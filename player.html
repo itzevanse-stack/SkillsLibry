@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Course Player — SkillsLibry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --teal: #4ecca3;
+  --teal-dark: #2db88a;
+  --teal-dim: rgba(78,204,163,0.12);
+  --teal-dim2: rgba(78,204,163,0.06);
+  --purple: #6c63ff;
+  --purple-dark: #5550d4;
+  --purple-dim: rgba(108,99,255,0.1);
+  --yellow: #ffd93d;
+  --yellow-dim: rgba(255,217,61,0.12);
+  --bg: #ffffff;
+  --bg2: #f8f9fc;
+  --bg3: #f0f2f8;
+  --bg4: #e8eaf2;
+  --border: #e4e6f0;
+  --border2: #d0d3e8;
+  --gold: #4ecca3;
+  --gold-light: #2db88a;
+  --gold-dim: rgba(78,204,163,0.12);
+  --gold-dim2: rgba(78,204,163,0.06);
+  --text: #0d0d1a;
+  --text2: #4a4d6a;
+  --text3: #8b8fa8;
+  --red: #e84545;
+  --green: #22c55e;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
+  --shadow: 0 2px 12px rgba(13,13,26,0.06);
+  --shadow-md: 0 4px 24px rgba(13,13,26,0.1);
+  --shadow-lg: 0 8px 40px rgba(13,13,26,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
+
+/* ─── TYPOGRAPHY ─── */
+.display{font-family:'Poppins',sans-serif;font-weight:600;line-height:1.1;letter-spacing:-0.02em}
+.serif{font-family:'Poppins',sans-serif}
+.mono{font-family:'Inter',sans-serif}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+
+/* ─── NAV ─── */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 32px;gap:32px}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none}
+.nav-logo-mark{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:#0a0a08}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:600;font-size:20px;color:var(--text)}
+.nav-links{display:flex;align-items:center;gap:24px;margin-left:16px}
+.nav-link{color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:color .2s;text-decoration:none}
+.nav-link:hover{color:var(--text)}
+.nav-link.active{color:var(--teal-dark)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;text-decoration:none;white-space:nowrap}
+.btn-ghost{background:transparent;color:var(--text2);padding:8px 16px;border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-teal{background:var(--teal);color:#0d0d1a;padding:10px 22px;font-weight:700}
+.btn-teal:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.3)}
+.btn-outline-teal{background:transparent;color:var(--teal-dark);padding:10px 22px;border:1.5px solid var(--teal);font-weight:600}
+.btn-outline-teal:hover{background:var(--teal-dim)}
+.btn-lg{padding:14px 32px;font-size:15px;border-radius:var(--radius)}
+.btn-sm{padding:6px 14px;font-size:12px}
+
+/* ─── PAGES ─── */
+.page{display:none;padding-top:64px;min-height:100vh}
+.page.active{display:block}
+
+/* ─── HOMEPAGE ─── */
+.hero{min-height:calc(100vh - 64px);display:flex;align-items:center;padding:80px 32px;position:relative;overflow:hidden;background:linear-gradient(160deg,#ffffff 0%,#f0f7ff 40%,#f0fdf8 100%)}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 70% 40%, rgba(78,204,163,0.10) 0%, transparent 60%)}
+.hero-grain{position:absolute;inset:0;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
+.hero-content{max-width:680px;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.25);border-radius:100px;padding:6px 16px;margin-bottom:28px}
+.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero-eyebrow span{font-size:12px;font-weight:600;color:var(--teal-dark);letter-spacing:.04em}
+.hero h1{font-size:clamp(44px,7vw,80px);margin-bottom:24px;color:var(--text)}
+.hero h1 em{color:var(--teal);font-style:normal}
+.hero-sub{font-size:17px;color:var(--text2);line-height:1.7;max-width:520px;margin-bottom:40px;font-weight:300}
+.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hero-stat{display:flex;align-items:center;gap:10px;padding-left:24px;border-left:1px solid var(--border)}
+.hero-stat-num{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
+.hero-stat-label{font-size:12px;color:var(--text3);line-height:1.3}
+.hero-stats{display:flex;gap:32px;margin-top:56px;padding-top:40px;border-top:1px solid var(--border)}
+
+/* ─── SECTION ─── */
+.section{padding:80px 32px;max-width:1100px;margin:0 auto}
+.section-label{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-dark);margin-bottom:14px}
+.section-title{font-size:clamp(30px,4vw,48px);margin-bottom:16px}
+.section-sub{font-size:15px;color:var(--text2);max-width:500px;line-height:1.7;margin-bottom:48px}
+
+/* ─── CATEGORY PILLS ─── */
+.category-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:48px}
+.cat-pill{padding:8px 18px;border-radius:100px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;background:transparent}
+.cat-pill:hover{border-color:var(--teal);color:var(--teal-dark)} .cat-pill.active{background:var(--teal-dim);border-color:var(--teal);color:var(--teal-dark)}
+
+/* ─── COURSE CARDS ─── */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.course-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:var(--shadow)}
+.course-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.course-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg2),var(--bg3));position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:44px}
+.course-thumb-icon{font-size:40px;opacity:0.3}
+.course-thumb-cat{position:absolute;top:12px;left:12px;background:#fff;border:1.5px solid var(--border);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--teal-dark)}
+.course-thumb-badge{position:absolute;top:12px;right:12px;background:var(--gold);border-radius:4px;padding:3px 8px;font-size:10px;font-weight:600;color:#0a0a08}
+.course-body{padding:18px 20px}
+.course-instructor{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.avatar-xs{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+.course-instructor-name{font-size:12px;color:var(--text3)}
+.course-title{font-size:15px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:8px}
+.course-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text3);margin-bottom:14px}
+.rating{color:#f59e0b}
+.course-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
+.course-price{font-family:'Poppins',sans-serif;font-size:22px;font-weight:600;color:var(--teal-dark)}
+.course-price-old{font-size:12px;color:var(--text3);text-decoration:line-through;margin-left:6px}
+.enroll-mini{padding:7px 16px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.enroll-mini:hover{background:var(--teal);color:#0d0d1a}
+
+/* ─── INSTRUCTORS ─── */
+.instructor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+.instructor-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;cursor:pointer;transition:all .25s;box-shadow:var(--shadow)}
+.instructor-card:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.instructor-avatar{width:72px;height:72px;border-radius:50%;background:var(--bg3);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600;color:var(--teal-dark);border:2px solid var(--border2)}
+.instructor-name{font-size:15px;font-weight:500;margin-bottom:4px}
+.instructor-title{font-size:12px;color:var(--text3);margin-bottom:12px}
+.instructor-stats{display:flex;justify-content:center;gap:20px}
+.istat{text-align:center}
+.istat-num{font-family:'Poppins',sans-serif;font-size:18px;font-weight:600;color:var(--teal-dark)}
+.istat-label{font-size:10px;color:var(--text3)}
+
+/* ─── TESTIMONIALS ─── */
+.testimonial-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.tcard{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);transition:all .2s}
+.tcard-stars{color:#f59e0b;font-size:14px;margin-bottom:12px;letter-spacing:2px}
+.tcard-text{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:18px;font-style:italic}
+.tcard-person{display:flex;align-items:center;gap:10px}
+.tcard-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.tcard-name{font-size:13px;font-weight:500}
+.tcard-loc{font-size:11px;color:var(--text3)}
+
+/* ─── HOW IT WORKS ─── */
+.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0}
+.step{padding:32px;border-right:1px solid var(--border);position:relative}
+.step:last-child{border-right:none}
+.step-num{font-family:'Poppins',sans-serif;font-size:48px;font-weight:700;color:var(--gold-dim);line-height:1;margin-bottom:20px}
+.step-title{font-size:16px;font-weight:500;margin-bottom:8px}
+.step-desc{font-size:13px;color:var(--text2);line-height:1.7}
+
+/* ─── MISSION BANNER ─── */
+.mission{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 32px;text-align:center;position:relative;overflow:hidden}
+.mission-bg{position:absolute;inset:0;background:radial-gradient(ellipse 50% 80% at 50% 100%, rgba(201,151,42,0.06) 0%, transparent 60%)}
+.mission-quote{font-family:'Poppins',sans-serif;font-size:clamp(24px,4vw,42px);font-weight:400;font-style:italic;color:var(--text);max-width:700px;margin:0 auto 24px;line-height:1.4;position:relative;z-index:1}
+.mission-accent-t{color:var(--teal)} .mission-accent-p{color:var(--purple)}
+.mission-sub{font-size:14px;color:var(--text3);position:relative;z-index:1}
+
+/* ─── CTA BANNER ─── */
+.cta-banner{background:linear-gradient(135deg,var(--teal-dim) 0%,var(--purple-dim) 100%);border:1.5px solid rgba(78,204,163,0.2);border-radius:var(--radius-lg);padding:56px 48px;text-align:center;margin:0 32px 80px;position:relative;overflow:hidden}
+.cta-banner-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse, rgba(78,204,163,0.12) 0%, transparent 70%)}
+.cta-banner h2{font-size:clamp(28px,4vw,44px);margin-bottom:16px;position:relative;z-index:1}
+.cta-banner p{font-size:15px;color:var(--text2);margin-bottom:32px;position:relative;z-index:1}
+.cta-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+
+/* ─── FOOTER ─── */
+.footer{background:var(--text);padding:56px 32px 32px}
+.footer-top{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand p{font-size:13px;color:var(--text3);line-height:1.7;margin-top:12px;max-width:220px}
+.footer-col h4{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:10px;cursor:pointer;text-decoration:none;transition:color .2s}
+.footer-col a:hover{color:var(--teal)}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--border)}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.3)}
+.footer-mission{font-size:12px;color:var(--teal);font-weight:500}
+
+/* ─── COURSE DETAIL PAGE ─── */
+.course-detail-hero{background:linear-gradient(160deg,#f0f7ff,#f0fdf8);border-bottom:1px solid var(--border);padding:48px 32px}
+.course-detail-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start}
+.course-detail-left{}
+.course-detail-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:12px;color:var(--text3)}
+.course-detail-eyebrow span{color:var(--teal-dark)}
+.course-detail-title{font-size:clamp(24px,3vw,38px);margin-bottom:16px;line-height:1.2}
+.course-detail-sub{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:20px}
+.course-detail-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--text2)}
+.course-detail-right{position:sticky;top:80px}
+.course-detail-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.promo-video{aspect-ratio:16/9;background:linear-gradient(135deg,#0d0d1a,#1a1a2e);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
+.promo-video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:background .2s}
+.promo-video-overlay:hover{background:rgba(0,0,0,0.2)}
+.play-circle{width:62px;height:62px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 12px rgba(78,204,163,.2);transition:transform .2s}
+.play-icon{width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:20px solid #0d0d1a;margin-left:4px}
+.course-card-body{padding:24px}
+.course-card-price{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.course-card-price-main{font-family:'Poppins',sans-serif;font-size:34px;font-weight:600;color:var(--teal-dark)}
+.course-card-price-old{font-size:16px;color:var(--text3);text-decoration:line-through}
+.course-card-discount{font-size:12px;background:rgba(78,204,163,0.12);color:var(--teal-dark);padding:3px 8px;border-radius:4px;font-weight:500}
+.course-card-timer{font-size:12px;color:var(--text3);margin-bottom:20px}
+.course-card-enroll{width:100%;padding:14px;background:var(--teal);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
+.course-card-enroll:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35)}
+.course-card-guarantee{text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px}
+.course-card-includes{border-top:1px solid var(--border);padding-top:20px}
+.course-card-includes h4{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px}
+.include-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin-bottom:8px}
+.include-check{width:16px;height:16px;border-radius:50%;background:var(--teal-dim);border:1.5px solid var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:var(--teal-dark);font-weight:700}
+
+/* TABS */
+.tabs-wrap{max-width:1100px;margin:0 auto;padding:0 32px}
+.tabs-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:40px;gap:0}
+.tab-btn{padding:16px 24px;font-size:14px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:transparent;border-top:none;border-left:none;border-right:none}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* Description tab */
+.desc-body{max-width:680px}
+.desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:16px}
+.desc-body ul{padding-left:24px;margin-bottom:16px}
+.desc-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:6px}
+.desc-section-title{font-size:18px;font-weight:500;color:var(--text);margin:28px 0 12px}
+
+/* Modules tab */
+.module-list{max-width:680px}
+.module-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden}
+.module-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;transition:background .2s}
+.module-header:hover{background:var(--bg3)}
+.module-header-left{display:flex;align-items:center;gap:12px}
+.module-num{font-family:'Inter',sans-serif;font-size:11px;color:var(--text3);width:28px}
+.module-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text)}
+.module-meta{font-size:12px;color:var(--text3);margin-left:auto;margin-right:12px}
+.chevron-icon{font-size:18px;color:var(--text3);transition:transform .2s;line-height:1}
+.chevron-icon.open{transform:rotate(180deg)}
+.lesson-list{border-top:1px solid var(--border);display:none}
+.lesson-list.open{display:block}
+.lesson-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .2s}
+.lesson-item:last-child{border-bottom:none}
+.lesson-item:hover{background:var(--bg3)}
+.lesson-icon{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);flex-shrink:0}
+.lesson-title{font-size:13px;color:var(--text2);flex:1}
+.lesson-duration{font-size:11px;color:var(--text3);margin-right:8px}
+.lesson-tag{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500}
+.tag-free{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.3)}
+.tag-lock{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+
+/* Testimonials tab */
+.testimonials-tab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;max-width:900px}
+
+/* ─── STUDENT DASHBOARD ─── */
+.dash-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px)}
+.sidebar{background:#fff;border-right:1.5px solid var(--border);padding:20px 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
+.sidebar-section{margin-bottom:8px}
+.sidebar-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:0 20px;margin-bottom:4px;margin-top:16px}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
+.sidebar-item:hover{color:var(--text);background:var(--bg3)}
+.sidebar-item.active{color:var(--teal-dark);border-left-color:var(--teal);background:var(--teal-dim)}
+.sidebar-icon{font-size:16px;width:20px;text-align:center}
+.dash-main{padding:32px;background:var(--bg2);overflow-y:auto}
+.dash-view{display:none}
+.dash-view.active{display:block}
+.dash-header{margin-bottom:32px}
+.dash-title{font-size:24px;font-weight:500;margin-bottom:4px}
+.dash-sub{font-size:14px;color:var(--text3)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.stat-card-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.stat-card-value{font-family:'Poppins',sans-serif;font-size:32px;font-weight:600;color:var(--teal-dark);line-height:1}
+.stat-card-sub{font-size:12px;color:var(--text3);margin-top:4px}
+
+/* My courses */
+.my-courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.my-course-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow)}
+.my-course-card:hover{border-color:var(--teal);box-shadow:var(--shadow-md)}
+.my-course-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg2),var(--bg3));display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
+.progress-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.5)}
+.progress-bar{height:100%;background:var(--teal);border-radius:2px}
+.my-course-body{padding:16px}
+.my-course-title{font-size:14px;font-weight:500;margin-bottom:8px}
+.my-course-progress{font-size:12px;color:var(--text3);margin-bottom:12px}
+.continue-btn{width:100%;padding:9px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.continue-btn:hover{background:var(--teal);color:#0d0d1a}
+
+/* Course Player */
+.player-layout{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 64px)}
+.player-main{padding:0}
+.video-container{background:#000;aspect-ratio:16/9;width:100%;display:flex;align-items:center;justify-content:center;position:relative}
+.video-placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:rgba(255,255,255,0.3)}
+.video-placeholder-icon{font-size:48px}
+.player-info{padding:24px 28px;border-bottom:1px solid var(--border)}
+.player-lesson-title{font-size:20px;font-weight:500;margin-bottom:8px}
+.player-lesson-meta{font-size:13px;color:var(--text3)}
+.player-nav{display:flex;gap:10px;margin-top:16px}
+.player-sidebar{background:#fff;border-left:1.5px solid var(--border);overflow-y:auto}
+.player-sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600}
+.player-progress-bar{height:3px;background:var(--bg4);margin-bottom:0}
+.player-progress-fill{height:100%;background:var(--teal);width:35%}
+.player-module{border-bottom:1px solid var(--border)}
+.player-module-header{padding:12px 16px;font-size:12px;font-weight:600;color:var(--text3);letter-spacing:0.04em;background:var(--bg3)}
+.player-lesson-item{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:12px;color:var(--text3);cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border)}
+.player-lesson-item:last-child{border-bottom:none}
+.player-lesson-item:hover{background:var(--bg3)}
+.player-lesson-item.active{background:var(--teal-dim);color:var(--teal-dark)}
+.lesson-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
+.lesson-check.done{background:var(--teal);border-color:var(--teal);color:#0d0d1a}
+
+/* ─── INSTRUCTOR PORTAL ─── */
+.inst-header{background:#fff;border-bottom:1.5px solid var(--border);padding:28px 32px}
+.inst-header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.inst-tabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius);padding:4px}
+.inst-tab{padding:8px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s}
+.inst-tab.active{background:#fff;color:var(--text);box-shadow:var(--shadow)}
+.inst-content{max-width:1100px;margin:0 auto;padding:32px;background:var(--bg2);min-height:calc(100vh - 180px)}
+.inst-view{display:none}
+.inst-view.active{display:block}
+
+/* Course builder */
+.builder-layout{display:grid;grid-template-columns:1fr 320px;gap:24px}
+.builder-left{}
+.builder-right{}
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:12px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
+.form-input{width:100%;padding:11px 14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;transition:border-color .2s;outline:none}
+.form-input:focus{border-color:var(--teal)}
+.form-input::placeholder{color:var(--text3)}
+.form-textarea{resize:vertical;min-height:120px;line-height:1.6}
+.form-select{appearance:none;cursor:pointer}
+.module-builder{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
+.module-builder-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.module-builder-title{flex:1;font-size:14px;font-weight:500}
+.module-builder-actions{display:flex;gap:6px}
+.icon-btn{width:28px;height:28px;border-radius:var(--radius-sm);background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text3);transition:all .2s}
+.icon-btn:hover{border-color:var(--border2);color:var(--text)}
+.lesson-builder{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg3)}
+.lesson-builder-input{flex:1;background:transparent;border:none;color:var(--text2);font-size:13px;outline:none}
+.add-lesson-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--text3);cursor:pointer;margin:8px 16px;transition:all .2s}
+.add-lesson-btn:hover{border-color:var(--teal);color:var(--teal-dark)}
+.add-module-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius);font-size:13px;color:var(--text3);cursor:pointer;transition:all .2s}
+.add-module-btn:hover{border-color:var(--teal);color:var(--teal-dark)}
+
+/* Testimonial uploader */
+.testimonial-list{display:grid;gap:12px}
+.testimonial-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:flex-start}
+.testimonial-item-body{flex:1}
+.testimonial-status{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
+.status-live{background:rgba(39,174,96,0.12);color:#27ae60;border:1px solid rgba(39,174,96,0.2)}
+.status-pending{background:rgba(78,204,163,0.1);color:var(--teal-dark);border:1px solid rgba(78,204,163,0.2)}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover{border-color:var(--teal-dark);background:var(--gold-dim2)}
+.upload-icon{font-size:32px;margin-bottom:12px;opacity:0.4}
+.upload-label{font-size:14px;color:var(--text2);margin-bottom:4px}
+.upload-sub{font-size:12px;color:var(--text3)}
+
+/* ─── ADMIN PANEL ─── */
+.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
+.admin-sidebar{background:#fff;border-right:1.5px solid var(--border);padding:20px 0}
+.admin-sidebar-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.admin-sidebar-logo span{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;color:var(--text3)}
+.admin-sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
+.admin-sidebar-item:hover{color:var(--text)}
+.admin-sidebar-item.active{color:var(--teal-dark);border-left-color:var(--teal);background:var(--teal-dim)}
+.admin-main{padding:32px;background:var(--bg2);overflow-y:auto}
+.admin-view{display:none}
+.admin-view.active{display:block}
+.admin-page-title{font-size:22px;font-weight:500;margin-bottom:4px}
+.admin-page-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
+.admin-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.admin-stat{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.admin-stat-label{font-size:11px;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
+.admin-stat-value{font-family:'Poppins',sans-serif;font-size:30px;font-weight:600;color:var(--teal-dark)}
+.admin-stat-change{font-size:12px;color:var(--green);margin-top:4px}
+
+/* Table */
+.admin-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.admin-table th{text-align:left;padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);background:var(--bg2);border-bottom:1.5px solid var(--border)}
+.admin-table td{padding:14px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border)}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tr:hover td{background:var(--bg3)}
+.table-actions{display:flex;gap:6px}
+.tbl-btn{padding:4px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;border:none}
+.tbl-btn-approve{background:rgba(39,174,96,0.12);color:#27ae60;border:1px solid rgba(39,174,96,0.2)}
+.tbl-btn-approve:hover{background:#27ae60;color:#fff}
+.tbl-btn-feature{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.25)}
+.tbl-btn-feature:hover{background:var(--teal);color:#0d0d1a}
+.tbl-btn-danger{background:rgba(192,57,43,0.1);color:var(--red);border:1px solid rgba(192,57,43,0.2)}
+.tbl-btn-danger:hover{background:var(--red);color:#fff}
+.badge-status{padding:3px 8px;border-radius:100px;font-size:11px;font-weight:500}
+.badge-live{background:rgba(39,174,96,0.12);color:#27ae60}
+.badge-pending{background:rgba(255,217,61,.12);color:#92400e}
+.badge-draft{background:var(--bg4);color:var(--text3)}
+
+/* ─── ENROLL MODAL ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,13,26,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:480px;padding:32px;animation:slideUp .3s ease;position:relative;box-shadow:var(--shadow-lg)}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-size:20px;font-weight:500;margin-bottom:4px}
+.modal-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
+.modal-course-summary{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:14px;margin-bottom:22px}
+.modal-course-icon{width:56px;height:42px;background:var(--bg4);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.modal-course-title{font-size:14px;font-weight:500;margin-bottom:4px}
+.modal-course-instructor{font-size:12px;color:var(--text3)}
+.modal-price-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.modal-price-label{font-size:13px;color:var(--text2)}
+.modal-price-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
+.modal-pay-btn{width:100%;padding:14px;background:var(--teal);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
+.modal-pay-btn:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35)}
+.modal-close{position:absolute;top:20px;right:24px;font-size:22px;color:var(--text3);cursor:pointer;background:none;border:none}
+.modal-guarantee{text-align:center;font-size:12px;color:var(--text3)}
+.modal-installment{width:100%;padding:12px;background:transparent;color:var(--purple);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border:1.5px solid var(--purple);border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
+.modal-installment:hover{background:var(--purple-dim)}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 18px;font-size:13px;color:var(--text);z-index:300;display:none;box-shadow:var(--shadow-lg);max-width:300px}
+.toast.show{display:flex;align-items:center;gap:10px}
+.toast-icon{font-size:18px}
+
+/* ─── CATALOG PAGE ─── */
+.catalog-header{background:linear-gradient(160deg,#f0f7ff,#f0fdf8);border-bottom:1.5px solid var(--border);padding:48px 32px}
+.catalog-header-inner{max-width:1100px;margin:0 auto}
+.catalog-search{display:flex;gap:12px;margin-top:24px}
+.catalog-search-input{flex:1;padding:12px 18px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;box-shadow:var(--shadow)}
+.catalog-search-input:focus{border-color:var(--teal)}
+.catalog-search-input::placeholder{color:var(--text3)}
+.catalog-body{max-width:1100px;margin:0 auto;padding:40px 32px}
+.filter-row{display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap}
+.filter-label{font-size:12px;color:var(--text3);font-weight:500}
+.sort-select{padding:8px 14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;outline:none;cursor:pointer;margin-left:auto;font-family:'Inter',sans-serif}
+
+/* responsive */
+@media(max-width:768px){
+  .nav-links{display:none}
+  .hero{padding:60px 20px}
+  .section{padding:60px 20px}
+  .course-detail-inner{grid-template-columns:1fr}
+  .course-detail-right{position:static}
+  .dash-layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .player-layout{grid-template-columns:1fr}
+  .player-sidebar{display:none}
+  .admin-layout{grid-template-columns:1fr}
+  .admin-sidebar{display:none}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .stats-row,.admin-stats-row{grid-template-columns:1fr 1fr}
+  .builder-layout{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+}
+.page{display:none}.page.active{display:block}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">S</div>
+    <span class="nav-logo-text">Skills<span>Libry</span></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="catalog.html">Courses</a>
+    <a class="nav-link" href="index.html">Instructors</a>
+    <a class="nav-link" href="#">Community</a>
+    <a class="nav-link" href="#">Blog</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn btn-ghost" href="dashboard.html">My Learning</a>
+    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+  </div>
+</nav>
+
+<div class="page active">
+<div class="player-layout">
+    <div class="player-main">
+      <div class="video-container">
+        <div class="video-placeholder">
+          <div class="video-placeholder-icon">▶</div>
+          <div style="font-size:14px;font-weight:500">Module 4 · Lesson 2</div>
+          <div style="font-size:12px">Free traffic — Facebook groups</div>
+        </div>
+      </div>
+      <div class="player-info">
+        <div class="player-lesson-title">Free traffic — Facebook groups</div>
+        <div class="player-lesson-meta">Module 4 of 6 · Lesson 2 of 6 · 18 min</div>
+        <div class="player-nav">
+          <button class="btn btn-ghost btn-sm">← Previous</button>
+          <button class="btn btn-teal btn-sm">Mark complete & next →</button>
+        </div>
+      </div>
+      <!-- Notes area -->
+      <div style="padding:24px 28px;border-bottom:1px solid var(--border)">
+        <div style="font-size:13px;font-weight:500;margin-bottom:10px">My notes</div>
+        <textarea class="form-input form-textarea" placeholder="Take notes while you watch..." style="min-height:80px;font-size:13px"></textarea>
+      </div>
+    </div>
+    <div class="player-sidebar">
+      <div class="player-sidebar-header">
+        Course content
+        <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:8px">35% complete</span>
+      </div>
+      <div class="player-progress-bar"><div class="player-progress-fill"></div></div>
+      <div id="player-curriculum"></div>
+    </div>
+  </div>
+</div>
+
+
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Done</span>
+</div>
+
+<script>
+
+function goTo(page){
+  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
+    dashboard:'dashboard.html',player:'player.html',
+    instructor:'instructor.html',admin:'admin.html'};
+  if(routes[page]) window.location.href=routes[page];
+}
+function showPage(page){ goTo(page); }
+function showCourseDetail(id){ window.location.href='course.html?id='+id; }
+
+
+// ── NULL-SAFE FUNCTIONS (override any duplicates below) ──
+
+function openEnrollModal(){
+  var em=document.getElementById('enroll-modal');
+  var pd=document.getElementById('modal-price-display');
+  var pn=document.getElementById('modal-price-note');
+  var ib=document.getElementById('modal-installment-btn');
+  if(pd) pd.textContent='₦35,000';
+  if(pn) pn.textContent='Full access · Lifetime';
+  if(ib) ib.style.display='block';
+  if(em) em.classList.add('open');
+}
+function openInstallModal(){ openEnrollModal(); switchToInstallment(); }
+function switchToInstallment(){
+  var pd=document.getElementById('modal-price-display');
+  var pn=document.getElementById('modal-price-note');
+  var ib=document.getElementById('modal-installment-btn');
+  if(pd) pd.textContent='₦17,500';
+  if(pn) pn.textContent='First payment today · ₦17,500 in 30 days';
+  if(ib) ib.style.display='none';
+}
+function closeModal(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.classList.remove('open');
+}
+function showToast(icon,msg){
+  var t=document.getElementById('toast'); if(!t) return;
+  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
+  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+// Safe modal backdrop close
+(function(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+})();
+
+// ── DATA ──
+const COURSES = [
+  {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
+  {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
+  {id:3,title:'Content to Cash: Monetise Every Platform You Touch',instructor:'Femi Ogunwale',initials:'FO',cat:'content',catLabel:'Content & Monetisation',price:'₦22,000',priceOld:'₦40,000',rating:'4.7',students:'2,104',badge:'New',icon:'🎬'},
+  {id:4,title:'AI Tools Mastery: Work 10x Faster, Earn 10x More',instructor:'Kemi Adeyemi',initials:'KA',cat:'ai',catLabel:'AI Skills',price:'₦32,000',priceOld:'₦55,000',rating:'4.9',students:'1,120',badge:'Trending',icon:'🤖'},
+  {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
+  {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
+];
+
+const INSTRUCTORS = [
+  {name:'Chidi Okafor',title:'Affiliate Marketing Expert',initials:'CO',courses:3,students:'4,801'},
+  {name:'Ngozi Adeola',title:'Copywriter & Digital Creator',initials:'NA',courses:2,students:'2,829'},
+  {name:'Femi Ogunwale',title:'Content Monetisation Coach',initials:'FO',courses:2,students:'2,104'},
+  {name:'Kemi Adeyemi',title:'AI Productivity Specialist',initials:'KA',courses:1,students:'1,120'},
+];
+
+const TESTIMONIALS = [
+  {name:'Amaka Obi',loc:'Lagos, Nigeria',text:'I made my first ₦45,000 commission in week 3 of the affiliate course. Chidi explains everything in a way that actually makes sense for Nigeria.',stars:5,initials:'AO'},
+  {name:'Taiwo Musa',loc:'Abuja, Nigeria',text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',stars:5,initials:'TM'},
+  {name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take me 2 days. My rates doubled.',stars:5,initials:'GA'},
+  {name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',stars:5,initials:'EN'},
+  {name:'Blessing Okafor',loc:'Lagos, Nigeria',text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',stars:5,initials:'BO'},
+  {name:'Ibrahim Suleiman',loc:'Kano, Nigeria',text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',stars:5,initials:'IS'},
+];
+
+const MODULES = [
+  {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
+  {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
+  {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
+  {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
+  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
+  {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
+];
+
+// ── RENDER FUNCTIONS ──
+function courseCard(c, onclick=''){
+  return `<div class="course-card" onclick="showCourseDetail(${c.id})">
+    <div class="course-thumb">
+      <span class="course-thumb-icon">${c.icon}</span>
+      <span class="course-thumb-cat">${c.catLabel}</span>
+      ${c.badge?`<span class="course-thumb-badge">${c.badge}</span>`:''}
+    </div>
+    <div class="course-body">
+      <div class="course-instructor">
+        <div class="avatar-xs">${c.initials}</div>
+        <span class="course-instructor-name">${c.instructor}</span>
+      </div>
+      <div class="course-title">${c.title}</div>
+      <div class="course-meta">
+        <span class="rating">★ ${c.rating}</span>
+        <span>${c.students} students</span>
+      </div>
+      <div class="course-footer">
+        <div><span class="course-price">${c.price}</span><span class="course-price-old">${c.priceOld}</span></div>
+        <div class="enroll-mini" onclick="event.stopPropagation();openEnrollModal()">Enroll</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHomeGrid(){
+  const g = document.getElementById('home-course-grid');
+  if(g) g.innerHTML = COURSES.map(c=>courseCard(c)).join('');
+}
+function renderCatalogGrid(list){
+  const g = document.getElementById('catalog-grid');
+  if(g) g.innerHTML = (list||COURSES).map(c=>courseCard(c)).join('');
+}
+function renderInstructors(){
+  const g = document.getElementById('instructor-grid');
+  if(!g) return;
+  g.innerHTML = INSTRUCTORS.map(i=>`
+    <div class="instructor-card">
+      <div class="instructor-avatar">${i.initials}</div>
+      <div class="instructor-name">${i.name}</div>
+      <div class="instructor-title">${i.title}</div>
+      <div class="instructor-stats">
+        <div class="istat"><div class="istat-num">${i.courses}</div><div class="istat-label">Courses</div></div>
+        <div class="istat"><div class="istat-num">${i.students}</div><div class="istat-label">Students</div></div>
+      </div>
+    </div>`).join('');
+}
+function renderTestimonials(){
+  const g = document.getElementById('home-testimonials');
+  if(!g) return;
+  g.innerHTML = TESTIMONIALS.slice(0,6).map(t=>`
+    <div class="tcard">
+      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
+      <div class="tcard-text">"${t.text}"</div>
+      <div class="tcard-person">
+        <div class="tcard-avatar">${t.initials}</div>
+        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
+      </div>
+    </div>`).join('');
+  const g2 = document.getElementById('course-testimonials-grid');
+  if(g2) g2.innerHTML = TESTIMONIALS.map(t=>`
+    <div class="tcard">
+      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
+      <div class="tcard-text">"${t.text}"</div>
+      <div class="tcard-person">
+        <div class="tcard-avatar">${t.initials}</div>
+        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
+      </div>
+    </div>`).join('');
+}
+function renderModules(){
+  const g = document.getElementById('module-list');
+  if(!g) return;
+  g.innerHTML = MODULES.map((m,mi)=>`
+    <div class="module-item">
+      <div class="module-header" onclick="toggleModule(this)">
+        <div class="module-header-left">
+          <span class="module-num">${m.num}</span>
+          <span class="module-title">${m.title}</span>
+        </div>
+        <span class="module-meta">${m.meta}</span>
+        <span class="chevron-icon ${mi===0?'open':''}">⌄</span>
+      </div>
+      <div class="lesson-list ${mi===0?'open':''}">
+        ${m.lessons.map((l,li)=>`
+          <div class="lesson-item">
+            <div class="lesson-icon">▶</div>
+            <span class="lesson-title">${l.t}</span>
+            <span class="lesson-duration">${l.dur}</span>
+            <span class="lesson-tag ${l.free?'tag-free':'tag-lock'}">${l.free?'Free preview':'Enrolled'}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function renderPlayerCurriculum(){
+  const g = document.getElementById('player-curriculum');
+  if(!g) return;
+  g.innerHTML = MODULES.map((m,mi)=>`
+    <div class="player-module">
+      <div class="player-module-header">Module ${m.num} — ${m.title}</div>
+      ${m.lessons.map((l,li)=>`
+        <div class="player-lesson-item ${mi===3&&li===1?'active':''}">
+          <div class="lesson-check ${(mi<3||(mi===0))?'done':''}">${(mi<3||(mi===0))?'✓':''}</div>
+          <span style="flex:1;font-size:12px">${l.t}</span>
+          <span style="font-size:10px;color:var(--text3)">${l.dur}</span>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ── NAVIGATION ──
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  window.scrollTo(0,0);
+}
+function showCourseDetail(id){
+  const c = COURSES.find(x=>x.id===id)||COURSES[0];
+  document.getElementById('cd-title').textContent = c.title;
+  document.getElementById('cd-category').textContent = c.catLabel;
+  document.getElementById('cd-instructor').textContent = c.instructor;
+  document.getElementById('cd-avatar').textContent = c.initials;
+  document.getElementById('cd-price').textContent = c.price;
+  document.getElementById('cd-price-old').textContent = c.priceOld;
+  document.getElementById('cd-students').textContent = c.students;
+  showPage('course');
+  document.querySelector('.tab-btn.active')?.click();
+}
+
+// ── TABS ──
+function switchTab(btn, pane){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(pane).classList.add('active');
+}
+function toggleModule(header){
+  const list = header.nextElementSibling;
+  const ch = header.querySelector('.chevron-icon');
+  list.classList.toggle('open');
+  ch.classList.toggle('open');
+}
+function switchDash(el, view){
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.dash-view').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(view).classList.add('active');
+}
+function switchInstTab(el, view){
+  document.querySelectorAll('.inst-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.inst-view').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(view).classList.add('active');
+}
+function switchAdmin(el, view){
+  document.querySelectorAll('.admin-sidebar-item').forEach(i=>i.classList.remove('active'));
+  document.querySelectorAll('.admin-view').forEach(v=>v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(view).classList.add('active');
+}
+
+// ── FILTERS ──
+function filterCat(el, cat){
+  document.querySelectorAll('.category-row .cat-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
+  renderHomeGrid();
+  if(cat!=='all'){
+    const g=document.getElementById('home-course-grid');
+    if(g) g.innerHTML=filtered.map(c=>courseCard(c)).join('');
+  }
+}
+function filterCatalog(el, cat){
+  document.querySelectorAll('.filter-row .cat-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const filtered=cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
+  renderCatalogGrid(filtered);
+}
+function searchCourses(){
+  const q = document.getElementById('catalog-search-input').value.toLowerCase();
+  const filtered = q?COURSES.filter(c=>c.title.toLowerCase().includes(q)||c.instructor.toLowerCase().includes(q)):COURSES;
+  renderCatalogGrid(filtered);
+}
+
+// ── MODAL ──
+// openEnrollModal defined above
+// openInstallModal defined above
+// switchToInstallment defined above
+// closeModal defined above
+// modal listener defined above
+// ── TOAST ──
+function showToast(icon, msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── INIT ──
+renderHomeGrid();
+renderCatalogGrid();
+renderInstructors();
+renderTestimonials();
+renderModules();
+renderPlayerCurriculum();
+
+
+var pc=document.getElementById('player-curriculum');
+if(pc) pc.innerHTML=MODULES.map(function(m,mi){
+  return '<div class="player-module-header">Module '+m.num+' — '+m.title+'</div>'+
+  m.lessons.map(function(l,li){
+    var active=(mi===3&&li===1)?' active':'';
+    var done=mi<2?'done':'';
+    return '<div class="player-lesson-item'+active+'"><div class="lesson-check '+done+'">'+(mi<2?'✓':'')+'</div><span style="flex:1">'+l.t+'</span><span style="font-size:10px;color:var(--text3)">'+l.dur+'</span></div>';
+  }).join('');
+}).join('');
+
+</script>
+</body>
+</html>
