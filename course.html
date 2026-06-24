@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Course Player — SkillsLibry</title>
+<title>Course — SkillsLibry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -458,119 +458,657 @@ h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
   .steps{grid-template-columns:1fr 1fr}
 }
 .page{display:none}.page.active{display:block}
+
+/* ── Course page specific layout ── */
+.course-wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:40px 32px 80px;
+  display:grid;
+  grid-template-columns:1fr 340px;
+  gap:48px;
+  align-items:start;
+}
+.course-main{}
+.course-sidebar{
+  position:sticky;
+  top:80px;
+}
+
+/* Breadcrumb */
+.breadcrumb{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:var(--text3);
+  margin-bottom:20px;
+}
+.breadcrumb a{color:var(--teal-dark);text-decoration:none;font-weight:500;cursor:pointer;}
+.breadcrumb a:hover{text-decoration:underline;}
+.breadcrumb-sep{color:var(--text3);}
+
+/* Course headline area */
+.course-headline{
+  margin-bottom:24px;
+}
+.course-below-video{margin-bottom:28px;padding-top:20px;}
+.course-headline h1{
+  font-size:clamp(22px,3vw,36px);
+  font-weight:700;
+  line-height:1.25;
+  margin-bottom:12px;
+  letter-spacing:-0.01em;
+  color:var(--text);
+}
+.course-headline-sub{
+  font-size:15px;
+  color:var(--text2);
+  line-height:1.7;
+  margin-bottom:18px;
+}
+.course-headline-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:16px;
+  font-size:13px;
+  color:var(--text2);
+  margin-bottom:16px;
+}
+.course-headline-instructor{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  color:var(--text2);
+}
+
+/* ── PROMO VIDEO — full width in main column ── */
+.promo-video-wrap{
+  width:100%;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  margin-bottom:32px;
+  position:relative;
+  background:#0d0d1a;
+  box-shadow:var(--shadow-lg);
+}
+.promo-video-wrap video,
+.promo-video-embed{
+  width:100%;
+  aspect-ratio:16/9;
+  display:block;
+  border:none;
+}
+.promo-video-placeholder{
+  aspect-ratio:16/9;
+  background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  cursor:pointer;
+  position:relative;
+}
+.promo-video-placeholder:hover .play-circle{transform:scale(1.08);}
+.promo-label{
+  font-size:13px;
+  color:rgba(255,255,255,.45);
+  letter-spacing:.04em;
+}
+.play-circle{
+  width:68px;height:68px;border-radius:50%;
+  background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 16px rgba(78,204,163,.15);
+  transition:transform .2s;
+}
+.play-icon{
+  width:0;height:0;
+  border-top:14px solid transparent;
+  border-bottom:14px solid transparent;
+  border-left:22px solid #0d0d1a;
+  margin-left:5px;
+}
+
+/* ── TABS ── */
+.course-tabs-bar{
+  display:flex;
+  border-bottom:2px solid var(--border);
+  margin-bottom:32px;
+  gap:0;
+}
+.course-tab-btn{
+  padding:14px 28px;
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  font-weight:600;
+  color:var(--text3);
+  cursor:pointer;
+  border:none;
+  background:transparent;
+  border-bottom:2px solid transparent;
+  margin-bottom:-2px;
+  transition:all .2s;
+}
+.course-tab-btn:hover{color:var(--text);}
+.course-tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal);}
+.course-tab-pane{display:none;}
+.course-tab-pane.active{display:block;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Description tab */
+.desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:14px;}
+.desc-body ul{padding-left:22px;margin-bottom:14px;}
+.desc-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:6px;}
+.desc-section-title{font-family:'Poppins',sans-serif;font-size:17px;font-weight:600;color:var(--text);margin:28px 0 12px;}
+
+/* Testimonials tab */
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:16px;
+}
+
+/* Modules tab */
+.modules-summary{font-size:13px;color:var(--text3);font-weight:500;margin-bottom:20px;}
+.module-item{border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:#fff;box-shadow:var(--shadow);}
+.module-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;transition:background .2s;}
+.module-header:hover{background:var(--bg2);}
+.module-header-left{display:flex;align-items:center;gap:12px;}
+.module-num{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);flex-shrink:0;}
+.module-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text);}
+.module-meta{font-size:12px;color:var(--text3);margin-right:12px;}
+.chevron-icon{font-size:18px;color:var(--text3);transition:transform .2s;line-height:1;}
+.chevron-icon.open{transform:rotate(180deg);}
+.lesson-list{display:none;border-top:1px solid var(--border);}
+.lesson-list.open{display:block;}
+.lesson-item{display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
+.lesson-item:last-child{border-bottom:none;}
+.lesson-item:hover{background:var(--bg2);}
+.lesson-icon{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);flex-shrink:0;}
+.lesson-title{font-size:13px;color:var(--text2);flex:1;}
+.lesson-duration{font-size:11px;color:var(--text3);margin-right:8px;}
+.lesson-tag{font-size:10px;padding:3px 10px;border-radius:100px;font-weight:600;}
+.tag-free{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.3);}
+.tag-lock{background:var(--bg3);color:var(--text3);}
+
+/* ── SIDEBAR PURCHASE CARD ── */
+.purchase-card{
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-lg);
+}
+.purchase-card-price-row{
+  padding:24px 24px 0;
+}
+.purchase-card-price{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  margin-bottom:4px;
+}
+.purchase-card-price-main{
+  font-family:'Poppins',sans-serif;
+  font-size:34px;
+  font-weight:800;
+  color:var(--text);
+}
+.purchase-card-price-old{
+  font-size:16px;
+  color:var(--text3);
+  text-decoration:line-through;
+}
+.purchase-card-discount{
+  font-size:12px;
+  background:rgba(34,197,94,.1);
+  color:#16a34a;
+  padding:3px 9px;
+  border-radius:4px;
+  font-weight:600;
+}
+.purchase-card-timer{
+  font-size:12px;
+  color:var(--text3);
+  margin-bottom:20px;
+}
+.purchase-card-actions{
+  padding:0 24px 20px;
+}
+.purchase-card-enroll{
+  width:100%;padding:14px;
+  background:var(--teal);color:#0d0d1a;
+  font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;
+  border:none;border-radius:var(--radius);cursor:pointer;
+  transition:all .2s;margin-bottom:10px;display:block;text-align:center;
+}
+.purchase-card-enroll:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35);}
+.purchase-card-install{
+  width:100%;padding:12px;
+  background:transparent;color:var(--purple);
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
+  border:1.5px solid var(--purple);border-radius:var(--radius);
+  cursor:pointer;transition:all .2s;margin-bottom:12px;display:block;text-align:center;
+}
+.purchase-card-install:hover{background:var(--purple-dim);}
+.purchase-card-guarantee{
+  text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px;
+}
+.purchase-card-includes{
+  border-top:1px solid var(--border);
+  padding:20px 24px 24px;
+}
+.purchase-card-includes h4{
+  font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--text);margin-bottom:14px;
+}
+.include-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:var(--text2);margin-bottom:10px;
+}
+.include-check{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--teal-dim);border:1.5px solid var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:9px;color:var(--teal-dark);font-weight:700;
+}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  .course-wrap{grid-template-columns:1fr;padding:24px 16px 100px;gap:0;}
+  .course-sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;z-index:50;border-radius:0;}
+  .purchase-card{border-radius:0;border-left:none;border-right:none;border-bottom:none;}
+  .purchase-card-includes{display:none;}
+}
+
+/* ── TESTIMONIAL CARDS — video + image + text ── */
+.tcard{
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:all .2s;
+}
+.tcard:hover{border-color:var(--teal);box-shadow:var(--shadow-md);}
+
+/* Media area — video or image */
+.tcard-media{
+  width:100%;
+  position:relative;
+  background:#0d0d1a;
+  cursor:pointer;
+}
+.tcard-media video{
+  width:100%;
+  aspect-ratio:16/9;
+  display:block;
+  object-fit:cover;
+}
+.tcard-media img{
+  width:100%;
+  aspect-ratio:16/9;
+  display:block;
+  object-fit:cover;
+}
+.tcard-play-btn{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,0.25);
+  transition:background .2s;
+}
+.tcard-play-btn:hover{background:rgba(0,0,0,0.1);}
+.tcard-play-circle{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 12px rgba(78,204,163,.2);
+  transition:transform .2s;
+}
+.tcard-play-btn:hover .tcard-play-circle{transform:scale(1.1);}
+.tcard-play-icon{
+  width:0;height:0;
+  border-top:10px solid transparent;
+  border-bottom:10px solid transparent;
+  border-left:17px solid #0d0d1a;
+  margin-left:3px;
+}
+.tcard-type-badge{
+  position:absolute;top:10px;right:10px;
+  background:rgba(13,13,26,.7);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:100px;
+  padding:4px 10px;
+  font-size:10px;font-weight:600;
+  color:rgba(255,255,255,.85);
+  letter-spacing:.04em;
+}
+
+/* Text body below media */
+.tcard-body{padding:18px 20px 20px;}
+.tcard-stars{color:#f59e0b;font-size:13px;margin-bottom:10px;letter-spacing:2px;}
+.tcard-text{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
+.tcard-person{display:flex;align-items:center;gap:10px;}
+.tcard-avatar{
+  width:38px;height:38px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.tcard-name{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:var(--text);}
+.tcard-loc{font-size:11px;color:var(--text3);}
+.tcard-result{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:4px;font-size:11px;font-weight:600;
+  color:var(--teal-dark);
+  background:var(--teal-dim);
+  padding:2px 8px;border-radius:100px;
+}
+
+/* Text-only card (no media) */
+.tcard-text-only .tcard-body{padding:22px;}
+.tcard-text-only .tcard-text::before{content:'"';font-family:'Poppins',sans-serif;font-size:48px;line-height:0;color:var(--teal);opacity:.3;display:block;margin-bottom:8px;padding-top:20px;}
+
+/* Grid */
+.testimonials-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;
+}
+
+
+/* ── CURRENCY SWITCHER ── */
+.currency-switcher{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+}
+.currency-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;
+  background:var(--bg2);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);
+  font-size:12px;font-weight:600;
+  color:var(--text2);
+  cursor:pointer;
+  transition:all .2s;
+  font-family:'Inter',sans-serif;
+  white-space:nowrap;
+}
+.currency-btn:hover{border-color:var(--teal);color:var(--teal-dark);}
+.currency-btn .flag{font-size:14px;}
+.currency-btn .chevron{font-size:10px;transition:transform .2s;}
+.currency-btn.open .chevron{transform:rotate(180deg);}
+.currency-dropdown{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  background:#fff;
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-lg);
+  min-width:200px;
+  z-index:200;
+  display:none;
+  overflow:hidden;
+}
+.currency-dropdown.open{display:block;animation:dropIn .15s ease;}
+@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.currency-dropdown-header{
+  padding:10px 14px;
+  font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text3);
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+}
+.currency-option{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  font-size:13px;font-weight:500;
+  color:var(--text2);
+  cursor:pointer;
+  transition:background .15s;
+  border-bottom:1px solid var(--border);
+}
+.currency-option:last-child{border-bottom:none;}
+.currency-option:hover{background:var(--teal-dim);color:var(--teal-dark);}
+.currency-option.active{background:var(--teal-dim);color:var(--teal-dark);font-weight:600;}
+.currency-option .c-flag{font-size:18px;width:24px;text-align:center;}
+.currency-option .c-name{flex:1;}
+.currency-option .c-symbol{font-size:12px;color:var(--text3);font-weight:600;}
+.currency-option.active .c-symbol{color:var(--teal-dark);}
+
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="nav">
   <a class="nav-logo" href="index.html">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="catalog.html">Courses</a>
+    <a class="nav-link" href="catalog.html" style="color:var(--teal-dark);font-weight:600;">Courses</a>
     <a class="nav-link" href="index.html">Instructors</a>
     <a class="nav-link" href="#">Community</a>
     <a class="nav-link" href="#">Blog</a>
   </div>
   <div class="nav-right">
+    <!-- Currency switcher -->
+    <div class="currency-switcher" id="currency-switcher">
+      <button class="currency-btn" id="currency-btn" onclick="toggleCurrencyDropdown()">
+        <span class="flag">🇳🇬</span>
+        <span>NGN</span>
+        <span class="chevron">▾</span>
+      </button>
+      <div class="currency-dropdown" id="currency-dropdown">
+        <div class="currency-dropdown-header">Select your currency</div>
+        <div class="currency-option" data-code="NGN" onclick="setCurrency('NGN');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇳🇬</span>
+          <span class="c-name">Nigerian Naira</span>
+          <span class="c-symbol">₦</span>
+        </div><div class="currency-option" data-code="USD" onclick="setCurrency('USD');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇺🇸</span>
+          <span class="c-name">US Dollar</span>
+          <span class="c-symbol">$</span>
+        </div><div class="currency-option" data-code="GBP" onclick="setCurrency('GBP');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇬🇧</span>
+          <span class="c-name">British Pound</span>
+          <span class="c-symbol">£</span>
+        </div><div class="currency-option" data-code="EUR" onclick="setCurrency('EUR');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇪🇺</span>
+          <span class="c-name">Euro</span>
+          <span class="c-symbol">€</span>
+        </div><div class="currency-option" data-code="GHS" onclick="setCurrency('GHS');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇬🇭</span>
+          <span class="c-name">Ghanaian Cedi</span>
+          <span class="c-symbol">GH₵</span>
+        </div><div class="currency-option" data-code="KES" onclick="setCurrency('KES');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇰🇪</span>
+          <span class="c-name">Kenyan Shilling</span>
+          <span class="c-symbol">KSh</span>
+        </div><div class="currency-option" data-code="ZAR" onclick="setCurrency('ZAR');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇿🇦</span>
+          <span class="c-name">South African Rand</span>
+          <span class="c-symbol">R</span>
+        </div><div class="currency-option" data-code="AED" onclick="setCurrency('AED');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇦🇪</span>
+          <span class="c-name">UAE Dirham</span>
+          <span class="c-symbol">AED</span>
+        </div><div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇨🇦</span>
+          <span class="c-name">Canadian Dollar</span>
+          <span class="c-symbol">CA$</span>
+        </div>
+      </div>
+    </div>
     <a class="btn btn-ghost" href="dashboard.html">My Learning</a>
     <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
   </div>
 </nav>
 
-<div class="page active">
-<div class="player-layout">
-    <div class="player-main">
-      <div class="video-container">
-        <div class="video-placeholder">
-          <div class="video-placeholder-icon">▶</div>
-          <div style="font-size:14px;font-weight:500">Module 4 · Lesson 2</div>
-          <div style="font-size:12px">Free traffic — Facebook groups</div>
+<!-- COURSE PAGE -->
+<div class="page active" style="padding-top:64px;background:var(--bg2);min-height:100vh;">
+
+  <div class="course-wrap">
+
+    <!-- LEFT: MAIN COLUMN -->
+    <div class="course-main">
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="catalog.html">Courses</a>
+        <span class="breadcrumb-sep">/</span>
+        <span id="cd-category">Affiliate Marketing</span>
+      </div>
+
+      <!-- Title only — above video -->
+      <div class="course-headline">
+        <h1 id="cd-title">Affiliate Marketing Mastery: From Zero to ₦500k/Month</h1>
+      </div>
+
+      <!-- PROMO VIDEO — below title, above description -->
+      <div class="promo-video-wrap">
+        <div class="promo-video-placeholder" onclick="showToast('▶','Playing course preview...')">
+          <div class="play-circle"><div class="play-icon"></div></div>
+          <div class="promo-label">▶ &nbsp; Watch course preview</div>
         </div>
       </div>
-      <div class="player-info">
-        <div class="player-lesson-title">Free traffic — Facebook groups</div>
-        <div class="player-lesson-meta">Module 4 of 6 · Lesson 2 of 6 · 18 min</div>
-        <div class="player-nav">
-          <button class="btn btn-ghost btn-sm">← Previous</button>
-          <button class="btn btn-teal btn-sm">Mark complete & next →</button>
+
+      <!-- Sub + meta + instructor — below video -->
+      <div class="course-below-video">
+        <p class="course-headline-sub">The most complete affiliate marketing course built specifically for the African market. Actual strategies that convert Nigerian and African audiences.</p>
+        <div class="course-headline-meta">
+          <span>⭐ <strong>4.9</strong> (847 ratings)</span>
+          <span>👥 <strong id="cd-students">3,241</strong> students</span>
+          <span>🕐 <strong>6h 20min</strong> total</span>
+          <span>📅 Updated <strong>Dec 2024</strong></span>
+        </div>
+        <div class="course-headline-instructor">
+          <div class="avatar-xs" style="width:32px;height:32px;font-size:13px;" id="cd-avatar">CO</div>
+          <span>Created by <strong style="color:var(--teal-dark);" id="cd-instructor">Chidi Okafor</strong></span>
         </div>
       </div>
-      <!-- Notes area -->
-      <div style="padding:24px 28px;border-bottom:1px solid var(--border)">
-        <div style="font-size:13px;font-weight:500;margin-bottom:10px">My notes</div>
-        <textarea class="form-input form-textarea" placeholder="Take notes while you watch..." style="min-height:80px;font-size:13px"></textarea>
+
+      <!-- 3 TABS -->
+      <div class="course-tabs-bar">
+        <button class="course-tab-btn active" onclick="switchTab(this,'tab-desc')">Description</button>
+        <button class="course-tab-btn" onclick="switchTab(this,'tab-testimonials')">Testimonials</button>
+        <button class="course-tab-btn" onclick="switchTab(this,'tab-modules')">Modules</button>
+      </div>
+
+      <!-- TAB 1: DESCRIPTION -->
+      <div id="tab-desc" class="course-tab-pane active">
+        <div class="desc-body">
+          <p>This course teaches you everything you need to build a consistent affiliate marketing income in Nigeria and across Africa — even if you have zero experience, no audience, and no product of your own.</p>
+          <div class="desc-section-title">What you will learn</div>
+          <ul>
+            <li>How to identify and join high-paying affiliate programs that actually convert for African audiences</li>
+            <li>How to build a simple, proven funnel that works with free and paid traffic</li>
+            <li>Traffic strategies tested and refined for Nigeria, Ghana, Kenya, and South Africa</li>
+            <li>How to write email sequences that warm cold leads into buyers</li>
+            <li>How to scale your first ₦50,000 month to ₦500,000/month systematically</li>
+            <li>The income activation plan — your first commission within 7 days of completing the course</li>
+          </ul>
+          <div class="desc-section-title">Who this course is for</div>
+          <p>This course is built for anyone in Africa who wants to earn income online without creating their own product. Whether you're a complete beginner or someone who has tried affiliate marketing before without results, this course gives you the system, not just the theory.</p>
+          <div class="desc-section-title">Requirements</div>
+          <ul>
+            <li>A smartphone or laptop with internet access</li>
+            <li>A Paystack or Flutterwave account (free to create)</li>
+            <li>No prior marketing experience needed</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TAB 2: TESTIMONIALS -->
+      <div id="tab-testimonials" class="course-tab-pane">
+        <div class="testimonials-grid" id="course-testimonials-grid"></div>
+      </div>
+
+      <!-- TAB 3: MODULES -->
+      <div id="tab-modules" class="course-tab-pane">
+        <div class="modules-summary">6 modules · 28 lessons · 6h 20min total</div>
+        <div id="module-list"></div>
+      </div>
+
+    </div><!-- /course-main -->
+
+    <!-- RIGHT: PURCHASE CARD SIDEBAR -->
+    <div class="course-sidebar">
+      <div class="purchase-card">
+        <div class="purchase-card-price-row">
+          <div class="purchase-card-price">
+            <span class="purchase-card-price-main" id="cd-price">₦35,000</span>
+            <span class="purchase-card-price-old" id="cd-price-old">₦60,000</span>
+            <span class="purchase-card-discount">42% off</span>
+          </div>
+          <div class="purchase-card-timer">⏰ Offer ends in 2 days</div>
+        </div>
+        <div class="purchase-card-actions">
+          <button class="purchase-card-enroll" onclick="openEnrollModal()">Enroll now — ₦35,000</button>
+          <button class="purchase-card-install" onclick="openInstallModal()">Pay in 2 — ₦17,500 today</button>
+          <div class="purchase-card-guarantee">🔒 30-day money-back guarantee</div>
+        </div>
+        <div class="purchase-card-includes">
+          <h4>This course includes</h4>
+          <div class="include-item"><div class="include-check">✓</div><span>6+ hours of HD video content</span></div>
+          <div class="include-item"><div class="include-check">✓</div><span>Downloadable resources & templates</span></div>
+          <div class="include-item"><div class="include-check">✓</div><span>Private student community access</span></div>
+          <div class="include-item"><div class="include-check">✓</div><span>Verified certificate on completion</span></div>
+          <div class="include-item"><div class="include-check">✓</div><span>Lifetime access & free updates</span></div>
+          <div class="include-item"><div class="include-check">✓</div><span>Income activation plan included</span></div>
+        </div>
+      </div>
+    </div><!-- /course-sidebar -->
+
+  </div><!-- /course-wrap -->
+</div>
+
+<!-- ENROLL MODAL -->
+<div class="modal-overlay" id="enroll-modal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-title">Complete your enrollment</div>
+    <div class="modal-sub">You're one step away from activating your skill</div>
+    <div class="modal-course-summary">
+      <div class="modal-course-icon">📈</div>
+      <div>
+        <div class="modal-course-title">Affiliate Marketing Mastery</div>
+        <div class="modal-course-instructor">Chidi Okafor · 6h 20min · 28 lessons</div>
       </div>
     </div>
-    <div class="player-sidebar">
-      <div class="player-sidebar-header">
-        Course content
-        <span style="font-size:11px;color:var(--text3);font-weight:400;margin-left:8px">35% complete</span>
+    <div class="modal-price-row">
+      <div>
+        <div class="modal-price-label">Total today</div>
+        <div style="font-size:12px;color:var(--text3)" id="modal-price-note">Full access · Lifetime</div>
       </div>
-      <div class="player-progress-bar"><div class="player-progress-fill"></div></div>
-      <div id="player-curriculum"></div>
+      <div class="modal-price-val" id="modal-price-display">₦35,000</div>
     </div>
+    <button class="modal-pay-btn" onclick="showToast('🚀','Redirecting to Paystack checkout...');closeModal()">Pay with Paystack →</button>
+    <button class="modal-installment" id="modal-installment-btn" onclick="switchToInstallment()">Pay in 2 — ₦17,500 today, ₦17,500 in 30 days</button>
+    <div class="modal-guarantee">🔒 30-day money-back guarantee · Secure payment via Paystack</div>
   </div>
 </div>
 
-
+<!-- TOAST -->
 <div class="toast" id="toast">
   <span class="toast-icon" id="toast-icon">✓</span>
   <span id="toast-msg">Done</span>
 </div>
 
 <script>
-
-function goTo(page){
-  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
-    dashboard:'dashboard.html',player:'player.html',
-    instructor:'instructor.html',admin:'admin.html'};
-  if(routes[page]) window.location.href=routes[page];
-}
-function showPage(page){ goTo(page); }
-function showCourseDetail(id){ window.location.href='course.html?id='+id; }
-
-
-// ── NULL-SAFE FUNCTIONS (override any duplicates below) ──
-
-function openEnrollModal(){
-  var em=document.getElementById('enroll-modal');
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-installment-btn');
-  if(pd) pd.textContent='₦35,000';
-  if(pn) pn.textContent='Full access · Lifetime';
-  if(ib) ib.style.display='block';
-  if(em) em.classList.add('open');
-}
-function openInstallModal(){ openEnrollModal(); switchToInstallment(); }
-function switchToInstallment(){
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-installment-btn');
-  if(pd) pd.textContent='₦17,500';
-  if(pn) pn.textContent='First payment today · ₦17,500 in 30 days';
-  if(ib) ib.style.display='none';
-}
-function closeModal(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.classList.remove('open');
-}
-function showToast(icon,msg){
-  var t=document.getElementById('toast'); if(!t) return;
-  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
-  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
-}
-// Safe modal backdrop close
-(function(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-})();
-
-// ── DATA ──
+/* ── DATA ── */
 const COURSES = [
   {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
   {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
@@ -579,23 +1117,50 @@ const COURSES = [
   {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
   {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
 ];
-
-const INSTRUCTORS = [
-  {name:'Chidi Okafor',title:'Affiliate Marketing Expert',initials:'CO',courses:3,students:'4,801'},
-  {name:'Ngozi Adeola',title:'Copywriter & Digital Creator',initials:'NA',courses:2,students:'2,829'},
-  {name:'Femi Ogunwale',title:'Content Monetisation Coach',initials:'FO',courses:2,students:'2,104'},
-  {name:'Kemi Adeyemi',title:'AI Productivity Specialist',initials:'KA',courses:1,students:'1,120'},
-];
-
 const TESTIMONIALS = [
-  {name:'Amaka Obi',loc:'Lagos, Nigeria',text:'I made my first ₦45,000 commission in week 3 of the affiliate course. Chidi explains everything in a way that actually makes sense for Nigeria.',stars:5,initials:'AO'},
-  {name:'Taiwo Musa',loc:'Abuja, Nigeria',text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',stars:5,initials:'TM'},
-  {name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take me 2 days. My rates doubled.',stars:5,initials:'GA'},
-  {name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',stars:5,initials:'EN'},
-  {name:'Blessing Okafor',loc:'Lagos, Nigeria',text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',stars:5,initials:'BO'},
-  {name:'Ibrahim Suleiman',loc:'Kano, Nigeria',text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',stars:5,initials:'IS'},
+  {
+    name:'Amaka Obi', loc:'Lagos, Nigeria', initials:'AO', stars:5,
+    type:'video',
+    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
+    text:'I made my first ₦45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',
+    result:'₦45,000 in week 3'
+  },
+  {
+    name:'Taiwo Musa', loc:'Abuja, Nigeria', initials:'TM', stars:5,
+    type:'image',
+    mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+    text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',
+    result:'₦120k first month'
+  },
+  {
+    name:'Grace Abiodun', loc:'Port Harcourt, Nigeria', initials:'GA', stars:5,
+    type:'video',
+    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
+    text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take 2 days. My rates doubled.',
+    result:'Rates doubled'
+  },
+  {
+    name:'Emmanuel Nwosu', loc:'Enugu, Nigeria', initials:'EN', stars:5,
+    type:'image',
+    mediaSrc:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
+    text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
+    result:'First sale in 21 days'
+  },
+  {
+    name:'Blessing Okafor', loc:'Lagos, Nigeria', initials:'BO', stars:5,
+    type:'text',
+    mediaSrc:null,
+    text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',
+    result:'$400/month client'
+  },
+  {
+    name:'Ibrahim Suleiman', loc:'Kano, Nigeria', initials:'IS', stars:5,
+    type:'text',
+    mediaSrc:null,
+    text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',
+    result:'First income in 14 days'
+  },
 ];
-
 const MODULES = [
   {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
   {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
@@ -605,224 +1170,278 @@ const MODULES = [
   {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
 ];
 
-// ── RENDER FUNCTIONS ──
-function courseCard(c, onclick=''){
-  return `<div class="course-card" onclick="showCourseDetail(${c.id})">
-    <div class="course-thumb">
-      <span class="course-thumb-icon">${c.icon}</span>
-      <span class="course-thumb-cat">${c.catLabel}</span>
-      ${c.badge?`<span class="course-thumb-badge">${c.badge}</span>`:''}
-    </div>
-    <div class="course-body">
-      <div class="course-instructor">
-        <div class="avatar-xs">${c.initials}</div>
-        <span class="course-instructor-name">${c.instructor}</span>
-      </div>
-      <div class="course-title">${c.title}</div>
-      <div class="course-meta">
-        <span class="rating">★ ${c.rating}</span>
-        <span>${c.students} students</span>
-      </div>
-      <div class="course-footer">
-        <div><span class="course-price">${c.price}</span><span class="course-price-old">${c.priceOld}</span></div>
-        <div class="enroll-mini" onclick="event.stopPropagation();openEnrollModal()">Enroll</div>
-      </div>
-    </div>
-  </div>`;
+/* ── NAVIGATION ── */
+function goTo(page){
+  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
+    dashboard:'dashboard.html',player:'player.html',
+    instructor:'instructor.html',admin:'admin.html'};
+  if(routes[page]) window.location.href=routes[page];
 }
+function showPage(page){ goTo(page); }
+function showCourseDetail(id){ window.location.href='course.html?id='+id; }
 
-function renderHomeGrid(){
-  const g = document.getElementById('home-course-grid');
-  if(g) g.innerHTML = COURSES.map(c=>courseCard(c)).join('');
-}
-function renderCatalogGrid(list){
-  const g = document.getElementById('catalog-grid');
-  if(g) g.innerHTML = (list||COURSES).map(c=>courseCard(c)).join('');
-}
-function renderInstructors(){
-  const g = document.getElementById('instructor-grid');
-  if(!g) return;
-  g.innerHTML = INSTRUCTORS.map(i=>`
-    <div class="instructor-card">
-      <div class="instructor-avatar">${i.initials}</div>
-      <div class="instructor-name">${i.name}</div>
-      <div class="instructor-title">${i.title}</div>
-      <div class="instructor-stats">
-        <div class="istat"><div class="istat-num">${i.courses}</div><div class="istat-label">Courses</div></div>
-        <div class="istat"><div class="istat-num">${i.students}</div><div class="istat-label">Students</div></div>
-      </div>
-    </div>`).join('');
-}
-function renderTestimonials(){
-  const g = document.getElementById('home-testimonials');
-  if(!g) return;
-  g.innerHTML = TESTIMONIALS.slice(0,6).map(t=>`
-    <div class="tcard">
-      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
-      <div class="tcard-text">"${t.text}"</div>
-      <div class="tcard-person">
-        <div class="tcard-avatar">${t.initials}</div>
-        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
-      </div>
-    </div>`).join('');
-  const g2 = document.getElementById('course-testimonials-grid');
-  if(g2) g2.innerHTML = TESTIMONIALS.map(t=>`
-    <div class="tcard">
-      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
-      <div class="tcard-text">"${t.text}"</div>
-      <div class="tcard-person">
-        <div class="tcard-avatar">${t.initials}</div>
-        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
-      </div>
-    </div>`).join('');
-}
-function renderModules(){
-  const g = document.getElementById('module-list');
-  if(!g) return;
-  g.innerHTML = MODULES.map((m,mi)=>`
-    <div class="module-item">
-      <div class="module-header" onclick="toggleModule(this)">
-        <div class="module-header-left">
-          <span class="module-num">${m.num}</span>
-          <span class="module-title">${m.title}</span>
-        </div>
-        <span class="module-meta">${m.meta}</span>
-        <span class="chevron-icon ${mi===0?'open':''}">⌄</span>
-      </div>
-      <div class="lesson-list ${mi===0?'open':''}">
-        ${m.lessons.map((l,li)=>`
-          <div class="lesson-item">
-            <div class="lesson-icon">▶</div>
-            <span class="lesson-title">${l.t}</span>
-            <span class="lesson-duration">${l.dur}</span>
-            <span class="lesson-tag ${l.free?'tag-free':'tag-lock'}">${l.free?'Free preview':'Enrolled'}</span>
-          </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-function renderPlayerCurriculum(){
-  const g = document.getElementById('player-curriculum');
-  if(!g) return;
-  g.innerHTML = MODULES.map((m,mi)=>`
-    <div class="player-module">
-      <div class="player-module-header">Module ${m.num} — ${m.title}</div>
-      ${m.lessons.map((l,li)=>`
-        <div class="player-lesson-item ${mi===3&&li===1?'active':''}">
-          <div class="lesson-check ${(mi<3||(mi===0))?'done':''}">${(mi<3||(mi===0))?'✓':''}</div>
-          <span style="flex:1;font-size:12px">${l.t}</span>
-          <span style="font-size:10px;color:var(--text3)">${l.dur}</span>
-        </div>`).join('')}
-    </div>`).join('');
-}
-
-// ── NAVIGATION ──
-function showPage(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  window.scrollTo(0,0);
-}
-function showCourseDetail(id){
-  const c = COURSES.find(x=>x.id===id)||COURSES[0];
-  document.getElementById('cd-title').textContent = c.title;
-  document.getElementById('cd-category').textContent = c.catLabel;
-  document.getElementById('cd-instructor').textContent = c.instructor;
-  document.getElementById('cd-avatar').textContent = c.initials;
-  document.getElementById('cd-price').textContent = c.price;
-  document.getElementById('cd-price-old').textContent = c.priceOld;
-  document.getElementById('cd-students').textContent = c.students;
-  showPage('course');
-  document.querySelector('.tab-btn.active')?.click();
-}
-
-// ── TABS ──
+/* ── TABS ── */
 function switchTab(btn, pane){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.course-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.course-tab-pane').forEach(function(p){ p.classList.remove('active'); });
   btn.classList.add('active');
-  document.getElementById(pane).classList.add('active');
+  var el = document.getElementById(pane);
+  if(el) el.classList.add('active');
 }
+
+/* ── MODULES ACCORDION ── */
 function toggleModule(header){
-  const list = header.nextElementSibling;
-  const ch = header.querySelector('.chevron-icon');
-  list.classList.toggle('open');
-  ch.classList.toggle('open');
-}
-function switchDash(el, view){
-  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.dash-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-function switchInstTab(el, view){
-  document.querySelectorAll('.inst-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.inst-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-function switchAdmin(el, view){
-  document.querySelectorAll('.admin-sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.admin-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
+  var lessons = header.nextElementSibling;
+  var chevron = header.querySelector('.chevron-icon');
+  if(lessons) lessons.classList.toggle('open');
+  if(chevron) chevron.classList.toggle('open');
 }
 
-// ── FILTERS ──
-function filterCat(el, cat){
-  document.querySelectorAll('.category-row .cat-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const filtered = cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
-  renderHomeGrid();
-  if(cat!=='all'){
-    const g=document.getElementById('home-course-grid');
-    if(g) g.innerHTML=filtered.map(c=>courseCard(c)).join('');
-  }
+/* ── MODAL ── */
+function openEnrollModal(){
+  var em=document.getElementById('enroll-modal');
+  var pd=document.getElementById('modal-price-display');
+  var pn=document.getElementById('modal-price-note');
+  var ib=document.getElementById('modal-install-btn');
+  if(pd) pd.textContent='₦35,000';
+  if(pn) pn.textContent='Full access · Lifetime';
+  if(ib) ib.style.display='block';
+  if(em) em.classList.add('open');
 }
-function filterCatalog(el, cat){
-  document.querySelectorAll('.filter-row .cat-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const filtered=cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
-  renderCatalogGrid(filtered);
+function openInstallModal(){ openEnrollModal(); switchToInstallment(); }
+function switchToInstallment(){
+  var pd=document.getElementById('modal-price-display');
+  var pn=document.getElementById('modal-price-note');
+  var ib=document.getElementById('modal-install-btn');
+  if(pd) pd.textContent='₦17,500';
+  if(pn) pn.textContent='First payment today · ₦17,500 in 30 days';
+  if(ib) ib.style.display='none';
 }
-function searchCourses(){
-  const q = document.getElementById('catalog-search-input').value.toLowerCase();
-  const filtered = q?COURSES.filter(c=>c.title.toLowerCase().includes(q)||c.instructor.toLowerCase().includes(q)):COURSES;
-  renderCatalogGrid(filtered);
+function closeModal(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.classList.remove('open');
 }
+(function(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+})();
 
-// ── MODAL ──
-// openEnrollModal defined above
-// openInstallModal defined above
-// switchToInstallment defined above
-// closeModal defined above
-// modal listener defined above
-// ── TOAST ──
-function showToast(icon, msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toast-icon').textContent=icon;
-  document.getElementById('toast-msg').textContent=msg;
+/* ── TOAST ── */
+function showToast(icon,msg){
+  var t=document.getElementById('toast'); if(!t) return;
+  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
+  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  setTimeout(function(){ t.classList.remove('show'); },3000);
 }
 
-// ── INIT ──
-renderHomeGrid();
-renderCatalogGrid();
-renderInstructors();
-renderTestimonials();
-renderModules();
-renderPlayerCurriculum();
-
-
-var pc=document.getElementById('player-curriculum');
-if(pc) pc.innerHTML=MODULES.map(function(m,mi){
-  return '<div class="player-module-header">Module '+m.num+' — '+m.title+'</div>'+
-  m.lessons.map(function(l,li){
-    var active=(mi===3&&li===1)?' active':'';
-    var done=mi<2?'done':'';
-    return '<div class="player-lesson-item'+active+'"><div class="lesson-check '+done+'">'+(mi<2?'✓':'')+'</div><span style="flex:1">'+l.t+'</span><span style="font-size:10px;color:var(--text3)">'+l.dur+'</span></div>';
+/* ── RENDER MODULES ── */
+(function(){
+  var ml=document.getElementById('module-list'); if(!ml) return;
+  ml.innerHTML=MODULES.map(function(m,mi){
+    return '<div class="module-item">'+
+      '<div class="module-header" onclick="toggleModule(this)">'+
+        '<div class="module-header-left">'+
+          '<div class="module-num">'+m.num+'</div>'+
+          '<span class="module-title">'+m.title+'</span>'+
+        '</div>'+
+        '<span class="module-meta">'+m.meta+'</span>'+
+        '<span class="chevron-icon'+(mi===0?' open':'')+'">⌄</span>'+
+      '</div>'+
+      '<div class="lesson-list'+(mi===0?' open':'')+'">'+
+        m.lessons.map(function(l){
+          return '<div class="lesson-item">'+
+            '<div class="lesson-icon">▶</div>'+
+            '<span class="lesson-title">'+l.t+'</span>'+
+            '<span class="lesson-duration">'+l.dur+'</span>'+
+            '<span class="lesson-tag '+(l.free?'tag-free':'tag-lock')+'">'+(l.free?'Free preview':'Enrolled')+'</span>'+
+          '</div>';
+        }).join('')+
+      '</div>'+
+    '</div>';
   }).join('');
-}).join('');
+})();
+
+/* ── RENDER TESTIMONIALS ── */
+(function(){
+  var ctg=document.getElementById('course-testimonials-grid'); if(!ctg) return;
+
+  function playVideo(wrapper){
+    var vid=wrapper.querySelector('video');
+    var btn=wrapper.querySelector('.tcard-play-btn');
+    if(!vid) return;
+    if(vid.paused){
+      vid.play();
+      if(btn) btn.style.display='none';
+    } else {
+      vid.pause();
+      if(btn) btn.style.display='flex';
+    }
+  }
+
+  ctg.innerHTML=TESTIMONIALS.map(function(t,i){
+    var mediaHtml='';
+
+    if(t.type==='video' && t.mediaSrc){
+      mediaHtml=
+        '<div class="tcard-media" onclick="var w=this;var vid=w.querySelector('video');var btn=w.querySelector('.tcard-play-btn');if(vid.paused){vid.play();btn.style.display='none';}else{vid.pause();btn.style.display='flex';}">' +
+          '<video preload="metadata" poster="">' +
+            '<source src="'+t.mediaSrc+'" type="video/mp4"/>'+
+          '</video>'+
+          '<div class="tcard-play-btn">'+
+            '<div class="tcard-play-circle"><div class="tcard-play-icon"></div></div>'+
+          '</div>'+
+          '<span class="tcard-type-badge">🎬 Video</span>'+
+        '</div>';
+
+    } else if(t.type==='image' && t.mediaSrc){
+      mediaHtml=
+        '<div class="tcard-media">'+
+          '<img src="'+t.mediaSrc+'" alt="'+t.name+' testimonial" loading="lazy"/>'+
+          '<span class="tcard-type-badge">📸 Photo</span>'+
+        '</div>';
+    }
+
+    var textOnlyClass = (!t.mediaSrc || t.type==='text') ? ' tcard-text-only' : '';
+
+    return '<div class="tcard'+textOnlyClass+'">'+
+      mediaHtml+
+      '<div class="tcard-body">'+
+        '<div class="tcard-stars">'+'★'.repeat(t.stars)+'</div>'+
+        '<div class="tcard-text">'+t.text+'</div>'+
+        '<div class="tcard-person">'+
+          '<div class="tcard-avatar">'+t.initials+'</div>'+
+          '<div>'+
+            '<div class="tcard-name">'+t.name+'</div>'+
+            '<div class="tcard-loc">'+t.loc+'</div>'+
+            (t.result ? '<div class="tcard-result">💰 '+t.result+'</div>' : '')+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+})();
+
+/* ── LOAD COURSE FROM URL PARAM ── */
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var id=parseInt(params.get('id'))||1;
+  var c=COURSES.find(function(x){return x.id===id;})||COURSES[0];
+  var set=function(elId,val){var el=document.getElementById(elId);if(el)el.textContent=val;};
+  set('cd-title',c.title);
+  set('cd-category',c.catLabel);
+  set('cd-instructor',c.instructor);
+  set('cd-avatar',c.initials);
+  set('cd-price',c.price);
+  set('cd-price-old',c.priceOld);
+  set('cd-students',c.students);
+  var eb=document.querySelector('.purchase-card-enroll');
+  if(eb) eb.textContent='Enroll now — '+c.price;
+})();
+
+/* ── CURRENCY SYSTEM ── */
+var CURRENCIES = {
+  NGN: { symbol:'₦',  name:'Nigerian Naira',      flag:'🇳🇬', rate:1,       processor:'paystack' },
+  USD: { symbol:'$',  name:'US Dollar',            flag:'🇺🇸', rate:0.00065, processor:'stripe'   },
+  GBP: { symbol:'£',  name:'British Pound',        flag:'🇬🇧', rate:0.00052, processor:'stripe'   },
+  EUR: { symbol:'€',  name:'Euro',                 flag:'🇪🇺', rate:0.00060, processor:'stripe'   },
+  GHS: { symbol:'GH₵',name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099,  processor:'paystack' },
+  KES: { symbol:'KSh',name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084,   processor:'paystack' },
+  ZAR: { symbol:'R',  name:'South African Rand',   flag:'🇿🇦', rate:0.012,   processor:'paystack' },
+  AED: { symbol:'AED',name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024,  processor:'stripe'   },
+  CAD: { symbol:'CA$',name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088, processor:'stripe'   },
+};
+
+/* Country → currency map for auto-detect */
+var COUNTRY_CURRENCY = {
+  NG:'NGN', US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', NL:'EUR',
+  GH:'GHS', KE:'KES', ZA:'ZAR', AE:'AED', CA:'CAD',
+  AU:'USD', SG:'USD', IN:'USD',
+};
+
+var _activeCurrency = localStorage.getItem('sl_currency') || 'NGN';
+
+function convertPrice(ngnAmount){
+  var c = CURRENCIES[_activeCurrency];
+  if(!c) return '₦' + ngnAmount.toLocaleString();
+  if(_activeCurrency === 'NGN') return '₦' + ngnAmount.toLocaleString();
+  var converted = (ngnAmount * c.rate);
+  // Round nicely
+  if(converted >= 100) converted = Math.round(converted);
+  else if(converted >= 10) converted = Math.round(converted * 10) / 10;
+  else converted = Math.round(converted * 100) / 100;
+  return c.symbol + converted.toLocaleString();
+}
+
+function setCurrency(code){
+  _activeCurrency = code;
+  localStorage.setItem('sl_currency', code);
+  updateCurrencyBtn();
+  updateAllPrices();
+  closeCurrencyDropdown();
+}
+
+function updateCurrencyBtn(){
+  var c = CURRENCIES[_activeCurrency];
+  var btn = document.getElementById('currency-btn');
+  if(btn && c) btn.innerHTML =
+    '<span class="flag">'+c.flag+'</span>' +
+    '<span>'+_activeCurrency+'</span>' +
+    '<span class="chevron">▾</span>';
+  // Mark active option
+  document.querySelectorAll('.currency-option').forEach(function(el){
+    el.classList.toggle('active', el.dataset.code === _activeCurrency);
+  });
+}
+
+function updateAllPrices(){
+  // Update all elements with data-ngn attribute
+  document.querySelectorAll('[data-ngn]').forEach(function(el){
+    el.textContent = convertPrice(parseInt(el.dataset.ngn));
+  });
+}
+
+function toggleCurrencyDropdown(){
+  var dd = document.getElementById('currency-dropdown');
+  var btn = document.getElementById('currency-btn');
+  if(!dd) return;
+  var isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  if(btn) btn.classList.toggle('open', !isOpen);
+}
+function closeCurrencyDropdown(){
+  var dd = document.getElementById('currency-dropdown');
+  var btn = document.getElementById('currency-btn');
+  if(dd) dd.classList.remove('open');
+  if(btn) btn.classList.remove('open');
+}
+
+/* Close on outside click */
+document.addEventListener('click', function(e){
+  var sw = document.getElementById('currency-switcher');
+  if(sw && !sw.contains(e.target)) closeCurrencyDropdown();
+});
+
+/* Auto-detect country via free IP API */
+(function(){
+  // Only auto-detect if user hasn't manually chosen
+  if(localStorage.getItem('sl_currency_manual')) return;
+  fetch('https://ipapi.co/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var country = data.country_code;
+      var detected = COUNTRY_CURRENCY[country] || 'USD';
+      _activeCurrency = detected;
+      localStorage.setItem('sl_currency', detected);
+      updateCurrencyBtn();
+      updateAllPrices();
+    })
+    .catch(function(){ /* silently fall back to NGN */ });
+})();
+
+/* Init */
+updateCurrencyBtn();
 
 </script>
 </body>
-</html> 
+</html>
