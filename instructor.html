@@ -980,13 +980,112 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sec-header">
         <div>
           <div class="sec-title">Student Testimonials</div>
-          <div class="sec-sub">Upload video, photo, or text testimonials. Shown on your course page after admin approval.</div>
+          <div class="sec-sub">Add video, photo or text testimonials from your students. Each one is reviewed before going live on your course page.</div>
         </div>
         <button class="btn btn-teal" onclick="openTestiForm()">+ Add testimonial</button>
       </div>
-      <div id="testi-list" style="color:var(--text3);text-align:center;padding:48px;">
-        <div style="font-size:36px;margin-bottom:12px;">&#11088;</div>
-        <div>No testimonials yet. Add your first student result.</div>
+      <div id="testi-list"></div>
+    </div>
+
+    <!-- TESTIMONIAL FORM MODAL -->
+    <div id="testi-modal" style="display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;background:rgba(13,13,26,.6);backdrop-filter:blur(8px);padding:16px;">
+      <div style="background:#fff;border-radius:20px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(13,13,26,.2);animation:authPop .25s ease;">
+        <div style="padding:24px 28px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-family:'Poppins',sans-serif;font-size:17px;font-weight:700;" id="testi-modal-title">Add Testimonial</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px;">Student results build trust and increase enrollments.</div>
+          </div>
+          <button onclick="closeTestiForm()" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--bg3);cursor:pointer;font-size:15px;color:var(--text3);">&#10005;</button>
+        </div>
+        <div style="padding:24px 28px;">
+
+          <!-- Type selector -->
+          <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Testimonial type</label>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+              <div id="tt-video" onclick="selectTestiType('video')" style="border:1.5px solid var(--teal);background:var(--teal-dim);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;">
+                <div style="font-size:22px;margin-bottom:4px;">&#127916;</div>
+                <div style="font-size:12px;font-weight:600;color:var(--teal-dark);">Video</div>
+              </div>
+              <div id="tt-image" onclick="selectTestiType('image')" style="border:1.5px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;transition:all .2s;">
+                <div style="font-size:22px;margin-bottom:4px;">&#128247;</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text3);">Photo</div>
+              </div>
+              <div id="tt-text" onclick="selectTestiType('text')" style="border:1.5px solid var(--border);border-radius:var(--r);padding:12px;text-align:center;cursor:pointer;transition:all .2s;">
+                <div style="font-size:22px;margin-bottom:4px;">&#128172;</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text3);">Text only</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Media upload (video/image) -->
+          <div id="testi-media-wrap" style="margin-bottom:20px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;" id="testi-media-label">Video file</label>
+            <div id="testi-upload-zone" style="border:2px dashed var(--border);border-radius:var(--r-lg);padding:28px;text-align:center;cursor:pointer;background:var(--bg2);position:relative;transition:all .2s;" ondragover="event.preventDefault();this.style.borderColor='var(--teal)'" ondragleave="this.style.borderColor='var(--border)'">
+              <div id="testi-upload-preview"></div>
+              <div id="testi-upload-prompt">
+                <div style="font-size:32px;margin-bottom:8px;" id="testi-upload-icon">&#127916;</div>
+                <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Click to upload or drag & drop</div>
+                <div style="font-size:12px;color:var(--text3);" id="testi-upload-hint">MP4, MOV · Max 200MB</div>
+              </div>
+              <input type="file" id="testi-file-input" accept="video/*" onchange="previewTestiMedia(this)" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>
+            </div>
+            <div style="background:var(--bg3);border-radius:100px;height:5px;overflow:hidden;margin-top:8px;display:none;" id="testi-upload-progress">
+              <div id="testi-upload-bar" style="height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));border-radius:100px;width:0%;transition:width .3s;"></div>
+            </div>
+          </div>
+
+          <!-- Student info -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Student name *</label>
+              <input id="testi-name" type="text" placeholder="e.g. Amaka Obi" class="fi" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Location</label>
+              <input id="testi-loc" type="text" placeholder="e.g. Lagos, Nigeria" class="fi" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            </div>
+          </div>
+
+          <!-- Star rating -->
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Rating</label>
+            <div style="display:flex;gap:6px;" id="star-picker">
+              <span onclick="setTestiStars(1)" style="font-size:24px;cursor:pointer;transition:transform .15s;" class="star-opt">&#9733;</span>
+              <span onclick="setTestiStars(2)" style="font-size:24px;cursor:pointer;transition:transform .15s;" class="star-opt">&#9733;</span>
+              <span onclick="setTestiStars(3)" style="font-size:24px;cursor:pointer;transition:transform .15s;" class="star-opt">&#9733;</span>
+              <span onclick="setTestiStars(4)" style="font-size:24px;cursor:pointer;transition:transform .15s;" class="star-opt">&#9733;</span>
+              <span onclick="setTestiStars(5)" style="font-size:24px;cursor:pointer;transition:transform .15s;" class="star-opt">&#9733;</span>
+            </div>
+          </div>
+
+          <!-- Testimonial text -->
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">What the student said *</label>
+            <textarea id="testi-text" placeholder="e.g. I made my first ₦45,000 commission in week 3..." style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;min-height:90px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+
+          <!-- Result achieved -->
+          <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Result achieved <span style="font-weight:400;color:var(--text3);">(shown as a badge)</span></label>
+            <input id="testi-result" type="text" placeholder="e.g. ₦45,000 in week 3" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+          </div>
+
+          <!-- Course link -->
+          <div style="margin-bottom:24px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Which course is this for?</label>
+            <select id="testi-course" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;background:#fff;appearance:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+              <option value="">All courses / general</option>
+            </select>
+          </div>
+
+          <div id="testi-form-error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+
+          <div style="display:flex;gap:10px;">
+            <button onclick="closeTestiForm()" style="flex:1;padding:12px;background:transparent;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;">Cancel</button>
+            <button onclick="saveTestimonial()" id="testi-save-btn" style="flex:2;padding:12px;background:var(--teal);border:none;border-radius:var(--r-sm);font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;">Save testimonial</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1013,13 +1112,39 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
     <!-- PROFILE -->
     <div class="page-view" id="view-profile">
       <div class="sec-header"><div class="sec-title">Profile</div></div>
-      <div style="max-width:600px;">
-        <div class="frow-1" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);">
-          <div class="fg"><label>Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your name"/></div>
-          <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and expertise..." style="min-height:100px;"></textarea></div>
-          <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
-          <div class="fg"><label>Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
-          <button class="btn btn-teal" onclick="saveProfile()">Save profile</button>
+      <div style="max-width:620px;">
+
+        <!-- Avatar card -->
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);margin-bottom:16px;display:flex;align-items:center;gap:24px;">
+          <div style="position:relative;flex-shrink:0;">
+            <div id="pf-avatar-wrap" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:30px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--border);">
+              <span id="pf-avatar-initials">?</span>
+              <img id="pf-avatar-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"/>
+            </div>
+            <label for="pf-avatar-input" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--teal);border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;" title="Change photo">&#9998;</label>
+            <input type="file" id="pf-avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this,'pf-avatar-img','pf-avatar-initials','sp-avatar')"/>
+          </div>
+          <div>
+            <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;" id="pf-avatar-name">Your name</div>
+            <div style="font-size:13px;color:var(--text3);margin-bottom:10px;">Instructor</div>
+            <label for="pf-avatar-input" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:var(--r-sm);padding:6px 14px;cursor:pointer;transition:all .2s;">
+              &#128444; Upload photo
+            </label>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px;">JPG, PNG · Max 5MB · Square recommended</div>
+          </div>
+        </div>
+
+        <!-- Info card -->
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:16px;">
+          <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your full name" oninput="document.getElementById('pf-avatar-name').textContent=this.value||'Your name'"/></div>
+          <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Headline</label><input class="fi" id="pf-headline" type="text" placeholder="e.g. Affiliate Marketer · ₦1.2M/month"/></div>
+          <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and results..." style="min-height:110px;resize:vertical;"></textarea></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Website</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
+            <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">LinkedIn</label><input class="fi" id="pf-linkedin" type="url" placeholder="https://linkedin.com/in/..."/></div>
+          </div>
+          <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
+          <button class="btn btn-teal" onclick="saveProfile()" style="width:fit-content;padding:11px 28px;">Save profile</button>
         </div>
       </div>
     </div>
@@ -1557,7 +1682,7 @@ function buildReview() {
    SUBMIT
 ══════════════════════════════════════════ */
 async function submitCourse() {
-  if(!window._user){ openAuthModal(submitCourse, 'signin'); return; }
+  if(!window._user){ openAuthModal(submitCourse, 'si'); return; }
 
   var btn = document.getElementById('btn-submit');
   if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
@@ -1598,12 +1723,12 @@ async function submitCourse() {
     };
 
     // Save to Firestore
-    var { getFirestore, collection, addDoc, serverTimestamp } =
-      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    if(!window._db) throw new Error('Not connected to database. Please refresh and try again.');
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     var db = window._db;
-    await addDoc(collection(db, 'courses'), Object.assign({}, courseData, {
-      createdAt:   serverTimestamp(),
-      submittedAt: serverTimestamp(),
+    await fb.addDoc(fb.collection(db, 'courses'), Object.assign({}, courseData, {
+      createdAt:   fb.serverTimestamp(),
+      submittedAt: fb.serverTimestamp(),
     }));
 
     // Show success
@@ -1614,8 +1739,9 @@ async function submitCourse() {
     showToast('🎉','Course submitted for review!');
 
   } catch(err) {
-    console.error(err);
-    showToast('❌','Failed to submit. Please try again.');
+    console.error('Submit error:', err);
+    var msg = err && err.message ? err.message : 'Failed to submit. Please try again.';
+    showToast('❌', msg.slice(0,80));
     if(btn){ btn.disabled=false; btn.textContent='Submit for review ✓'; }
   }
 }
@@ -1624,8 +1750,296 @@ async function saveDraft() {
   showToast('&#128190;','Draft saved locally.');
 }
 
-function saveProfile() { showToast('✓','Profile saved.'); }
-function openTestiForm() { showToast('&#128247;','Testimonial form coming soon.'); }
+function saveProfile() {
+  var name = (document.getElementById('pf-name')||{}).value||'';
+  if(name) {
+    var spName = document.getElementById('sp-name');
+    if(spName) spName.textContent = name;
+    var initials = name.split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+    var spAvatar = document.getElementById('sp-avatar');
+    if(spAvatar && !document.getElementById('pf-avatar-img').src) spAvatar.textContent = initials;
+    localStorage.setItem('sl_inst_name', name);
+  }
+  showToast('✓', 'Profile saved!');
+}
+
+function handleAvatarUpload(input, imgId, initialsId, sidebarAvatarId) {
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ showToast('❌','Max 5MB for profile photo.'); return; }
+  var url = URL.createObjectURL(file);
+  var img = document.getElementById(imgId);
+  var initials = document.getElementById(initialsId);
+  if(img){ img.src = url; img.style.display = 'block'; }
+  if(initials) initials.style.display = 'none';
+  // Also update sidebar avatar
+  var sidebar = document.getElementById(sidebarAvatarId);
+  if(sidebar){
+    sidebar.innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  }
+  showToast('✓', 'Profile photo updated!');
+}
+
+/* ══════════════════════════════════════════
+   TESTIMONIALS SYSTEM
+══════════════════════════════════════════ */
+var _testimonials   = JSON.parse(localStorage.getItem('sl_inst_testimonials') || '[]');
+var _editingTestiId = null;
+var _testiType      = 'video';
+var _testiStars     = 5;
+var _testiFile      = null;
+
+function openTestiForm(editId) {
+  _editingTestiId = editId || null;
+  _testiType  = 'video';
+  _testiStars = 5;
+  _testiFile  = null;
+
+  var title = document.getElementById('testi-modal-title');
+  if(title) title.textContent = editId ? 'Edit Testimonial' : 'Add Testimonial';
+
+  // Pre-fill if editing
+  var existing = editId ? _testimonials.find(function(t){ return t.id === editId; }) : null;
+  if(existing) {
+    document.getElementById('testi-name').value   = existing.name   || '';
+    document.getElementById('testi-loc').value    = existing.loc    || '';
+    document.getElementById('testi-text').value   = existing.text   || '';
+    document.getElementById('testi-result').value = existing.result || '';
+    _testiType  = existing.type  || 'video';
+    _testiStars = existing.stars || 5;
+  } else {
+    ['testi-name','testi-loc','testi-text','testi-result'].forEach(function(id){
+      var el = document.getElementById(id); if(el) el.value = '';
+    });
+  }
+
+  selectTestiType(_testiType);
+  setTestiStars(_testiStars);
+
+  var m = document.getElementById('testi-modal');
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
+}
+
+function closeTestiForm() {
+  var m = document.getElementById('testi-modal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+  _editingTestiId = null;
+}
+
+function selectTestiType(type) {
+  _testiType = type;
+  var types = ['video','image','text'];
+  types.forEach(function(t){
+    var el = document.getElementById('tt-'+t);
+    if(!el) return;
+    var active = t === type;
+    el.style.borderColor = active ? 'var(--teal)' : 'var(--border)';
+    el.style.background  = active ? 'var(--teal-dim)' : '#fff';
+    el.querySelector('div:last-child').style.color = active ? 'var(--teal-dark)' : 'var(--text3)';
+  });
+
+  var wrap  = document.getElementById('testi-media-wrap');
+  var label = document.getElementById('testi-media-label');
+  var icon  = document.getElementById('testi-upload-icon');
+  var hint  = document.getElementById('testi-upload-hint');
+  var input = document.getElementById('testi-file-input');
+
+  if(type === 'text'){
+    if(wrap) wrap.style.display = 'none';
+  } else {
+    if(wrap) wrap.style.display = 'block';
+    if(type === 'video'){
+      if(label) label.textContent = 'Video file';
+      if(icon)  icon.innerHTML = '&#127916;';
+      if(hint)  hint.textContent = 'MP4, MOV · Max 200MB';
+      if(input) input.accept = 'video/*';
+    } else {
+      if(label) label.textContent = 'Student photo or screenshot';
+      if(icon)  icon.innerHTML = '&#128247;';
+      if(hint)  hint.textContent = 'JPG, PNG, WEBP · Max 10MB';
+      if(input) input.accept = 'image/*';
+    }
+  }
+
+  // Reset preview
+  var preview = document.getElementById('testi-upload-preview');
+  var prompt  = document.getElementById('testi-upload-prompt');
+  if(preview) preview.innerHTML = '';
+  if(prompt)  prompt.style.display = 'block';
+}
+
+function setTestiStars(n){
+  _testiStars = n;
+  document.querySelectorAll('.star-opt').forEach(function(el, i){
+    el.style.color = i < n ? '#f59e0b' : '#e4e6f0';
+  });
+}
+
+function previewTestiMedia(input){
+  var file = input.files[0]; if(!file) return;
+  var maxSize = _testiType === 'video' ? 200*1024*1024 : 10*1024*1024;
+  if(file.size > maxSize){
+    showToast('&#10060;', 'File too large.');
+    input.value = ''; return;
+  }
+  _testiFile = file;
+  var url     = URL.createObjectURL(file);
+  var preview = document.getElementById('testi-upload-preview');
+  var prompt  = document.getElementById('testi-upload-prompt');
+  if(prompt) prompt.style.display = 'none';
+  if(preview){
+    if(_testiType === 'video'){
+      preview.innerHTML = '<video src="'+url+'" controls style="width:100%;border-radius:8px;max-height:160px;"></video>'
+        +'<div style="font-size:12px;color:var(--teal-dark);font-weight:600;margin-top:6px;cursor:pointer;" onclick="document.getElementById(\'testi-file-input\').click()">Change video</div>';
+    } else {
+      preview.innerHTML = '<img src="'+url+'" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;display:block;"/>'
+        +'<div style="font-size:12px;color:var(--teal-dark);font-weight:600;margin-top:6px;cursor:pointer;" onclick="document.getElementById(\'testi-file-input\').click()">Change photo</div>';
+    }
+  }
+}
+
+async function saveTestimonial(){
+  var name   = document.getElementById('testi-name').value.trim();
+  var text   = document.getElementById('testi-text').value.trim();
+  var errEl  = document.getElementById('testi-form-error');
+
+  if(!name){ if(errEl){ errEl.textContent='Please enter the student name.'; errEl.style.display='block'; } return; }
+  if(!text){ if(errEl){ errEl.textContent='Please enter what the student said.'; errEl.style.display='block'; } return; }
+  if(_testiType !== 'text' && !_testiFile && !_editingTestiId){
+    if(errEl){ errEl.textContent='Please upload a '+_testiType+' file.'; errEl.style.display='block'; } return;
+  }
+  if(errEl) errEl.style.display = 'none';
+
+  var btn = document.getElementById('testi-save-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
+
+  var mediaUrl = null;
+  if(_testiFile){
+    // Store as object URL locally (in production would upload to storage)
+    mediaUrl = URL.createObjectURL(_testiFile);
+  }
+
+  var initials = name.split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+
+  var testi = {
+    id:       _editingTestiId || ('t_' + Date.now()),
+    type:     _testiType,
+    name:     name,
+    initials: initials,
+    loc:      document.getElementById('testi-loc').value.trim(),
+    text:     text,
+    result:   document.getElementById('testi-result').value.trim(),
+    stars:    _testiStars,
+    mediaSrc: mediaUrl || (_editingTestiId ? (_testimonials.find(function(t){ return t.id===_editingTestiId; })||{}).mediaSrc : null),
+    status:   'pending',
+    createdAt: new Date().toISOString(),
+  };
+
+  if(_editingTestiId){
+    var idx = _testimonials.findIndex(function(t){ return t.id === _editingTestiId; });
+    if(idx >= 0) _testimonials[idx] = testi;
+  } else {
+    _testimonials.unshift(testi);
+  }
+
+  // Save to Firestore if available
+  if(window._db && window._user){
+    try {
+      var { collection, doc, setDoc, serverTimestamp } =
+        await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await setDoc(doc(window._db, 'testimonials', testi.id), Object.assign({}, testi, {
+        instructorId: window._user.uid,
+        mediaSrc: null, // don't store blob URL in Firestore
+        updatedAt: serverTimestamp(),
+      }));
+    } catch(e){ console.warn('Firestore save failed:', e); }
+  }
+
+  localStorage.setItem('sl_inst_testimonials', JSON.stringify(_testimonials));
+  closeTestiForm();
+  renderTestimonialsList();
+  showToast('&#11088;', _editingTestiId ? 'Testimonial updated!' : 'Testimonial added!');
+  if(btn){ btn.disabled=false; btn.textContent='Save testimonial'; }
+}
+
+function deleteTestimonial(id){
+  if(!confirm('Delete this testimonial? This cannot be undone.')) return;
+  _testimonials = _testimonials.filter(function(t){ return t.id !== id; });
+  localStorage.setItem('sl_inst_testimonials', JSON.stringify(_testimonials));
+  if(window._db && window._user){
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+      fb.deleteDoc(fb.doc(window._db, 'testimonials', id)).catch(function(){});
+    });
+  }
+  renderTestimonialsList();
+  showToast('&#128465;', 'Testimonial deleted.');
+}
+
+function renderTestimonialsList(){
+  var container = document.getElementById('testi-list');
+  if(!container) return;
+
+  if(_testimonials.length === 0){
+    container.innerHTML = '<div style="text-align:center;padding:56px;color:var(--text3);">'
+      +'<div style="font-size:40px;margin-bottom:12px;">&#11088;</div>'
+      +'<div style="font-weight:600;margin-bottom:6px;">No testimonials yet</div>'
+      +'<div style="font-size:13px;margin-bottom:20px;">Add your first student result to build credibility.</div>'
+      +'<button class="btn btn-teal" onclick="openTestiForm()">+ Add testimonial</button>'
+      +'</div>';
+    return;
+  }
+
+  var statusColors = {
+    pending:  {bg:'rgba(245,158,11,.1)',color:'#92400e',border:'rgba(245,158,11,.25)',label:'Pending review'},
+    approved: {bg:'rgba(34,197,94,.1)', color:'#166534',border:'rgba(34,197,94,.25)', label:'Live on course page'},
+    rejected: {bg:'rgba(239,68,68,.08)',color:'#991b1b',border:'rgba(239,68,68,.2)',  label:'Needs revision'},
+  };
+
+  container.innerHTML = '<div style="display:flex;flex-direction:column;gap:14px;">'
+    + _testimonials.map(function(t){
+        var sc = statusColors[t.status] || statusColors.pending;
+        var stars = '';
+        for(var i=0;i<(t.stars||5);i++) stars += '&#9733;';
+
+        var mediaHtml = '';
+        if(t.type === 'video' && t.mediaSrc){
+          mediaHtml = '<video src="'+t.mediaSrc+'" style="width:80px;height:56px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#000;" preload="none"></video>';
+        } else if(t.type === 'image' && t.mediaSrc){
+          mediaHtml = '<img src="'+t.mediaSrc+'" style="width:80px;height:56px;border-radius:6px;object-fit:cover;flex-shrink:0;"/>';
+        } else {
+          mediaHtml = '<div style="width:80px;height:56px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">&#128172;</div>';
+        }
+
+        return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);transition:border-color .2s;" onmouseover="this.style.borderColor=\'var(--border2)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
+          + mediaHtml
+          +'<div style="flex:1;min-width:0;">'
+            +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">'
+              +'<div style="font-family:\'Poppins\',sans-serif;font-size:14px;font-weight:600;color:var(--text);">'+t.name+'</div>'
+              +(t.loc ? '<div style="font-size:11px;color:var(--text3);">'+t.loc+'</div>' : '')
+            +'</div>'
+            +'<div style="color:#f59e0b;font-size:11px;margin-bottom:4px;">'+stars+'</div>'
+            +'<div style="font-size:13px;color:var(--text2);line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px;">'+t.text+'</div>'
+            +(t.result ? '<div style="display:inline-flex;align-items:center;gap:4px;margin-top:5px;font-size:11px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:2px 8px;border-radius:100px;">&#128176; '+t.result+'</div>' : '')
+          +'</div>'
+          +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;">'
+            +'<span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:'+sc.bg+';color:'+sc.color+';border:1px solid '+sc.border+';">'+sc.label+'</span>'
+            +'<div style="display:flex;gap:8px;">'
+              +'<button class="btn btn-ghost btn-sm" onclick="openTestiForm(\''+t.id+'\')" style="font-size:12px;padding:6px 14px;">&#9998; Edit</button>'
+              +'<button class="btn btn-danger btn-sm" onclick="deleteTestimonial(\''+t.id+'\')" style="font-size:12px;padding:6px 14px;">&#128465; Delete</button>'
+            +'</div>'
+          +'</div>'
+        +'</div>';
+      }).join('')
+  +'</div>';
+}
+
+// Init testimonials on page load
+document.addEventListener('authReady', function(){ renderTestimonialsList(); });
+renderTestimonialsList();
+
+// Close modal on backdrop click
+document.getElementById('testi-modal').addEventListener('click', function(e){
+  if(e.target === this) closeTestiForm();
+});
 
 /* ══════════════════════════════════════════
    INIT
