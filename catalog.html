@@ -1064,15 +1064,20 @@ var cg=document.getElementById('catalog-grid'); if(cg) cg.innerHTML=COURSES.map(
 
 /* ── CURRENCY SYSTEM ── */
 var CURRENCIES = {
-  NGN: { symbol:'₦',  name:'Nigerian Naira',      flag:'🇳🇬', rate:1,       processor:'paystack' },
-  USD: { symbol:'$',  name:'US Dollar',            flag:'🇺🇸', rate:0.00065, processor:'stripe'   },
-  GBP: { symbol:'£',  name:'British Pound',        flag:'🇬🇧', rate:0.00052, processor:'stripe'   },
-  EUR: { symbol:'€',  name:'Euro',                 flag:'🇪🇺', rate:0.00060, processor:'stripe'   },
-  GHS: { symbol:'GH₵',name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099,  processor:'paystack' },
-  KES: { symbol:'KSh',name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084,   processor:'paystack' },
-  ZAR: { symbol:'R',  name:'South African Rand',   flag:'🇿🇦', rate:0.012,   processor:'paystack' },
-  AED: { symbol:'AED',name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024,  processor:'stripe'   },
-  CAD: { symbol:'CA$',name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088, processor:'stripe'   },
+  NGN: { symbol:'₦',    name:'Nigerian Naira',      flag:'🇳🇬', rate:1       },
+  USD: { symbol:'$',    name:'US Dollar',            flag:'🇺🇸', rate:0.00065 },
+  GBP: { symbol:'£',    name:'British Pound',        flag:'🇬🇧', rate:0.00052 },
+  EUR: { symbol:'€',    name:'Euro',                 flag:'🇪🇺', rate:0.00060 },
+  GHS: { symbol:'GH₵',  name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099  },
+  KES: { symbol:'KSh',  name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084   },
+  ZAR: { symbol:'R',    name:'South African Rand',   flag:'🇿🇦', rate:0.012   },
+  AED: { symbol:'AED',  name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024  },
+  CAD: { symbol:'CA$',  name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088 },
+  UGX: { symbol:'USh',  name:'Ugandan Shilling',     flag:'🇺🇬', rate:2.4     },
+  TZS: { symbol:'TSh',  name:'Tanzanian Shilling',   flag:'🇹🇿', rate:1.67    },
+  RWF: { symbol:'RWF',  name:'Rwandan Franc',        flag:'🇷🇼', rate:0.83    },
+  EGP: { symbol:'E£',   name:'Egyptian Pound',       flag:'🇪🇬', rate:0.032   },
+  XOF: { symbol:'CFA',  name:'West African CFA',     flag:'🌍',  rate:0.39    },
 };
 
 /* Country → currency map for auto-detect */
