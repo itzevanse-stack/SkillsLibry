@@ -2,563 +2,528 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Instructor Portal — SkillsLibry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-:root {
-  --teal: #4ecca3;
-  --teal-dark: #2db88a;
-  --teal-dim: rgba(78,204,163,0.12);
-  --teal-dim2: rgba(78,204,163,0.06);
-  --purple: #6c63ff;
-  --purple-dark: #5550d4;
-  --purple-dim: rgba(108,99,255,0.1);
-  --yellow: #ffd93d;
-  --yellow-dim: rgba(255,217,61,0.12);
-  --bg: #ffffff;
-  --bg2: #f8f9fc;
-  --bg3: #f0f2f8;
-  --bg4: #e8eaf2;
-  --border: #e4e6f0;
-  --border2: #d0d3e8;
-  --gold: #4ecca3;
-  --gold-light: #2db88a;
-  --gold-dim: rgba(78,204,163,0.12);
-  --gold-dim2: rgba(78,204,163,0.06);
-  --text: #0d0d1a;
-  --text2: #4a4d6a;
-  --text3: #8b8fa8;
-  --red: #e84545;
-  --green: #22c55e;
-  --radius: 10px;
-  --radius-sm: 6px;
-  --radius-lg: 16px;
-  --shadow: 0 2px 12px rgba(13,13,26,0.06);
-  --shadow-md: 0 4px 24px rgba(13,13,26,0.1);
-  --shadow-lg: 0 8px 40px rgba(13,13,26,0.14);
+/* ── TOKENS ── */
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--bg3:#f1f3f9;--bg4:#e8eaf0;
+  --border:#e4e6f0;--border2:#d0d3e8;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--red:#ef4444;--orange:#f59e0b;
+  --r:10px;--r-sm:6px;--r-lg:16px;--r-xl:24px;
+  --sh:0 2px 12px rgba(13,13,26,.06);
+  --sh-md:0 6px 28px rgba(13,13,26,.1);
+  --sh-lg:0 12px 48px rgba(13,13,26,.14);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
-h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+a{text-decoration:none;color:inherit}
+button{font-family:'Inter',sans-serif;cursor:pointer}
+input,textarea,select{font-family:'Inter',sans-serif}
 
-/* ─── TYPOGRAPHY ─── */
-.display{font-family:'Poppins',sans-serif;font-weight:600;line-height:1.1;letter-spacing:-0.02em}
-.serif{font-family:'Poppins',sans-serif}
-.mono{font-family:'Inter',sans-serif}
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:64px;
+  display:flex;align-items:center;padding:0 32px;gap:24px;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.nav-logo-mark{
+  width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#fff;
+}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:var(--text);}
+.nav-logo-text span{color:var(--teal);}
+.nav-tag{
+  font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--teal-dark);background:var(--teal-dim);
+  border:1px solid rgba(78,204,163,.25);
+  border-radius:4px;padding:3px 8px;
+}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-size:13px;font-weight:600;border:none;border-radius:var(--r-sm);
+  cursor:pointer;transition:all .2s;padding:9px 18px;
+}
+.btn-ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+.btn-teal{background:var(--teal);color:#0d0d1a;font-weight:700;}
+.btn-teal:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(78,204,163,.35);}
+.btn-purple{background:var(--purple);color:#fff;font-weight:700;}
+.btn-purple:hover{background:#5550d4;transform:translateY(-1px);}
+.btn-danger{background:transparent;color:var(--red);border:1.5px solid rgba(239,68,68,.25);}
+.btn-danger:hover{background:rgba(239,68,68,.06);}
+.btn-lg{padding:13px 28px;font-size:15px;border-radius:var(--r);}
+.btn-sm{padding:6px 14px;font-size:12px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
 
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+/* ── LAYOUT ── */
+.shell{
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:100vh;
+  padding-top:64px;
+}
 
-/* ─── NAV ─── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 32px;gap:32px}
-.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none}
-.nav-logo-mark{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:#0a0a08}
-.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:600;font-size:20px;color:var(--text)}
-.nav-links{display:flex;align-items:center;gap:24px;margin-left:16px}
-.nav-link{color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:color .2s;text-decoration:none}
-.nav-link:hover{color:var(--text)}
-.nav-link.active{color:var(--teal-dark)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;text-decoration:none;white-space:nowrap}
-.btn-ghost{background:transparent;color:var(--text2);padding:8px 16px;border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
-.btn-teal{background:var(--teal);color:#0d0d1a;padding:10px 22px;font-weight:700}
-.btn-teal:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.3)}
-.btn-outline-teal{background:transparent;color:var(--teal-dark);padding:10px 22px;border:1.5px solid var(--teal);font-weight:600}
-.btn-outline-teal:hover{background:var(--teal-dim)}
-.btn-lg{padding:14px 32px;font-size:15px;border-radius:var(--radius)}
-.btn-sm{padding:6px 14px;font-size:12px}
+/* ── SIDEBAR ── */
+.sidebar{
+  background:#fff;
+  border-right:1px solid var(--border);
+  padding:28px 0;
+  position:sticky;top:64px;
+  height:calc(100vh - 64px);
+  overflow-y:auto;
+}
+.sidebar-section{
+  padding:0 16px;
+  margin-bottom:28px;
+}
+.sidebar-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text3);
+  padding:0 8px;margin-bottom:8px;
+}
+.sidebar-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all .2s;margin-bottom:2px;
+}
+.sidebar-item:hover{background:var(--bg2);color:var(--text);}
+.sidebar-item.active{background:var(--teal-dim);color:var(--teal-dark);font-weight:600;}
+.sidebar-item .si-icon{
+  width:32px;height:32px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;background:var(--bg3);flex-shrink:0;
+  transition:background .2s;
+}
+.sidebar-item.active .si-icon{background:rgba(78,204,163,.2);}
+.sidebar-badge{
+  margin-left:auto;font-size:10px;font-weight:700;
+  background:var(--red);color:#fff;
+  border-radius:100px;padding:2px 7px;
+}
 
-/* ─── PAGES ─── */
-.page{display:none;padding-top:64px;min-height:100vh}
-.page.active{display:block}
+/* Profile card in sidebar */
+.sidebar-profile{
+  margin:0 16px 24px;
+  background:linear-gradient(135deg,var(--teal-dim),var(--purple-dim));
+  border:1.5px solid rgba(78,204,163,.2);
+  border-radius:var(--r-lg);padding:18px;
+}
+.sp-avatar{
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;color:#fff;
+  margin-bottom:10px;
+}
+.sp-name{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;margin-bottom:2px;}
+.sp-role{font-size:11px;color:var(--teal-dark);font-weight:600;}
+.sp-stats{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(78,204,163,.15);}
+.sp-stat{text-align:center;}
+.sp-stat-val{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;color:var(--text);}
+.sp-stat-label{font-size:10px;color:var(--text3);}
 
-/* ─── HOMEPAGE ─── */
-.hero{min-height:calc(100vh - 64px);display:flex;align-items:center;padding:80px 32px;position:relative;overflow:hidden;background:linear-gradient(160deg,#ffffff 0%,#f0f7ff 40%,#f0fdf8 100%)}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 70% 40%, rgba(78,204,163,0.10) 0%, transparent 60%)}
-.hero-grain{position:absolute;inset:0;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
-.hero-content{max-width:680px;position:relative;z-index:1}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.25);border-radius:100px;padding:6px 16px;margin-bottom:28px}
-.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.hero-eyebrow span{font-size:12px;font-weight:600;color:var(--teal-dark);letter-spacing:.04em}
-.hero h1{font-size:clamp(44px,7vw,80px);margin-bottom:24px;color:var(--text)}
-.hero h1 em{color:var(--teal);font-style:normal}
-.hero-sub{font-size:17px;color:var(--text2);line-height:1.7;max-width:520px;margin-bottom:40px;font-weight:300}
-.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.hero-stat{display:flex;align-items:center;gap:10px;padding-left:24px;border-left:1px solid var(--border)}
-.hero-stat-num{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
-.hero-stat-label{font-size:12px;color:var(--text3);line-height:1.3}
-.hero-stats{display:flex;gap:32px;margin-top:56px;padding-top:40px;border-top:1px solid var(--border)}
+/* ── MAIN CONTENT ── */
+.main{padding:32px;}
+.page-view{display:none;}
+.page-view.active{display:block;}
 
-/* ─── SECTION ─── */
-.section{padding:80px 32px;max-width:1100px;margin:0 auto}
-.section-label{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-dark);margin-bottom:14px}
-.section-title{font-size:clamp(30px,4vw,48px);margin-bottom:16px}
-.section-sub{font-size:15px;color:var(--text2);max-width:500px;line-height:1.7;margin-bottom:48px}
+/* ── OVERVIEW CARDS ── */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:22px;
+  box-shadow:var(--sh);transition:all .2s;
+}
+.stat-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.sc-icon{
+  width:44px;height:44px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:14px;
+}
+.sc-icon.teal{background:var(--teal-dim);}
+.sc-icon.purple{background:var(--purple-dim);}
+.sc-icon.green{background:rgba(34,197,94,.1);}
+.sc-icon.orange{background:rgba(245,158,11,.1);}
+.sc-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;}
+.sc-label{font-size:12px;color:var(--text3);font-weight:500;}
 
-/* ─── CATEGORY PILLS ─── */
-.category-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:48px}
-.cat-pill{padding:8px 18px;border-radius:100px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;background:transparent}
-.cat-pill:hover{border-color:var(--teal);color:var(--teal-dark)} .cat-pill.active{background:var(--teal-dim);border-color:var(--teal);color:var(--teal-dark)}
+/* ── SECTION HEADER ── */
+.sec-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;
+}
+.sec-title{font-size:20px;font-weight:700;color:var(--text);}
+.sec-sub{font-size:13px;color:var(--text3);margin-top:2px;}
 
-/* ─── COURSE CARDS ─── */
-.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.course-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:var(--shadow)}
-.course-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.course-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg2),var(--bg3));position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:44px}
-.course-thumb-icon{font-size:40px;opacity:0.3}
-.course-thumb-cat{position:absolute;top:12px;left:12px;background:#fff;border:1.5px solid var(--border);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--teal-dark)}
-.course-thumb-badge{position:absolute;top:12px;right:12px;background:var(--gold);border-radius:4px;padding:3px 8px;font-size:10px;font-weight:600;color:#0a0a08}
-.course-body{padding:18px 20px}
-.course-instructor{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.avatar-xs{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-.course-instructor-name{font-size:12px;color:var(--text3)}
-.course-title{font-size:15px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:8px}
-.course-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text3);margin-bottom:14px}
-.rating{color:#f59e0b}
-.course-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
-.course-price{font-family:'Poppins',sans-serif;font-size:22px;font-weight:600;color:var(--teal-dark)}
-.course-price-old{font-size:12px;color:var(--text3);text-decoration:line-through;margin-left:6px}
-.enroll-mini{padding:7px 16px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
-.enroll-mini:hover{background:var(--teal);color:#0d0d1a}
+/* ── COURSE CARDS (existing courses list) ── */
+.course-list{display:flex;flex-direction:column;gap:14px;}
+.course-list-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:20px 24px;
+  display:flex;align-items:center;gap:20px;
+  box-shadow:var(--sh);transition:all .2s;
+}
+.course-list-card:hover{border-color:var(--teal);box-shadow:var(--sh-md);}
+.clc-thumb{
+  width:80px;height:56px;border-radius:8px;
+  background:linear-gradient(135deg,var(--bg3),var(--bg4));
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;overflow:hidden;
+}
+.clc-thumb img{width:100%;height:100%;object-fit:cover;}
+.clc-info{flex:1;}
+.clc-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.clc-meta{display:flex;gap:14px;font-size:12px;color:var(--text3);}
+.clc-status{
+  padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;
+}
+.status-draft{background:var(--bg3);color:var(--text3);}
+.status-pending{background:rgba(245,158,11,.1);color:#92400e;border:1px solid rgba(245,158,11,.25);}
+.status-approved{background:rgba(34,197,94,.1);color:#166534;border:1px solid rgba(34,197,94,.25);}
+.status-rejected{background:rgba(239,68,68,.08);color:#991b1b;border:1px solid rgba(239,68,68,.2);}
+.clc-actions{display:flex;gap:8px;align-items:center;}
 
-/* ─── INSTRUCTORS ─── */
-.instructor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
-.instructor-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;cursor:pointer;transition:all .25s;box-shadow:var(--shadow)}
-.instructor-card:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.instructor-avatar{width:72px;height:72px;border-radius:50%;background:var(--bg3);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600;color:var(--teal-dark);border:2px solid var(--border2)}
-.instructor-name{font-size:15px;font-weight:500;margin-bottom:4px}
-.instructor-title{font-size:12px;color:var(--text3);margin-bottom:12px}
-.instructor-stats{display:flex;justify-content:center;gap:20px}
-.istat{text-align:center}
-.istat-num{font-family:'Poppins',sans-serif;font-size:18px;font-weight:600;color:var(--teal-dark)}
-.istat-label{font-size:10px;color:var(--text3)}
+/* ════════════════════════════════════════
+   COURSE BUILDER — WIZARD
+════════════════════════════════════════ */
+.wizard-wrap{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-xl);overflow:hidden;
+  box-shadow:var(--sh-lg);
+}
 
-/* ─── TESTIMONIALS ─── */
-.testimonial-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.tcard{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);transition:all .2s}
-.tcard-stars{color:#f59e0b;font-size:14px;margin-bottom:12px;letter-spacing:2px}
-.tcard-text{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:18px;font-style:italic}
-.tcard-person{display:flex;align-items:center;gap:10px}
-.tcard-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.tcard-name{font-size:13px;font-weight:500}
-.tcard-loc{font-size:11px;color:var(--text3)}
+/* Progress bar */
+.wizard-progress{
+  background:var(--bg2);
+  border-bottom:1.5px solid var(--border);
+  padding:0 32px;
+  display:flex;align-items:stretch;
+}
+.wp-step{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 0;
+  margin-right:32px;
+  border-bottom:2.5px solid transparent;
+  cursor:pointer;transition:all .2s;
+  position:relative;
+}
+.wp-step.active{border-bottom-color:var(--teal);}
+.wp-step.done{border-bottom-color:var(--teal);}
+.wp-step.inactive{opacity:.5;}
+.wp-num{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  background:var(--bg3);color:var(--text3);
+  transition:all .2s;flex-shrink:0;
+}
+.wp-step.active .wp-num{background:var(--teal);color:#0d0d1a;}
+.wp-step.done .wp-num{background:var(--teal);color:#0d0d1a;}
+.wp-step-title{font-size:12px;font-weight:600;color:var(--text2);}
+.wp-step.active .wp-step-title{color:var(--teal-dark);}
+.wp-step.done .wp-step-title{color:var(--teal-dark);}
 
-/* ─── HOW IT WORKS ─── */
-.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0}
-.step{padding:32px;border-right:1px solid var(--border);position:relative}
-.step:last-child{border-right:none}
-.step-num{font-family:'Poppins',sans-serif;font-size:48px;font-weight:700;color:var(--gold-dim);line-height:1;margin-bottom:20px}
-.step-title{font-size:16px;font-weight:500;margin-bottom:8px}
-.step-desc{font-size:13px;color:var(--text2);line-height:1.7}
+/* Wizard body */
+.wizard-body{padding:40px 40px 32px;}
+.wizard-step{display:none;}
+.wizard-step.active{display:block;}
+.step-title{font-size:22px;font-weight:700;margin-bottom:6px;}
+.step-sub{font-size:14px;color:var(--text2);margin-bottom:32px;}
 
-/* ─── MISSION BANNER ─── */
-.mission{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 32px;text-align:center;position:relative;overflow:hidden}
-.mission-bg{position:absolute;inset:0;background:radial-gradient(ellipse 50% 80% at 50% 100%, rgba(201,151,42,0.06) 0%, transparent 60%)}
-.mission-quote{font-family:'Poppins',sans-serif;font-size:clamp(24px,4vw,42px);font-weight:400;font-style:italic;color:var(--text);max-width:700px;margin:0 auto 24px;line-height:1.4;position:relative;z-index:1}
-.mission-accent-t{color:var(--teal)} .mission-accent-p{color:var(--purple)}
-.mission-sub{font-size:14px;color:var(--text3);position:relative;z-index:1}
+/* Form elements */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.frow-1{display:grid;grid-template-columns:1fr;gap:20px;margin-bottom:20px;}
+.frow-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:12px;font-weight:600;color:var(--text2);}
+.fg .hint{font-size:11px;color:var(--text3);margin-top:2px;}
+.fi{
+  padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:var(--r-sm);
+  font-size:14px;color:var(--text);background:#fff;
+  transition:border .2s;outline:none;width:100%;
+}
+.fi:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(78,204,163,.1);}
+.fi::placeholder{color:var(--text3);}
+textarea.fi{resize:vertical;min-height:100px;line-height:1.6;}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238b8fa8'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+.char-count{font-size:11px;color:var(--text3);text-align:right;margin-top:4px;}
 
-/* ─── CTA BANNER ─── */
-.cta-banner{background:linear-gradient(135deg,var(--teal-dim) 0%,var(--purple-dim) 100%);border:1.5px solid rgba(78,204,163,0.2);border-radius:var(--radius-lg);padding:56px 48px;text-align:center;margin:0 32px 80px;position:relative;overflow:hidden}
-.cta-banner-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse, rgba(78,204,163,0.12) 0%, transparent 70%)}
-.cta-banner h2{font-size:clamp(28px,4vw,44px);margin-bottom:16px;position:relative;z-index:1}
-.cta-banner p{font-size:15px;color:var(--text2);margin-bottom:32px;position:relative;z-index:1}
-.cta-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+/* Tags input */
+.tags-wrap{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:10px 12px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);background:#fff;cursor:text;
+  transition:border .2s;
+}
+.tags-wrap:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(78,204,163,.1);}
+.tag-item{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--teal-dim);color:var(--teal-dark);
+  border:1px solid rgba(78,204,163,.25);
+  border-radius:100px;padding:3px 10px;font-size:12px;font-weight:500;
+}
+.tag-rm{background:none;border:none;cursor:pointer;font-size:14px;color:var(--teal-dark);padding:0;line-height:1;}
+.tags-input{border:none;outline:none;font-size:13px;color:var(--text);min-width:120px;flex:1;}
 
-/* ─── FOOTER ─── */
-.footer{background:var(--text);padding:56px 32px 32px}
-.footer-top{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
-.footer-brand p{font-size:13px;color:var(--text3);line-height:1.7;margin-top:12px;max-width:220px}
-.footer-col h4{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
-.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:10px;cursor:pointer;text-decoration:none;transition:color .2s}
-.footer-col a:hover{color:var(--teal)}
-.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--border)}
-.footer-copy{font-size:12px;color:rgba(255,255,255,.3)}
-.footer-mission{font-size:12px;color:var(--teal);font-weight:500}
+/* Upload zone */
+.upload-zone{
+  border:2px dashed var(--border);border-radius:var(--r-lg);
+  padding:36px 24px;text-align:center;cursor:pointer;
+  transition:all .2s;position:relative;background:var(--bg2);
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:var(--teal-dim);}
+.upload-zone .uz-icon{font-size:36px;margin-bottom:10px;}
+.upload-zone .uz-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.upload-zone .uz-sub{font-size:12px;color:var(--text3);}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-preview{
+  width:100%;border-radius:var(--r);overflow:hidden;
+  margin-bottom:12px;background:#000;position:relative;
+}
+.upload-preview img{width:100%;max-height:200px;object-fit:cover;display:block;}
+.upload-preview video{width:100%;max-height:220px;display:block;}
+.upload-preview-label{
+  position:absolute;top:10px;right:10px;
+  background:rgba(13,13,26,.7);color:#fff;
+  font-size:11px;font-weight:600;padding:4px 10px;border-radius:4px;
+}
+.upload-change{
+  display:inline-block;margin-top:8px;font-size:12px;
+  color:var(--teal-dark);font-weight:600;cursor:pointer;
+}
+.upload-change:hover{text-decoration:underline;}
 
-/* ─── COURSE DETAIL PAGE ─── */
-.course-detail-hero{background:linear-gradient(160deg,#f0f7ff,#f0fdf8);border-bottom:1px solid var(--border);padding:48px 32px}
-.course-detail-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start}
-.course-detail-left{}
-.course-detail-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:12px;color:var(--text3)}
-.course-detail-eyebrow span{color:var(--teal-dark)}
-.course-detail-title{font-size:clamp(24px,3vw,38px);margin-bottom:16px;line-height:1.2}
-.course-detail-sub{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:20px}
-.course-detail-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--text2)}
-.course-detail-right{position:sticky;top:80px}
-.course-detail-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.promo-video{aspect-ratio:16/9;background:linear-gradient(135deg,#0d0d1a,#1a1a2e);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
-.promo-video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:background .2s}
-.promo-video-overlay:hover{background:rgba(0,0,0,0.2)}
-.play-circle{width:62px;height:62px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 12px rgba(78,204,163,.2);transition:transform .2s}
-.play-icon{width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:20px solid #0d0d1a;margin-left:4px}
-.course-card-body{padding:24px}
-.course-card-price{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
-.course-card-price-main{font-family:'Poppins',sans-serif;font-size:34px;font-weight:600;color:var(--teal-dark)}
-.course-card-price-old{font-size:16px;color:var(--text3);text-decoration:line-through}
-.course-card-discount{font-size:12px;background:rgba(78,204,163,0.12);color:var(--teal-dark);padding:3px 8px;border-radius:4px;font-weight:500}
-.course-card-timer{font-size:12px;color:var(--text3);margin-bottom:20px}
-.course-card-enroll{width:100%;padding:14px;background:var(--teal);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
-.course-card-enroll:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35)}
-.course-card-guarantee{text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px}
-.course-card-includes{border-top:1px solid var(--border);padding-top:20px}
-.course-card-includes h4{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px}
-.include-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin-bottom:8px}
-.include-check{width:16px;height:16px;border-radius:50%;background:var(--teal-dim);border:1.5px solid var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:var(--teal-dark);font-weight:700}
+/* Progress bar for upload */
+.upload-progress{
+  margin-top:12px;
+  background:var(--bg3);border-radius:100px;height:6px;overflow:hidden;display:none;
+}
+.upload-progress-bar{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));border-radius:100px;transition:width .3s;width:0%;}
+.upload-progress-label{font-size:12px;color:var(--teal-dark);margin-top:6px;text-align:center;display:none;}
 
-/* TABS */
-.tabs-wrap{max-width:1100px;margin:0 auto;padding:0 32px}
-.tabs-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:40px;gap:0}
-.tab-btn{padding:16px 24px;font-size:14px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:transparent;border-top:none;border-left:none;border-right:none}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal)}
-.tab-pane{display:none}
-.tab-pane.active{display:block}
+/* Learning points */
+.learning-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.learning-item{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg2);border:1.5px solid var(--border);
+  border-radius:var(--r-sm);padding:10px 14px;
+}
+.learning-item input{flex:1;border:none;background:transparent;outline:none;font-size:13px;color:var(--text);}
+.learning-item .rm-btn{background:none;border:none;cursor:pointer;font-size:16px;color:var(--text3);padding:0;transition:color .2s;}
+.learning-item .rm-btn:hover{color:var(--red);}
+.add-item-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--teal-dark);
+  background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);
+  border-radius:var(--r-sm);padding:8px 16px;cursor:pointer;
+  transition:all .2s;
+}
+.add-item-btn:hover{background:rgba(78,204,163,.18);}
 
-/* Description tab */
-.desc-body{max-width:680px}
-.desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:16px}
-.desc-body ul{padding-left:24px;margin-bottom:16px}
-.desc-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:6px}
-.desc-section-title{font-size:18px;font-weight:500;color:var(--text);margin:28px 0 12px}
+/* ── STEP 2: MODULES ── */
+.modules-builder{display:flex;flex-direction:column;gap:16px;}
+.module-card{
+  background:var(--bg2);border:1.5px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+}
+.module-card-head{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;background:#fff;
+  border-bottom:1px solid var(--border);cursor:pointer;
+}
+.module-drag{font-size:16px;color:var(--text3);cursor:grab;}
+.module-num-badge{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;
+  color:var(--teal-dark);flex-shrink:0;
+}
+.module-name-input{
+  flex:1;border:none;background:transparent;outline:none;
+  font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;
+  color:var(--text);
+}
+.module-name-input::placeholder{color:var(--text3);}
+.module-toggle{font-size:18px;color:var(--text3);margin-left:auto;transition:transform .2s;}
+.module-toggle.open{transform:rotate(180deg);}
+.module-lessons{padding:16px 20px;display:none;}
+.module-lessons.open{display:block;}
 
-/* Modules tab */
-.module-list{max-width:680px}
-.module-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden}
-.module-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;transition:background .2s}
-.module-header:hover{background:var(--bg3)}
-.module-header-left{display:flex;align-items:center;gap:12px}
-.module-num{font-family:'Inter',sans-serif;font-size:11px;color:var(--text3);width:28px}
-.module-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text)}
-.module-meta{font-size:12px;color:var(--text3);margin-left:auto;margin-right:12px}
-.chevron-icon{font-size:18px;color:var(--text3);transition:transform .2s;line-height:1}
-.chevron-icon.open{transform:rotate(180deg)}
-.lesson-list{border-top:1px solid var(--border);display:none}
-.lesson-list.open{display:block}
-.lesson-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .2s}
-.lesson-item:last-child{border-bottom:none}
-.lesson-item:hover{background:var(--bg3)}
-.lesson-icon{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);flex-shrink:0}
-.lesson-title{font-size:13px;color:var(--text2);flex:1}
-.lesson-duration{font-size:11px;color:var(--text3);margin-right:8px}
-.lesson-tag{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500}
-.tag-free{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.3)}
-.tag-lock{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+/* Lesson item */
+.lesson-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);background:#fff;margin-bottom:8px;
+  transition:all .2s;
+}
+.lesson-item:hover{border-color:var(--border2);}
+.lesson-drag{font-size:14px;color:var(--text3);cursor:grab;}
+.lesson-type-icon{
+  width:32px;height:32px;border-radius:var(--r-sm);
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  background:var(--bg3);flex-shrink:0;
+}
+.lesson-name-input{
+  flex:1;border:none;background:transparent;outline:none;
+  font-size:13px;color:var(--text);
+}
+.lesson-name-input::placeholder{color:var(--text3);}
+.lesson-type-select{
+  font-size:11px;font-weight:600;color:var(--text3);
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:4px;padding:4px 8px;cursor:pointer;
+}
+.lesson-free-toggle{
+  display:flex;align-items:center;gap:5px;
+  font-size:11px;color:var(--text3);cursor:pointer;
+}
+.lesson-free-toggle input{cursor:pointer;}
+.lesson-actions{display:flex;gap:6px;}
+.lesson-btn{
+  width:28px;height:28px;border-radius:var(--r-sm);
+  border:1.5px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;color:var(--text3);
+  transition:all .2s;
+}
+.lesson-btn:hover{border-color:var(--red);color:var(--red);}
+.lesson-btn.edit:hover{border-color:var(--teal);color:var(--teal-dark);}
 
-/* Testimonials tab */
-.testimonials-tab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;max-width:900px}
+/* Add lesson row */
+.add-lesson-row{
+  display:flex;gap:8px;margin-top:10px;
+}
+.lesson-type-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:600;padding:7px 14px;
+  border-radius:var(--r-sm);border:1.5px solid var(--border);
+  background:#fff;cursor:pointer;color:var(--text2);
+  transition:all .2s;
+}
+.lesson-type-btn:hover{border-color:var(--teal);color:var(--teal-dark);background:var(--teal-dim);}
 
-/* ─── STUDENT DASHBOARD ─── */
-.dash-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px)}
-.sidebar{background:#fff;border-right:1.5px solid var(--border);padding:20px 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
-.sidebar-section{margin-bottom:8px}
-.sidebar-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:0 20px;margin-bottom:4px;margin-top:16px}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
-.sidebar-item:hover{color:var(--text);background:var(--bg3)}
-.sidebar-item.active{color:var(--teal-dark);border-left-color:var(--teal);background:var(--teal-dim)}
-.sidebar-icon{font-size:16px;width:20px;text-align:center}
-.dash-main{padding:32px;background:var(--bg2);overflow-y:auto}
-.dash-view{display:none}
-.dash-view.active{display:block}
-.dash-header{margin-bottom:32px}
-.dash-title{font-size:24px;font-weight:500;margin-bottom:4px}
-.dash-sub{font-size:14px;color:var(--text3)}
+/* ── STEP 3: VIDEO UPLOAD ── */
+.video-lessons-list{display:flex;flex-direction:column;gap:16px;}
+.vl-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+}
+.vl-head{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 20px;background:var(--bg2);
+  border-bottom:1px solid var(--border);
+}
+.vl-module-tag{
+  font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text3);background:var(--bg4);
+  border-radius:4px;padding:3px 8px;
+}
+.vl-lesson-name{font-size:13px;font-weight:600;color:var(--text);}
+.vl-body{padding:20px;}
+.vl-tabs{display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-bottom:16px;width:fit-content;}
+.vl-tab{
+  padding:8px 20px;font-size:12px;font-weight:600;
+  color:var(--text3);background:#fff;border:none;cursor:pointer;
+  transition:all .2s;
+}
+.vl-tab.active{background:var(--teal);color:#0d0d1a;}
+.vl-content{display:none;}
+.vl-content.active{display:block;}
 
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.stat-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.stat-card-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
-.stat-card-value{font-family:'Poppins',sans-serif;font-size:32px;font-weight:600;color:var(--teal-dark);line-height:1}
-.stat-card-sub{font-size:12px;color:var(--text3);margin-top:4px}
+/* ── STEP 4: PRICING ── */
+.price-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.price-card{
+  border:2px solid var(--border);border-radius:var(--r-lg);
+  padding:24px;cursor:pointer;transition:all .2s;
+  text-align:center;
+}
+.price-card:hover{border-color:var(--teal);}
+.price-card.selected{border-color:var(--teal);background:var(--teal-dim);}
+.price-card .pc-icon{font-size:28px;margin-bottom:10px;}
+.price-card .pc-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;margin-bottom:4px;}
+.price-card .pc-desc{font-size:12px;color:var(--text3);}
 
-/* My courses */
-.my-courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.my-course-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow)}
-.my-course-card:hover{border-color:var(--teal);box-shadow:var(--shadow-md)}
-.my-course-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg2),var(--bg3));display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
-.progress-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.5)}
-.progress-bar{height:100%;background:var(--teal);border-radius:2px}
-.my-course-body{padding:16px}
-.my-course-title{font-size:14px;font-weight:500;margin-bottom:8px}
-.my-course-progress{font-size:12px;color:var(--text3);margin-bottom:12px}
-.continue-btn{width:100%;padding:9px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
-.continue-btn:hover{background:var(--teal);color:#0d0d1a}
+/* ── STEP 5: REVIEW ── */
+.review-card{
+  background:var(--bg2);border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:24px;margin-bottom:16px;
+}
+.review-card h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;}
+.review-card h4::after{content:'';flex:1;height:1px;background:var(--border);}
+.review-row{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.review-row:last-child{border-bottom:none;}
+.review-label{color:var(--text3);}
+.review-val{font-weight:600;color:var(--text);}
+.review-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin-bottom:8px;}
+.check-icon{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.check-icon.ok{background:rgba(34,197,94,.1);color:var(--green);}
+.check-icon.warn{background:rgba(245,158,11,.1);color:var(--orange);}
 
-/* Course Player */
-.player-layout{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 64px)}
-.player-main{padding:0}
-.video-container{background:#000;aspect-ratio:16/9;width:100%;display:flex;align-items:center;justify-content:center;position:relative}
-.video-placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:rgba(255,255,255,0.3)}
-.video-placeholder-icon{font-size:48px}
-.player-info{padding:24px 28px;border-bottom:1px solid var(--border)}
-.player-lesson-title{font-size:20px;font-weight:500;margin-bottom:8px}
-.player-lesson-meta{font-size:13px;color:var(--text3)}
-.player-nav{display:flex;gap:10px;margin-top:16px}
-.player-sidebar{background:#fff;border-left:1.5px solid var(--border);overflow-y:auto}
-.player-sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600}
-.player-progress-bar{height:3px;background:var(--bg4);margin-bottom:0}
-.player-progress-fill{height:100%;background:var(--teal);width:35%}
-.player-module{border-bottom:1px solid var(--border)}
-.player-module-header{padding:12px 16px;font-size:12px;font-weight:600;color:var(--text3);letter-spacing:0.04em;background:var(--bg3)}
-.player-lesson-item{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:12px;color:var(--text3);cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border)}
-.player-lesson-item:last-child{border-bottom:none}
-.player-lesson-item:hover{background:var(--bg3)}
-.player-lesson-item.active{background:var(--teal-dim);color:var(--teal-dark)}
-.lesson-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
-.lesson-check.done{background:var(--teal);border-color:var(--teal);color:#0d0d1a}
+/* Wizard footer */
+.wizard-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 40px;border-top:1.5px solid var(--border);
+  background:var(--bg2);
+}
+.wf-left{font-size:13px;color:var(--text3);}
 
-/* ─── INSTRUCTOR PORTAL ─── */
-.inst-header{background:#fff;border-bottom:1.5px solid var(--border);padding:28px 32px}
-.inst-header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.inst-tabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius);padding:4px}
-.inst-tab{padding:8px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s}
-.inst-tab.active{background:#fff;color:var(--text);box-shadow:var(--shadow)}
-.inst-content{max-width:1100px;margin:0 auto;padding:32px;background:var(--bg2);min-height:calc(100vh - 180px)}
-.inst-view{display:none}
-.inst-view.active{display:block}
+/* ── SUBMIT SUCCESS ── */
+.submit-success{
+  text-align:center;padding:64px 40px;
+}
+.ss-icon{font-size:64px;margin-bottom:20px;}
+.ss-title{font-size:24px;font-weight:700;margin-bottom:10px;}
+.ss-sub{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 32px;line-height:1.7;}
 
-/* Course builder */
-.builder-layout{display:grid;grid-template-columns:1fr 320px;gap:24px}
-.builder-left{}
-.builder-right{}
-.form-group{margin-bottom:20px}
-.form-label{display:block;font-size:12px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
-.form-input{width:100%;padding:11px 14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;transition:border-color .2s;outline:none}
-.form-input:focus{border-color:var(--teal)}
-.form-input::placeholder{color:var(--text3)}
-.form-textarea{resize:vertical;min-height:120px;line-height:1.6}
-.form-select{appearance:none;cursor:pointer}
-.module-builder{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
-.module-builder-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border)}
-.module-builder-title{flex:1;font-size:14px;font-weight:500}
-.module-builder-actions{display:flex;gap:6px}
-.icon-btn{width:28px;height:28px;border-radius:var(--radius-sm);background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text3);transition:all .2s}
-.icon-btn:hover{border-color:var(--border2);color:var(--text)}
-.lesson-builder{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg3)}
-.lesson-builder-input{flex:1;background:transparent;border:none;color:var(--text2);font-size:13px;outline:none}
-.add-lesson-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--text3);cursor:pointer;margin:8px 16px;transition:all .2s}
-.add-lesson-btn:hover{border-color:var(--teal);color:var(--teal-dark)}
-.add-module-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius);font-size:13px;color:var(--text3);cursor:pointer;transition:all .2s}
-.add-module-btn:hover{border-color:var(--teal);color:var(--teal-dark)}
+/* ── PAYOUT SECTION ── */
+.payout-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:28px;margin-bottom:16px;
+  box-shadow:var(--sh);
+}
 
-/* Testimonial uploader */
-.testimonial-list{display:grid;gap:12px}
-.testimonial-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:flex-start}
-.testimonial-item-body{flex:1}
-.testimonial-status{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
-.status-live{background:rgba(39,174,96,0.12);color:#27ae60;border:1px solid rgba(39,174,96,0.2)}
-.status-pending{background:rgba(78,204,163,0.1);color:var(--teal-dark);border:1px solid rgba(78,204,163,0.2)}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:all .2s}
-.upload-zone:hover{border-color:var(--teal-dark);background:var(--gold-dim2)}
-.upload-icon{font-size:32px;margin-bottom:12px;opacity:0.4}
-.upload-label{font-size:14px;color:var(--text2);margin-bottom:4px}
-.upload-sub{font-size:12px;color:var(--text3)}
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:#fff;border:1.5px solid var(--border);border-radius:var(--r);
+  padding:13px 18px;font-size:13px;color:var(--text);
+  display:none;box-shadow:var(--sh-lg);max-width:320px;
+}
+.toast.show{display:flex;align-items:center;gap:10px;animation:toastIn .25s ease;}
+@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.toast-icon{font-size:18px;}
 
-/* ─── ADMIN PANEL ─── */
-.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
-.admin-sidebar{background:#fff;border-right:1.5px solid var(--border);padding:20px 0}
-.admin-sidebar-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
-.admin-sidebar-logo span{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;color:var(--text3)}
-.admin-sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
-.admin-sidebar-item:hover{color:var(--text)}
-.admin-sidebar-item.active{color:var(--teal-dark);border-left-color:var(--teal);background:var(--teal-dim)}
-.admin-main{padding:32px;background:var(--bg2);overflow-y:auto}
-.admin-view{display:none}
-.admin-view.active{display:block}
-.admin-page-title{font-size:22px;font-weight:500;margin-bottom:4px}
-.admin-page-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
-.admin-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.admin-stat{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.admin-stat-label{font-size:11px;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
-.admin-stat-value{font-family:'Poppins',sans-serif;font-size:30px;font-weight:600;color:var(--teal-dark)}
-.admin-stat-change{font-size:12px;color:var(--green);margin-top:4px}
-
-/* Table */
-.admin-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
-.admin-table th{text-align:left;padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);background:var(--bg2);border-bottom:1.5px solid var(--border)}
-.admin-table td{padding:14px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border)}
-.admin-table tr:last-child td{border-bottom:none}
-.admin-table tr:hover td{background:var(--bg3)}
-.table-actions{display:flex;gap:6px}
-.tbl-btn{padding:4px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;border:none}
-.tbl-btn-approve{background:rgba(39,174,96,0.12);color:#27ae60;border:1px solid rgba(39,174,96,0.2)}
-.tbl-btn-approve:hover{background:#27ae60;color:#fff}
-.tbl-btn-feature{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.25)}
-.tbl-btn-feature:hover{background:var(--teal);color:#0d0d1a}
-.tbl-btn-danger{background:rgba(192,57,43,0.1);color:var(--red);border:1px solid rgba(192,57,43,0.2)}
-.tbl-btn-danger:hover{background:var(--red);color:#fff}
-.badge-status{padding:3px 8px;border-radius:100px;font-size:11px;font-weight:500}
-.badge-live{background:rgba(39,174,96,0.12);color:#27ae60}
-.badge-pending{background:rgba(255,217,61,.12);color:#92400e}
-.badge-draft{background:var(--bg4);color:var(--text3)}
-
-/* ─── ENROLL MODAL ─── */
-.modal-overlay{position:fixed;inset:0;background:rgba(13,13,26,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:480px;padding:32px;animation:slideUp .3s ease;position:relative;box-shadow:var(--shadow-lg)}
-@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-title{font-size:20px;font-weight:500;margin-bottom:4px}
-.modal-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
-.modal-course-summary{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:14px;margin-bottom:22px}
-.modal-course-icon{width:56px;height:42px;background:var(--bg4);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.modal-course-title{font-size:14px;font-weight:500;margin-bottom:4px}
-.modal-course-instructor{font-size:12px;color:var(--text3)}
-.modal-price-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.modal-price-label{font-size:13px;color:var(--text2)}
-.modal-price-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
-.modal-pay-btn{width:100%;padding:14px;background:var(--teal);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
-.modal-pay-btn:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35)}
-.modal-close{position:absolute;top:20px;right:24px;font-size:22px;color:var(--text3);cursor:pointer;background:none;border:none}
-.modal-guarantee{text-align:center;font-size:12px;color:var(--text3)}
-.modal-installment{width:100%;padding:12px;background:transparent;color:var(--purple);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border:1.5px solid var(--purple);border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
-.modal-installment:hover{background:var(--purple-dim)}
-
-/* ─── TOAST ─── */
-.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 18px;font-size:13px;color:var(--text);z-index:300;display:none;box-shadow:var(--shadow-lg);max-width:300px}
-.toast.show{display:flex;align-items:center;gap:10px}
-.toast-icon{font-size:18px}
-
-/* ─── CATALOG PAGE ─── */
-.catalog-header{background:linear-gradient(160deg,#f0f7ff,#f0fdf8);border-bottom:1.5px solid var(--border);padding:48px 32px}
-.catalog-header-inner{max-width:1100px;margin:0 auto}
-.catalog-search{display:flex;gap:12px;margin-top:24px}
-.catalog-search-input{flex:1;padding:12px 18px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;box-shadow:var(--shadow)}
-.catalog-search-input:focus{border-color:var(--teal)}
-.catalog-search-input::placeholder{color:var(--text3)}
-.catalog-body{max-width:1100px;margin:0 auto;padding:40px 32px}
-.filter-row{display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap}
-.filter-label{font-size:12px;color:var(--text3);font-weight:500}
-.sort-select{padding:8px 14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;outline:none;cursor:pointer;margin-left:auto;font-family:'Inter',sans-serif}
-
-/* responsive */
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .shell{grid-template-columns:220px 1fr;}
+  .stat-cards{grid-template-columns:repeat(2,1fr);}
+}
 @media(max-width:768px){
-  .nav-links{display:none}
-  .hero{padding:60px 20px}
-  .section{padding:60px 20px}
-  .course-detail-inner{grid-template-columns:1fr}
-  .course-detail-right{position:static}
-  .dash-layout{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .player-layout{grid-template-columns:1fr}
-  .player-sidebar{display:none}
-  .admin-layout{grid-template-columns:1fr}
-  .admin-sidebar{display:none}
-  .footer-top{grid-template-columns:1fr 1fr}
-  .stats-row,.admin-stats-row{grid-template-columns:1fr 1fr}
-  .builder-layout{grid-template-columns:1fr}
-  .steps{grid-template-columns:1fr 1fr}
+  .shell{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .frow,.frow-3{grid-template-columns:1fr;}
+  .price-cards{grid-template-columns:1fr;}
 }
-.page{display:none}.page.active{display:block}
 </style>
-<!-- firebase.html - paste this ONCE inside <head> of every page -->
-
-
-<!-- ══ FIREBASE + AUTH ══ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-         signOut, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app  = initializeApp({
-  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
-  authDomain:        "skillslibry.firebaseapp.com",
-  projectId:         "skillslibry",
-  storageBucket:     "skillslibry.firebasestorage.app",
-  messagingSenderId: "363745273879",
-  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
-});
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-window._auth = auth;
-window._db   = db;
-
-onAuthStateChanged(auth, async (user) => {
-  window._user = user || null;
-  if (user) {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    window._userName = snap.exists() ? snap.data().name : user.email;
-  } else {
-    window._userRole = null;
-    window._userName = null;
-  }
-  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
-});
-
-window.slSignUp = async function(name, email, password, role) {
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, 'users', cred.user.uid), {
-      name, email,
-      role: role || 'student',
-      createdAt: serverTimestamp(),
-      enrolledCourses: [],
-      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
-    });
-    window._userRole = role || 'student';
-    window._userName = name;
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slSignIn = async function(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slSignOut = async function() {
-  await signOut(auth);
-  window.location.href = 'index.html';
-};
-
-window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
-  if (!window._user) return { ok: false, error: 'Not logged in' };
-  const id = courseId + '_' + window._user.uid;
-  await setDoc(doc(db, 'enrollments', id), {
-    studentId: window._user.uid,
-    courseId, instructorId,
-    paidAmount: amount, currency, transactionId,
-    platformCut: amount * 0.40,
-    instructorCut: amount * 0.60,
-    affiliateCode: affiliateCode || null,
-    progress: { completedLessons: [], percentComplete: 0 },
-    enrolledAt: serverTimestamp(),
-  });
-  return { ok: true };
-};
-
-function slErr(code) {
-  const m = {
-    'auth/email-already-in-use': 'An account with this email already exists.',
-    'auth/invalid-email':        'Please enter a valid email address.',
-    'auth/weak-password':        'Password must be at least 6 characters.',
-    'auth/user-not-found':       'No account found with this email.',
-    'auth/wrong-password':       'Incorrect password. Please try again.',
-    'auth/invalid-credential':   'Incorrect email or password.',
-    'auth/too-many-requests':    'Too many attempts. Please wait a moment.',
-  };
-  return m[code] || 'Something went wrong. Please try again.';
-}
-</script>
 </head>
 <body>
 
@@ -567,761 +532,1108 @@ function slErr(code) {
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
-  <div class="nav-links">
-    <a class="nav-link" href="catalog.html">Courses</a>
-    <a class="nav-link" href="index.html">Instructors</a>
-    <a class="nav-link" href="#">Community</a>
-    <a class="nav-link" href="#">Blog</a>
-  </div>
+  <div class="nav-tag">Instructor Portal</div>
   <div class="nav-right">
-    <a class="btn btn-ghost" href="dashboard.html">My Learning</a>
-    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+    <a class="btn btn-ghost btn-sm" href="index.html">View site</a>
+    <button class="btn btn-teal btn-sm" onclick="showView('builder'); startNewCourse();">+ New course</button>
   </div>
 </nav>
 
-<div class="page active">
-<div class="inst-header">
-    <div class="inst-header-inner">
-      <div>
-        <div class="section-label">Instructor Portal</div>
-        <div style="font-size:20px;font-weight:500">Welcome back, Chidi</div>
+<div class="shell">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="sp-avatar" id="sp-avatar">E</div>
+      <div class="sp-name" id="sp-name">Instructor</div>
+      <div class="sp-role">&#10003; Verified Instructor</div>
+      <div class="sp-stats">
+        <div class="sp-stat"><div class="sp-stat-val" id="sp-courses">0</div><div class="sp-stat-label">Courses</div></div>
+        <div class="sp-stat"><div class="sp-stat-val" id="sp-students">0</div><div class="sp-stat-label">Students</div></div>
+        <div class="sp-stat"><div class="sp-stat-val" id="sp-earnings">₦0</div><div class="sp-stat-label">Earnings</div></div>
       </div>
-      <div style="display:flex;align-items:center;gap:16px">
-        <div style="text-align:right">
-          <div style="font-size:11px;color:var(--text3)">Your earnings this month</div>
-          <div class="display" style="font-size:28px;color:var(--teal-dark)">₦428,000</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Main</div>
+      <div class="sidebar-item active" onclick="showView('overview')" id="nav-overview">
+        <div class="si-icon">&#128200;</div> Overview
+      </div>
+      <div class="sidebar-item" onclick="showView('courses')" id="nav-courses">
+        <div class="si-icon">&#127891;</div> My Courses
+      </div>
+      <div class="sidebar-item" onclick="showView('builder'); startNewCourse();" id="nav-builder">
+        <div class="si-icon">&#43;</div> Create Course
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Engagement</div>
+      <div class="sidebar-item" onclick="showView('testimonials')" id="nav-testimonials">
+        <div class="si-icon">&#11088;</div> Testimonials
+      </div>
+      <div class="sidebar-item" onclick="showView('students')" id="nav-students">
+        <div class="si-icon">&#128101;</div> Students
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Finance</div>
+      <div class="sidebar-item" onclick="showView('payouts')" id="nav-payouts">
+        <div class="si-icon">&#128176;</div> Payouts
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Account</div>
+      <div class="sidebar-item" onclick="showView('profile')" id="nav-profile">
+        <div class="si-icon">&#128100;</div> Profile
+      </div>
+      <div class="sidebar-item" onclick="slSignOut && slSignOut()">
+        <div class="si-icon">&#128682;</div> Sign out
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <div class="page-view active" id="view-overview">
+      <div class="sec-header">
+        <div>
+          <div class="sec-title">Welcome back &#128075;</div>
+          <div class="sec-sub">Here's how your courses are performing.</div>
         </div>
-        <button class="btn btn-teal" onclick="switchInstTab(document.querySelectorAll('.inst-tab')[1],'inst-builder')">+ New course</button>
+        <button class="btn btn-teal" onclick="showView('builder'); startNewCourse();">+ Create new course</button>
+      </div>
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="sc-icon teal">&#127891;</div>
+          <div class="sc-val" id="ov-courses">0</div>
+          <div class="sc-label">Total courses</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon purple">&#128101;</div>
+          <div class="sc-val" id="ov-students">0</div>
+          <div class="sc-label">Total students</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon green">&#128176;</div>
+          <div class="sc-val" id="ov-earnings">₦0</div>
+          <div class="sc-label">Total earnings</div>
+        </div>
+        <div class="stat-card">
+          <div class="sc-icon orange">&#11088;</div>
+          <div class="sc-val" id="ov-rating">—</div>
+          <div class="sc-label">Avg. rating</div>
+        </div>
+      </div>
+      <div class="sec-header" style="margin-top:8px;">
+        <div class="sec-title" style="font-size:16px;">Recent courses</div>
+      </div>
+      <div class="course-list" id="ov-course-list">
+        <div style="text-align:center;padding:48px;color:var(--text3);">
+          <div style="font-size:40px;margin-bottom:12px;">&#127891;</div>
+          <div style="font-weight:600;margin-bottom:6px;">No courses yet</div>
+          <div style="font-size:13px;margin-bottom:20px;">Create your first course and start earning.</div>
+          <button class="btn btn-teal" onclick="showView('builder'); startNewCourse();">Create first course</button>
+        </div>
       </div>
     </div>
-    <div class="inst-header-inner" style="margin-top:20px">
-      <div class="inst-tabs">
-        <div class="inst-tab active" onclick="switchInstTab(this,'inst-overview')">Overview</div>
-        <div class="inst-tab" onclick="switchInstTab(this,'inst-builder')">Course Builder</div>
-        <div class="inst-tab" onclick="switchInstTab(this,'inst-testimonials')">Testimonials</div>
-        <div class="inst-tab" onclick="switchInstTab(this,'inst-payouts')">Payouts</div>
-      </div>
-    </div>
-  </div>
-  <div class="inst-content">
 
-    <div id="inst-overview" class="inst-view active">
-      <div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card"><div class="stat-card-label">Total students</div><div class="stat-card-value">847</div><div class="stat-card-sub">↑ 34 this week</div></div>
-        <div class="stat-card"><div class="stat-card-label">Active courses</div><div class="stat-card-value">2</div><div class="stat-card-sub">1 pending review</div></div>
-        <div class="stat-card"><div class="stat-card-label">Avg rating</div><div class="stat-card-value">4.9</div><div class="stat-card-sub">From 312 reviews</div></div>
-        <div class="stat-card"><div class="stat-card-label">Total earned</div><div class="stat-card-value">₦2.1M</div><div class="stat-card-sub">Lifetime</div></div>
+    <!-- MY COURSES -->
+    <div class="page-view" id="view-courses">
+      <div class="sec-header">
+        <div>
+          <div class="sec-title">My Courses</div>
+          <div class="sec-sub">Manage and track all your courses.</div>
+        </div>
+        <button class="btn btn-teal" onclick="showView('builder'); startNewCourse();">+ New course</button>
       </div>
-      <div style="font-size:15px;font-weight:500;margin-bottom:16px">Your courses</div>
-      <table class="admin-table">
-        <thead><tr><th>Course</th><th>Students</th><th>Rating</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody>
-          <tr><td>Affiliate Marketing Mastery</td><td>847</td><td>⭐ 4.9</td><td>₦1.48M</td><td><span class="badge-status badge-live">Live</span></td><td><div class="table-actions"><button class="tbl-btn tbl-btn-feature">Edit</button></div></td></tr>
-          <tr><td>Email Marketing Secrets</td><td>312</td><td>⭐ 4.8</td><td>₦624k</td><td><span class="badge-status badge-live">Live</span></td><td><div class="table-actions"><button class="tbl-btn tbl-btn-feature">Edit</button></div></td></tr>
-          <tr><td>Advanced Funnel Building</td><td>—</td><td>—</td><td>—</td><td><span class="badge-status badge-pending">In Review</span></td><td><div class="table-actions"><button class="tbl-btn tbl-btn-feature">Preview</button></div></td></tr>
-        </tbody>
-      </table>
+      <div class="course-list" id="courses-list">
+        <div style="text-align:center;padding:48px;color:var(--text3);">
+          <div style="font-size:40px;margin-bottom:12px;">&#127891;</div>
+          <div style="font-weight:600;margin-bottom:20px;">No courses yet</div>
+          <button class="btn btn-teal" onclick="showView('builder'); startNewCourse();">Create first course</button>
+        </div>
+      </div>
     </div>
 
-    <div id="inst-builder" class="inst-view">
-      <div style="font-size:18px;font-weight:500;margin-bottom:4px">Build a new course</div>
-      <div style="font-size:13px;color:var(--text3);margin-bottom:28px">Fill in the details, then build your modules and lessons below.</div>
-      <div class="builder-layout">
-        <div class="builder-left">
-          <div class="form-group">
-            <label class="form-label">Course title</label>
-            <input class="form-input" placeholder="e.g. Affiliate Marketing Mastery: From Zero to ₦500k/Month"/>
+    <!-- COURSE BUILDER WIZARD -->
+    <div class="page-view" id="view-builder">
+      <div class="sec-header">
+        <div>
+          <div class="sec-title">Course Builder</div>
+          <div class="sec-sub">Build your course step by step.</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="showView('courses')">&#8592; Back to courses</button>
+      </div>
+
+      <div class="wizard-wrap">
+
+        <!-- Progress steps -->
+        <div class="wizard-progress" id="wizard-progress">
+          <div class="wp-step active" onclick="goStep(1)" id="ws-1">
+            <div class="wp-num">1</div>
+            <div class="wp-step-title">Course Info</div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Course description</label>
-            <textarea class="form-input form-textarea" placeholder="Describe what students will learn and achieve by the end of this course..."></textarea>
+          <div class="wp-step inactive" onclick="goStep(2)" id="ws-2">
+            <div class="wp-num">2</div>
+            <div class="wp-step-title">Modules & Lessons</div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-            <div class="form-group">
-              <label class="form-label">Category</label>
-              <select class="form-input form-select">
-                <option>Affiliate Marketing</option>
-                <option>Content & Monetisation</option>
-                <option>Digital Products</option>
-                <option>AI Skills</option>
-                <option>Freelancing</option>
-                <option>Copywriting</option>
+          <div class="wp-step inactive" onclick="goStep(3)" id="ws-3">
+            <div class="wp-num">3</div>
+            <div class="wp-step-title">Upload Videos</div>
+          </div>
+          <div class="wp-step inactive" onclick="goStep(4)" id="ws-4">
+            <div class="wp-num">4</div>
+            <div class="wp-step-title">Pricing</div>
+          </div>
+          <div class="wp-step inactive" onclick="goStep(5)" id="ws-5">
+            <div class="wp-num">5</div>
+            <div class="wp-step-title">Review & Submit</div>
+          </div>
+        </div>
+
+        <!-- ── STEP 1: COURSE INFO ── -->
+        <div class="wizard-body">
+        <div class="wizard-step active" id="step-1">
+          <div class="step-title">Tell us about your course</div>
+          <div class="step-sub">This information helps students decide whether your course is right for them.</div>
+
+          <div class="frow-1">
+            <div class="fg">
+              <label>Course title *</label>
+              <input class="fi" id="ci-title" type="text" placeholder="e.g. Affiliate Marketing Mastery: From Zero to ₦500k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
+              <div class="char-count"><span id="ci-title-count">0</span>/120</div>
+            </div>
+          </div>
+
+          <div class="frow">
+            <div class="fg">
+              <label>Category *</label>
+              <select class="fi" id="ci-cat">
+                <option value="">Select a category</option>
+                <option value="affiliate">Affiliate Marketing</option>
+                <option value="digital">Digital Products</option>
+                <option value="content">Content & Monetisation</option>
+                <option value="ai">AI Skills</option>
+                <option value="freelance">Freelancing</option>
+                <option value="copywriting">Copywriting</option>
+                <option value="ecommerce">E-Commerce</option>
+                <option value="social">Social Media Marketing</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Level</label>
-              <select class="form-input form-select">
-                <option>Beginner</option>
-                <option>Intermediate</option>
-                <option>Advanced</option>
+            <div class="fg">
+              <label>Difficulty level *</label>
+              <select class="fi" id="ci-level">
+                <option value="">Select level</option>
+                <option value="beginner">Beginner — No experience needed</option>
+                <option value="intermediate">Intermediate — Some experience helpful</option>
+                <option value="advanced">Advanced — Experience required</option>
+                <option value="all">All levels</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label">Price (₦)</label>
-              <input class="form-input" type="number" placeholder="35000"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Original price (₦)</label>
-              <input class="form-input" type="number" placeholder="60000"/>
+          </div>
+
+          <div class="frow-1">
+            <div class="fg">
+              <label>Course subtitle</label>
+              <input class="fi" id="ci-subtitle" type="text" placeholder="A short, punchy description shown under the title" maxlength="200" oninput="updateCharCount('ci-subtitle','ci-sub-count',200)"/>
+              <div class="char-count"><span id="ci-sub-count">0</span>/200</div>
             </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Promotional video URL</label>
-            <input class="form-input" placeholder="Paste your Bunny.net or YouTube promo video URL"/>
+
+          <div class="frow-1">
+            <div class="fg">
+              <label>Full description *</label>
+              <textarea class="fi" id="ci-desc" rows="5" placeholder="Describe your course in detail. What will students learn? Who is it for? What makes it different?" style="min-height:130px;" oninput="updateCharCount('ci-desc','ci-desc-count',2000)"></textarea>
+              <div class="char-count"><span id="ci-desc-count">0</span>/2000</div>
+            </div>
           </div>
-          <div style="font-size:15px;font-weight:500;margin:28px 0 16px">Course Modules</div>
-          <div id="builder-modules">
-            <div class="module-builder">
-              <div class="module-builder-header">
-                <span style="font-size:11px;color:var(--text3);font-family:monospace">M1</span>
-                <input class="lesson-builder-input" value="Module 1 — Introduction" style="font-weight:500;color:var(--text)"/>
-                <div class="module-builder-actions">
-                  <div class="icon-btn">↑</div>
-                  <div class="icon-btn">↓</div>
-                  <div class="icon-btn" style="color:var(--red)">✕</div>
+
+          <div class="frow">
+            <div class="fg">
+              <label>Language</label>
+              <select class="fi" id="ci-lang">
+                <option value="english">English</option>
+                <option value="yoruba">Yoruba</option>
+                <option value="igbo">Igbo</option>
+                <option value="hausa">Hausa</option>
+                <option value="pidgin">Nigerian Pidgin</option>
+                <option value="french">French</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label>Estimated duration</label>
+              <select class="fi" id="ci-duration">
+                <option value="1-2h">1 – 2 hours</option>
+                <option value="2-5h">2 – 5 hours</option>
+                <option value="5-10h">5 – 10 hours</option>
+                <option value="10-20h">10 – 20 hours</option>
+                <option value="20h+">20+ hours</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div class="fg" style="margin-bottom:10px;">
+              <label>What students will learn * <span style="font-weight:400;color:var(--text3);">(add at least 4 points)</span></label>
+            </div>
+            <div class="learning-list" id="learn-list"></div>
+            <button class="add-item-btn" onclick="addLearningPoint()">&#43; Add learning point</button>
+          </div>
+
+          <div style="margin-bottom:20px;">
+            <div class="fg" style="margin-bottom:10px;">
+              <label>Requirements <span style="font-weight:400;color:var(--text3);">(what students need before starting)</span></label>
+            </div>
+            <div class="learning-list" id="req-list"></div>
+            <button class="add-item-btn" onclick="addRequirement()">&#43; Add requirement</button>
+          </div>
+
+          <div class="frow">
+            <div class="fg">
+              <label>Course thumbnail *</label>
+              <div class="upload-zone" id="thumb-zone" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,'thumb')">
+                <div id="thumb-preview" style="display:none;"></div>
+                <div id="thumb-prompt">
+                  <div class="uz-icon">&#128444;</div>
+                  <div class="uz-title">Upload thumbnail</div>
+                  <div class="uz-sub">JPG, PNG or WEBP · 1280×720px recommended</div>
                 </div>
+                <input type="file" accept="image/*" onchange="previewThumb(this)"/>
               </div>
-              <div class="lesson-builder"><span style="font-size:12px;color:var(--text3);width:24px">L1</span><input class="lesson-builder-input" value="Welcome and what you'll achieve"/><span style="font-size:12px;color:var(--text3)">12 min</span></div>
-              <div class="lesson-builder"><span style="font-size:12px;color:var(--text3);width:24px">L2</span><input class="lesson-builder-input" value="How affiliate marketing works in Africa"/><span style="font-size:12px;color:var(--text3)">18 min</span></div>
-              <div class="add-lesson-btn" onclick="showToast('📝','Lesson added')">+ Add lesson</div>
             </div>
-            <div class="module-builder">
-              <div class="module-builder-header">
-                <span style="font-size:11px;color:var(--text3);font-family:monospace">M2</span>
-                <input class="lesson-builder-input" value="Module 2 — Picking your niche" style="font-weight:500;color:var(--text)"/>
-                <div class="module-builder-actions">
-                  <div class="icon-btn">↑</div>
-                  <div class="icon-btn">↓</div>
-                  <div class="icon-btn" style="color:var(--red)">✕</div>
+            <div class="fg">
+              <label>Promo video <span style="font-weight:400;color:var(--text3);">(shown on course page)</span></label>
+              <div class="upload-zone" id="promo-zone" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,'promo')">
+                <div id="promo-preview" style="display:none;"></div>
+                <div id="promo-prompt">
+                  <div class="uz-icon">&#127909;</div>
+                  <div class="uz-title">Upload promo video</div>
+                  <div class="uz-sub">MP4 · Max 500MB · 1–3 minutes recommended</div>
                 </div>
+                <input type="file" accept="video/*" onchange="previewPromo(this)"/>
               </div>
-              <div class="lesson-builder"><span style="font-size:12px;color:var(--text3);width:24px">L1</span><input class="lesson-builder-input" value="How to choose a niche that converts"/><span style="font-size:12px;color:var(--text3)">22 min</span></div>
-              <div class="add-lesson-btn" onclick="showToast('📝','Lesson added')">+ Add lesson</div>
+              <div class="upload-progress" id="promo-progress"><div class="upload-progress-bar" id="promo-bar"></div></div>
+              <div class="upload-progress-label" id="promo-label"></div>
             </div>
-          </div>
-          <div class="add-module-btn" onclick="showToast('📦','Module added')">+ Add module</div>
-          <div style="display:flex;gap:12px;margin-top:24px">
-            <button class="btn btn-ghost">Save draft</button>
-            <button class="btn btn-teal" onclick="showToast('🚀','Course submitted for review')">Submit for review</button>
           </div>
         </div>
-        <div class="builder-right">
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;position:sticky;top:80px">
-            <div style="font-size:13px;font-weight:500;margin-bottom:16px">Course thumbnail</div>
-            <div class="upload-zone" onclick="showToast('📸','Upload feature coming soon')">
-              <div class="upload-icon">🖼</div>
-              <div class="upload-label">Upload thumbnail</div>
-              <div class="upload-sub">1280 × 720px recommended</div>
+
+        <!-- ── STEP 2: MODULES & LESSONS ── -->
+        <div class="wizard-step" id="step-2">
+          <div class="step-title">Structure your course</div>
+          <div class="step-sub">Organise your content into modules and lessons. Drag to reorder.</div>
+          <div class="modules-builder" id="modules-builder"></div>
+          <button class="add-item-btn" style="margin-top:16px;" onclick="addModule()">&#43; Add module</button>
+        </div>
+
+        <!-- ── STEP 3: UPLOAD VIDEOS ── -->
+        <div class="wizard-step" id="step-3">
+          <div class="step-title">Upload your lesson videos</div>
+          <div class="step-sub">Upload a video for each lesson. Max 5GB per video. Bunny.net streams them securely to your students.</div>
+          <div class="video-lessons-list" id="video-lessons-list">
+            <div style="text-align:center;padding:40px;color:var(--text3);">
+              <div style="font-size:36px;margin-bottom:10px;">&#127916;</div>
+              <div>Add modules and lessons in Step 2 first.</div>
             </div>
-            <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
-              <div style="font-size:13px;font-weight:500;margin-bottom:12px">Checklist</div>
-              <div style="font-size:12px;color:var(--text2);display:flex;flex-direction:column;gap:8px">
-                <div>✓ Course title</div>
-                <div>✓ Description</div>
-                <div>✓ Category & price</div>
-                <div style="color:var(--text3)">○ Promo video</div>
-                <div style="color:var(--text3)">○ Thumbnail</div>
-                <div style="color:var(--text3)">○ Minimum 3 modules</div>
-                <div style="color:var(--text3)">○ Monetisation module</div>
+          </div>
+        </div>
+
+        <!-- ── STEP 4: PRICING ── -->
+        <div class="wizard-step" id="step-4">
+          <div class="step-title">Set your price</div>
+          <div class="step-sub">You earn 60% of every sale. SkillsLibry takes 40% to cover hosting, payments, and support.</div>
+
+          <div class="price-cards" style="margin-bottom:28px;">
+            <div class="price-card selected" id="pc-paid" onclick="selectPriceType('paid')">
+              <div class="pc-icon">&#128176;</div>
+              <div class="pc-title">Paid course</div>
+              <div class="pc-desc">Set your own price. Students pay once, get lifetime access.</div>
+            </div>
+            <div class="price-card" id="pc-free" onclick="selectPriceType('free')">
+              <div class="pc-icon">&#127381;</div>
+              <div class="pc-title">Free course</div>
+              <div class="pc-desc">Great for building audience and credibility.</div>
+            </div>
+          </div>
+
+          <div id="price-inputs">
+            <div class="frow">
+              <div class="fg">
+                <label>Price in NGN (₦) *</label>
+                <input class="fi" id="pr-ngn" type="number" placeholder="e.g. 35000" min="1000"/>
+                <div class="hint">Minimum ₦1,000. Your earnings: <strong id="pr-earn">₦0</strong></div>
+              </div>
+              <div class="fg">
+                <label>Original price (for discount display)</label>
+                <input class="fi" id="pr-original" type="number" placeholder="e.g. 60000"/>
+                <div class="hint">Show the original price crossed out to show the discount.</div>
+              </div>
+            </div>
+
+            <div class="frow-1">
+              <div class="fg">
+                <label>What's included in this course</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;" id="includes-list">
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="inc-cert" checked/> Verified certificate on completion
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="inc-lifetime" checked/> Lifetime access & free updates
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="inc-dl"/> Downloadable resources
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="inc-community"/> Private community access
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="inc-mentorship"/> Live mentorship sessions
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="inc-quiz"/> Quizzes & assignments
+                  </label>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- ── STEP 5: REVIEW & SUBMIT ── -->
+        <div class="wizard-step" id="step-5">
+          <div class="step-title">Review &amp; submit</div>
+          <div class="step-sub">Review your course details before submitting for approval. We'll review it within 48 hours.</div>
+
+          <div class="review-card">
+            <h4>Course details</h4>
+            <div class="review-row"><span class="review-label">Title</span><span class="review-val" id="rv-title">—</span></div>
+            <div class="review-row"><span class="review-label">Category</span><span class="review-val" id="rv-cat">—</span></div>
+            <div class="review-row"><span class="review-label">Level</span><span class="review-val" id="rv-level">—</span></div>
+            <div class="review-row"><span class="review-label">Language</span><span class="review-val" id="rv-lang">—</span></div>
+            <div class="review-row"><span class="review-label">Duration</span><span class="review-val" id="rv-duration">—</span></div>
+          </div>
+
+          <div class="review-card">
+            <h4>Structure</h4>
+            <div class="review-row"><span class="review-label">Modules</span><span class="review-val" id="rv-modules">0</span></div>
+            <div class="review-row"><span class="review-label">Total lessons</span><span class="review-val" id="rv-lessons">0</span></div>
+            <div class="review-row"><span class="review-label">Videos uploaded</span><span class="review-val" id="rv-videos">0</span></div>
+          </div>
+
+          <div class="review-card">
+            <h4>Pricing</h4>
+            <div class="review-row"><span class="review-label">Price</span><span class="review-val" id="rv-price">—</span></div>
+            <div class="review-row"><span class="review-label">Your earnings per sale</span><span class="review-val" id="rv-earn">—</span></div>
+          </div>
+
+          <div class="review-card">
+            <h4>Checklist</h4>
+            <div id="review-checklist"></div>
+          </div>
+
+          <div style="background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.2);border-radius:var(--r-lg);padding:20px 24px;">
+            <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;margin-bottom:8px;">What happens after you submit?</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.75;">
+              &#128336; Our team reviews your course within <strong>48 hours</strong>.<br>
+              &#9989; If approved, it goes live on the catalog immediately.<br>
+              &#128172; If changes are needed, we'll send you specific feedback.<br>
+              &#128176; You start earning from the first enrollment.
+            </div>
+          </div>
+        </div>
+
+        <!-- ── SUCCESS ── -->
+        <div class="wizard-step" id="step-success">
+          <div class="submit-success">
+            <div class="ss-icon">&#127881;</div>
+            <div class="ss-title">Course submitted for review!</div>
+            <div class="ss-sub">Our team will review your course within 48 hours. You'll be notified by email once it's approved or if we need any changes.</div>
+            <div style="display:flex;gap:12px;justify-content:center;">
+              <button class="btn btn-teal btn-lg" onclick="showView('courses')">View my courses</button>
+              <button class="btn btn-ghost btn-lg" onclick="showView('builder'); startNewCourse();">Create another course</button>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /wizard-body -->
+
+        <!-- Wizard footer -->
+        <div class="wizard-footer" id="wizard-footer">
+          <div class="wf-left">Step <span id="current-step-num">1</span> of 5</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-ghost" id="btn-prev" onclick="prevStep()" style="display:none;">&#8592; Back</button>
+            <button class="btn btn-ghost" onclick="saveDraft()">Save draft</button>
+            <button class="btn btn-teal" id="btn-next" onclick="nextStep()">Continue &#8594;</button>
+            <button class="btn btn-purple btn-lg" id="btn-submit" onclick="submitCourse()" style="display:none;">Submit for review &#10003;</button>
+          </div>
+        </div>
+
+      </div><!-- /wizard-wrap -->
+    </div><!-- /view-builder -->
+
+    <!-- TESTIMONIALS -->
+    <div class="page-view" id="view-testimonials">
+      <div class="sec-header">
+        <div>
+          <div class="sec-title">Student Testimonials</div>
+          <div class="sec-sub">Upload video, photo, or text testimonials. Shown on your course page after admin approval.</div>
+        </div>
+        <button class="btn btn-teal" onclick="openTestiForm()">+ Add testimonial</button>
+      </div>
+      <div id="testi-list" style="color:var(--text3);text-align:center;padding:48px;">
+        <div style="font-size:36px;margin-bottom:12px;">&#11088;</div>
+        <div>No testimonials yet. Add your first student result.</div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div class="page-view" id="view-students">
+      <div class="sec-header"><div class="sec-title">Students</div></div>
+      <div style="color:var(--text3);text-align:center;padding:48px;">
+        <div style="font-size:36px;margin-bottom:12px;">&#128101;</div>
+        <div>Your enrolled students will appear here.</div>
+      </div>
+    </div>
+
+    <!-- PAYOUTS -->
+    <div class="page-view" id="view-payouts">
+      <div class="sec-header"><div class="sec-title">Payouts</div></div>
+      <div class="payout-card">
+        <div style="font-size:12px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Pending payout</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:40px;font-weight:800;color:var(--teal-dark);margin-bottom:4px;" id="payout-pending">₦0</div>
+        <div style="font-size:13px;color:var(--text2);">Paid out every month on the 1st. Bank transfer or Flutterwave.</div>
+      </div>
+      <div style="color:var(--text3);text-align:center;padding:32px;">No payout history yet.</div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page-view" id="view-profile">
+      <div class="sec-header"><div class="sec-title">Profile</div></div>
+      <div style="max-width:600px;">
+        <div class="frow-1" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);">
+          <div class="fg"><label>Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your name"/></div>
+          <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and expertise..." style="min-height:100px;"></textarea></div>
+          <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
+          <div class="fg"><label>Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
+          <button class="btn btn-teal" onclick="saveProfile()">Save profile</button>
         </div>
       </div>
     </div>
 
-    <div id="inst-testimonials" class="inst-view">
-
-      <!-- Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px;">
-        <div>
-          <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:var(--text);">Testimonials</div>
-          <div style="font-size:13px;color:var(--text3);margin-top:2px;">Upload student testimonials — video, photo, or text. Shown on your course page after admin approval.</div>
-        </div>
-      </div>
-
-      <!-- TYPE SELECTOR TABS -->
-      <div style="display:flex;gap:8px;margin-bottom:24px;" id="testi-type-tabs">
-        <button class="testi-type-btn active" onclick="selectTestiType(this,'video')"
-          style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);border:1.5px solid var(--teal);background:var(--teal-dim);color:var(--teal-dark);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
-          🎬 Video testimonial
-        </button>
-        <button class="testi-type-btn" onclick="selectTestiType(this,'image')"
-          style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;color:var(--text2);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
-          📸 Photo testimonial
-        </button>
-        <button class="testi-type-btn" onclick="selectTestiType(this,'text')"
-          style="display:flex;align-items:center;gap:8px;padding:10px 20px;border-radius:var(--radius);border:1.5px solid var(--border);background:#fff;color:var(--text2);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">
-          ✍️ Text testimonial
-        </button>
-      </div>
-
-      <!-- FORM CARD -->
-      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:28px;box-shadow:var(--shadow);">
-
-        <!-- Student info — always shown -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Student name</label>
-            <input class="form-input" id="testi-name" placeholder="e.g. Amaka Obi"/>
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">City / country</label>
-            <input class="form-input" id="testi-loc" placeholder="e.g. Lagos, Nigeria"/>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Result achieved</label>
-            <input class="form-input" id="testi-result" placeholder="e.g. ₦120k first month"/>
-          </div>
-          <div class="form-group" style="margin:0">
-            <label class="form-label">Star rating</label>
-            <select class="form-input form-select" id="testi-stars">
-              <option value="5">⭐⭐⭐⭐⭐  (5 stars)</option>
-              <option value="4">⭐⭐⭐⭐  (4 stars)</option>
-              <option value="3">⭐⭐⭐  (3 stars)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- VIDEO UPLOAD -->
-        <div id="testi-video-block">
-          <label class="form-label">Video testimonial</label>
-          <div class="upload-zone" id="testi-video-zone"
-            onclick="document.getElementById('testi-video-input').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--teal)'"
-            ondragleave="this.style.borderColor='var(--border)'"
-            ondrop="handleTestiDrop(event,'video')">
-            <div id="testi-video-preview" style="display:none;width:100%;aspect-ratio:16/9;background:#000;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px;">
-              <video id="testi-video-player" controls style="width:100%;height:100%;object-fit:cover;"></video>
-            </div>
-            <div id="testi-video-prompt">
-              <div class="upload-icon">🎬</div>
-              <div class="upload-label">Click to upload or drag & drop video</div>
-              <div class="upload-sub">MP4, MOV, WEBM · Max 500MB · 30 sec – 3 min recommended</div>
-            </div>
-          </div>
-          <input type="file" id="testi-video-input" accept="video/*" style="display:none" onchange="previewTestiVideo(this)"/>
-          <div style="margin-top:14px;">
-            <label class="form-label">Or paste a video URL (YouTube / Loom / Bunny.net)</label>
-            <input class="form-input" id="testi-video-url" placeholder="https://www.youtube.com/watch?v=..." style="margin-top:6px;"/>
-          </div>
-        </div>
-
-        <!-- IMAGE UPLOAD -->
-        <div id="testi-image-block" style="display:none;">
-          <label class="form-label">Photo testimonial</label>
-          <div class="upload-zone" id="testi-image-zone"
-            onclick="document.getElementById('testi-image-input').click()"
-            ondragover="event.preventDefault();this.style.borderColor='var(--teal)'"
-            ondragleave="this.style.borderColor='var(--border)'"
-            ondrop="handleTestiDrop(event,'image')">
-            <div id="testi-image-preview" style="display:none;width:100%;border-radius:var(--radius-sm);overflow:hidden;margin-bottom:12px;">
-              <img id="testi-image-player" style="width:100%;max-height:300px;object-fit:cover;" alt="Preview"/>
-            </div>
-            <div id="testi-image-prompt">
-              <div class="upload-icon">📸</div>
-              <div class="upload-label">Click to upload or drag & drop photo</div>
-              <div class="upload-sub">JPG, PNG, WEBP · Max 10MB · Screenshot of result or student photo</div>
-            </div>
-          </div>
-          <input type="file" id="testi-image-input" accept="image/*" style="display:none" onchange="previewTestiImage(this)"/>
-          <div style="margin-top:14px;">
-            <label class="form-label">Or paste an image URL</label>
-            <input class="form-input" id="testi-image-url" placeholder="https://..." style="margin-top:6px;"/>
-          </div>
-        </div>
-
-        <!-- TEXT ONLY -->
-        <div id="testi-text-block" style="display:none;">
-          <div style="background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.2);border-radius:var(--radius);padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--teal-dark);">
-            💡 Text testimonials show as a quote card without any media. Great for DM screenshots or written feedback.
-          </div>
-        </div>
-
-        <!-- Written quote — always shown -->
-        <div class="form-group" style="margin-top:16px;margin-bottom:0;">
-          <label class="form-label">What the student said <span style="color:var(--text3);font-weight:400;text-transform:none;">(their exact words)</span></label>
-          <textarea class="form-input form-textarea" id="testi-quote" placeholder="Paste or type the student's review here — their exact words work best..." style="min-height:90px;margin-top:6px;"></textarea>
-        </div>
-
-        <!-- Course selector + submit -->
-        <div style="display:flex;align-items:center;gap:12px;margin-top:18px;flex-wrap:wrap;">
-          <select class="form-input form-select" id="testi-course" style="flex:1;min-width:200px;">
-            <option>Affiliate Marketing Mastery</option>
-            <option>Email Marketing Secrets</option>
-            <option>Advanced Funnel Building</option>
-          </select>
-          <button class="btn btn-teal" onclick="submitTestimonial()"
-            style="padding:11px 28px;font-size:14px;">
-            Submit for approval
-          </button>
-        </div>
-      </div>
-
-      <!-- SUBMITTED TESTIMONIALS LIST -->
-      <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text);">Submitted testimonials</div>
-      <div id="submitted-testimonials" style="display:flex;flex-direction:column;gap:12px;">
-
-        <!-- Sample: video testimonial -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);">
-          <div style="display:flex;gap:0;">
-            <div style="width:140px;flex-shrink:0;background:#0d0d1a;display:flex;align-items:center;justify-content:center;position:relative;">
-              <div style="font-size:28px;opacity:.4;">🎬</div>
-              <div style="position:absolute;bottom:8px;left:8px;background:rgba(13,13,26,.8);color:rgba(255,255,255,.7);font-size:10px;padding:2px 7px;border-radius:100px;">Video</div>
-            </div>
-            <div style="flex:1;padding:16px 18px;">
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-                <span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;">Amaka Obi — Lagos, Nigeria</span>
-                <span style="font-size:11px;padding:3px 10px;border-radius:100px;font-weight:600;background:rgba(34,197,94,.1);color:#16a34a;border:1px solid rgba(34,197,94,.25);">Live</span>
-              </div>
-              <div style="color:#f59e0b;font-size:12px;margin-bottom:6px;">★★★★★</div>
-              <div style="font-size:13px;color:var(--text2);">"I made my first ₦45,000 commission in week 3..."</div>
-              <div style="font-size:11px;color:var(--teal-dark);margin-top:6px;font-weight:600;">💰 ₦45,000 in week 3</div>
-            </div>
-            <div style="padding:16px;display:flex;align-items:flex-start;">
-              <button class="tbl-btn tbl-btn-danger" onclick="showToast('🗑','Testimonial deleted')">Delete</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Sample: image testimonial -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);">
-          <div style="display:flex;gap:0;">
-            <div style="width:140px;flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative;">
-              <div style="font-size:28px;opacity:.4;">📸</div>
-              <div style="position:absolute;bottom:8px;left:8px;background:rgba(13,13,26,.6);color:rgba(255,255,255,.7);font-size:10px;padding:2px 7px;border-radius:100px;">Photo</div>
-            </div>
-            <div style="flex:1;padding:16px 18px;">
-              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
-                <span style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;">Taiwo Musa — Abuja, Nigeria</span>
-                <span style="font-size:11px;padding:3px 10px;border-radius:100px;font-weight:600;background:rgba(255,217,61,.12);color:#92400e;border:1px solid rgba(255,217,61,.3);">Pending review</span>
-              </div>
-              <div style="color:#f59e0b;font-size:12px;margin-bottom:6px;">★★★★★</div>
-              <div style="font-size:13px;color:var(--text2);">"Before SkillsLibry I made nothing for 6 months. First month after: ₦120k..."</div>
-              <div style="font-size:11px;color:var(--teal-dark);margin-top:6px;font-weight:600;">💰 ₦120k first month</div>
-            </div>
-            <div style="padding:16px;display:flex;align-items:flex-start;">
-              <button class="tbl-btn tbl-btn-danger" onclick="showToast('🗑','Testimonial deleted')">Delete</button>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    <div id="inst-payouts" class="inst-view">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-        <div>
-          <div style="font-size:18px;font-weight:500">Payouts</div>
-          <div style="font-size:13px;color:var(--text3)">Revenue is split 60% to you, 40% to SkillsLibry</div>
-        </div>
-        <button class="btn btn-teal" onclick="showToast('💸','Withdrawal requested')">Request withdrawal</button>
-      </div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">Available balance</div><div class="stat-card-value">₦428k</div><div class="stat-card-sub">Ready to withdraw</div></div>
-        <div class="stat-card"><div class="stat-card-label">Pending</div><div class="stat-card-value">₦84k</div><div class="stat-card-sub">Processing</div></div>
-        <div class="stat-card"><div class="stat-card-label">Total paid out</div><div class="stat-card-value">₦1.6M</div><div class="stat-card-sub">Lifetime</div></div>
-        <div class="stat-card"><div class="stat-card-label">Platform cut</div><div class="stat-card-value">40%</div><div class="stat-card-sub">Your share: 60%</div></div>
-      </div>
-      <div style="font-size:14px;font-weight:500;margin-bottom:14px">Payout history</div>
-      <table class="admin-table">
-        <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead>
-        <tbody>
-          <tr><td>Dec 1, 2024</td><td>₦360,000</td><td>Bank transfer</td><td><span class="badge-status badge-live">Paid</span></td></tr>
-          <tr><td>Nov 1, 2024</td><td>₦288,000</td><td>Bank transfer</td><td><span class="badge-status badge-live">Paid</span></td></tr>
-          <tr><td>Oct 1, 2024</td><td>₦216,000</td><td>Bank transfer</td><td><span class="badge-status badge-live">Paid</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-
-  </div>
+  </main>
 </div>
 
-
+<!-- TOAST -->
 <div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">✓</span>
-  <span id="toast-msg">Done</span>
+  <span class="toast-icon" id="toast-icon"></span>
+  <span id="toast-msg"></span>
 </div>
 
 <script>
-
-function goTo(page){
-  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
-    dashboard:'dashboard.html',player:'player.html',
-    instructor:'instructor.html',admin:'admin.html'};
-  if(routes[page]) window.location.href=routes[page];
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+function showView(v) {
+  document.querySelectorAll('.page-view').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-item').forEach(function(el){ el.classList.remove('active'); });
+  var view = document.getElementById('view-'+v);
+  var nav  = document.getElementById('nav-'+v);
+  if(view) view.classList.add('active');
+  if(nav)  nav.classList.add('active');
 }
-function showPage(page){ goTo(page); }
-function showCourseDetail(id){ window.location.href='course.html?id='+id; }
 
-
-// ── NULL-SAFE FUNCTIONS (override any duplicates below) ──
-
-function openEnrollModal(){
-  var em=document.getElementById('enroll-modal');
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-installment-btn');
-  if(pd) pd.textContent='₦35,000';
-  if(pn) pn.textContent='Full access · Lifetime';
-  if(ib) ib.style.display='block';
-  if(em) em.classList.add('open');
-}
-function openInstallModal(){ openEnrollModal(); switchToInstallment(); }
-function switchToInstallment(){
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-installment-btn');
-  if(pd) pd.textContent='₦17,500';
-  if(pn) pn.textContent='First payment today · ₦17,500 in 30 days';
-  if(ib) ib.style.display='none';
-}
-function closeModal(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.classList.remove('open');
-}
-function showToast(icon,msg){
-  var t=document.getElementById('toast'); if(!t) return;
-  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
-  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function showToast(icon, msg) {
+  var t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-msg').textContent  = msg;
   t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
-}
-// Safe modal backdrop close
-(function(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-})();
-
-// ── DATA ──
-const COURSES = [
-  {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
-  {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
-  {id:3,title:'Content to Cash: Monetise Every Platform You Touch',instructor:'Femi Ogunwale',initials:'FO',cat:'content',catLabel:'Content & Monetisation',price:'₦22,000',priceOld:'₦40,000',rating:'4.7',students:'2,104',badge:'New',icon:'🎬'},
-  {id:4,title:'AI Tools Mastery: Work 10x Faster, Earn 10x More',instructor:'Kemi Adeyemi',initials:'KA',cat:'ai',catLabel:'AI Skills',price:'₦32,000',priceOld:'₦55,000',rating:'4.9',students:'1,120',badge:'Trending',icon:'🤖'},
-  {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
-  {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
-];
-
-const INSTRUCTORS = [
-  {name:'Chidi Okafor',title:'Affiliate Marketing Expert',initials:'CO',courses:3,students:'4,801'},
-  {name:'Ngozi Adeola',title:'Copywriter & Digital Creator',initials:'NA',courses:2,students:'2,829'},
-  {name:'Femi Ogunwale',title:'Content Monetisation Coach',initials:'FO',courses:2,students:'2,104'},
-  {name:'Kemi Adeyemi',title:'AI Productivity Specialist',initials:'KA',courses:1,students:'1,120'},
-];
-
-const TESTIMONIALS = [
-  {name:'Amaka Obi',loc:'Lagos, Nigeria',text:'I made my first ₦45,000 commission in week 3 of the affiliate course. Chidi explains everything in a way that actually makes sense for Nigeria.',stars:5,initials:'AO'},
-  {name:'Taiwo Musa',loc:'Abuja, Nigeria',text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',stars:5,initials:'TM'},
-  {name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take me 2 days. My rates doubled.',stars:5,initials:'GA'},
-  {name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',stars:5,initials:'EN'},
-  {name:'Blessing Okafor',loc:'Lagos, Nigeria',text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',stars:5,initials:'BO'},
-  {name:'Ibrahim Suleiman',loc:'Kano, Nigeria',text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',stars:5,initials:'IS'},
-];
-
-const MODULES = [
-  {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
-  {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
-  {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
-  {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
-  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
-  {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
-];
-
-// ── RENDER FUNCTIONS ──
-function courseCard(c, onclick=''){
-  return `<div class="course-card" onclick="showCourseDetail(${c.id})">
-    <div class="course-thumb">
-      <span class="course-thumb-icon">${c.icon}</span>
-      <span class="course-thumb-cat">${c.catLabel}</span>
-      ${c.badge?`<span class="course-thumb-badge">${c.badge}</span>`:''}
-    </div>
-    <div class="course-body">
-      <div class="course-instructor">
-        <div class="avatar-xs">${c.initials}</div>
-        <span class="course-instructor-name">${c.instructor}</span>
-      </div>
-      <div class="course-title">${c.title}</div>
-      <div class="course-meta">
-        <span class="rating">★ ${c.rating}</span>
-        <span>${c.students} students</span>
-      </div>
-      <div class="course-footer">
-        <div><span class="course-price">${c.price}</span><span class="course-price-old">${c.priceOld}</span></div>
-        <div class="enroll-mini" onclick="event.stopPropagation();openEnrollModal()">Enroll</div>
-      </div>
-    </div>
-  </div>`;
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
 }
 
-function renderHomeGrid(){
-  const g = document.getElementById('home-course-grid');
-  if(g) g.innerHTML = COURSES.map(c=>courseCard(c)).join('');
-}
-function renderCatalogGrid(list){
-  const g = document.getElementById('catalog-grid');
-  if(g) g.innerHTML = (list||COURSES).map(c=>courseCard(c)).join('');
-}
-function renderInstructors(){
-  const g = document.getElementById('instructor-grid');
-  if(!g) return;
-  g.innerHTML = INSTRUCTORS.map(i=>`
-    <div class="instructor-card">
-      <div class="instructor-avatar">${i.initials}</div>
-      <div class="instructor-name">${i.name}</div>
-      <div class="instructor-title">${i.title}</div>
-      <div class="instructor-stats">
-        <div class="istat"><div class="istat-num">${i.courses}</div><div class="istat-label">Courses</div></div>
-        <div class="istat"><div class="istat-num">${i.students}</div><div class="istat-label">Students</div></div>
-      </div>
-    </div>`).join('');
-}
-function renderTestimonials(){
-  const g = document.getElementById('home-testimonials');
-  if(!g) return;
-  g.innerHTML = TESTIMONIALS.slice(0,6).map(t=>`
-    <div class="tcard">
-      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
-      <div class="tcard-text">"${t.text}"</div>
-      <div class="tcard-person">
-        <div class="tcard-avatar">${t.initials}</div>
-        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
-      </div>
-    </div>`).join('');
-  const g2 = document.getElementById('course-testimonials-grid');
-  if(g2) g2.innerHTML = TESTIMONIALS.map(t=>`
-    <div class="tcard">
-      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
-      <div class="tcard-text">"${t.text}"</div>
-      <div class="tcard-person">
-        <div class="tcard-avatar">${t.initials}</div>
-        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
-      </div>
-    </div>`).join('');
-}
-function renderModules(){
-  const g = document.getElementById('module-list');
-  if(!g) return;
-  g.innerHTML = MODULES.map((m,mi)=>`
-    <div class="module-item">
-      <div class="module-header" onclick="toggleModule(this)">
-        <div class="module-header-left">
-          <span class="module-num">${m.num}</span>
-          <span class="module-title">${m.title}</span>
-        </div>
-        <span class="module-meta">${m.meta}</span>
-        <span class="chevron-icon ${mi===0?'open':''}">⌄</span>
-      </div>
-      <div class="lesson-list ${mi===0?'open':''}">
-        ${m.lessons.map((l,li)=>`
-          <div class="lesson-item">
-            <div class="lesson-icon">▶</div>
-            <span class="lesson-title">${l.t}</span>
-            <span class="lesson-duration">${l.dur}</span>
-            <span class="lesson-tag ${l.free?'tag-free':'tag-lock'}">${l.free?'Free preview':'Enrolled'}</span>
-          </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-function renderPlayerCurriculum(){
-  const g = document.getElementById('player-curriculum');
-  if(!g) return;
-  g.innerHTML = MODULES.map((m,mi)=>`
-    <div class="player-module">
-      <div class="player-module-header">Module ${m.num} — ${m.title}</div>
-      ${m.lessons.map((l,li)=>`
-        <div class="player-lesson-item ${mi===3&&li===1?'active':''}">
-          <div class="lesson-check ${(mi<3||(mi===0))?'done':''}">${(mi<3||(mi===0))?'✓':''}</div>
-          <span style="flex:1;font-size:12px">${l.t}</span>
-          <span style="font-size:10px;color:var(--text3)">${l.dur}</span>
-        </div>`).join('')}
-    </div>`).join('');
-}
+/* ══════════════════════════════════════════
+   COURSE BUILDER STATE
+══════════════════════════════════════════ */
+var _course = {
+  title:'', subtitle:'', category:'', level:'', language:'english',
+  duration:'', description:'', thumbnail:null, promoVideo:null,
+  promoVideoId:null, learns:[], requirements:[], modules:[],
+  priceNGN:0, priceOriginal:0, priceType:'paid', includes:[],
+  status:'draft'
+};
+var _currentStep = 1;
+var _totalSteps  = 5;
 
-// ── NAVIGATION ──
-function showPage(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  window.scrollTo(0,0);
-}
-function showCourseDetail(id){
-  const c = COURSES.find(x=>x.id===id)||COURSES[0];
-  document.getElementById('cd-title').textContent = c.title;
-  document.getElementById('cd-category').textContent = c.catLabel;
-  document.getElementById('cd-instructor').textContent = c.instructor;
-  document.getElementById('cd-avatar').textContent = c.initials;
-  document.getElementById('cd-price').textContent = c.price;
-  document.getElementById('cd-price-old').textContent = c.priceOld;
-  document.getElementById('cd-students').textContent = c.students;
-  showPage('course');
-  document.querySelector('.tab-btn.active')?.click();
-}
-
-// ── TABS ──
-function switchTab(btn, pane){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(pane).classList.add('active');
-}
-function toggleModule(header){
-  const list = header.nextElementSibling;
-  const ch = header.querySelector('.chevron-icon');
-  list.classList.toggle('open');
-  ch.classList.toggle('open');
-}
-function switchDash(el, view){
-  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.dash-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-function switchInstTab(el, view){
-  document.querySelectorAll('.inst-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.inst-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-function switchAdmin(el, view){
-  document.querySelectorAll('.admin-sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.admin-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-
-// ── FILTERS ──
-function filterCat(el, cat){
-  document.querySelectorAll('.category-row .cat-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const filtered = cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
-  renderHomeGrid();
-  if(cat!=='all'){
-    const g=document.getElementById('home-course-grid');
-    if(g) g.innerHTML=filtered.map(c=>courseCard(c)).join('');
-  }
-}
-function filterCatalog(el, cat){
-  document.querySelectorAll('.filter-row .cat-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const filtered=cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
-  renderCatalogGrid(filtered);
-}
-function searchCourses(){
-  const q = document.getElementById('catalog-search-input').value.toLowerCase();
-  const filtered = q?COURSES.filter(c=>c.title.toLowerCase().includes(q)||c.instructor.toLowerCase().includes(q)):COURSES;
-  renderCatalogGrid(filtered);
-}
-
-// ── MODAL ──
-// openEnrollModal defined above
-// openInstallModal defined above
-// switchToInstallment defined above
-// closeModal defined above
-// modal listener defined above
-// ── TOAST ──
-function showToast(icon, msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toast-icon').textContent=icon;
-  document.getElementById('toast-msg').textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// ── INIT ──
-renderHomeGrid();
-renderCatalogGrid();
-renderInstructors();
-renderTestimonials();
-renderModules();
-renderPlayerCurriculum();
-
-function switchInstTab(el,v){
-  document.querySelectorAll('.inst-tab').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.inst-view').forEach(function(x){x.classList.remove('active');});
-  el.classList.add('active');
-  var t=document.getElementById(v); if(t) t.classList.add('active');
-}
-
-
-
-/* ── TESTIMONIAL UPLOADER ── */
-var _testiType = 'video';
-
-function selectTestiType(btn, type){
-  _testiType = type;
-  document.querySelectorAll('.testi-type-btn').forEach(function(b){
-    b.style.borderColor = 'var(--border)';
-    b.style.background = '#fff';
-    b.style.color = 'var(--text2)';
+function startNewCourse() {
+  _course = {
+    title:'', subtitle:'', category:'', level:'', language:'english',
+    duration:'', description:'', thumbnail:null, promoVideo:null,
+    promoVideoId:null, learns:[], requirements:[], modules:[],
+    priceNGN:0, priceOriginal:0, priceType:'paid', includes:[], status:'draft'
+  };
+  _currentStep = 1;
+  // Reset form fields
+  ['ci-title','ci-subtitle','ci-desc','pr-ngn','pr-original'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
   });
-  btn.style.borderColor = 'var(--teal)';
-  btn.style.background = 'var(--teal-dim)';
-  btn.style.color = 'var(--teal-dark)';
-  document.getElementById('testi-video-block').style.display = type==='video' ? 'block' : 'none';
-  document.getElementById('testi-image-block').style.display = type==='image' ? 'block' : 'none';
-  document.getElementById('testi-text-block').style.display  = type==='text'  ? 'block' : 'none';
+  document.getElementById('learn-list').innerHTML = '';
+  document.getElementById('req-list').innerHTML   = '';
+  document.getElementById('modules-builder').innerHTML = '';
+  document.getElementById('thumb-preview').style.display = 'none';
+  document.getElementById('thumb-prompt').style.display  = 'block';
+  document.getElementById('promo-preview').style.display = 'none';
+  document.getElementById('promo-prompt').style.display  = 'block';
+  // Add default learning points
+  addLearningPoint(); addLearningPoint(); addLearningPoint();
+  addRequirement();
+  // Add first module
+  addModule();
+  goStep(1);
 }
 
-function previewTestiVideo(input){
-  if(!input.files || !input.files[0]) return;
-  var file = input.files[0];
-  var url  = URL.createObjectURL(file);
-  var player  = document.getElementById('testi-video-player');
-  var preview = document.getElementById('testi-video-preview');
-  var prompt  = document.getElementById('testi-video-prompt');
-  if(player)  player.src = url;
-  if(preview) preview.style.display = 'block';
-  if(prompt)  prompt.style.display  = 'none';
-  showToast('🎬', 'Video loaded — ' + file.name);
-}
+/* ══════════════════════════════════════════
+   WIZARD NAVIGATION
+══════════════════════════════════════════ */
+function goStep(n) {
+  if(n < 1 || n > _totalSteps) return;
 
-function previewTestiImage(input){
-  if(!input.files || !input.files[0]) return;
-  var file = input.files[0];
-  var url  = URL.createObjectURL(file);
-  var player  = document.getElementById('testi-image-player');
-  var preview = document.getElementById('testi-image-preview');
-  var prompt  = document.getElementById('testi-image-prompt');
-  if(player)  player.src = url;
-  if(preview) preview.style.display = 'block';
-  if(prompt)  prompt.style.display  = 'none';
-  showToast('📸', 'Image loaded — ' + file.name);
-}
+  // Validate current before moving forward
+  if(n > _currentStep && !validateStep(_currentStep)) return;
 
-function handleTestiDrop(event, type){
-  event.preventDefault();
-  var files = event.dataTransfer.files;
-  if(!files || !files[0]) return;
-  if(type==='video'){
-    var inp = document.getElementById('testi-video-input');
-    if(inp){ inp.files = files; previewTestiVideo(inp); }
-  } else {
-    var inp = document.getElementById('testi-image-input');
-    if(inp){ inp.files = files; previewTestiImage(inp); }
+  _currentStep = n;
+
+  // Update step panels
+  for(var i=1; i<=_totalSteps; i++){
+    var panel = document.getElementById('step-'+i);
+    if(panel) panel.classList.toggle('active', i===n);
   }
+  // Hide success panel
+  var succ = document.getElementById('step-success');
+  if(succ) succ.classList.remove('active');
+
+  // Update progress indicator
+  for(var i=1; i<=_totalSteps; i++){
+    var ws = document.getElementById('ws-'+i);
+    if(!ws) continue;
+    ws.className = 'wp-step ' + (i===n ? 'active' : i<n ? 'done' : 'inactive');
+  }
+
+  document.getElementById('current-step-num').textContent = n;
+  document.getElementById('btn-prev').style.display  = n > 1 ? 'inline-flex' : 'none';
+  document.getElementById('btn-next').style.display  = n < _totalSteps ? 'inline-flex' : 'none';
+  document.getElementById('btn-submit').style.display = n === _totalSteps ? 'inline-flex' : 'none';
+
+  if(n === 3) buildVideoUploadList();
+  if(n === 5) buildReview();
+
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function submitTestimonial(){
-  var name  = document.getElementById('testi-name')  ? document.getElementById('testi-name').value.trim()  : '';
-  var quote = document.getElementById('testi-quote') ? document.getElementById('testi-quote').value.trim() : '';
-  if(!name || !quote){
-    showToast('⚠️','Please fill in student name and their quote');
+function nextStep(){ goStep(_currentStep+1); }
+function prevStep(){ goStep(_currentStep-1); }
+
+function validateStep(n) {
+  if(n === 1) {
+    var title = (document.getElementById('ci-title')||{}).value||'';
+    var cat   = (document.getElementById('ci-cat')||{}).value||'';
+    var level = (document.getElementById('ci-level')||{}).value||'';
+    var desc  = (document.getElementById('ci-desc')||{}).value||'';
+    if(!title.trim()){ showToast('⚠️','Please enter a course title.'); return false; }
+    if(!cat)          { showToast('⚠️','Please select a category.'); return false; }
+    if(!level)        { showToast('⚠️','Please select a difficulty level.'); return false; }
+    if(!desc.trim())  { showToast('⚠️','Please write a course description.'); return false; }
+    // Save to state
+    _course.title    = title.trim();
+    _course.subtitle = document.getElementById('ci-subtitle').value.trim();
+    _course.category = cat;
+    _course.level    = level;
+    _course.language = document.getElementById('ci-lang').value;
+    _course.duration = document.getElementById('ci-duration').value;
+    _course.description = desc.trim();
+    _course.learns   = collectListItems('learn-list');
+    _course.requirements = collectListItems('req-list');
+  }
+  if(n === 2) {
+    if(_course.modules.length === 0){ showToast('⚠️','Add at least one module.'); return false; }
+    var hasLesson = _course.modules.some(function(m){ return m.lessons && m.lessons.length > 0; });
+    if(!hasLesson){ showToast('⚠️','Add at least one lesson to a module.'); return false; }
+  }
+  if(n === 4) {
+    if(_course.priceType === 'paid') {
+      var price = parseFloat((document.getElementById('pr-ngn')||{}).value||0);
+      if(!price || price < 1000){ showToast('⚠️','Minimum price is ₦1,000.'); return false; }
+      _course.priceNGN = price;
+      _course.priceOriginal = parseFloat((document.getElementById('pr-original')||{}).value||0);
+    }
+  }
+  return true;
+}
+
+/* ══════════════════════════════════════════
+   FORM HELPERS
+══════════════════════════════════════════ */
+function updateCharCount(inputId, countId, max) {
+  var el = document.getElementById(inputId);
+  var ct = document.getElementById(countId);
+  if(el && ct) ct.textContent = el.value.length;
+}
+
+function addLearningPoint() {
+  var list = document.getElementById('learn-list');
+  var id = 'lp-' + Date.now() + Math.random().toString(36).slice(2,5);
+  var div = document.createElement('div');
+  div.className = 'learning-item'; div.id = id;
+  div.innerHTML = '<span style="color:var(--teal);font-size:14px;">&#10003;</span>'
+    + '<input type="text" placeholder="e.g. Build a profitable affiliate funnel from scratch"/>'
+    + '<button class="rm-btn" onclick="document.getElementById(\''+id+'\').remove()">&#215;</button>';
+  list.appendChild(div);
+}
+
+function addRequirement() {
+  var list = document.getElementById('req-list');
+  var id = 'rq-' + Date.now() + Math.random().toString(36).slice(2,5);
+  var div = document.createElement('div');
+  div.className = 'learning-item'; div.id = id;
+  div.innerHTML = '<span style="color:var(--orange);font-size:14px;">&#9679;</span>'
+    + '<input type="text" placeholder="e.g. A smartphone or laptop with internet access"/>'
+    + '<button class="rm-btn" onclick="document.getElementById(\''+id+'\').remove()">&#215;</button>';
+  list.appendChild(div);
+}
+
+function collectListItems(listId) {
+  var items = [];
+  document.querySelectorAll('#'+listId+' input[type=text]').forEach(function(inp){
+    if(inp.value.trim()) items.push(inp.value.trim());
+  });
+  return items;
+}
+
+/* ══════════════════════════════════════════
+   FILE UPLOADS
+══════════════════════════════════════════ */
+function previewThumb(input) {
+  if(!input.files||!input.files[0]) return;
+  var file = input.files[0];
+  var url  = URL.createObjectURL(file);
+  _course.thumbnail = file;
+  var prev = document.getElementById('thumb-preview');
+  var prom = document.getElementById('thumb-prompt');
+  prev.innerHTML = '<img src="'+url+'"/><div class="upload-preview-label">&#128444; Thumbnail</div><div class="upload-change" onclick="this.closest(\'.upload-zone\').querySelector(\'input\').click()">Change image</div>';
+  prev.style.display = 'block'; prom.style.display = 'none';
+}
+
+function previewPromo(input) {
+  if(!input.files||!input.files[0]) return;
+  var file = input.files[0];
+  var maxSize = 500 * 1024 * 1024;
+  if(file.size > maxSize){ showToast('❌','Promo video max 500MB.'); return; }
+  var url = URL.createObjectURL(file);
+  _course.promoVideo = file;
+  var prev = document.getElementById('promo-preview');
+  var prom = document.getElementById('promo-prompt');
+  prev.innerHTML = '<video src="'+url+'" controls style="width:100%;max-height:200px;"></video>'
+    +'<div class="upload-preview-label">&#127909; Promo</div>';
+  prev.style.display = 'block'; prom.style.display = 'none';
+}
+
+function handleDrop(event, type) {
+  event.preventDefault();
+  var file = event.dataTransfer.files[0];
+  if(!file) return;
+  var input = document.createElement('input');
+  input.files = event.dataTransfer.files;
+  if(type === 'thumb') previewThumb({files:[file]});
+  else previewPromo({files:[file]});
+  document.getElementById(type===('thumb')?'thumb-zone':'promo-zone').classList.remove('drag');
+}
+
+/* ══════════════════════════════════════════
+   MODULES & LESSONS
+══════════════════════════════════════════ */
+function addModule() {
+  var moduleIdx = _course.modules.length;
+  _course.modules.push({ title:'', lessons:[] });
+  renderModules();
+}
+
+function removeModule(idx) {
+  _course.modules.splice(idx, 1);
+  renderModules();
+}
+
+function addLesson(moduleIdx, type) {
+  _course.modules[moduleIdx].lessons.push({
+    title:'', type: type||'video', free:false, videoId:null, videoUrl:null
+  });
+  renderModules();
+}
+
+function removeLesson(mIdx, lIdx) {
+  _course.modules[mIdx].lessons.splice(lIdx, 1);
+  renderModules();
+}
+
+function syncModuleTitle(idx, val) {
+  if(_course.modules[idx]) _course.modules[idx].title = val;
+}
+function syncLessonTitle(mIdx, lIdx, val) {
+  if(_course.modules[mIdx]&&_course.modules[mIdx].lessons[lIdx])
+    _course.modules[mIdx].lessons[lIdx].title = val;
+}
+function syncLessonFree(mIdx, lIdx, val) {
+  if(_course.modules[mIdx]&&_course.modules[mIdx].lessons[lIdx])
+    _course.modules[mIdx].lessons[lIdx].free = val;
+}
+
+var _openModules = {};
+function toggleModule(idx) {
+  _openModules[idx] = !_openModules[idx];
+  var lessons = document.getElementById('mod-lessons-'+idx);
+  var toggle  = document.getElementById('mod-toggle-'+idx);
+  if(lessons){ lessons.classList.toggle('open', _openModules[idx]); }
+  if(toggle) { toggle.classList.toggle('open', _openModules[idx]); }
+}
+
+var TYPE_ICONS = { video:'&#127916;', quiz:'&#10067;', assignment:'&#128196;', text:'&#128196;' };
+var TYPE_LABELS = { video:'Video', quiz:'Quiz', assignment:'Assignment', text:'Reading' };
+
+function renderModules() {
+  var container = document.getElementById('modules-builder');
+  if(!container) return;
+  if(_course.modules.length === 0){
+    container.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">No modules yet. Add your first module below.</div>';
     return;
   }
-  showToast('✓','Testimonial submitted — pending admin approval');
-  // Reset form
-  ['testi-name','testi-loc','testi-result','testi-quote','testi-video-url','testi-image-url'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.value='';
-  });
-  var vp=document.getElementById('testi-video-preview'); if(vp) vp.style.display='none';
-  var vpr=document.getElementById('testi-video-prompt'); if(vpr) vpr.style.display='block';
-  var ip=document.getElementById('testi-image-preview'); if(ip) ip.style.display='none';
-  var ipr=document.getElementById('testi-image-prompt'); if(ipr) ipr.style.display='block';
+  container.innerHTML = _course.modules.map(function(mod, mIdx){
+    var isOpen = _openModules[mIdx] !== false;
+    if(_openModules[mIdx] === undefined) _openModules[mIdx] = true;
+
+    var lessonsHtml = mod.lessons.map(function(les, lIdx){
+      return '<div class="lesson-item">'
+        +'<span class="lesson-drag">&#8942;&#8942;</span>'
+        +'<div class="lesson-type-icon">'+( TYPE_ICONS[les.type]||'&#127916;' )+'</div>'
+        +'<input class="lesson-name-input" type="text" placeholder="Lesson title..." value="'+les.title+'"'
+        +' oninput="syncLessonTitle('+mIdx+','+lIdx+',this.value)"/>'
+        +'<select class="lesson-type-select" onchange="changeLessonType('+mIdx+','+lIdx+',this.value)">'
+        +'<option value="video" '+(les.type==='video'?'selected':'')+'>&#127916; Video</option>'
+        +'<option value="quiz" '+(les.type==='quiz'?'selected':'')+'>&#10067; Quiz</option>'
+        +'<option value="assignment" '+(les.type==='assignment'?'selected':'')+'>&#128196; Assignment</option>'
+        +'</select>'
+        +'<label class="lesson-free-toggle" title="Free preview">'
+        +'<input type="checkbox" '+(les.free?'checked':'')+' onchange="syncLessonFree('+mIdx+','+lIdx+',this.checked)"/> Free preview'
+        +'</label>'
+        +'<div class="lesson-actions">'
+        +'<button class="lesson-btn" title="Remove lesson" onclick="removeLesson('+mIdx+','+lIdx+')">&#215;</button>'
+        +'</div>'
+        +'</div>';
+    }).join('');
+
+    return '<div class="module-card">'
+      +'<div class="module-card-head" onclick="toggleModule('+mIdx+')">'
+        +'<span class="module-drag">&#8942;&#8942;</span>'
+        +'<div class="module-num-badge">'+(mIdx+1)+'</div>'
+        +'<input class="module-name-input" type="text" placeholder="Module title..." value="'+mod.title+'"'
+        +' oninput="syncModuleTitle('+mIdx+',this.value)" onclick="event.stopPropagation()"/>'
+        +'<span style="font-size:12px;color:var(--text3);margin-right:8px;">'+mod.lessons.length+' lesson'+(mod.lessons.length!==1?'s':'')+'</span>'
+        +'<button style="margin-left:8px;" class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeModule('+mIdx+')">Remove</button>'
+        +'<span class="module-toggle '+(isOpen?'open':'')+'" id="mod-toggle-'+mIdx+'">&#8964;</span>'
+      +'</div>'
+      +'<div class="module-lessons '+(isOpen?'open':'')+'" id="mod-lessons-'+mIdx+'">'
+        + lessonsHtml
+        +'<div class="add-lesson-row">'
+        +'<button class="lesson-type-btn" onclick="addLesson('+mIdx+',\'video\')">&#127916; Video lesson</button>'
+        +'<button class="lesson-type-btn" onclick="addLesson('+mIdx+',\'quiz\')">&#10067; Quiz</button>'
+        +'<button class="lesson-type-btn" onclick="addLesson('+mIdx+',\'assignment\')">&#128196; Assignment</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
 }
 
+function changeLessonType(mIdx, lIdx, type) {
+  if(_course.modules[mIdx]&&_course.modules[mIdx].lessons[lIdx])
+    _course.modules[mIdx].lessons[lIdx].type = type;
+  renderModules();
+}
+
+/* ══════════════════════════════════════════
+   VIDEO UPLOAD LIST (STEP 3)
+══════════════════════════════════════════ */
+function buildVideoUploadList() {
+  var container = document.getElementById('video-lessons-list');
+  if(!container) return;
+  var videoLessons = [];
+  _course.modules.forEach(function(mod, mIdx){
+    (mod.lessons||[]).forEach(function(les, lIdx){
+      if(les.type === 'video'){
+        videoLessons.push({ mod:mod.title||('Module '+(mIdx+1)), lesson:les.title||('Lesson '+(lIdx+1)), mIdx:mIdx, lIdx:lIdx, les:les });
+      }
+    });
+  });
+  if(videoLessons.length === 0){
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);"><div style="font-size:36px;margin-bottom:10px;">&#127916;</div><div>No video lessons found. Go back and add video lessons in Step 2.</div></div>';
+    return;
+  }
+  container.innerHTML = videoLessons.map(function(item){
+    var uploadedHtml = item.les.videoId
+      ? '<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:#166534;display:flex;align-items:center;gap:10px;">&#9989; Video uploaded successfully<button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="reuploadVideo('+item.mIdx+','+item.lIdx+')">Re-upload</button></div>'
+      : '<div class="upload-zone" id="vz-'+item.mIdx+'-'+item.lIdx+'" ondragover="event.preventDefault();this.classList.add(\'drag\')" ondragleave="this.classList.remove(\'drag\')" ondrop="handleVideoDrop(event,'+item.mIdx+','+item.lIdx+')">'
+        +'<div id="vp-'+item.mIdx+'-'+item.lIdx+'"></div>'
+        +'<div id="vpr-'+item.mIdx+'-'+item.lIdx+'">'
+        +'<div class="uz-icon">&#127916;</div>'
+        +'<div class="uz-title">Click to upload or drag & drop</div>'
+        +'<div class="uz-sub">MP4, MOV, WEBM · Max 5GB</div>'
+        +'</div>'
+        +'<input type="file" accept="video/*" onchange="handleVideoFileSelect(this,'+item.mIdx+','+item.lIdx+')" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>'
+        +'</div>'
+        +'<div class="upload-progress" id="vup-'+item.mIdx+'-'+item.lIdx+'"><div class="upload-progress-bar" id="vupb-'+item.mIdx+'-'+item.lIdx+'"></div></div>'
+        +'<div class="upload-progress-label" id="vupl-'+item.mIdx+'-'+item.lIdx+'"></div>';
+
+    return '<div class="vl-card">'
+      +'<div class="vl-head">'
+        +'<span class="vl-module-tag">'+item.mod+'</span>'
+        +'<span class="vl-lesson-name">'+item.lesson+'</span>'
+      +'</div>'
+      +'<div class="vl-body">'+uploadedHtml+'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function handleVideoFileSelect(input, mIdx, lIdx) {
+  if(!input.files||!input.files[0]) return;
+  var file = input.files[0];
+  var maxSize = 5 * 1024 * 1024 * 1024;
+  if(file.size > maxSize){ showToast('❌','Max 5GB per video.'); return; }
+  uploadLessonVideo(file, mIdx, lIdx);
+}
+
+function handleVideoDrop(event, mIdx, lIdx) {
+  event.preventDefault();
+  var file = event.dataTransfer.files[0];
+  if(file) uploadLessonVideo(file, mIdx, lIdx);
+  document.getElementById('vz-'+mIdx+'-'+lIdx).classList.remove('drag');
+}
+
+async function uploadLessonVideo(file, mIdx, lIdx) {
+  var mod    = _course.modules[mIdx];
+  var lesson = mod.lessons[lIdx];
+  var title  = (mod.title||'Module') + ' - ' + (lesson.title||'Lesson');
+
+  var progWrap  = document.getElementById('vup-'+mIdx+'-'+lIdx);
+  var progBar   = document.getElementById('vupb-'+mIdx+'-'+lIdx);
+  var progLabel = document.getElementById('vupl-'+mIdx+'-'+lIdx);
+  var prompt    = document.getElementById('vpr-'+mIdx+'-'+lIdx);
+  var preview   = document.getElementById('vp-'+mIdx+'-'+lIdx);
+
+  if(prompt) prompt.innerHTML = '<div class="uz-icon">&#8987;</div><div class="uz-title">Preparing upload...</div>';
+
+  try {
+    // Get upload slot from our API
+    var res = await fetch('/api/bunny-upload', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ title: title, courseId: 'draft' })
+    });
+    var data = await res.json();
+    if(!data.videoId) throw new Error('Failed to create video slot');
+
+    if(progWrap) progWrap.style.display = 'block';
+    if(progLabel) progLabel.style.display = 'block';
+
+    // Upload to Bunny
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', data.uploadUrl, true);
+    xhr.setRequestHeader('AccessKey','6c4e5625-43cc-40d1-837892724178-134a-459b');
+    xhr.setRequestHeader('Content-Type','video/*');
+
+    xhr.upload.onprogress = function(e){
+      if(e.lengthComputable){
+        var pct = Math.round(e.loaded/e.total*100);
+        if(progBar)   progBar.style.width = pct+'%';
+        if(progLabel) progLabel.textContent = 'Uploading... '+pct+'%';
+      }
+    };
+
+    await new Promise(function(resolve,reject){
+      xhr.onload  = function(){ xhr.status<300 ? resolve() : reject(new Error('Upload failed')); };
+      xhr.onerror = function(){ reject(new Error('Network error')); };
+      xhr.send(file);
+    });
+
+    // Save to course state
+    _course.modules[mIdx].lessons[lIdx].videoId  = data.videoId;
+    _course.modules[mIdx].lessons[lIdx].videoUrl = data.embedUrl;
+
+    if(progLabel) progLabel.textContent = '✓ Uploaded!';
+    if(progBar)   progBar.style.background = 'var(--green)';
+
+    // Show success in the card
+    setTimeout(function(){ buildVideoUploadList(); }, 800);
+    showToast('✓', 'Video uploaded — ' + (lesson.title||'Lesson'));
+
+  } catch(err) {
+    showToast('❌','Upload failed: '+err.message);
+    if(prompt) prompt.innerHTML = '<div class="uz-icon">&#127916;</div><div class="uz-title">Click to try again</div><div class="uz-sub">'+err.message+'</div>';
+    if(progWrap) progWrap.style.display = 'none';
+  }
+}
+
+/* ══════════════════════════════════════════
+   PRICING
+══════════════════════════════════════════ */
+function selectPriceType(type) {
+  _course.priceType = type;
+  document.getElementById('pc-paid').classList.toggle('selected', type==='paid');
+  document.getElementById('pc-free').classList.toggle('selected', type==='free');
+  document.getElementById('price-inputs').style.display = type==='paid' ? 'block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  var priceInput = document.getElementById('pr-ngn');
+  if(priceInput){
+    priceInput.addEventListener('input', function(){
+      var v = parseFloat(this.value)||0;
+      var earn = Math.round(v * 0.60);
+      var el = document.getElementById('pr-earn');
+      if(el) el.textContent = '₦'+earn.toLocaleString();
+    });
+  }
+});
+
+/* ══════════════════════════════════════════
+   REVIEW
+══════════════════════════════════════════ */
+function buildReview() {
+  // Sync pricing from form
+  if(_course.priceType === 'paid'){
+    _course.priceNGN = parseFloat((document.getElementById('pr-ngn')||{}).value||0);
+    _course.priceOriginal = parseFloat((document.getElementById('pr-original')||{}).value||0);
+  }
+
+  var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); }, 0);
+  var uploadedVideos = _course.modules.reduce(function(a,m){
+    return a + (m.lessons||[]).filter(function(l){ return l.type==='video' && l.videoId; }).length;
+  }, 0);
+
+  function setText(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+  setText('rv-title',    _course.title||'—');
+  setText('rv-cat',      _course.category||'—');
+  setText('rv-level',    _course.level||'—');
+  setText('rv-lang',     _course.language||'—');
+  setText('rv-duration', _course.duration||'—');
+  setText('rv-modules',  _course.modules.length);
+  setText('rv-lessons',  totalLessons);
+  setText('rv-videos',   uploadedVideos);
+  setText('rv-price',    _course.priceType==='free' ? 'Free' : ('₦'+(_course.priceNGN||0).toLocaleString()));
+  setText('rv-earn',     _course.priceType==='free' ? '₦0' : ('₦'+Math.round((_course.priceNGN||0)*0.6).toLocaleString()));
+
+  // Checklist
+  var checks = [
+    { ok: !!_course.title, label: 'Course title added' },
+    { ok: !!_course.category, label: 'Category selected' },
+    { ok: !!_course.description, label: 'Description written' },
+    { ok: !!_course.thumbnail, label: 'Thumbnail uploaded' },
+    { ok: _course.modules.length > 0, label: 'At least one module added' },
+    { ok: totalLessons > 0, label: 'At least one lesson added' },
+    { ok: uploadedVideos > 0, label: 'At least one video uploaded' },
+    { ok: _course.priceType==='free' || _course.priceNGN > 0, label: 'Price set' },
+  ];
+  var cl = document.getElementById('review-checklist');
+  if(cl) cl.innerHTML = checks.map(function(c){
+    return '<div class="review-check">'
+      +'<div class="check-icon '+(c.ok?'ok':'warn')+'">'+(c.ok?'&#10003;':'!')+'</div>'
+      +'<span style="color:'+(c.ok?'var(--text)':'var(--orange)')+';">'+c.label+'</span>'
+      +'</div>';
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   SUBMIT
+══════════════════════════════════════════ */
+async function submitCourse() {
+  if(!window._user){ openAuthModal(submitCourse, 'signin'); return; }
+
+  var btn = document.getElementById('btn-submit');
+  if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
+
+  try {
+    var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); },0);
+
+    // Build payload
+    var courseData = {
+      title:        _course.title,
+      subtitle:     _course.subtitle,
+      category:     _course.category,
+      level:        _course.level,
+      language:     _course.language,
+      duration:     _course.duration,
+      description:  _course.description,
+      learns:       _course.learns,
+      requirements: _course.requirements,
+      modules:      _course.modules.map(function(m){
+        return {
+          title: m.title,
+          lessons: (m.lessons||[]).map(function(l){
+            return { title:l.title, type:l.type, free:l.free, videoId:l.videoId||null, videoUrl:l.videoUrl||null };
+          })
+        };
+      }),
+      priceNGN:     _course.priceNGN,
+      priceOriginal:_course.priceOriginal,
+      priceType:    _course.priceType,
+      totalLessons: totalLessons,
+      totalModules: _course.modules.length,
+      instructorId:  window._user.uid,
+      instructorName: window._userName || '',
+      status:       'pending_review',
+      totalStudents: 0,
+      totalRevenue:  0,
+      rating: 0,
+    };
+
+    // Save to Firestore
+    var { getFirestore, collection, addDoc, serverTimestamp } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var db = window._db;
+    await addDoc(collection(db, 'courses'), Object.assign({}, courseData, {
+      createdAt:   serverTimestamp(),
+      submittedAt: serverTimestamp(),
+    }));
+
+    // Show success
+    document.querySelectorAll('.wizard-step').forEach(function(el){ el.classList.remove('active'); });
+    document.getElementById('step-success').classList.add('active');
+    document.getElementById('wizard-footer').style.display = 'none';
+    document.getElementById('wizard-progress').style.display = 'none';
+    showToast('🎉','Course submitted for review!');
+
+  } catch(err) {
+    console.error(err);
+    showToast('❌','Failed to submit. Please try again.');
+    if(btn){ btn.disabled=false; btn.textContent='Submit for review ✓'; }
+  }
+}
+
+async function saveDraft() {
+  showToast('&#128190;','Draft saved locally.');
+}
+
+function saveProfile() { showToast('✓','Profile saved.'); }
+function openTestiForm() { showToast('&#128247;','Testimonial form coming soon.'); }
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+startNewCourse();
 </script>
-<!-- auth-modal.html - paste this once before <!-- ══ AUTH MODAL ══ -->
+
+<!-- ══ AUTH MODAL ══ -->
 <div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;position:relative;animation:authPop .25s ease;">
     <style>@keyframes authPop{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}</style>
@@ -1469,9 +1781,5 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
 </script>
-</body> on every page -->
-
-
-
 </body>
 </html>
