@@ -459,6 +459,142 @@ h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
 }
 .page{display:none}.page.active{display:block}
 </style>
+<!-- firebase.html - paste this ONCE inside <head> of every page -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+    authDomain: "skillslibry.firebaseapp.com",
+    projectId: "skillslibry",
+    storageBucket: "skillslibry.firebasestorage.app",
+    messagingSenderId: "363745273879",
+    appId: "1:363745273879:web:8a9c4795e37ef5eed15452",
+    measurementId: "G-SW4GS8M6G5"
+  };
+
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getFirestore(app);
+
+  /* ── expose globally so other scripts can use them ── */
+  window._auth = auth;
+  window._db   = db;
+  window._fbReady = false;
+
+  /* ── Auth state listener ── */
+  onAuthStateChanged(auth, async (user) => {
+    window._user = user || null;
+    window._fbReady = true;
+
+    if (user) {
+      /* fetch role from Firestore */
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      window._userRole = snap.exists() ? snap.data().role : 'student';
+      window._userName = snap.exists() ? snap.data().name : user.email;
+    } else {
+      window._userRole = null;
+      window._userName = null;
+    }
+
+    /* fire custom event so pages can react */
+    document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
+  });
+
+  /* ══════════════════════════════════════════
+     SIGN UP
+  ══════════════════════════════════════════ */
+  window.slSignUp = async function(name, email, password, role) {
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      /* write user doc */
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name,
+        email,
+        role: role || 'student',
+        createdAt: serverTimestamp(),
+        enrolledCourses: [],
+        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+      });
+      window._userRole = role || 'student';
+      window._userName = name;
+      return { ok: true, user: cred.user };
+    } catch(e) {
+      return { ok: false, error: slFirebaseError(e.code) };
+    }
+  };
+
+  /* ══════════════════════════════════════════
+     SIGN IN
+  ══════════════════════════════════════════ */
+  window.slSignIn = async function(email, password) {
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      return { ok: true, user: cred.user };
+    } catch(e) {
+      return { ok: false, error: slFirebaseError(e.code) };
+    }
+  };
+
+  /* ══════════════════════════════════════════
+     SIGN OUT
+  ══════════════════════════════════════════ */
+  window.slSignOut = async function() {
+    await signOut(auth);
+    window.location.href = 'index.html';
+  };
+
+  /* ══════════════════════════════════════════
+     ENROLL — called after payment success
+  ══════════════════════════════════════════ */
+  window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
+    if (!window._user) return { ok: false, error: 'Not logged in' };
+
+    const platformCut  = amount * 0.40;
+    const instructorCut = amount * 0.60;
+    const affiliateCut = affiliateCode ? amount * 0.10 : 0;
+
+    const enrollmentId = courseId + '_' + window._user.uid;
+
+    await setDoc(doc(db, 'enrollments', enrollmentId), {
+      studentId:    window._user.uid,
+      courseId,
+      instructorId,
+      paidAmount:   amount,
+      currency,
+      transactionId,
+      platformCut,
+      instructorCut,
+      affiliateCut,
+      affiliateCode: affiliateCode || null,
+      progress: { completedLessons: [], percentComplete: 0 },
+      enrolledAt: serverTimestamp(),
+    });
+
+    return { ok: true };
+  };
+
+  /* ══════════════════════════════════════════
+     FRIENDLY ERROR MESSAGES
+  ══════════════════════════════════════════ */
+  function slFirebaseError(code) {
+    const map = {
+      'auth/email-already-in-use':    'An account with this email already exists.',
+      'auth/invalid-email':           'Please enter a valid email address.',
+      'auth/weak-password':           'Password must be at least 6 characters.',
+      'auth/user-not-found':          'No account found with this email.',
+      'auth/wrong-password':          'Incorrect password. Please try again.',
+      'auth/too-many-requests':       'Too many attempts. Please wait a moment.',
+      'auth/network-request-failed':  'Network error. Check your connection.',
+    };
+    return map[code] || 'Something went wrong. Please try again.';
+  }
+</script>
+
 </head>
 <body>
 
@@ -1221,5 +1357,327 @@ function submitTestimonial(){
 }
 
 </script>
+<!-- auth-modal.html - paste this once before </body> on every page -->
+
+<!-- ══ AUTH MODAL ══ -->
+<div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;background:rgba(13,13,26,.6);backdrop-filter:blur(8px);">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:440px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;animation:authIn .25s ease;">
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1.5px solid #e4e6f0;">
+      <button id="tab-signin" onclick="authTab('signin')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#4ecca3;border-bottom:2px solid #4ecca3;transition:all .2s;">
+        Sign In
+      </button>
+      <button id="tab-signup" onclick="authTab('signup')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#8b8fa8;border-bottom:2px solid transparent;transition:all .2s;">
+        Create Account
+      </button>
+    </div>
+
+    <div style="padding:32px;">
+
+      <!-- SIGN IN FORM -->
+      <div id="form-signin">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">Welcome back. Sign in to access your courses.</p>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email address</label>
+          <input id="si-email" type="email" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Password</label>
+          <input id="si-pass" type="password" placeholder="••••••••"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
+            onkeydown="if(event.key==='Enter') authSubmit('signin')"/>
+        </div>
+        <div id="si-error" style="display:none;background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:#e84545;margin-bottom:16px;"></div>
+        <button onclick="authSubmit('signin')" id="si-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:all .2s;"
+          onmouseover="this.style.background='#2db88a'" onmouseout="this.style.background='#4ecca3'">
+          Sign in
+        </button>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="form-signup" style="display:none;">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">Join thousands of learners earning with digital skills.</p>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name</label>
+          <input id="su-name" type="text" placeholder="Your full name"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email address</label>
+          <input id="su-email" type="email" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Password</label>
+          <input id="su-pass" type="password" placeholder="Min 6 characters"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
+            onkeydown="if(event.key==='Enter') authSubmit('signup')"/>
+        </div>
+        <div id="su-error" style="display:none;background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:#e84545;margin-bottom:16px;"></div>
+        <button onclick="authSubmit('signup')" id="su-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:all .2s;"
+          onmouseover="this.style.background='#2db88a'" onmouseout="this.style.background='#4ecca3'">
+          Create account
+        </button>
+        <p style="font-size:11px;color:#8b8fa8;text-align:center;margin-top:14px;line-height:1.6;">
+          By creating an account you agree to our Terms of Service and Privacy Policy.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Close -->
+    <button onclick="closeAuthModal()"
+      style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:#f0f2f7;cursor:pointer;font-size:16px;color:#8b8fa8;display:flex;align-items:center;justify-content:center;transition:all .2s;"
+      onmouseover="this.style.background='#e4e6f0'" onmouseout="this.style.background='#f0f2f7'">&#10005;</button>
+
+  </div>
+</div>
+
+<style>
+@keyframes authIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#auth-modal.open{display:flex!important;}
+</style>
+
+<script>
+/* ── AUTH MODAL CONTROLS ── */
+var _pendingAction = null; // store what to do after auth
+
+function openAuthModal(action, tab) {
+  _pendingAction = action || null;
+  authTab(tab || 'signin');
+  document.getElementById('auth-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal() {
+  document.getElementById('auth-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  _pendingAction = null;
+  clearAuthErrors();
+}
+
+function authTab(tab) {
+  var isSignin = tab === 'signin';
+  document.getElementById('form-signin').style.display = isSignin ? 'block' : 'none';
+  document.getElementById('form-signup').style.display = isSignin ? 'none' : 'block';
+  document.getElementById('tab-signin').style.color       = isSignin ? '#4ecca3' : '#8b8fa8';
+  document.getElementById('tab-signin').style.borderBottomColor = isSignin ? '#4ecca3' : 'transparent';
+  document.getElementById('tab-signup').style.color       = isSignin ? '#8b8fa8' : '#4ecca3';
+  document.getElementById('tab-signup').style.borderBottomColor = isSignin ? 'transparent' : '#4ecca3';
+}
+
+function clearAuthErrors() {
+  var si = document.getElementById('si-error');
+  var su = document.getElementById('su-error');
+  if(si){si.style.display='none';si.textContent='';}
+  if(su){su.style.display='none';su.textContent='';}
+}
+
+function showAuthError(form, msg) {
+  var el = document.getElementById(form === 'signin' ? 'si-error' : 'su-error');
+  if(el){el.textContent=msg;el.style.display='block';}
+}
+
+function setAuthBtnLoading(form, loading) {
+  var btn = document.getElementById(form === 'signin' ? 'si-btn' : 'su-btn');
+  if(btn){
+    btn.disabled = loading;
+    btn.textContent = loading ? 'Please wait...' : (form === 'signin' ? 'Sign in' : 'Create account');
+    btn.style.opacity = loading ? '.7' : '1';
+  }
+}
+
+async function authSubmit(form) {
+  clearAuthErrors();
+
+  if (form === 'signin') {
+    var email = document.getElementById('si-email').value.trim();
+    var pass  = document.getElementById('si-pass').value;
+    if(!email || !pass){ showAuthError('signin','Please fill in all fields.'); return; }
+    setAuthBtnLoading('signin', true);
+    var result = await window.slSignIn(email, pass);
+    setAuthBtnLoading('signin', false);
+    if(!result.ok){ showAuthError('signin', result.error); return; }
+
+  } else {
+    var name  = document.getElementById('su-name').value.trim();
+    var email = document.getElementById('su-email').value.trim();
+    var pass  = document.getElementById('su-pass').value;
+    if(!name || !email || !pass){ showAuthError('signup','Please fill in all fields.'); return; }
+    setAuthBtnLoading('signup', true);
+    var result = await window.slSignUp(name, email, pass, 'student');
+    setAuthBtnLoading('signup', false);
+    if(!result.ok){ showAuthError('signup', result.error); return; }
+  }
+
+  /* Auth succeeded */
+  closeAuthModal();
+
+  /* Execute pending action (e.g. open checkout) */
+  if(typeof _pendingAction === 'function') {
+    _pendingAction();
+    _pendingAction = null;
+  } else {
+    showToast && showToast('✓', 'Welcome to SkillsLibry!');
+  }
+}
+
+/* Close on backdrop click */
+document.getElementById('auth-modal').addEventListener('click', function(e){
+  if(e.target === this) closeAuthModal();
+});
+
+/* ── Update nav based on auth state ── */
+document.addEventListener('authReady', function(e){
+  var user = e.detail.user;
+  var myLearningLink = document.querySelector('a[href="dashboard.html"]');
+  if(myLearningLink && user){
+    myLearningLink.textContent = window._userName || 'My Learning';
+  }
+});
+
+/* ══════════════════════════════════════════
+   BUNNY STREAM VIDEO UPLOAD
+══════════════════════════════════════════ */
+
+var BUNNY_LIBRARY_ID = '690865';
+var BUNNY_CDN_HOST   = 'vz-4ec805fa-2e2.b-cdn.net';
+
+/* Upload a video file to Bunny Stream */
+async function uploadVideoToBunny(file, title, onProgress) {
+  showToast('⏳', 'Creating video slot...');
+
+  try {
+    /* Step 1 — Get upload URL from our API */
+    const res = await fetch('/api/bunny-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, courseId: _activeCourseId || 'draft' }),
+    });
+    const data = await res.json();
+    if (!data.videoId) throw new Error('Failed to create video slot');
+
+    showToast('⬆️', 'Uploading video...');
+
+    /* Step 2 — Upload directly to Bunny via PUT */
+    const xhr = new XMLHttpRequest();
+    xhr.open('PUT', data.uploadUrl, true);
+    xhr.setRequestHeader('AccessKey', '6c4e5625-43cc-40d1-837892724178-134a-459b');
+    xhr.setRequestHeader('Content-Type', 'video/*');
+
+    xhr.upload.onprogress = function(e) {
+      if (e.lengthComputable && typeof onProgress === 'function') {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+
+    await new Promise(function(resolve, reject) {
+      xhr.onload  = function(){ xhr.status < 300 ? resolve() : reject(new Error('Upload failed: ' + xhr.status)); };
+      xhr.onerror = function(){ reject(new Error('Network error during upload')); };
+      xhr.send(file);
+    });
+
+    showToast('✓', 'Video uploaded successfully!');
+    return {
+      videoId:  data.videoId,
+      embedUrl: data.embedUrl,
+      cdnUrl:   data.cdnUrl,
+    };
+
+  } catch(err) {
+    showToast('❌', 'Upload failed: ' + err.message);
+    throw err;
+  }
+}
+
+/* Handle lesson video file input change */
+function handleLessonVideoSelect(input, lessonIndex) {
+  var file = input.files[0];
+  if (!file) return;
+
+  var maxSize = 5 * 1024 * 1024 * 1024; // 5GB
+  if (file.size > maxSize) {
+    showToast('❌', 'File too large. Max 5GB per video.');
+    input.value = '';
+    return;
+  }
+
+  var preview = input.closest('.lesson-upload-zone');
+  if (preview) {
+    preview.innerHTML = '<div style="padding:16px;font-size:13px;color:var(--teal-dark);">&#128249; ' + file.name + ' (' + Math.round(file.size/1024/1024) + ' MB) — Ready to upload</div>';
+  }
+
+  // Store file reference for form submission
+  input._selectedFile = file;
+  showToast('✓', file.name + ' selected');
+}
+
+/* Submit entire course to Firestore */
+async function submitCourseForReview() {
+  if (!window._user) {
+    openAuthModal(null, 'signin');
+    return;
+  }
+
+  var title = document.getElementById('course-title-input');
+  var desc  = document.getElementById('course-desc-input');
+  var price = document.getElementById('course-price-input');
+  var cat   = document.getElementById('course-cat-input');
+
+  if (!title || !title.value.trim()) {
+    showToast('⚠️', 'Please enter a course title');
+    return;
+  }
+
+  var btn = document.getElementById('submit-course-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+  try {
+    // Import Firestore dynamically
+    var { getFirestore, doc, setDoc, collection, addDoc, serverTimestamp } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+    var db = window._db;
+    var courseRef = await addDoc(collection(db, 'courses'), {
+      title:       title.value.trim(),
+      description: desc ? desc.value.trim() : '',
+      price:       parseFloat(price ? price.value : 0),
+      priceNGN:    parseFloat(price ? price.value : 0),
+      category:    cat ? cat.value : 'general',
+      instructorId: window._user.uid,
+      instructorName: window._userName || '',
+      status:      'pending_review',
+      totalStudents: 0,
+      totalRevenue:  0,
+      rating: 0,
+      createdAt: serverTimestamp(),
+      submittedAt: serverTimestamp(),
+    });
+
+    showToast('🎉', 'Course submitted for review!');
+    if (btn) { btn.textContent = 'Submitted ✓'; }
+
+  } catch(err) {
+    console.error('Submit error:', err);
+    showToast('❌', 'Failed to submit. Try again.');
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit for review'; }
+  }
+}
+
+var _activeCourseId = null;
+
+</script>
+
 </body>
-</html> 
+</html>
