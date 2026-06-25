@@ -2,895 +2,573 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Course — SkillsLibry</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
 <style>
-:root {
-  --teal: #4ecca3;
-  --teal-dark: #2db88a;
-  --teal-dim: rgba(78,204,163,0.12);
-  --teal-dim2: rgba(78,204,163,0.06);
-  --purple: #6c63ff;
-  --purple-dark: #5550d4;
-  --purple-dim: rgba(108,99,255,0.1);
-  --yellow: #ffd93d;
-  --yellow-dim: rgba(255,217,61,0.12);
-  --bg: #ffffff;
-  --bg2: #f8f9fc;
-  --bg3: #f0f2f8;
-  --bg4: #e8eaf2;
-  --border: #e4e6f0;
-  --border2: #d0d3e8;
-  --gold: #4ecca3;
-  --gold-light: #2db88a;
-  --gold-dim: rgba(78,204,163,0.12);
-  --gold-dim2: rgba(78,204,163,0.06);
-  --text: #0d0d1a;
-  --text2: #4a4d6a;
-  --text3: #8b8fa8;
-  --red: #e84545;
-  --green: #22c55e;
-  --radius: 10px;
-  --radius-sm: 6px;
-  --radius-lg: 16px;
-  --shadow: 0 2px 12px rgba(13,13,26,0.06);
-  --shadow-md: 0 4px 24px rgba(13,13,26,0.1);
-  --shadow-lg: 0 8px 40px rgba(13,13,26,0.14);
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);--teal-dim2:rgba(78,204,163,.05);
+  --purple:#6c63ff;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--bg3:#f1f3f9;--bg4:#e8eaf0;
+  --border:#e4e6f0;--border2:#d0d3e8;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--orange:#f59e0b;--red:#ef4444;
+  --r:10px;--r-sm:6px;--r-lg:16px;--r-xl:24px;
+  --sh:0 2px 12px rgba(13,13,26,.06);
+  --sh-md:0 8px 32px rgba(13,13,26,.1);
+  --sh-lg:0 20px 60px rgba(13,13,26,.15);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden}
-h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+a{text-decoration:none;color:inherit}
 
-/* ─── TYPOGRAPHY ─── */
-.display{font-family:'Poppins',sans-serif;font-weight:600;line-height:1.1;letter-spacing:-0.02em}
-.serif{font-family:'Poppins',sans-serif}
-.mono{font-family:'Inter',sans-serif}
-
-/* ─── SCROLLBAR ─── */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--bg2)}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
-
-/* ─── NAV ─── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 32px;gap:32px}
-.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;text-decoration:none}
-.nav-logo-mark{width:32px;height:32px;background:var(--gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:#0a0a08}
-.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:600;font-size:20px;color:var(--text)}
-.nav-links{display:flex;align-items:center;gap:24px;margin-left:16px}
-.nav-link{color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:color .2s;text-decoration:none}
-.nav-link:hover{color:var(--text)}
-.nav-link.active{color:var(--teal-dark)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;text-decoration:none;white-space:nowrap}
-.btn-ghost{background:transparent;color:var(--text2);padding:8px 16px;border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
-.btn-teal{background:var(--teal);color:#0d0d1a;padding:10px 22px;font-weight:700}
-.btn-teal:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.3)}
-.btn-outline-teal{background:transparent;color:var(--teal-dark);padding:10px 22px;border:1.5px solid var(--teal);font-weight:600}
-.btn-outline-teal:hover{background:var(--teal-dim)}
-.btn-lg{padding:14px 32px;font-size:15px;border-radius:var(--radius)}
-.btn-sm{padding:6px 14px;font-size:12px}
-
-/* ─── PAGES ─── */
-.page{display:none;padding-top:64px;min-height:100vh}
-.page.active{display:block}
-
-/* ─── HOMEPAGE ─── */
-.hero{min-height:calc(100vh - 64px);display:flex;align-items:center;padding:80px 32px;position:relative;overflow:hidden;background:linear-gradient(160deg,#ffffff 0%,#f0f7ff 40%,#f0fdf8 100%)}
-.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 70% 40%, rgba(78,204,163,0.10) 0%, transparent 60%)}
-.hero-grain{position:absolute;inset:0;opacity:0.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px}
-.hero-content{max-width:680px;position:relative;z-index:1}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.25);border-radius:100px;padding:6px 16px;margin-bottom:28px}
-.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.hero-eyebrow span{font-size:12px;font-weight:600;color:var(--teal-dark);letter-spacing:.04em}
-.hero h1{font-size:clamp(44px,7vw,80px);margin-bottom:24px;color:var(--text)}
-.hero h1 em{color:var(--teal);font-style:normal}
-.hero-sub{font-size:17px;color:var(--text2);line-height:1.7;max-width:520px;margin-bottom:40px;font-weight:300}
-.hero-actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.hero-stat{display:flex;align-items:center;gap:10px;padding-left:24px;border-left:1px solid var(--border)}
-.hero-stat-num{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
-.hero-stat-label{font-size:12px;color:var(--text3);line-height:1.3}
-.hero-stats{display:flex;gap:32px;margin-top:56px;padding-top:40px;border-top:1px solid var(--border)}
-
-/* ─── SECTION ─── */
-.section{padding:80px 32px;max-width:1100px;margin:0 auto}
-.section-label{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-dark);margin-bottom:14px}
-.section-title{font-size:clamp(30px,4vw,48px);margin-bottom:16px}
-.section-sub{font-size:15px;color:var(--text2);max-width:500px;line-height:1.7;margin-bottom:48px}
-
-/* ─── CATEGORY PILLS ─── */
-.category-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:48px}
-.cat-pill{padding:8px 18px;border-radius:100px;border:1px solid var(--border);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;background:transparent}
-.cat-pill:hover{border-color:var(--teal);color:var(--teal-dark)} .cat-pill.active{background:var(--teal-dim);border-color:var(--teal);color:var(--teal-dark)}
-
-/* ─── COURSE CARDS ─── */
-.course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.course-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .25s;box-shadow:var(--shadow)}
-.course-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
-.course-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg2),var(--bg3));position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:44px}
-.course-thumb-icon{font-size:40px;opacity:0.3}
-.course-thumb-cat{position:absolute;top:12px;left:12px;background:#fff;border:1.5px solid var(--border);border-radius:100px;padding:4px 12px;font-size:11px;font-weight:600;color:var(--teal-dark)}
-.course-thumb-badge{position:absolute;top:12px;right:12px;background:var(--gold);border-radius:4px;padding:3px 8px;font-size:10px;font-weight:600;color:#0a0a08}
-.course-body{padding:18px 20px}
-.course-instructor{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.avatar-xs{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-.course-instructor-name{font-size:12px;color:var(--text3)}
-.course-title{font-size:15px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:8px}
-.course-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text3);margin-bottom:14px}
-.rating{color:#f59e0b}
-.course-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
-.course-price{font-family:'Poppins',sans-serif;font-size:22px;font-weight:600;color:var(--teal-dark)}
-.course-price-old{font-size:12px;color:var(--text3);text-decoration:line-through;margin-left:6px}
-.enroll-mini{padding:7px 16px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
-.enroll-mini:hover{background:var(--teal);color:#0d0d1a}
-
-/* ─── INSTRUCTORS ─── */
-.instructor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
-.instructor-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:28px 24px;text-align:center;cursor:pointer;transition:all .25s;box-shadow:var(--shadow)}
-.instructor-card:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.instructor-avatar{width:72px;height:72px;border-radius:50%;background:var(--bg3);margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:28px;font-weight:600;color:var(--teal-dark);border:2px solid var(--border2)}
-.instructor-name{font-size:15px;font-weight:500;margin-bottom:4px}
-.instructor-title{font-size:12px;color:var(--text3);margin-bottom:12px}
-.instructor-stats{display:flex;justify-content:center;gap:20px}
-.istat{text-align:center}
-.istat-num{font-family:'Poppins',sans-serif;font-size:18px;font-weight:600;color:var(--teal-dark)}
-.istat-label{font-size:10px;color:var(--text3)}
-
-/* ─── TESTIMONIALS ─── */
-.testimonial-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
-.tcard{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);transition:all .2s}
-.tcard-stars{color:#f59e0b;font-size:14px;margin-bottom:12px;letter-spacing:2px}
-.tcard-text{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:18px;font-style:italic}
-.tcard-person{display:flex;align-items:center;gap:10px}
-.tcard-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
-.tcard-name{font-size:13px;font-weight:500}
-.tcard-loc{font-size:11px;color:var(--text3)}
-
-/* ─── HOW IT WORKS ─── */
-.steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0}
-.step{padding:32px;border-right:1px solid var(--border);position:relative}
-.step:last-child{border-right:none}
-.step-num{font-family:'Poppins',sans-serif;font-size:48px;font-weight:700;color:var(--gold-dim);line-height:1;margin-bottom:20px}
-.step-title{font-size:16px;font-weight:500;margin-bottom:8px}
-.step-desc{font-size:13px;color:var(--text2);line-height:1.7}
-
-/* ─── MISSION BANNER ─── */
-.mission{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:80px 32px;text-align:center;position:relative;overflow:hidden}
-.mission-bg{position:absolute;inset:0;background:radial-gradient(ellipse 50% 80% at 50% 100%, rgba(201,151,42,0.06) 0%, transparent 60%)}
-.mission-quote{font-family:'Poppins',sans-serif;font-size:clamp(24px,4vw,42px);font-weight:400;font-style:italic;color:var(--text);max-width:700px;margin:0 auto 24px;line-height:1.4;position:relative;z-index:1}
-.mission-accent-t{color:var(--teal)} .mission-accent-p{color:var(--purple)}
-.mission-sub{font-size:14px;color:var(--text3);position:relative;z-index:1}
-
-/* ─── CTA BANNER ─── */
-.cta-banner{background:linear-gradient(135deg,var(--teal-dim) 0%,var(--purple-dim) 100%);border:1.5px solid rgba(78,204,163,0.2);border-radius:var(--radius-lg);padding:56px 48px;text-align:center;margin:0 32px 80px;position:relative;overflow:hidden}
-.cta-banner-glow{position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:300px;height:200px;background:radial-gradient(ellipse, rgba(78,204,163,0.12) 0%, transparent 70%)}
-.cta-banner h2{font-size:clamp(28px,4vw,44px);margin-bottom:16px;position:relative;z-index:1}
-.cta-banner p{font-size:15px;color:var(--text2);margin-bottom:32px;position:relative;z-index:1}
-.cta-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
-
-/* ─── FOOTER ─── */
-.footer{background:var(--text);padding:56px 32px 32px}
-.footer-top{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
-.footer-brand p{font-size:13px;color:var(--text3);line-height:1.7;margin-top:12px;max-width:220px}
-.footer-col h4{font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
-.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.4);margin-bottom:10px;cursor:pointer;text-decoration:none;transition:color .2s}
-.footer-col a:hover{color:var(--teal)}
-.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:24px;border-top:1px solid var(--border)}
-.footer-copy{font-size:12px;color:rgba(255,255,255,.3)}
-.footer-mission{font-size:12px;color:var(--teal);font-weight:500}
-
-/* ─── COURSE DETAIL PAGE ─── */
-.course-detail-hero{background:linear-gradient(160deg,#f0f7ff,#f0fdf8);border-bottom:1px solid var(--border);padding:48px 32px}
-.course-detail-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:start}
-.course-detail-left{}
-.course-detail-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:12px;color:var(--text3)}
-.course-detail-eyebrow span{color:var(--teal-dark)}
-.course-detail-title{font-size:clamp(24px,3vw,38px);margin-bottom:16px;line-height:1.2}
-.course-detail-sub{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:20px}
-.course-detail-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--text2)}
-.course-detail-right{position:sticky;top:80px}
-.course-detail-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
-.promo-video{aspect-ratio:16/9;background:linear-gradient(135deg,#0d0d1a,#1a1a2e);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer}
-.promo-video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;transition:background .2s}
-.promo-video-overlay:hover{background:rgba(0,0,0,0.2)}
-.play-circle{width:62px;height:62px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 12px rgba(78,204,163,.2);transition:transform .2s}
-.play-icon{width:0;height:0;border-top:12px solid transparent;border-bottom:12px solid transparent;border-left:20px solid #0d0d1a;margin-left:4px}
-.course-card-body{padding:24px}
-.course-card-price{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
-.course-card-price-main{font-family:'Poppins',sans-serif;font-size:34px;font-weight:600;color:var(--teal-dark)}
-.course-card-price-old{font-size:16px;color:var(--text3);text-decoration:line-through}
-.course-card-discount{font-size:12px;background:rgba(78,204,163,0.12);color:var(--teal-dark);padding:3px 8px;border-radius:4px;font-weight:500}
-.course-card-timer{font-size:12px;color:var(--text3);margin-bottom:20px}
-.course-card-enroll{width:100%;padding:14px;background:var(--teal);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
-.course-card-enroll:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35)}
-.course-card-guarantee{text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px}
-.course-card-includes{border-top:1px solid var(--border);padding-top:20px}
-.course-card-includes h4{font-size:12px;font-weight:600;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:12px}
-.include-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);margin-bottom:8px}
-.include-check{width:16px;height:16px;border-radius:50%;background:var(--teal-dim);border:1.5px solid var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:9px;color:var(--teal-dark);font-weight:700}
-
-/* TABS */
-.tabs-wrap{max-width:1100px;margin:0 auto;padding:0 32px}
-.tabs-bar{display:flex;border-bottom:1px solid var(--border);margin-bottom:40px;gap:0}
-.tab-btn{padding:16px 24px;font-size:14px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;background:transparent;border-top:none;border-left:none;border-right:none}
-.tab-btn:hover{color:var(--text)}
-.tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal)}
-.tab-pane{display:none}
-.tab-pane.active{display:block}
-
-/* Description tab */
-.desc-body{max-width:680px}
-.desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:16px}
-.desc-body ul{padding-left:24px;margin-bottom:16px}
-.desc-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:6px}
-.desc-section-title{font-size:18px;font-weight:500;color:var(--text);margin:28px 0 12px}
-
-/* Modules tab */
-.module-list{max-width:680px}
-.module-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden}
-.module-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;transition:background .2s}
-.module-header:hover{background:var(--bg3)}
-.module-header-left{display:flex;align-items:center;gap:12px}
-.module-num{font-family:'Inter',sans-serif;font-size:11px;color:var(--text3);width:28px}
-.module-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text)}
-.module-meta{font-size:12px;color:var(--text3);margin-left:auto;margin-right:12px}
-.chevron-icon{font-size:18px;color:var(--text3);transition:transform .2s;line-height:1}
-.chevron-icon.open{transform:rotate(180deg)}
-.lesson-list{border-top:1px solid var(--border);display:none}
-.lesson-list.open{display:block}
-.lesson-item{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .2s}
-.lesson-item:last-child{border-bottom:none}
-.lesson-item:hover{background:var(--bg3)}
-.lesson-icon{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);flex-shrink:0}
-.lesson-title{font-size:13px;color:var(--text2);flex:1}
-.lesson-duration{font-size:11px;color:var(--text3);margin-right:8px}
-.lesson-tag{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:500}
-.tag-free{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.3)}
-.tag-lock{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
-
-/* Testimonials tab */
-.testimonials-tab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;max-width:900px}
-
-/* ─── STUDENT DASHBOARD ─── */
-.dash-layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 64px)}
-.sidebar{background:#fff;border-right:1.5px solid var(--border);padding:20px 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto}
-.sidebar-section{margin-bottom:8px}
-.sidebar-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);padding:0 20px;margin-bottom:4px;margin-top:16px}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
-.sidebar-item:hover{color:var(--text);background:var(--bg3)}
-.sidebar-item.active{color:var(--teal-dark);border-left-color:var(--teal);background:var(--teal-dim)}
-.sidebar-icon{font-size:16px;width:20px;text-align:center}
-.dash-main{padding:32px;background:var(--bg2);overflow-y:auto}
-.dash-view{display:none}
-.dash-view.active{display:block}
-.dash-header{margin-bottom:32px}
-.dash-title{font-size:24px;font-weight:500;margin-bottom:4px}
-.dash-sub{font-size:14px;color:var(--text3)}
-
-/* Stats row */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
-.stat-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.stat-card-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
-.stat-card-value{font-family:'Poppins',sans-serif;font-size:32px;font-weight:600;color:var(--teal-dark);line-height:1}
-.stat-card-sub{font-size:12px;color:var(--text3);margin-top:4px}
-
-/* My courses */
-.my-courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.my-course-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow)}
-.my-course-card:hover{border-color:var(--teal);box-shadow:var(--shadow-md)}
-.my-course-thumb{aspect-ratio:16/9;background:linear-gradient(135deg,var(--bg2),var(--bg3));display:flex;align-items:center;justify-content:center;font-size:36px;position:relative}
-.progress-bar-wrap{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(0,0,0,0.5)}
-.progress-bar{height:100%;background:var(--teal);border-radius:2px}
-.my-course-body{padding:16px}
-.my-course-title{font-size:14px;font-weight:500;margin-bottom:8px}
-.my-course-progress{font-size:12px;color:var(--text3);margin-bottom:12px}
-.continue-btn{width:100%;padding:9px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
-.continue-btn:hover{background:var(--teal);color:#0d0d1a}
-
-/* Course Player */
-.player-layout{display:grid;grid-template-columns:1fr 320px;min-height:calc(100vh - 64px)}
-.player-main{padding:0}
-.video-container{background:#000;aspect-ratio:16/9;width:100%;display:flex;align-items:center;justify-content:center;position:relative}
-.video-placeholder{display:flex;flex-direction:column;align-items:center;gap:12px;color:rgba(255,255,255,0.3)}
-.video-placeholder-icon{font-size:48px}
-.player-info{padding:24px 28px;border-bottom:1px solid var(--border)}
-.player-lesson-title{font-size:20px;font-weight:500;margin-bottom:8px}
-.player-lesson-meta{font-size:13px;color:var(--text3)}
-.player-nav{display:flex;gap:10px;margin-top:16px}
-.player-sidebar{background:#fff;border-left:1.5px solid var(--border);overflow-y:auto}
-.player-sidebar-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600}
-.player-progress-bar{height:3px;background:var(--bg4);margin-bottom:0}
-.player-progress-fill{height:100%;background:var(--teal);width:35%}
-.player-module{border-bottom:1px solid var(--border)}
-.player-module-header{padding:12px 16px;font-size:12px;font-weight:600;color:var(--text3);letter-spacing:0.04em;background:var(--bg3)}
-.player-lesson-item{display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:12px;color:var(--text3);cursor:pointer;transition:background .2s;border-bottom:1px solid var(--border)}
-.player-lesson-item:last-child{border-bottom:none}
-.player-lesson-item:hover{background:var(--bg3)}
-.player-lesson-item.active{background:var(--teal-dim);color:var(--teal-dark)}
-.lesson-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px}
-.lesson-check.done{background:var(--teal);border-color:var(--teal);color:#0d0d1a}
-
-/* ─── INSTRUCTOR PORTAL ─── */
-.inst-header{background:#fff;border-bottom:1.5px solid var(--border);padding:28px 32px}
-.inst-header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.inst-tabs{display:flex;gap:4px;background:var(--bg3);border-radius:var(--radius);padding:4px}
-.inst-tab{padding:8px 20px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s}
-.inst-tab.active{background:#fff;color:var(--text);box-shadow:var(--shadow)}
-.inst-content{max-width:1100px;margin:0 auto;padding:32px;background:var(--bg2);min-height:calc(100vh - 180px)}
-.inst-view{display:none}
-.inst-view.active{display:block}
-
-/* Course builder */
-.builder-layout{display:grid;grid-template-columns:1fr 320px;gap:24px}
-.builder-left{}
-.builder-right{}
-.form-group{margin-bottom:20px}
-.form-label{display:block;font-size:12px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px}
-.form-input{width:100%;padding:11px 14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;transition:border-color .2s;outline:none}
-.form-input:focus{border-color:var(--teal)}
-.form-input::placeholder{color:var(--text3)}
-.form-textarea{resize:vertical;min-height:120px;line-height:1.6}
-.form-select{appearance:none;cursor:pointer}
-.module-builder{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow)}
-.module-builder-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--border)}
-.module-builder-title{flex:1;font-size:14px;font-weight:500}
-.module-builder-actions{display:flex;gap:6px}
-.icon-btn{width:28px;height:28px;border-radius:var(--radius-sm);background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text3);transition:all .2s}
-.icon-btn:hover{border-color:var(--border2);color:var(--text)}
-.lesson-builder{display:flex;align-items:center;gap:10px;padding:10px 16px;border-top:1px solid var(--border);background:var(--bg3)}
-.lesson-builder-input{flex:1;background:transparent;border:none;color:var(--text2);font-size:13px;outline:none}
-.add-lesson-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--text3);cursor:pointer;margin:8px 16px;transition:all .2s}
-.add-lesson-btn:hover{border-color:var(--teal);color:var(--teal-dark)}
-.add-module-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:transparent;border:1px dashed var(--border);border-radius:var(--radius);font-size:13px;color:var(--text3);cursor:pointer;transition:all .2s}
-.add-module-btn:hover{border-color:var(--teal);color:var(--teal-dark)}
-
-/* Testimonial uploader */
-.testimonial-list{display:grid;gap:12px}
-.testimonial-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:12px;align-items:flex-start}
-.testimonial-item-body{flex:1}
-.testimonial-status{padding:3px 10px;border-radius:100px;font-size:11px;font-weight:500}
-.status-live{background:rgba(39,174,96,0.12);color:#27ae60;border:1px solid rgba(39,174,96,0.2)}
-.status-pending{background:rgba(78,204,163,0.1);color:var(--teal-dark);border:1px solid rgba(78,204,163,0.2)}
-.upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;cursor:pointer;transition:all .2s}
-.upload-zone:hover{border-color:var(--teal-dark);background:var(--gold-dim2)}
-.upload-icon{font-size:32px;margin-bottom:12px;opacity:0.4}
-.upload-label{font-size:14px;color:var(--text2);margin-bottom:4px}
-.upload-sub{font-size:12px;color:var(--text3)}
-
-/* ─── ADMIN PANEL ─── */
-.admin-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 64px)}
-.admin-sidebar{background:#fff;border-right:1.5px solid var(--border);padding:20px 0}
-.admin-sidebar-logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
-.admin-sidebar-logo span{font-family:'Poppins',sans-serif;font-size:16px;font-weight:600;color:var(--text3)}
-.admin-sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
-.admin-sidebar-item:hover{color:var(--text)}
-.admin-sidebar-item.active{color:var(--teal-dark);border-left-color:var(--teal);background:var(--teal-dim)}
-.admin-main{padding:32px;background:var(--bg2);overflow-y:auto}
-.admin-view{display:none}
-.admin-view.active{display:block}
-.admin-page-title{font-size:22px;font-weight:500;margin-bottom:4px}
-.admin-page-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
-.admin-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
-.admin-stat{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
-.admin-stat-label{font-size:11px;color:var(--text3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px}
-.admin-stat-value{font-family:'Poppins',sans-serif;font-size:30px;font-weight:600;color:var(--teal-dark)}
-.admin-stat-change{font-size:12px;color:var(--green);margin-top:4px}
-
-/* Table */
-.admin-table{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
-.admin-table th{text-align:left;padding:12px 16px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);background:var(--bg2);border-bottom:1.5px solid var(--border)}
-.admin-table td{padding:14px 16px;font-size:13px;color:var(--text2);border-bottom:1px solid var(--border)}
-.admin-table tr:last-child td{border-bottom:none}
-.admin-table tr:hover td{background:var(--bg3)}
-.table-actions{display:flex;gap:6px}
-.tbl-btn{padding:4px 12px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;border:none}
-.tbl-btn-approve{background:rgba(39,174,96,0.12);color:#27ae60;border:1px solid rgba(39,174,96,0.2)}
-.tbl-btn-approve:hover{background:#27ae60;color:#fff}
-.tbl-btn-feature{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.25)}
-.tbl-btn-feature:hover{background:var(--teal);color:#0d0d1a}
-.tbl-btn-danger{background:rgba(192,57,43,0.1);color:var(--red);border:1px solid rgba(192,57,43,0.2)}
-.tbl-btn-danger:hover{background:var(--red);color:#fff}
-.badge-status{padding:3px 8px;border-radius:100px;font-size:11px;font-weight:500}
-.badge-live{background:rgba(39,174,96,0.12);color:#27ae60}
-.badge-pending{background:rgba(255,217,61,.12);color:#92400e}
-.badge-draft{background:var(--bg4);color:var(--text3)}
-
-/* ─── ENROLL MODAL ─── */
-.modal-overlay{position:fixed;inset:0;background:rgba(13,13,26,.5);z-index:200;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:480px;padding:32px;animation:slideUp .3s ease;position:relative;box-shadow:var(--shadow-lg)}
-@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-title{font-size:20px;font-weight:500;margin-bottom:4px}
-.modal-sub{font-size:13px;color:var(--text3);margin-bottom:24px}
-.modal-course-summary{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:14px;margin-bottom:22px}
-.modal-course-icon{width:56px;height:42px;background:var(--bg4);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.modal-course-title{font-size:14px;font-weight:500;margin-bottom:4px}
-.modal-course-instructor{font-size:12px;color:var(--text3)}
-.modal-price-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.modal-price-label{font-size:13px;color:var(--text2)}
-.modal-price-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text)}
-.modal-pay-btn{width:100%;padding:14px;background:var(--teal);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:var(--radius);cursor:pointer;transition:all .2s;margin-bottom:10px}
-.modal-pay-btn:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35)}
-.modal-close{position:absolute;top:20px;right:24px;font-size:22px;color:var(--text3);cursor:pointer;background:none;border:none}
-.modal-guarantee{text-align:center;font-size:12px;color:var(--text3)}
-
-
-/* ─── TOAST ─── */
-.toast{position:fixed;bottom:24px;right:24px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:13px 18px;font-size:13px;color:var(--text);z-index:300;display:none;box-shadow:var(--shadow-lg);max-width:300px}
-.toast.show{display:flex;align-items:center;gap:10px}
-.toast-icon{font-size:18px}
-
-/* ─── CATALOG PAGE ─── */
-.catalog-header{background:linear-gradient(160deg,#f0f7ff,#f0fdf8);border-bottom:1.5px solid var(--border);padding:48px 32px}
-.catalog-header-inner{max-width:1100px;margin:0 auto}
-.catalog-search{display:flex;gap:12px;margin-top:24px}
-.catalog-search-input{flex:1;padding:12px 18px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;box-shadow:var(--shadow)}
-.catalog-search-input:focus{border-color:var(--teal)}
-.catalog-search-input::placeholder{color:var(--text3)}
-.catalog-body{max-width:1100px;margin:0 auto;padding:40px 32px}
-.filter-row{display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap}
-.filter-label{font-size:12px;color:var(--text3);font-weight:500}
-.sort-select{padding:8px 14px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;outline:none;cursor:pointer;margin-left:auto;font-family:'Inter',sans-serif}
-
-/* responsive */
-@media(max-width:768px){
-  .nav-links{display:none}
-  .hero{padding:60px 20px}
-  .section{padding:60px 20px}
-  .course-detail-inner{grid-template-columns:1fr}
-  .course-detail-right{position:static}
-  .dash-layout{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .player-layout{grid-template-columns:1fr}
-  .player-sidebar{display:none}
-  .admin-layout{grid-template-columns:1fr}
-  .admin-sidebar{display:none}
-  .footer-top{grid-template-columns:1fr 1fr}
-  .stats-row,.admin-stats-row{grid-template-columns:1fr 1fr}
-  .builder-layout{grid-template-columns:1fr}
-  .steps{grid-template-columns:1fr 1fr}
-}
-.page{display:none}.page.active{display:block}
-
-/* ── Course page specific layout ── */
-.course-wrap{
-  max-width:1100px;
-  margin:0 auto;
-  padding:40px 32px 80px;
-  display:grid;
-  grid-template-columns:1fr 340px;
-  gap:48px;
-  align-items:start;
-}
-.course-main{}
-.course-sidebar{
-  position:sticky;
-  top:80px;
-}
-
-/* Breadcrumb */
-.breadcrumb{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:13px;
-  color:var(--text3);
-  margin-bottom:20px;
-}
-.breadcrumb a{color:var(--teal-dark);text-decoration:none;font-weight:500;cursor:pointer;}
-.breadcrumb a:hover{text-decoration:underline;}
-.breadcrumb-sep{color:var(--text3);}
-
-/* Course headline area */
-.course-headline{
-  margin-bottom:24px;
-}
-.course-below-video{margin-bottom:28px;padding-top:20px;}
-.course-headline h1{
-  font-size:clamp(22px,3vw,36px);
-  font-weight:700;
-  line-height:1.25;
-  margin-bottom:12px;
-  letter-spacing:-0.01em;
-  color:var(--text);
-}
-.course-headline-sub{
-  font-size:15px;
-  color:var(--text2);
-  line-height:1.7;
-  margin-bottom:18px;
-}
-.course-headline-meta{
-  display:flex;
-  flex-wrap:wrap;
-  gap:16px;
-  font-size:13px;
-  color:var(--text2);
-  margin-bottom:16px;
-}
-.course-headline-instructor{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:13px;
-  color:var(--text2);
-}
-
-/* ── PROMO VIDEO — full width in main column ── */
-.promo-video-wrap{
-  width:100%;
-  border-radius:var(--radius-lg);
-  overflow:hidden;
-  margin-bottom:32px;
-  position:relative;
-  background:#0d0d1a;
-  box-shadow:var(--shadow-lg);
-}
-.promo-video-wrap video,
-.promo-video-embed{
-  width:100%;
-  aspect-ratio:16/9;
-  display:block;
-  border:none;
-}
-.promo-video-placeholder{
-  aspect-ratio:16/9;
-  background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  cursor:pointer;
-  position:relative;
-}
-.promo-video-placeholder:hover .play-circle{transform:scale(1.08);}
-.promo-label{
-  font-size:13px;
-  color:rgba(255,255,255,.45);
-  letter-spacing:.04em;
-}
-.play-circle{
-  width:68px;height:68px;border-radius:50%;
-  background:var(--teal);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 0 16px rgba(78,204,163,.15);
-  transition:transform .2s;
-}
-.play-icon{
-  width:0;height:0;
-  border-top:14px solid transparent;
-  border-bottom:14px solid transparent;
-  border-left:22px solid #0d0d1a;
-  margin-left:5px;
-}
-
-/* ── TABS ── */
-.course-tabs-bar{
-  display:flex;
-  border-bottom:2px solid var(--border);
-  margin-bottom:32px;
-  gap:0;
-}
-.course-tab-btn{
-  padding:14px 28px;
-  font-family:'Inter',sans-serif;
-  font-size:14px;
-  font-weight:600;
-  color:var(--text3);
-  cursor:pointer;
-  border:none;
-  background:transparent;
-  border-bottom:2px solid transparent;
-  margin-bottom:-2px;
-  transition:all .2s;
-}
-.course-tab-btn:hover{color:var(--text);}
-.course-tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal);}
-.course-tab-pane{display:none;}
-.course-tab-pane.active{display:block;animation:fadeIn .2s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* Description tab */
-.desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:14px;}
-.desc-body ul{padding-left:22px;margin-bottom:14px;}
-.desc-body li{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:6px;}
-.desc-section-title{font-family:'Poppins',sans-serif;font-size:17px;font-weight:600;color:var(--text);margin:28px 0 12px;}
-
-/* Testimonials tab */
-.testimonials-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-  gap:16px;
-}
-
-/* Modules tab */
-.modules-summary{font-size:13px;color:var(--text3);font-weight:500;margin-bottom:20px;}
-.module-item{border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;background:#fff;box-shadow:var(--shadow);}
-.module-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;transition:background .2s;}
-.module-header:hover{background:var(--bg2);}
-.module-header-left{display:flex;align-items:center;gap:12px;}
-.module-num{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-sm);flex-shrink:0;}
-.module-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text);}
-.module-meta{font-size:12px;color:var(--text3);margin-right:12px;}
-.chevron-icon{font-size:18px;color:var(--text3);transition:transform .2s;line-height:1;}
-.chevron-icon.open{transform:rotate(180deg);}
-.lesson-list{display:none;border-top:1px solid var(--border);}
-.lesson-list.open{display:block;}
-.lesson-item{display:flex;align-items:center;gap:12px;padding:11px 20px;border-bottom:1px solid var(--border);transition:background .2s;cursor:pointer;}
-.lesson-item:last-child{border-bottom:none;}
-.lesson-item:hover{background:var(--bg2);}
-.lesson-icon{width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text3);flex-shrink:0;}
-.lesson-title{font-size:13px;color:var(--text2);flex:1;}
-.lesson-duration{font-size:11px;color:var(--text3);margin-right:8px;}
-.lesson-tag{font-size:10px;padding:3px 10px;border-radius:100px;font-weight:600;}
-.tag-free{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.3);}
-.tag-lock{background:var(--bg3);color:var(--text3);}
-
-/* ── SIDEBAR PURCHASE CARD ── */
-.purchase-card{
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:var(--radius-lg);
-  overflow:hidden;
-  box-shadow:var(--shadow-lg);
-}
-.purchase-card-price-row{
-  padding:24px 24px 0;
-}
-.purchase-card-price{
-  display:flex;
-  align-items:baseline;
-  gap:10px;
-  margin-bottom:4px;
-}
-.purchase-card-price-main{
-  font-family:'Poppins',sans-serif;
-  font-size:34px;
-  font-weight:800;
-  color:var(--text);
-}
-.purchase-card-price-old{
-  font-size:16px;
-  color:var(--text3);
-  text-decoration:line-through;
-}
-.purchase-card-discount{
-  font-size:12px;
-  background:rgba(34,197,94,.1);
-  color:#16a34a;
-  padding:3px 9px;
-  border-radius:4px;
-  font-weight:600;
-}
-.purchase-card-timer{
-  font-size:12px;
-  color:var(--text3);
-  margin-bottom:20px;
-}
-.purchase-card-actions{
-  padding:0 24px 20px;
-}
-.purchase-card-enroll{
-  width:100%;padding:14px;
-  background:var(--teal);color:#0d0d1a;
-  font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;
-  border:none;border-radius:var(--radius);cursor:pointer;
-  transition:all .2s;margin-bottom:10px;display:block;text-align:center;
-}
-.purchase-card-enroll:hover{background:var(--teal-dark);box-shadow:0 4px 16px rgba(78,204,163,.35);}
-.purchase-card-install{
-  width:100%;padding:12px;
-  background:transparent;color:var(--purple);
-  font-family:'Inter',sans-serif;font-size:13px;font-weight:600;
-  border:1.5px solid var(--purple);border-radius:var(--radius);
-  cursor:pointer;transition:all .2s;margin-bottom:12px;display:block;text-align:center;
-}
-.purchase-card-install:hover{background:var(--purple-dim);}
-.purchase-card-guarantee{
-  text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px;
-}
-.purchase-card-includes{
-  border-top:1px solid var(--border);
-  padding:20px 24px 24px;
-}
-.purchase-card-includes h4{
-  font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.05em;color:var(--text);margin-bottom:14px;
-}
-.include-item{
-  display:flex;align-items:center;gap:10px;
-  font-size:13px;color:var(--text2);margin-bottom:10px;
-}
-.include-check{
-  width:18px;height:18px;border-radius:50%;
-  background:var(--teal-dim);border:1.5px solid var(--teal);
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:9px;color:var(--teal-dark);font-weight:700;
-}
-
-/* ── Responsive ── */
-@media(max-width:768px){
-  .course-wrap{grid-template-columns:1fr;padding:24px 16px 100px;gap:0;}
-  .course-sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;z-index:50;border-radius:0;}
-  .purchase-card{border-radius:0;border-left:none;border-right:none;border-bottom:none;}
-  .purchase-card-includes{display:none;}
-}
-
-/* ── TESTIMONIAL CARDS — video + image + text ── */
-.tcard{
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:var(--radius-lg);
-  overflow:hidden;
-  box-shadow:var(--shadow);
-  transition:all .2s;
-}
-.tcard:hover{border-color:var(--teal);box-shadow:var(--shadow-md);}
-
-/* Media area — video or image */
-.tcard-media{
-  width:100%;
-  position:relative;
-  background:#0d0d1a;
-  cursor:pointer;
-}
-.tcard-media video{
-  width:100%;
-  aspect-ratio:16/9;
-  display:block;
-  object-fit:cover;
-}
-.tcard-media img{
-  width:100%;
-  aspect-ratio:16/9;
-  display:block;
-  object-fit:cover;
-}
-.tcard-play-btn{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,0.25);
-  transition:background .2s;
-}
-.tcard-play-btn:hover{background:rgba(0,0,0,0.1);}
-.tcard-play-circle{
-  width:52px;height:52px;border-radius:50%;
-  background:var(--teal);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 0 12px rgba(78,204,163,.2);
-  transition:transform .2s;
-}
-.tcard-play-btn:hover .tcard-play-circle{transform:scale(1.1);}
-.tcard-play-icon{
-  width:0;height:0;
-  border-top:10px solid transparent;
-  border-bottom:10px solid transparent;
-  border-left:17px solid #0d0d1a;
-  margin-left:3px;
-}
-.tcard-type-badge{
-  position:absolute;top:10px;right:10px;
-  background:rgba(13,13,26,.7);
-  backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:100px;
-  padding:4px 10px;
-  font-size:10px;font-weight:600;
-  color:rgba(255,255,255,.85);
-  letter-spacing:.04em;
-}
-
-/* Text body below media */
-.tcard-body{padding:18px 20px 20px;}
-.tcard-stars{color:#f59e0b;font-size:13px;margin-bottom:10px;letter-spacing:2px;}
-.tcard-text{font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:16px;}
-.tcard-person{display:flex;align-items:center;gap:10px;}
-.tcard-avatar{
-  width:38px;height:38px;border-radius:50%;
-  background:linear-gradient(135deg,var(--teal),var(--purple));
-  display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;color:#fff;flex-shrink:0;
-}
-.tcard-name{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:var(--text);}
-.tcard-loc{font-size:11px;color:var(--text3);}
-.tcard-result{
-  display:inline-flex;align-items:center;gap:5px;
-  margin-top:4px;font-size:11px;font-weight:600;
-  color:var(--teal-dark);
-  background:var(--teal-dim);
-  padding:2px 8px;border-radius:100px;
-}
-
-/* Text-only card (no media) */
-.tcard-text-only .tcard-body{padding:22px;}
-.tcard-text-only .tcard-text::before{content:'"';font-family:'Poppins',sans-serif;font-size:48px;line-height:0;color:var(--teal);opacity:.3;display:block;margin-bottom:8px;padding-top:20px;}
-
-/* Grid */
-.testimonials-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:20px;
-}
-
-
-/* ── CURRENCY SWITCHER ── */
-.currency-switcher{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-}
-.currency-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 12px;
-  background:var(--bg2);
-  border:1.5px solid var(--border);
-  border-radius:var(--radius-sm);
-  font-size:12px;font-weight:600;
-  color:var(--text2);
-  cursor:pointer;
-  transition:all .2s;
-  font-family:'Inter',sans-serif;
-  white-space:nowrap;
-}
-.currency-btn:hover{border-color:var(--teal);color:var(--teal-dark);}
-.currency-btn .flag{font-size:14px;}
-.currency-btn .chevron{font-size:10px;transition:transform .2s;}
-.currency-btn.open .chevron{transform:rotate(180deg);}
-.currency-dropdown{
-  position:absolute;
-  top:calc(100% + 8px);
-  right:0;
-  background:#fff;
-  border:1.5px solid var(--border);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow-lg);
-  min-width:200px;
-  z-index:200;
-  display:none;
-  overflow:hidden;
-}
-.currency-dropdown.open{display:block;animation:dropIn .15s ease;}
-@keyframes dropIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.currency-dropdown-header{
-  padding:10px 14px;
-  font-size:10px;font-weight:700;
-  text-transform:uppercase;letter-spacing:.08em;
-  color:var(--text3);
-  border-bottom:1px solid var(--border);
-  background:var(--bg2);
-}
-.currency-option{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;
-  font-size:13px;font-weight:500;
-  color:var(--text2);
-  cursor:pointer;
-  transition:background .15s;
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:100;height:64px;
+  display:flex;align-items:center;padding:0 32px;gap:32px;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
 }
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.nav-logo-mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#fff;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:var(--text);}
+.nav-logo-text span{color:var(--teal);}
+.nav-links{display:flex;align-items:center;gap:4px;position:absolute;left:50%;transform:translateX(-50%);}
+.nav-link{color:var(--text2);font-size:13px;font-weight:500;padding:7px 14px;border-radius:var(--r-sm);transition:all .2s;cursor:pointer;}
+.nav-link:hover{color:var(--text);background:var(--bg2);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;border:none;border-radius:var(--r-sm);cursor:pointer;transition:all .2s;padding:9px 18px;}
+.btn-ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+.btn-teal{background:var(--teal);color:#0d0d1a;font-weight:700;}
+.btn-teal:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(78,204,163,.35);}
+.btn-lg{padding:15px 32px;font-size:15px;border-radius:var(--r);}
+
+/* Currency */
+.currency-switcher{position:relative;}
+.currency-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.currency-btn:hover,.currency-btn.open{border-color:var(--teal);color:var(--teal-dark);}
+.currency-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh-lg);min-width:210px;z-index:200;display:none;overflow:hidden;}
+.currency-dropdown.open{display:block;animation:fadeDown .15s ease;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.currency-dropdown-header{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
+.currency-option{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);}
 .currency-option:last-child{border-bottom:none;}
-.currency-option:hover{background:var(--teal-dim);color:var(--teal-dark);}
-.currency-option.active{background:var(--teal-dim);color:var(--teal-dark);font-weight:600;}
+.currency-option:hover,.currency-option.active{background:var(--teal-dim);color:var(--teal-dark);}
 .currency-option .c-flag{font-size:18px;width:24px;text-align:center;}
 .currency-option .c-name{flex:1;}
-.currency-option .c-symbol{font-size:12px;color:var(--text3);font-weight:600;}
+.currency-option .c-symbol{font-size:11px;color:var(--text3);font-weight:600;}
 .currency-option.active .c-symbol{color:var(--teal-dark);}
 
+/* ── HERO BAND ── */
+.course-hero{
+  background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
+  padding:48px 0 0;
+  position:relative;overflow:hidden;
+}
+.course-hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 10% 50%,rgba(78,204,163,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 90% 20%,rgba(108,99,255,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-inner{
+  max-width:1160px;margin:0 auto;
+  padding:0 32px 48px;
+  display:grid;grid-template-columns:1fr 380px;gap:64px;
+  align-items:start;position:relative;z-index:1;
+}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:20px;}
+.breadcrumb a{color:var(--teal);cursor:pointer;transition:opacity .2s;}
+.breadcrumb a:hover{opacity:.8;}
+.breadcrumb-sep{color:rgba(255,255,255,.2);}
+.course-hero-title{
+  font-size:clamp(24px,3vw,40px);font-weight:800;
+  color:#fff;line-height:1.15;letter-spacing:-.02em;
+  margin-bottom:16px;
+}
+.course-hero-sub{
+  font-size:15px;color:rgba(255,255,255,.6);
+  line-height:1.75;margin-bottom:24px;max-width:580px;
+}
+.course-hero-meta{
+  display:flex;flex-wrap:wrap;gap:20px;
+  margin-bottom:20px;
+}
+.meta-item{display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(255,255,255,.55);}
+.meta-item strong{color:rgba(255,255,255,.85);font-weight:600;}
+.rating-stars{color:#f59e0b;font-size:13px;letter-spacing:1px;}
+.hero-instructor{
+  display:flex;align-items:center;gap:10px;
+  font-size:13px;color:rgba(255,255,255,.5);
+}
+.hero-inst-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;color:#fff;
+}
+.hero-inst-name{color:var(--teal);font-weight:600;cursor:pointer;}
+
+/* Badges */
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;
+}
+.badge-bestseller{background:var(--orange);color:#fff;}
+.badge-updated{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.badge-students{background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);}
+
+/* ── STICKY PURCHASE CARD ── */
+.purchase-card{
+  background:#fff;
+  border-radius:var(--r-xl);
+  box-shadow:var(--sh-lg);
+  overflow:hidden;
+  position:sticky;top:80px;
+}
+.pc-preview{
+  position:relative;cursor:pointer;
+  background:#0d0d1a;
+  aspect-ratio:16/9;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.pc-preview-thumb{
+  width:100%;height:100%;object-fit:cover;opacity:.7;position:absolute;inset:0;
+}
+.pc-play{
+  width:56px;height:56px;border-radius:50%;
+  background:rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+  position:relative;z-index:1;
+  transition:transform .2s;
+}
+.pc-preview:hover .pc-play{transform:scale(1.08);}
+.pc-play-icon{width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:16px solid var(--teal-dark);margin-left:4px;}
+.pc-preview-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;color:rgba(255,255,255,.8);z-index:1;white-space:nowrap;}
+
+.pc-body{padding:24px;}
+.pc-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
+.pc-price{font-family:'Poppins',sans-serif;font-size:36px;font-weight:900;color:var(--text);line-height:1;}
+.pc-price-old{font-size:16px;color:var(--text3);text-decoration:line-through;}
+.pc-discount{font-size:12px;font-weight:700;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);padding:3px 8px;border-radius:4px;}
+.pc-timer{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:6px;}
+
+.enroll-btn{
+  width:100%;padding:16px;
+  background:linear-gradient(135deg,var(--teal) 0%,#38b2ac 100%);
+  color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;
+  border:none;border-radius:var(--r);cursor:pointer;
+  transition:all .25s;display:block;text-align:center;
+  box-shadow:0 4px 20px rgba(78,204,163,.3);
+  margin-bottom:12px;position:relative;overflow:hidden;
+}
+.enroll-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);
+  opacity:0;transition:opacity .2s;
+}
+.enroll-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(78,204,163,.45);}
+.enroll-btn:hover::before{opacity:1;}
+.enroll-btn:active{transform:translateY(0);}
+.pc-guarantee{text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;}
+
+.pc-includes{border-top:1.5px solid var(--border);padding-top:18px;}
+.pc-includes-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:14px;}
+.include-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);margin-bottom:10px;}
+.include-check{width:18px;height:18px;border-radius:50%;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--teal-dark);font-weight:700;flex-shrink:0;}
+
+/* ── MAIN CONTENT AREA ── */
+.course-content{
+  max-width:1160px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr 380px;gap:64px;
+  align-items:start;padding-top:40px;padding-bottom:80px;
+}
+.course-main{}
+.course-sidebar-spacer{/* reserve space for sticky card */}
+
+/* ── TABS ── */
+.tabs-bar{
+  display:flex;border-bottom:2px solid var(--border);
+  margin-bottom:36px;position:sticky;top:64px;
+  background:var(--bg2);z-index:10;
+}
+.tab-btn{
+  padding:16px 24px;font-size:14px;font-weight:600;
+  color:var(--text3);background:transparent;border:none;cursor:pointer;
+  border-bottom:2.5px solid transparent;margin-bottom:-2px;
+  transition:all .2s;
+}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal);}
+.tab-pane{display:none;animation:fadeIn .2s ease;}
+.tab-pane.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── DESCRIPTION TAB ── */
+.desc-section{margin-bottom:36px;}
+.desc-section-title{
+  font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;
+  color:var(--text);margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:12px;}
+.learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.learn-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;color:var(--text2);line-height:1.6;
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);padding:12px 14px;
+}
+.learn-check{
+  width:18px;height:18px;border-radius:50%;flex-shrink:0;margin-top:1px;
+  background:var(--teal-dim);display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:var(--teal-dark);font-weight:700;
+}
+.req-item{
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:14px;color:var(--text2);padding:10px 0;
+  border-bottom:1px solid var(--border);
+}
+.req-item:last-child{border-bottom:none;}
+
+/* ── INSTRUCTOR CARD ── */
+.inst-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:24px;
+  display:flex;gap:20px;align-items:flex-start;
+}
+.inst-card-avatar{
+  width:72px;height:72px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;color:#fff;
+}
+.inst-card-name{font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+.inst-card-title{font-size:13px;color:var(--teal-dark);font-weight:600;margin-bottom:10px;}
+.inst-card-stats{display:flex;gap:20px;margin-bottom:12px;}
+.inst-stat{font-size:12px;color:var(--text3);}
+.inst-stat strong{color:var(--text);font-weight:600;}
+.inst-card-bio{font-size:13px;color:var(--text2);line-height:1.75;}
+
+/* ── TESTIMONIALS TAB ── */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.tcard{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--sh);transition:all .2s;
+}
+.tcard:hover{border-color:var(--teal);box-shadow:var(--sh-md);transform:translateY(-2px);}
+.tcard-media{position:relative;aspect-ratio:16/9;background:#0d0d1a;overflow:hidden;}
+.tcard-media img{width:100%;height:100%;object-fit:cover;display:block;}
+.tcard-media video{width:100%;height:100%;object-fit:cover;display:block;}
+.tcard-media-badge{
+  position:absolute;top:8px;right:8px;
+  background:rgba(13,13,26,.7);backdrop-filter:blur(6px);
+  color:rgba(255,255,255,.85);font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:4px;
+}
+.tcard-play-overlay{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.2);cursor:pointer;transition:background .2s;
+}
+.tcard-play-overlay:hover{background:rgba(0,0,0,.05);}
+.tcard-play-circle{width:44px;height:44px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px rgba(78,204,163,.2);}
+.tcard-play-icon{width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:14px solid #0d0d1a;margin-left:2px;}
+.tcard-body{padding:18px 20px 20px;}
+.tcard-stars{color:#f59e0b;font-size:12px;margin-bottom:8px;letter-spacing:1px;}
+.tcard-text{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;}
+.tcard-person{display:flex;align-items:center;gap:9px;}
+.tcard-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
+.tcard-name{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;}
+.tcard-loc{font-size:11px;color:var(--text3);}
+.tcard-result{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:10px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:2px 7px;border-radius:100px;}
+.tcard-text-only .tcard-body{padding:28px 24px;}
+
+/* ── MODULES TAB ── */
+.modules-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+}
+.modules-summary{font-size:13px;color:var(--text3);font-weight:500;}
+.module-item{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);margin-bottom:10px;overflow:hidden;
+  box-shadow:var(--sh);transition:border-color .2s;
+}
+.module-item:hover{border-color:var(--border2);}
+.module-head{
+  display:flex;align-items:center;gap:14px;
+  padding:16px 20px;cursor:pointer;
+  transition:background .2s;
+}
+.module-head:hover{background:var(--bg2);}
+.module-num{
+  width:32px;height:32px;border-radius:var(--r-sm);flex-shrink:0;
+  background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;color:var(--teal-dark);
+}
+.module-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text);flex:1;}
+.module-meta{font-size:12px;color:var(--text3);margin-right:10px;}
+.module-chevron{font-size:16px;color:var(--text3);transition:transform .2s;line-height:1;}
+.module-chevron.open{transform:rotate(180deg);}
+.lesson-list{display:none;border-top:1px solid var(--border);}
+.lesson-list.open{display:block;}
+.lesson-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 20px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .2s;
+}
+.lesson-row:last-child{border-bottom:none;}
+.lesson-row:hover{background:var(--bg2);}
+.lesson-icon{
+  width:30px;height:30px;border-radius:50%;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--text3);flex-shrink:0;
+}
+.lesson-title{font-size:13px;color:var(--text2);flex:1;}
+.lesson-dur{font-size:11px;color:var(--text3);margin-right:8px;}
+.lesson-tag{font-size:10px;padding:3px 9px;border-radius:100px;font-weight:600;}
+.tag-free{background:var(--teal-dim);color:var(--teal-dark);border:1px solid rgba(78,204,163,.25);}
+.tag-lock{background:var(--bg3);color:var(--text3);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:13px 18px;font-size:13px;color:var(--text);display:none;box-shadow:var(--sh-lg);max-width:300px;}
+.toast.show{display:flex;align-items:center;gap:10px;animation:fadeDown .25s ease;}
+.toast-icon{font-size:18px;}
+
+@media(max-width:900px){
+  .hero-inner,.course-content{grid-template-columns:1fr;}
+  .purchase-card{position:static;}
+  .learn-grid,.testi-grid{grid-template-columns:1fr;}
+}
 </style>
-<!-- firebase.html - paste this ONCE inside <head> of every page -->
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">S</div>
+    <span class="nav-logo-text">Skills<span>Libry</span></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="catalog.html" style="color:var(--teal-dark);font-weight:600;">Courses</a>
+    <a class="nav-link" href="#">Community</a>
+    <a class="nav-link" href="#">Blog</a>
+  </div>
+  <div class="nav-right">
+    <div class="currency-switcher" id="currency-switcher">
+      <button class="currency-btn" id="currency-btn" onclick="toggleCurrencyDropdown()">USD &#9660;</button>
+      <div class="currency-dropdown" id="currency-dropdown">
+        <div class="currency-dropdown-header">Select your currency</div>
+        <div class="currency-option" data-code="NGN" onclick="setCurrency('NGN');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127475;&#127468;</span><span class="c-name">Nigerian Naira</span><span class="c-symbol">&#x20a6;</span></div>
+        <div class="currency-option" data-code="USD" onclick="setCurrency('USD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127482;&#127480;</span><span class="c-name">US Dollar</span><span class="c-symbol">$</span></div>
+        <div class="currency-option" data-code="GBP" onclick="setCurrency('GBP');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127468;&#127463;</span><span class="c-name">British Pound</span><span class="c-symbol">&#163;</span></div>
+        <div class="currency-option" data-code="EUR" onclick="setCurrency('EUR');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127466;&#127482;</span><span class="c-name">Euro</span><span class="c-symbol">&#8364;</span></div>
+        <div class="currency-option" data-code="GHS" onclick="setCurrency('GHS');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127468;&#127469;</span><span class="c-name">Ghanaian Cedi</span><span class="c-symbol">GH&#8373;</span></div>
+        <div class="currency-option" data-code="KES" onclick="setCurrency('KES');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127472;&#127466;</span><span class="c-name">Kenyan Shilling</span><span class="c-symbol">KSh</span></div>
+        <div class="currency-option" data-code="ZAR" onclick="setCurrency('ZAR');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127487;&#127462;</span><span class="c-name">South African Rand</span><span class="c-symbol">R</span></div>
+        <div class="currency-option" data-code="AED" onclick="setCurrency('AED');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127462;&#127466;</span><span class="c-name">UAE Dirham</span><span class="c-symbol">AED</span></div>
+        <div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127464;&#127462;</span><span class="c-name">Canadian Dollar</span><span class="c-symbol">CA$</span></div>
+      </div>
+    </div>
+    <a class="btn btn-ghost" href="#" onclick="window._user?window.location.href='dashboard.html':openAuthModal(null,'si')">My Learning</a>
+    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+  </div>
+</nav>
+
+<!-- ══ HERO BAND ══ -->
+<div class="course-hero">
+  <div class="hero-inner">
+    <div class="course-hero-left">
+      <div class="breadcrumb">
+        <a href="catalog.html">Courses</a>
+        <span class="breadcrumb-sep">/</span>
+        <span id="cd-category">Affiliate Marketing</span>
+      </div>
+
+      <h1 class="course-hero-title" id="cd-title">
+        Affiliate Marketing Mastery: From Zero to &#x20a6;500k/Month
+      </h1>
+
+      <!-- Promo video — sits directly below headline -->
+      <div style="
+        margin:24px 0 28px;
+        border-radius:14px;overflow:hidden;
+        box-shadow:0 20px 60px rgba(0,0,0,.5);
+        border:1.5px solid rgba(255,255,255,.1);
+        position:relative;background:#000;
+        aspect-ratio:16/9;
+        cursor:pointer;
+      " id="hero-promo-wrap" onclick="playHeroVideo(this)">
+        <!-- Placeholder / play button -->
+        <div id="hero-promo-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(13,13,26,.9),rgba(26,26,46,.8));">
+          <div id="hero-play-btn" style="width:72px;height:72px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 18px rgba(78,204,163,.12),0 0 0 36px rgba(78,204,163,.05);margin-bottom:16px;transition:transform .2s;">
+            <div style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:22px solid #0d0d1a;margin-left:5px;"></div>
+          </div>
+          <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">Watch course preview</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.45);">See exactly what you get before enrolling</div>
+        </div>
+        <video id="hero-promo-video" style="display:none;width:100%;height:100%;object-fit:cover;" controls preload="none">
+          <source src="" type="video/mp4"/>
+        </video>
+      </div>
+
+      <div class="hero-badges" style="margin:-8px 0 20px;">
+        <span class="badge badge-bestseller">&#11088; Bestseller</span>
+        <span class="badge badge-updated">&#9989; Updated Dec 2024</span>
+        <span class="badge badge-students">&#128101; 3,241 students</span>
+      </div>
+
+      <p class="course-hero-sub">
+        The most complete affiliate marketing course built specifically for the African market. Actual strategies that convert Nigerian and African audiences.
+      </p>
+
+      <div class="course-hero-meta">
+        <div class="meta-item">
+          <span class="rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <strong>4.9</strong>
+          <span>(847 ratings)</span>
+        </div>
+        <div class="meta-item">&#128336; <strong>6h 20min</strong> total</div>
+        <div class="meta-item">&#127891; <strong>6 modules</strong> · 28 lessons</div>
+      </div>
+
+      <div class="hero-instructor">
+        <div class="hero-inst-avatar" id="cd-avatar">CO</div>
+        <span>Created by&nbsp;</span>
+        <span class="hero-inst-name" id="cd-instructor">Chidi Okafor</span>
+      </div>
+    </div>
+
+    <!-- Purchase card sits in hero on desktop -->
+    <div>
+      <div class="purchase-card">
+        <div class="pc-body">
+          <div class="pc-price-row">
+            <div class="pc-price" id="cd-price" data-ngn="35000">&#x20a6;35,000</div>
+            <div class="pc-price-old" id="cd-price-old">&#x20a6;60,000</div>
+            <div class="pc-discount">42% off</div>
+          </div>
+          <div class="pc-timer">&#9203; Offer ends in 2 days</div>
+
+          <div class="pc-includes">
+            <div class="pc-includes-title">This course includes</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>6+ hours of HD video content</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Downloadable resources &amp; templates</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Private student community access</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Verified certificate on completion</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Lifetime access &amp; free updates</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Income activation plan included</div>
+          </div>
+
+          <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
+            Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000</span>
+          </button>
+          <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="course-content">
+  <div class="course-main">
+
+    <!-- Tabs -->
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'tab-desc')">Description</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-testi')">Testimonials</button>
+      <button class="tab-btn" onclick="switchTab(this,'tab-modules')">Modules</button>
+    </div>
+
+    <!-- TAB: DESCRIPTION -->
+    <div id="tab-desc" class="tab-pane active">
+
+      <div class="desc-section">
+        <div class="desc-section-title">&#9989; What you will learn</div>
+        <div class="learn-grid">
+          <div class="learn-item"><div class="learn-check">&#10003;</div>Identify high-paying affiliate programs that convert for African audiences</div>
+          <div class="learn-item"><div class="learn-check">&#10003;</div>Build a proven funnel that works with free and paid traffic</div>
+          <div class="learn-item"><div class="learn-check">&#10003;</div>Write email sequences that warm cold leads into buyers</div>
+          <div class="learn-item"><div class="learn-check">&#10003;</div>Scale your first &#x20a6;50k month to &#x20a6;500k/month systematically</div>
+          <div class="learn-item"><div class="learn-check">&#10003;</div>Traffic strategies tested for Nigeria, Ghana, Kenya &amp; South Africa</div>
+          <div class="learn-item"><div class="learn-check">&#10003;</div>Your first commission within 7 days of completing the course</div>
+        </div>
+      </div>
+
+      <div class="desc-section">
+        <div class="desc-section-title">&#128196; Course description</div>
+        <div class="desc-body">
+          <p>This course teaches you everything you need to build a consistent affiliate marketing income in Nigeria and across Africa — even if you have zero experience, no audience, and no product of your own.</p>
+          <p>Every module is built around one goal: your first real income. Not theory. Not fluff. Step-by-step systems that have been tested and refined specifically for African markets, African payment systems, and African audiences.</p>
+          <p>By the end of this course, you'll have a live funnel, a working traffic strategy, and a clear path from your first sale to &#x20a6;500k/month.</p>
+        </div>
+      </div>
+
+      <div class="desc-section">
+        <div class="desc-section-title">&#128221; Requirements</div>
+        <div>
+          <div class="req-item">&#9679;&nbsp; A smartphone or laptop with internet access</div>
+          <div class="req-item">&#9679;&nbsp; A Flutterwave or Paystack account (free to create)</div>
+          <div class="req-item">&#9679;&nbsp; No prior marketing experience needed — we start from zero</div>
+        </div>
+      </div>
+
+      <div class="desc-section">
+        <div class="desc-section-title">&#128100; About the instructor</div>
+        <div class="inst-card">
+          <div class="inst-card-avatar" id="inst-avatar">CO</div>
+          <div>
+            <div class="inst-card-name" id="inst-name">Chidi Okafor</div>
+            <div class="inst-card-title">Affiliate Marketer &amp; Digital Entrepreneur</div>
+            <div class="inst-card-stats">
+              <div class="inst-stat"><strong>3,241</strong> students</div>
+              <div class="inst-stat"><strong>4.9</strong> &#9733; rating</div>
+              <div class="inst-stat"><strong>1</strong> course</div>
+            </div>
+            <div class="inst-card-bio">Chidi has been generating consistent affiliate income in Nigeria for 5+ years, with monthly earnings exceeding &#x20a6;1.2M. He teaches the exact systems he uses — no theory, no recycled content from YouTube.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB: TESTIMONIALS -->
+    <div id="tab-testi" class="tab-pane">
+      <div class="testi-grid" id="course-testimonials-grid"></div>
+    </div>
+
+    <!-- TAB: MODULES -->
+    <div id="tab-modules" class="tab-pane">
+      <div class="modules-header">
+        <div class="modules-summary">6 modules &middot; 28 lessons &middot; 6h 20min total</div>
+      </div>
+      <div id="module-list"></div>
+    </div>
+
+  </div>
+  <div class="course-sidebar-spacer"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toast-icon"></span>
+  <span id="toast-msg"></span>
+</div>
 
 
-<script src="https://checkout.flutterwave.com/v3.js"></script>
 <!-- ══ FIREBASE + AUTH ══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1021,541 +699,8 @@ function slErr(code) {
   return m[code] || ('Error: ' + code + ' — please try again.');
 }
 </script>
-</head>
-<body>
 
-<!-- NAV -->
-<nav class="nav">
-  <a class="nav-logo" href="index.html">
-    <div class="nav-logo-mark">S</div>
-    <span class="nav-logo-text">Skills<span>Libry</span></span>
-  </a>
-  <div class="nav-links">
-    <a class="nav-link" href="catalog.html" style="color:var(--teal-dark);font-weight:600;">Courses</a>
-    <a class="nav-link" href="#">Community</a>
-    <a class="nav-link" href="#">Blog</a>
-  </div>
-  <div class="nav-right">
-    <!-- Currency switcher -->
-    <div class="currency-switcher" id="currency-switcher">
-      <button class="currency-btn" id="currency-btn" onclick="toggleCurrencyDropdown()">
-        <span class="flag">🇳🇬</span>
-        <span>NGN</span>
-        <span class="chevron">▾</span>
-      </button>
-      <div class="currency-dropdown" id="currency-dropdown">
-        <div class="currency-dropdown-header">Select your currency</div>
-        <div class="currency-option" data-code="NGN" onclick="setCurrency('NGN');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇳🇬</span>
-          <span class="c-name">Nigerian Naira</span>
-          <span class="c-symbol">₦</span>
-        </div><div class="currency-option" data-code="USD" onclick="setCurrency('USD');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇺🇸</span>
-          <span class="c-name">US Dollar</span>
-          <span class="c-symbol">$</span>
-        </div><div class="currency-option" data-code="GBP" onclick="setCurrency('GBP');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇬🇧</span>
-          <span class="c-name">British Pound</span>
-          <span class="c-symbol">£</span>
-        </div><div class="currency-option" data-code="EUR" onclick="setCurrency('EUR');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇪🇺</span>
-          <span class="c-name">Euro</span>
-          <span class="c-symbol">€</span>
-        </div><div class="currency-option" data-code="GHS" onclick="setCurrency('GHS');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇬🇭</span>
-          <span class="c-name">Ghanaian Cedi</span>
-          <span class="c-symbol">GH₵</span>
-        </div><div class="currency-option" data-code="KES" onclick="setCurrency('KES');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇰🇪</span>
-          <span class="c-name">Kenyan Shilling</span>
-          <span class="c-symbol">KSh</span>
-        </div><div class="currency-option" data-code="ZAR" onclick="setCurrency('ZAR');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇿🇦</span>
-          <span class="c-name">South African Rand</span>
-          <span class="c-symbol">R</span>
-        </div><div class="currency-option" data-code="AED" onclick="setCurrency('AED');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇦🇪</span>
-          <span class="c-name">UAE Dirham</span>
-          <span class="c-symbol">AED</span>
-        </div><div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');">
-          <span class="c-flag">🇨🇦</span>
-          <span class="c-name">Canadian Dollar</span>
-          <span class="c-symbol">CA$</span>
-        </div>
-      </div>
-    </div>
-    <a class="btn btn-ghost" href="dashboard.html">My Learning</a>
-    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
-  </div>
-</nav>
-
-<!-- COURSE PAGE -->
-<div class="page active" style="padding-top:64px;background:var(--bg2);min-height:100vh;">
-
-  <div class="course-wrap">
-
-    <!-- LEFT: MAIN COLUMN -->
-    <div class="course-main">
-
-      <!-- Breadcrumb -->
-      <div class="breadcrumb">
-        <a href="catalog.html">Courses</a>
-        <span class="breadcrumb-sep">/</span>
-        <span id="cd-category">Affiliate Marketing</span>
-      </div>
-
-      <!-- Title only — above video -->
-      <div class="course-headline">
-        <h1 id="cd-title">Affiliate Marketing Mastery: From Zero to ₦500k/Month</h1>
-      </div>
-
-      <!-- PROMO VIDEO — below title, above description -->
-      <div class="promo-video-wrap">
-        <div class="promo-video-placeholder" onclick="showToast('▶','Playing course preview...')">
-          <div class="play-circle"><div class="play-icon"></div></div>
-          <div class="promo-label">▶ &nbsp; Watch course preview</div>
-        </div>
-      </div>
-
-      <!-- Sub + meta + instructor — below video -->
-      <div class="course-below-video">
-        <p class="course-headline-sub">The most complete affiliate marketing course built specifically for the African market. Actual strategies that convert Nigerian and African audiences.</p>
-        <div class="course-headline-meta">
-          <span>⭐ <strong>4.9</strong> (847 ratings)</span>
-          <span>👥 <strong id="cd-students">3,241</strong> students</span>
-          <span>🕐 <strong>6h 20min</strong> total</span>
-          <span>📅 Updated <strong>Dec 2024</strong></span>
-        </div>
-        <div class="course-headline-instructor">
-          <div class="avatar-xs" style="width:32px;height:32px;font-size:13px;" id="cd-avatar">CO</div>
-          <span>Created by <strong style="color:var(--teal-dark);" id="cd-instructor">Chidi Okafor</strong></span>
-        </div>
-      </div>
-
-      <!-- 3 TABS -->
-      <div class="course-tabs-bar">
-        <button class="course-tab-btn active" onclick="switchTab(this,'tab-desc')">Description</button>
-        <button class="course-tab-btn" onclick="switchTab(this,'tab-testimonials')">Testimonials</button>
-        <button class="course-tab-btn" onclick="switchTab(this,'tab-modules')">Modules</button>
-      </div>
-
-      <!-- TAB 1: DESCRIPTION -->
-      <div id="tab-desc" class="course-tab-pane active">
-        <div class="desc-body">
-          <p>This course teaches you everything you need to build a consistent affiliate marketing income in Nigeria and across Africa — even if you have zero experience, no audience, and no product of your own.</p>
-          <div class="desc-section-title">What you will learn</div>
-          <ul>
-            <li>How to identify and join high-paying affiliate programs that actually convert for African audiences</li>
-            <li>How to build a simple, proven funnel that works with free and paid traffic</li>
-            <li>Traffic strategies tested and refined for Nigeria, Ghana, Kenya, and South Africa</li>
-            <li>How to write email sequences that warm cold leads into buyers</li>
-            <li>How to scale your first ₦50,000 month to ₦500,000/month systematically</li>
-            <li>The income activation plan — your first commission within 7 days of completing the course</li>
-          </ul>
-          <div class="desc-section-title">Who this course is for</div>
-          <p>This course is built for anyone in Africa who wants to earn income online without creating their own product. Whether you're a complete beginner or someone who has tried affiliate marketing before without results, this course gives you the system, not just the theory.</p>
-          <div class="desc-section-title">Requirements</div>
-          <ul>
-            <li>A smartphone or laptop with internet access</li>
-            <li>A Paystack or Flutterwave account (free to create)</li>
-            <li>No prior marketing experience needed</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- TAB 2: TESTIMONIALS -->
-      <div id="tab-testimonials" class="course-tab-pane">
-        <div class="testimonials-grid" id="course-testimonials-grid"></div>
-      </div>
-
-      <!-- TAB 3: MODULES -->
-      <div id="tab-modules" class="course-tab-pane">
-        <div class="modules-summary">6 modules · 28 lessons · 6h 20min total</div>
-        <div id="module-list"></div>
-      </div>
-
-    </div><!-- /course-main -->
-
-    <!-- RIGHT: PURCHASE CARD SIDEBAR -->
-    <div class="course-sidebar">
-      <div class="purchase-card">
-        <div class="purchase-card-price-row">
-          <div class="purchase-card-price">
-            <span class="purchase-card-price-main" id="cd-price">₦35,000</span>
-            <span class="purchase-card-price-old" id="cd-price-old">₦60,000</span>
-            <span class="purchase-card-discount">42% off</span>
-          </div>
-          <div class="purchase-card-timer">⏰ Offer ends in 2 days</div>
-        </div>
-        <div class="purchase-card-actions">
-          <button class="purchase-card-enroll" onclick="enrollClick()">Enroll now — ₦35,000</button>
-          
-          <div class="purchase-card-guarantee">🔒 30-day money-back guarantee</div>
-        </div>
-        <div class="purchase-card-includes">
-          <h4>This course includes</h4>
-          <div class="include-item"><div class="include-check">✓</div><span>6+ hours of HD video content</span></div>
-          <div class="include-item"><div class="include-check">✓</div><span>Downloadable resources & templates</span></div>
-          <div class="include-item"><div class="include-check">✓</div><span>Private student community access</span></div>
-          <div class="include-item"><div class="include-check">✓</div><span>Verified certificate on completion</span></div>
-          <div class="include-item"><div class="include-check">✓</div><span>Lifetime access & free updates</span></div>
-          <div class="include-item"><div class="include-check">✓</div><span>Income activation plan included</span></div>
-        </div>
-      </div>
-    </div><!-- /course-sidebar -->
-
-  </div><!-- /course-wrap -->
-</div>
-
-<!-- ENROLL MODAL -->
-<div class="modal-overlay" id="enroll-modal">
-  <div class="modal" style="position:relative">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <div class="modal-title">Complete your enrollment</div>
-    <div class="modal-sub">You're one step away from activating your skill</div>
-    <div class="modal-course-summary">
-      <div class="modal-course-icon">📈</div>
-      <div>
-        <div class="modal-course-title">Affiliate Marketing Mastery</div>
-        <div class="modal-course-instructor">Chidi Okafor · 6h 20min · 28 lessons</div>
-      </div>
-    </div>
-    <div class="modal-price-row">
-      <div>
-        <div class="modal-price-label">Total today</div>
-        <div style="font-size:12px;color:var(--text3)" id="modal-price-note">Full access · Lifetime</div>
-      </div>
-      <div class="modal-price-val" id="modal-price-display">₦35,000</div>
-    </div>
-    <button class="modal-pay-btn" onclick="showToast('🚀','Redirecting to Paystack checkout...');closeModal()">Pay with Paystack →</button>
-    
-    <div class="modal-guarantee">🔒 30-day money-back guarantee · Secure payment via Paystack</div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon">✓</span>
-  <span id="toast-msg">Done</span>
-</div>
-
-<script>
-/* ── DATA ── */
-const COURSES = [
-  {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
-  {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
-  {id:3,title:'Content to Cash: Monetise Every Platform You Touch',instructor:'Femi Ogunwale',initials:'FO',cat:'content',catLabel:'Content & Monetisation',price:'₦22,000',priceOld:'₦40,000',rating:'4.7',students:'2,104',badge:'New',icon:'🎬'},
-  {id:4,title:'AI Tools Mastery: Work 10x Faster, Earn 10x More',instructor:'Kemi Adeyemi',initials:'KA',cat:'ai',catLabel:'AI Skills',price:'₦32,000',priceOld:'₦55,000',rating:'4.9',students:'1,120',badge:'Trending',icon:'🤖'},
-  {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
-  {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
-];
-const TESTIMONIALS = [
-  {
-    name:'Amaka Obi', loc:'Lagos, Nigeria', initials:'AO', stars:5,
-    type:'video',
-    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
-    text:'I made my first ₦45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',
-    result:'₦45,000 in week 3'
-  },
-  {
-    name:'Taiwo Musa', loc:'Abuja, Nigeria', initials:'TM', stars:5,
-    type:'image',
-    mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
-    text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',
-    result:'₦120k first month'
-  },
-  {
-    name:'Grace Abiodun', loc:'Port Harcourt, Nigeria', initials:'GA', stars:5,
-    type:'video',
-    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
-    text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take 2 days. My rates doubled.',
-    result:'Rates doubled'
-  },
-  {
-    name:'Emmanuel Nwosu', loc:'Enugu, Nigeria', initials:'EN', stars:5,
-    type:'image',
-    mediaSrc:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
-    text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
-    result:'First sale in 21 days'
-  },
-  {
-    name:'Blessing Okafor', loc:'Lagos, Nigeria', initials:'BO', stars:5,
-    type:'text',
-    mediaSrc:null,
-    text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',
-    result:'$400/month client'
-  },
-  {
-    name:'Ibrahim Suleiman', loc:'Kano, Nigeria', initials:'IS', stars:5,
-    type:'text',
-    mediaSrc:null,
-    text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',
-    result:'First income in 14 days'
-  },
-];
-const MODULES = [
-  {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
-  {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
-  {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
-  {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
-  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
-  {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
-];
-
-/* ── NAVIGATION ── */
-function goTo(page){
-  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
-    dashboard:'dashboard.html',player:'player.html',
-    instructor:'instructor.html',admin:'admin.html'};
-  if(routes[page]) window.location.href=routes[page];
-}
-function showPage(page){ goTo(page); }
-function showCourseDetail(id){ window.location.href='course.html?id='+id; }
-
-/* ── TABS ── */
-function switchTab(btn, pane){
-  document.querySelectorAll('.course-tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.querySelectorAll('.course-tab-pane').forEach(function(p){ p.classList.remove('active'); });
-  btn.classList.add('active');
-  var el = document.getElementById(pane);
-  if(el) el.classList.add('active');
-}
-
-/* ── MODULES ACCORDION ── */
-function toggleModule(header){
-  var lessons = header.nextElementSibling;
-  var chevron = header.querySelector('.chevron-icon');
-  if(lessons) lessons.classList.toggle('open');
-  if(chevron) chevron.classList.toggle('open');
-}
-
-/* ── MODAL ── */
-function openEnrollModal(){
-  var em=document.getElementById('enroll-modal');
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-install-btn');
-  if(pd) pd.textContent='₦35,000';
-  if(pn) pn.textContent='Full access · Lifetime';
-  if(ib) ib.style.display='block';
-  if(em) em.classList.add('open');
-}
-
-
-function closeModal(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.classList.remove('open');
-}
-(function(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-})();
-
-/* ── TOAST ── */
-function showToast(icon,msg){
-  var t=document.getElementById('toast'); if(!t) return;
-  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
-  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
-  t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); },3000);
-}
-
-/* ── RENDER MODULES ── */
-(function(){
-  var ml=document.getElementById('module-list'); if(!ml) return;
-  ml.innerHTML=MODULES.map(function(m,mi){
-    return '<div class="module-item">'+
-      '<div class="module-header" onclick="toggleModule(this)">'+
-        '<div class="module-header-left">'+
-          '<div class="module-num">'+m.num+'</div>'+
-          '<span class="module-title">'+m.title+'</span>'+
-        '</div>'+
-        '<span class="module-meta">'+m.meta+'</span>'+
-        '<span class="chevron-icon'+(mi===0?' open':'')+'">⌄</span>'+
-      '</div>'+
-      '<div class="lesson-list'+(mi===0?' open':'')+'">'+
-        m.lessons.map(function(l){
-          return '<div class="lesson-item">'+
-            '<div class="lesson-icon">▶</div>'+
-            '<span class="lesson-title">'+l.t+'</span>'+
-            '<span class="lesson-duration">'+l.dur+'</span>'+
-            '<span class="lesson-tag '+(l.free?'tag-free':'tag-lock')+'">'+(l.free?'Free preview':'Enrolled')+'</span>'+
-          '</div>';
-        }).join('')+
-      '</div>'+
-    '</div>';
-  }).join('');
-})();
-
-/* ── RENDER TESTIMONIALS ── */
-(function(){
-  var ctg=document.getElementById('course-testimonials-grid'); if(!ctg) return;
-
-  ctg.innerHTML=TESTIMONIALS.map(function(t){
-    var mediaHtml='';
-
-    if(t.type==='video' && t.mediaSrc){
-      mediaHtml='<div class="tcard-media">'
-        +'<video preload="metadata" style="width:100%;aspect-ratio:16/9;display:block;object-fit:cover;">'
-        +'<source src="'+t.mediaSrc+'" type="video/mp4"/>'
-        +'</video>'
-        +'<span class="tcard-type-badge">&#127916; Video</span>'
-        +'</div>';
-
-    } else if(t.type==='image' && t.mediaSrc){
-      mediaHtml='<div class="tcard-media">'
-        +'<img src="'+t.mediaSrc+'" alt="'+t.name+'" loading="lazy" style="width:100%;aspect-ratio:16/9;display:block;object-fit:cover;"/>'
-        +'<span class="tcard-type-badge">&#128247; Photo</span>'
-        +'</div>';
-    }
-
-    var textOnly = (!t.mediaSrc || t.type==='text') ? ' tcard-text-only' : '';
-
-    return '<div class="tcard'+textOnly+'">'
-      +mediaHtml
-      +'<div class="tcard-body">'
-        +'<div class="tcard-stars">'+'&#9733;'.repeat(t.stars)+'</div>'
-        +'<div class="tcard-text">'+t.text+'</div>'
-        +'<div class="tcard-person">'
-          +'<div class="tcard-avatar">'+t.initials+'</div>'
-          +'<div>'
-            +'<div class="tcard-name">'+t.name+'</div>'
-            +'<div class="tcard-loc">'+t.loc+'</div>'
-            +(t.result ? '<div class="tcard-result">&#128176; '+t.result+'</div>' : '')
-          +'</div>'
-        +'</div>'
-      +'</div>'
-    +'</div>';
-  }).join('');
-})();
-
-/* ── LOAD COURSE FROM URL PARAM ── */
-(function(){
-  var params=new URLSearchParams(window.location.search);
-  var id=parseInt(params.get('id'))||1;
-  var c=COURSES.find(function(x){return x.id===id;})||COURSES[0];
-  var set=function(elId,val){var el=document.getElementById(elId);if(el)el.textContent=val;};
-  set('cd-title',c.title);
-  set('cd-category',c.catLabel);
-  set('cd-instructor',c.instructor);
-  set('cd-avatar',c.initials);
-  set('cd-price',c.price);
-  set('cd-price-old',c.priceOld);
-  set('cd-students',c.students);
-  var eb=document.querySelector('.purchase-card-enroll');
-  if(eb) eb.textContent='Enroll now — '+c.price;
-})();
-
-/* ── CURRENCY SYSTEM ── */
-var CURRENCIES = {
-  NGN: { symbol:'₦',    name:'Nigerian Naira',      flag:'🇳🇬', rate:1       },
-  USD: { symbol:'$',    name:'US Dollar',            flag:'🇺🇸', rate:0.00065 },
-  GBP: { symbol:'£',    name:'British Pound',        flag:'🇬🇧', rate:0.00052 },
-  EUR: { symbol:'€',    name:'Euro',                 flag:'🇪🇺', rate:0.00060 },
-  GHS: { symbol:'GH₵',  name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099  },
-  KES: { symbol:'KSh',  name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084   },
-  ZAR: { symbol:'R',    name:'South African Rand',   flag:'🇿🇦', rate:0.012   },
-  AED: { symbol:'AED',  name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024  },
-  CAD: { symbol:'CA$',  name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088 },
-  UGX: { symbol:'USh',  name:'Ugandan Shilling',     flag:'🇺🇬', rate:2.4     },
-  TZS: { symbol:'TSh',  name:'Tanzanian Shilling',   flag:'🇹🇿', rate:1.67    },
-  RWF: { symbol:'RWF',  name:'Rwandan Franc',        flag:'🇷🇼', rate:0.83    },
-  EGP: { symbol:'E£',   name:'Egyptian Pound',       flag:'🇪🇬', rate:0.032   },
-  XOF: { symbol:'CFA',  name:'West African CFA',     flag:'🌍',  rate:0.39    },
-};
-
-/* Country → currency map for auto-detect */
-var COUNTRY_CURRENCY = {
-  NG:'NGN', US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', NL:'EUR',
-  GH:'GHS', KE:'KES', ZA:'ZAR', AE:'AED', CA:'CAD',
-  AU:'USD', SG:'USD', IN:'USD',
-};
-
-var _activeCurrency = localStorage.getItem('sl_currency') || 'NGN';
-
-function convertPrice(ngnAmount){
-  var c = CURRENCIES[_activeCurrency];
-  if(!c) return '₦' + ngnAmount.toLocaleString();
-  if(_activeCurrency === 'NGN') return '₦' + ngnAmount.toLocaleString();
-  var converted = (ngnAmount * c.rate);
-  // Round nicely
-  if(converted >= 100) converted = Math.round(converted);
-  else if(converted >= 10) converted = Math.round(converted * 10) / 10;
-  else converted = Math.round(converted * 100) / 100;
-  return c.symbol + converted.toLocaleString();
-}
-
-function setCurrency(code){
-  _activeCurrency = code;
-  localStorage.setItem('sl_currency', code);
-  updateCurrencyBtn();
-  updateAllPrices();
-  closeCurrencyDropdown();
-}
-
-function updateCurrencyBtn(){
-  var c = CURRENCIES[_activeCurrency];
-  var btn = document.getElementById('currency-btn');
-  if(btn && c) btn.innerHTML =
-    '<span class="flag">'+c.flag+'</span>' +
-    '<span>'+_activeCurrency+'</span>' +
-    '<span class="chevron">▾</span>';
-  // Mark active option
-  document.querySelectorAll('.currency-option').forEach(function(el){
-    el.classList.toggle('active', el.dataset.code === _activeCurrency);
-  });
-}
-
-function updateAllPrices(){
-  // Update all elements with data-ngn attribute
-  document.querySelectorAll('[data-ngn]').forEach(function(el){
-    el.textContent = convertPrice(parseInt(el.dataset.ngn));
-  });
-}
-
-function toggleCurrencyDropdown(){
-  var dd = document.getElementById('currency-dropdown');
-  var btn = document.getElementById('currency-btn');
-  if(!dd) return;
-  var isOpen = dd.classList.contains('open');
-  dd.classList.toggle('open', !isOpen);
-  if(btn) btn.classList.toggle('open', !isOpen);
-}
-function closeCurrencyDropdown(){
-  var dd = document.getElementById('currency-dropdown');
-  var btn = document.getElementById('currency-btn');
-  if(dd) dd.classList.remove('open');
-  if(btn) btn.classList.remove('open');
-}
-
-/* Close on outside click */
-document.addEventListener('click', function(e){
-  var sw = document.getElementById('currency-switcher');
-  if(sw && !sw.contains(e.target)) closeCurrencyDropdown();
-});
-
-/* Auto-detect country via free IP API */
-(function(){
-  // Only auto-detect if user hasn't manually chosen
-  if(localStorage.getItem('sl_currency_manual')) return;
-  fetch('https://ipapi.co/json/')
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var country = data.country_code;
-      var detected = COUNTRY_CURRENCY[country] || 'USD';
-      _activeCurrency = detected;
-      localStorage.setItem('sl_currency', detected);
-      updateCurrencyBtn();
-      updateAllPrices();
-    })
-    .catch(function(){ /* silently fall back to NGN */ });
-})();
-
-/* Init */
-updateCurrencyBtn();
-
-</script>
-<!-- auth-modal.html - paste this once before <!-- ══ AUTH MODAL ══ -->
+<!-- ══ AUTH MODAL ══ -->
 <div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
   <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;position:relative;animation:authPop .25s ease;">
     <style>@keyframes authPop{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}</style>
@@ -1740,9 +885,612 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
 </script>
-</body> on every page -->
+
+<script>
+
+/* ── DATA ── */
+const COURSES = [
+  {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
+  {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
+  {id:3,title:'Content to Cash: Monetise Every Platform You Touch',instructor:'Femi Ogunwale',initials:'FO',cat:'content',catLabel:'Content & Monetisation',price:'₦22,000',priceOld:'₦40,000',rating:'4.7',students:'2,104',badge:'New',icon:'🎬'},
+  {id:4,title:'AI Tools Mastery: Work 10x Faster, Earn 10x More',instructor:'Kemi Adeyemi',initials:'KA',cat:'ai',catLabel:'AI Skills',price:'₦32,000',priceOld:'₦55,000',rating:'4.9',students:'1,120',badge:'Trending',icon:'🤖'},
+  {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
+  {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
+];
+const TESTIMONIALS = [
+  {
+    name:'Amaka Obi', loc:'Lagos, Nigeria', initials:'AO', stars:5,
+    type:'video',
+    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
+    text:'I made my first ₦45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',
+    result:'₦45,000 in week 3'
+  },
+  {
+    name:'Taiwo Musa', loc:'Abuja, Nigeria', initials:'TM', stars:5,
+    type:'image',
+    mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+    text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',
+    result:'₦120k first month'
+  },
+  {
+    name:'Grace Abiodun', loc:'Port Harcourt, Nigeria', initials:'GA', stars:5,
+    type:'video',
+    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
+    text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take 2 days. My rates doubled.',
+    result:'Rates doubled'
+  },
+  {
+    name:'Emmanuel Nwosu', loc:'Enugu, Nigeria', initials:'EN', stars:5,
+    type:'image',
+    mediaSrc:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
+    text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
+    result:'First sale in 21 days'
+  },
+  {
+    name:'Blessing Okafor', loc:'Lagos, Nigeria', initials:'BO', stars:5,
+    type:'text',
+    mediaSrc:null,
+    text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',
+    result:'$400/month client'
+  },
+  {
+    name:'Ibrahim Suleiman', loc:'Kano, Nigeria', initials:'IS', stars:5,
+    type:'text',
+    mediaSrc:null,
+    text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',
+    result:'First income in 14 days'
+  },
+];
+const MODULES = [
+  {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
+  {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
+  {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
+  {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
+  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
+  {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
+];
+
+/* ── NAVIGATION ── */
+function goTo(page){
+  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
+    dashboard:'dashboard.html',player:'player.html',
+    instructor:'instructor.html',admin:'admin.html'};
+  if(routes[page]) window.location.href=routes[page];
+}
+function showPage(page){ goTo(page); }
+function showCourseDetail(id){ window.location.href='course.html?id='+id; }
+
+/* ── TABS ── */
+function switchTab(btn, pane){
+  document.querySelectorAll('.course-tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.course-tab-pane').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  var el = document.getElementById(pane);
+  if(el) el.classList.add('active');
+}
+
+/* ── MODULES ACCORDION ── */
+function toggleModule(header){
+  var lessons = header.nextElementSibling;
+  var chevron = header.querySelector('.chevron-icon');
+  if(lessons) lessons.classList.toggle('open');
+  if(chevron) chevron.classList.toggle('open');
+}
+
+/* ── MODAL ── */
+function openEnrollModal(){
+  var em=document.getElementById('enroll-modal');
+  var pd=document.getElementById('modal-price-display');
+  var pn=document.getElementById('modal-price-note');
+  var ib=document.getElementById('modal-install-btn');
+  if(pd) pd.textContent='₦35,000';
+  if(pn) pn.textContent='Full access · Lifetime';
+  if(ib) ib.style.display='block';
+  if(em) em.classList.add('open');
+}
 
 
+function closeModal(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.classList.remove('open');
+}
+(function(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+})();
+
+/* ── TOAST ── */
+function showToast(icon,msg){
+  var t=document.getElementById('toast'); if(!t) return;
+  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
+  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); },3000);
+}
+
+/* ── RENDER MODULES ── */
+(function(){
+  var ml=document.getElementById('module-list'); if(!ml) return;
+  ml.innerHTML=MODULES.map(function(m,mi){
+    return '<div class="module-item">'+
+      '<div class="module-header" onclick="toggleModule(this)">'+
+        '<div class="module-header-left">'+
+          '<div class="module-num">'+m.num+'</div>'+
+          '<span class="module-title">'+m.title+'</span>'+
+        '</div>'+
+        '<span class="module-meta">'+m.meta+'</span>'+
+        '<span class="chevron-icon'+(mi===0?' open':'')+'">⌄</span>'+
+      '</div>'+
+      '<div class="lesson-list'+(mi===0?' open':'')+'">'+
+        m.lessons.map(function(l){
+          return '<div class="lesson-item">'+
+            '<div class="lesson-icon">▶</div>'+
+            '<span class="lesson-title">'+l.t+'</span>'+
+            '<span class="lesson-duration">'+l.dur+'</span>'+
+            '<span class="lesson-tag '+(l.free?'tag-free':'tag-lock')+'">'+(l.free?'Free preview':'Enrolled')+'</span>'+
+          '</div>';
+        }).join('')+
+      '</div>'+
+    '</div>';
+  }).join('');
+})();
+
+/* ── RENDER TESTIMONIALS ── */
+(function(){
+  var grid = document.getElementById('course-testimonials-grid');
+  if(!grid) return;
+
+  var testi = [
+    {type:'video',  mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
+     name:'Amaka Obi',loc:'Lagos, Nigeria',initials:'AO',stars:5,
+     text:'I made my first N45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',
+     result:'N45,000 in week 3'},
+    {type:'image', mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
+     name:'Taiwo Musa',loc:'Abuja, Nigeria',initials:'TM',stars:5,
+     text:'Before this I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed N120k in my first month.',
+     result:'N120k first month'},
+    {type:'text',  mediaSrc:null,
+     name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',initials:'GA',stars:5,
+     text:'The income activation plan at the end of every module is what separates this from every other course. My rates doubled within 60 days.',
+     result:'Income doubled'},
+    {type:'text',  mediaSrc:null,
+     name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',initials:'EN',stars:5,
+     text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
+     result:'First sale in 21 days'},
+  ];
+
+  grid.innerHTML = testi.map(function(t){
+    var mediaHtml = '';
+    if(t.type === 'video' && t.mediaSrc){
+      mediaHtml = '<div class="tcard-media">'
+        + '<video preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;">'
+        + '<source src="' + t.mediaSrc + '" type="video/mp4"/></video>'
+        + '<div class="tcard-play-overlay" onclick="playTestiVideo(this)">'
+        + '<div class="tcard-play-circle"><div class="tcard-play-icon"></div></div></div>'
+        + '<div class="tcard-media-badge">Video</div>'
+        + '</div>';
+    } else if(t.type === 'image' && t.mediaSrc){
+      mediaHtml = '<div class="tcard-media">'
+        + '<img src="' + t.mediaSrc + '" alt="' + t.name + '" style="width:100%;height:100%;object-fit:cover;display:block;"/>'
+        + '<div class="tcard-media-badge">Photo</div>'
+        + '</div>';
+    }
+    var textOnly = (!t.mediaSrc || t.type === 'text') ? ' tcard-text-only' : '';
+    var stars = '';
+    for(var i = 0; i < t.stars; i++) stars += '★';
+    return '<div class="tcard' + textOnly + '">'
+      + mediaHtml
+      + '<div class="tcard-body">'
+        + '<div class="tcard-stars">' + stars + '</div>'
+        + '<div class="tcard-text">' + t.text + '</div>'
+        + '<div class="tcard-person">'
+          + '<div class="tcard-avatar">' + t.initials + '</div>'
+          + '<div>'
+            + '<div class="tcard-name">' + t.name + '</div>'
+            + '<div class="tcard-loc">' + t.loc + '</div>'
+            + (t.result ? '<div class="tcard-result">' + t.result + '</div>' : '')
+          + '</div>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+})();
+
+/* ── LOAD COURSE FROM URL PARAM ── */
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  var id=parseInt(params.get('id'))||1;
+  var c=COURSES.find(function(x){return x.id===id;})||COURSES[0];
+  var set=function(elId,val){var el=document.getElementById(elId);if(el)el.textContent=val;};
+  set('cd-title',c.title);
+  set('cd-category',c.catLabel);
+  set('cd-instructor',c.instructor);
+  set('cd-avatar',c.initials);
+  set('cd-price',c.price);
+  set('cd-price-old',c.priceOld);
+  set('cd-students',c.students);
+  var eb=document.querySelector('.purchase-card-enroll');
+  if(eb) eb.textContent='Enroll now — '+c.price;
+})();
+
+/* ── CURRENCY SYSTEM ── */
+var CURRENCIES = {
+  NGN: { symbol:'₦',    name:'Nigerian Naira',      flag:'🇳🇬', rate:1       },
+  USD: { symbol:'$',    name:'US Dollar',            flag:'🇺🇸', rate:0.00065 },
+  GBP: { symbol:'£',    name:'British Pound',        flag:'🇬🇧', rate:0.00052 },
+  EUR: { symbol:'€',    name:'Euro',                 flag:'🇪🇺', rate:0.00060 },
+  GHS: { symbol:'GH₵',  name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099  },
+  KES: { symbol:'KSh',  name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084   },
+  ZAR: { symbol:'R',    name:'South African Rand',   flag:'🇿🇦', rate:0.012   },
+  AED: { symbol:'AED',  name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024  },
+  CAD: { symbol:'CA$',  name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088 },
+  UGX: { symbol:'USh',  name:'Ugandan Shilling',     flag:'🇺🇬', rate:2.4     },
+  TZS: { symbol:'TSh',  name:'Tanzanian Shilling',   flag:'🇹🇿', rate:1.67    },
+  RWF: { symbol:'RWF',  name:'Rwandan Franc',        flag:'🇷🇼', rate:0.83    },
+  EGP: { symbol:'E£',   name:'Egyptian Pound',       flag:'🇪🇬', rate:0.032   },
+  XOF: { symbol:'CFA',  name:'West African CFA',     flag:'🌍',  rate:0.39    },
+};
+
+/* Country → currency map for auto-detect */
+var COUNTRY_CURRENCY = {
+  NG:'NGN', US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', NL:'EUR',
+  GH:'GHS', KE:'KES', ZA:'ZAR', AE:'AED', CA:'CAD',
+  AU:'USD', SG:'USD', IN:'USD',
+};
+
+var _activeCurrency = localStorage.getItem('sl_currency') || 'NGN';
+
+function convertPrice(ngnAmount){
+  var c = CURRENCIES[_activeCurrency];
+  if(!c) return '₦' + ngnAmount.toLocaleString();
+  if(_activeCurrency === 'NGN') return '₦' + ngnAmount.toLocaleString();
+  var converted = (ngnAmount * c.rate);
+  // Round nicely
+  if(converted >= 100) converted = Math.round(converted);
+  else if(converted >= 10) converted = Math.round(converted * 10) / 10;
+  else converted = Math.round(converted * 100) / 100;
+  return c.symbol + converted.toLocaleString();
+}
+
+function setCurrency(code){
+  _activeCurrency = code;
+  localStorage.setItem('sl_currency', code);
+  updateCurrencyBtn();
+  updateAllPrices();
+  closeCurrencyDropdown();
+}
+
+function updateCurrencyBtn(){
+  var c = CURRENCIES[_activeCurrency];
+  var btn = document.getElementById('currency-btn');
+  if(btn && c) btn.innerHTML =
+    '<span class="flag">'+c.flag+'</span>' +
+    '<span>'+_activeCurrency+'</span>' +
+    '<span class="chevron">▾</span>';
+  // Mark active option
+  document.querySelectorAll('.currency-option').forEach(function(el){
+    el.classList.toggle('active', el.dataset.code === _activeCurrency);
+  });
+}
+
+function updateAllPrices(){
+  // Update all elements with data-ngn attribute
+  document.querySelectorAll('[data-ngn]').forEach(function(el){
+    el.textContent = convertPrice(parseInt(el.dataset.ngn));
+  });
+}
+
+function toggleCurrencyDropdown(){
+  var dd = document.getElementById('currency-dropdown');
+  var btn = document.getElementById('currency-btn');
+  if(!dd) return;
+  var isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  if(btn) btn.classList.toggle('open', !isOpen);
+}
+function closeCurrencyDropdown(){
+  var dd = document.getElementById('currency-dropdown');
+  var btn = document.getElementById('currency-btn');
+  if(dd) dd.classList.remove('open');
+  if(btn) btn.classList.remove('open');
+}
+
+/* Close on outside click */
+document.addEventListener('click', function(e){
+  var sw = document.getElementById('currency-switcher');
+  if(sw && !sw.contains(e.target)) closeCurrencyDropdown();
+});
+
+/* Auto-detect country via free IP API */
+(function(){
+  // Only auto-detect if user hasn't manually chosen
+  if(localStorage.getItem('sl_currency_manual')) return;
+  fetch('https://ipapi.co/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      var country = data.country_code;
+      var detected = COUNTRY_CURRENCY[country] || 'USD';
+      _activeCurrency = detected;
+      localStorage.setItem('sl_currency', detected);
+      updateCurrencyBtn();
+      updateAllPrices();
+    })
+    .catch(function(){ /* silently fall back to NGN */ });
+})();
+
+/* Init */
+updateCurrencyBtn();
+
+
+
+/* ── TABS ── */
+function switchTab(btn, pane){
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  var el = document.getElementById(pane);
+  if(el) el.classList.add('active');
+}
+
+/* ── MODULES ACCORDION ── */
+function toggleModule(head){
+  var lessons = head.nextElementSibling;
+  var chevron = head.querySelector('.module-chevron');
+  if(lessons) lessons.classList.toggle('open');
+  if(chevron) chevron.classList.toggle('open');
+}
+
+/* ── TOAST ── */
+function showToast(icon, msg){
+  var t=document.getElementById('toast'); if(!t) return;
+  var ti=document.getElementById('toast-icon'); if(ti) ti.innerHTML=icon;
+  var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+
+/* ── CURRENCY ── */
+var CURRENCIES = {
+  NGN:{symbol:'₦',name:'Nigerian Naira',    flag:'🇳🇬',rate:1},
+  USD:{symbol:'$',        name:'US Dollar',         flag:'🇺🇸',rate:0.00065},
+  GBP:{symbol:'£',   name:'British Pound',     flag:'🇬🇧',rate:0.00052},
+  EUR:{symbol:'€',  name:'Euro',              flag:'🇪🇺',rate:0.00060},
+  GHS:{symbol:'GH₵',name:'Ghanaian Cedi',     flag:'🇬🇭',rate:0.0099},
+  KES:{symbol:'KSh',      name:'Kenyan Shilling',   flag:'🇰🇪',rate:0.084},
+  ZAR:{symbol:'R',        name:'South African Rand',flag:'🇿🇦',rate:0.012},
+  AED:{symbol:'AED',      name:'UAE Dirham',         flag:'🇦🇪',rate:0.0024},
+  CAD:{symbol:'CA$',      name:'Canadian Dollar',   flag:'🇨🇦',rate:0.00088},
+};
+var COUNTRY_CURRENCY={NG:'NGN',US:'USD',GB:'GBP',DE:'EUR',FR:'EUR',GH:'GHS',KE:'KES',ZA:'ZAR',AE:'AED',CA:'CAD'};
+var _cur = localStorage.getItem('sl_currency') || 'NGN';
+
+function convertPrice(ngn){
+  var c=CURRENCIES[_cur]; if(!c||_cur==='NGN') return '₦'+ngn.toLocaleString();
+  var v=ngn*c.rate; v=v>=100?Math.round(v):Math.round(v*100)/100;
+  return c.symbol+' '+v.toLocaleString();
+}
+function setCurrency(code){
+  _cur=code; localStorage.setItem('sl_currency',code);
+  updateCurrencyBtn(); updateAllPrices(); closeCurrencyDropdown();
+}
+function updateCurrencyBtn(){
+  var btn=document.getElementById('currency-btn');
+  if(btn) btn.textContent=_cur+' ▾';
+  document.querySelectorAll('.currency-option').forEach(function(el){
+    el.classList.toggle('active',el.dataset.code===_cur);
+  });
+}
+function updateAllPrices(){
+  document.querySelectorAll('[data-ngn]').forEach(function(el){
+    var v=parseInt(el.dataset.ngn); if(v) el.innerHTML=convertPrice(v);
+  });
+  var ep=document.getElementById('enroll-price');
+  if(ep) ep.innerHTML=convertPrice(35000);
+}
+function toggleCurrencyDropdown(){
+  var dd=document.getElementById('currency-dropdown');
+  var btn=document.getElementById('currency-btn');
+  if(!dd) return;
+  var open=dd.classList.contains('open');
+  dd.classList.toggle('open',!open);
+  if(btn) btn.classList.toggle('open',!open);
+}
+function closeCurrencyDropdown(){
+  var dd=document.getElementById('currency-dropdown'); if(dd) dd.classList.remove('open');
+  var btn=document.getElementById('currency-btn'); if(btn) btn.classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  var sw=document.getElementById('currency-switcher');
+  if(sw&&!sw.contains(e.target)) closeCurrencyDropdown();
+});
+
+/* ── ENROLL ── */
+var _activeCourse = {
+  id: 1, title: 'Affiliate Marketing Mastery: From Zero to ₦500k/Month',
+  instructorId: 'instructor_1', priceNGN: 35000
+};
+
+function enrollClick(){
+  if(!window._user){
+    openAuthModal(function(){ enrollClick(); }, 'su');
+    return;
+  }
+  if(typeof window.slSignIn !== 'function'){
+    showToast('⏳','Connecting... please try again in a moment.');
+    return;
+  }
+
+  var c = _activeCourse;
+  var rate = (CURRENCIES[_cur]||{}).rate || 1;
+  var amount = Math.round(c.priceNGN * rate * 100) / 100;
+
+  FlutterwaveCheckout({
+    public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
+    tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    amount:     amount,
+    currency:   _cur,
+    payment_options: 'card,banktransfer,ussd,mobilemoney',
+    customer:{
+      email: window._user.email,
+      name:  window._userName || window._user.email,
+    },
+    meta:{
+      courseId:      String(c.id),
+      instructorId:  c.instructorId,
+      affiliateCode: localStorage.getItem('sl_aff') || null,
+    },
+    customizations:{
+      title:       'SkillsLibry',
+      description: c.title.replace(/&#x[\w]+;/g,'').replace(/&\w+;/g,''),
+      logo:        'https://www.skillslibry.com/logo.png',
+    },
+    callback: async function(response){
+      if(response.status === 'successful' || response.status === 'completed'){
+        showToast('⏳','Confirming payment...');
+        var result = await window.slEnroll({
+          courseId:      String(c.id),
+          instructorId:  c.instructorId,
+          amount:        amount,
+          currency:      _cur,
+          transactionId: response.transaction_id,
+          affiliateCode: localStorage.getItem('sl_aff') || null,
+        });
+        if(result && result.ok){
+          showToast('🎉','Enrolled! Redirecting...');
+          setTimeout(function(){ window.location.href='player.html?course='+c.id; }, 1500);
+        } else {
+          showToast('⚠️','Payment received. Contact support if access is delayed.');
+        }
+      } else {
+        showToast('❌','Payment was not completed.');
+      }
+    },
+    onclose: function(){}
+  });
+}
+
+/* ── RENDER TESTIMONIALS ── */
+(function(){
+  var grid = document.getElementById('course-testimonials-grid');
+  if(!grid) return;
+
+  var testi = [
+    {type:'video',mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',name:'Amaka Obi',loc:'Lagos, Nigeria',initials:'AO',stars:5,text:'I made my first ₦45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',result:'₦45,000 in week 3'},
+    {type:'image',mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',name:'Taiwo Musa',loc:'Abuja, Nigeria',initials:'TM',stars:5,text:'Before this I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',result:'₦120k first month'},
+    {type:'text',mediaSrc:null,name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',initials:'GA',stars:5,text:'The income activation plan at the end of every module is what separates this from every other course. My rates doubled within 60 days.',result:'Income doubled'},
+    {type:'text',mediaSrc:null,name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',initials:'EN',stars:5,text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',result:'First sale in 21 days'},
+  ];
+
+  grid.innerHTML = testi.map(function(t){
+    var mediaHtml = '';
+    if(t.type==='video'&&t.mediaSrc){
+      mediaHtml='<div class="tcard-media">'
+        +'<video preload="metadata" style="width:100%;height:100%;object-fit:cover;display:block;"><source src="'+t.mediaSrc+'" type="video/mp4"/></video>'
+        +'<div class="tcard-play-overlay" onclick="playTestiVideo(this)"><div class="tcard-play-circle"><div class="tcard-play-icon"></div></div></div>'
+        +'<div class="tcard-media-badge">🎬 Video</div>'
+        +'</div>';
+    } else if(t.type==='image'&&t.mediaSrc){
+      mediaHtml='<div class="tcard-media"><img src="'+t.mediaSrc+'" alt="'+t.name+'"/><div class="tcard-media-badge">📷 Photo</div></div>';
+    }
+    var textOnly = (!t.mediaSrc||t.type==='text') ? ' tcard-text-only' : '';
+    var stars = '';
+    for(var i=0;i<t.stars;i++) stars+='★';
+    return '<div class="tcard'+textOnly+'">'
+      +mediaHtml
+      +'<div class="tcard-body">'
+        +'<div class="tcard-stars">'+stars+'</div>'
+        +'<div class="tcard-text">'+t.text+'</div>'
+        +'<div class="tcard-person">'
+          +'<div class="tcard-avatar">'+t.initials+'</div>'
+          +'<div><div class="tcard-name">'+t.name+'</div>'
+          +'<div class="tcard-loc">'+t.loc+'</div>'
+          +(t.result?'<div class="tcard-result">💰 '+t.result+'</div>':'')
+          +'</div>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+})();
+
+/* ── RENDER MODULES ── */
+(function(){
+  var ml = document.getElementById('module-list');
+  if(!ml||typeof MODULES==='undefined') return;
+  ml.innerHTML = MODULES.map(function(m, mi){
+    var lessonsHtml = m.lessons.map(function(l){
+      return '<div class="lesson-row">'
+        +'<div class="lesson-icon">▶</div>'
+        +'<span class="lesson-title">'+l.t+'</span>'
+        +'<span class="lesson-dur">'+l.dur+'</span>'
+        +'<span class="lesson-tag '+(l.free?'tag-free':'tag-lock')+'">'+(l.free?'Free preview':'Enrolled')+'</span>'
+        +'</div>';
+    }).join('');
+    return '<div class="module-item">'
+      +'<div class="module-head" onclick="toggleModule(this)">'
+        +'<div class="module-num">'+m.num+'</div>'
+        +'<div class="module-title">'+m.title+'</div>'
+        +'<div class="module-meta">'+m.meta+'</div>'
+        +'<div class="module-chevron'+(mi===0?' open':'')+'">⌄</div>'
+      +'</div>'
+      +'<div class="lesson-list'+(mi===0?' open':'')+'">'+lessonsHtml+'</div>'
+    +'</div>';
+  }).join('');
+})();
+
+/* ── LOAD COURSE FROM URL ── */
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var id = parseInt(params.get('id'))||1;
+  if(typeof COURSES !== 'undefined'){
+    var c = COURSES.find(function(x){ return x.id===id; }) || COURSES[0];
+    var set = function(elId,val){ var el=document.getElementById(elId); if(el) el.innerHTML=val; };
+    set('cd-title', c.title);
+    set('cd-category', c.catLabel||'Course');
+    set('cd-instructor', c.instructor);
+    set('cd-avatar', c.initials);
+    set('cd-price', convertPrice(c.priceNGN||35000));
+    document.getElementById('cd-price').dataset.ngn = c.priceNGN||35000;
+    set('cd-price-old', '₦'+((c.priceNGN||35000)*1.7|0).toLocaleString());
+    set('enroll-price', convertPrice(c.priceNGN||35000));
+    set('inst-name', c.instructor);
+    set('inst-avatar', c.initials);
+    _activeCourse.id = c.id;
+    _activeCourse.title = c.title;
+    _activeCourse.priceNGN = c.priceNGN||35000;
+  }
+  updateCurrencyBtn();
+  updateAllPrices();
+  // Auto-detect currency
+  if(!localStorage.getItem('sl_currency_manual')){
+    fetch('https://ipapi.co/json/').then(function(r){return r.json();}).then(function(d){
+      var det=COUNTRY_CURRENCY[d.country_code]||'USD';
+      _cur=det; localStorage.setItem('sl_currency',det);
+      updateCurrencyBtn(); updateAllPrices();
+    }).catch(function(){});
+  }
+})();
+
+function playHeroVideo(wrap) {
+  var placeholder = document.getElementById('hero-promo-placeholder');
+  var video = document.getElementById('hero-promo-video');
+  if(placeholder) placeholder.style.display = 'none';
+  if(video){ video.style.display = 'block'; video.play().catch(function(){}); }
+}
+
+function playPromoVideo() {
+  var placeholder = document.getElementById('promo-placeholder');
+  var video = document.getElementById('promo-video');
+  if(placeholder) placeholder.style.display = 'none';
+  if(video){ video.style.display='block'; video.play(); }
+}
+
+function playTestiVideo(overlay) {
+  var video = overlay.previousSibling;
+  if(!video) return;
+  if(video.paused){ video.play(); overlay.style.display='none'; }
+  else { video.pause(); overlay.style.display='flex'; }
+}
+</script>
 
 </body>
 </html>
