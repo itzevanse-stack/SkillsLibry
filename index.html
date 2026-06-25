@@ -527,141 +527,105 @@ a{text-decoration:none;color:inherit}
 </style>
 
 <!-- firebase.html - paste this ONCE inside <head> of every page -->
+
+
+<!-- ══ FIREBASE + AUTH ══ -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
-    authDomain: "skillslibry.firebaseapp.com",
-    projectId: "skillslibry",
-    storageBucket: "skillslibry.firebasestorage.app",
-    messagingSenderId: "363745273879",
-    appId: "1:363745273879:web:8a9c4795e37ef5eed15452",
-    measurementId: "G-SW4GS8M6G5"
-  };
+const app  = initializeApp({
+  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain:        "skillslibry.firebaseapp.com",
+  projectId:         "skillslibry",
+  storageBucket:     "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-  const app  = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
+window._auth = auth;
+window._db   = db;
 
-  /* ── expose globally so other scripts can use them ── */
-  window._auth = auth;
-  window._db   = db;
-  window._fbReady = false;
-
-  /* ── Auth state listener ── */
-  onAuthStateChanged(auth, async (user) => {
-    window._user = user || null;
-    window._fbReady = true;
-
-    if (user) {
-      /* fetch role from Firestore */
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      window._userRole = snap.exists() ? snap.data().role : 'student';
-      window._userName = snap.exists() ? snap.data().name : user.email;
-    } else {
-      window._userRole = null;
-      window._userName = null;
-    }
-
-    /* fire custom event so pages can react */
-    document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
-  });
-
-  /* ══════════════════════════════════════════
-     SIGN UP
-  ══════════════════════════════════════════ */
-  window.slSignUp = async function(name, email, password, role) {
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      /* write user doc */
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        name,
-        email,
-        role: role || 'student',
-        createdAt: serverTimestamp(),
-        enrolledCourses: [],
-        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
-      });
-      window._userRole = role || 'student';
-      window._userName = name;
-      return { ok: true, user: cred.user };
-    } catch(e) {
-      return { ok: false, error: slFirebaseError(e.code) };
-    }
-  };
-
-  /* ══════════════════════════════════════════
-     SIGN IN
-  ══════════════════════════════════════════ */
-  window.slSignIn = async function(email, password) {
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      return { ok: true, user: cred.user };
-    } catch(e) {
-      return { ok: false, error: slFirebaseError(e.code) };
-    }
-  };
-
-  /* ══════════════════════════════════════════
-     SIGN OUT
-  ══════════════════════════════════════════ */
-  window.slSignOut = async function() {
-    await signOut(auth);
-    window.location.href = 'index.html';
-  };
-
-  /* ══════════════════════════════════════════
-     ENROLL — called after payment success
-  ══════════════════════════════════════════ */
-  window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
-    if (!window._user) return { ok: false, error: 'Not logged in' };
-
-    const platformCut  = amount * 0.40;
-    const instructorCut = amount * 0.60;
-    const affiliateCut = affiliateCode ? amount * 0.10 : 0;
-
-    const enrollmentId = courseId + '_' + window._user.uid;
-
-    await setDoc(doc(db, 'enrollments', enrollmentId), {
-      studentId:    window._user.uid,
-      courseId,
-      instructorId,
-      paidAmount:   amount,
-      currency,
-      transactionId,
-      platformCut,
-      instructorCut,
-      affiliateCut,
-      affiliateCode: affiliateCode || null,
-      progress: { completedLessons: [], percentComplete: 0 },
-      enrolledAt: serverTimestamp(),
-    });
-
-    return { ok: true };
-  };
-
-  /* ══════════════════════════════════════════
-     FRIENDLY ERROR MESSAGES
-  ══════════════════════════════════════════ */
-  function slFirebaseError(code) {
-    const map = {
-      'auth/email-already-in-use':    'An account with this email already exists.',
-      'auth/invalid-email':           'Please enter a valid email address.',
-      'auth/weak-password':           'Password must be at least 6 characters.',
-      'auth/user-not-found':          'No account found with this email.',
-      'auth/wrong-password':          'Incorrect password. Please try again.',
-      'auth/too-many-requests':       'Too many attempts. Please wait a moment.',
-      'auth/network-request-failed':  'Network error. Check your connection.',
-    };
-    return map[code] || 'Something went wrong. Please try again.';
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if (user) {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  } else {
+    window._userRole = null;
+    window._userName = null;
   }
-</script>
+  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
+});
 
+window.slSignUp = async function(name, email, password, role) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email,
+      role: role || 'student',
+      createdAt: serverTimestamp(),
+      enrolledCourses: [],
+      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+    });
+    window._userRole = role || 'student';
+    window._userName = name;
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignIn = async function(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignOut = async function() {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
+window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
+  if (!window._user) return { ok: false, error: 'Not logged in' };
+  const id = courseId + '_' + window._user.uid;
+  await setDoc(doc(db, 'enrollments', id), {
+    studentId: window._user.uid,
+    courseId, instructorId,
+    paidAmount: amount, currency, transactionId,
+    platformCut: amount * 0.40,
+    instructorCut: amount * 0.60,
+    affiliateCode: affiliateCode || null,
+    progress: { completedLessons: [], percentComplete: 0 },
+    enrolledAt: serverTimestamp(),
+  });
+  return { ok: true };
+};
+
+function slErr(code) {
+  const m = {
+    'auth/email-already-in-use': 'An account with this email already exists.',
+    'auth/invalid-email':        'Please enter a valid email address.',
+    'auth/weak-password':        'Password must be at least 6 characters.',
+    'auth/user-not-found':       'No account found with this email.',
+    'auth/wrong-password':       'Incorrect password. Please try again.',
+    'auth/invalid-credential':   'Incorrect email or password.',
+    'auth/too-many-requests':    'Too many attempts. Please wait a moment.',
+  };
+  return m[code] || 'Something went wrong. Please try again.';
+}
+</script>
 </head>
 <body>
 <nav class="nav">
@@ -1196,196 +1160,157 @@ function showToast(icon,msg){
 })();
 </script>
 
-<!-- auth-modal.html - paste this once before </body> on every page -->
-
-<!-- ══ AUTH MODAL ══ -->
-<div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:500;align-items:center;justify-content:center;background:rgba(13,13,26,.6);backdrop-filter:blur(8px);">
-  <div style="background:#fff;border-radius:20px;width:100%;max-width:440px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;animation:authIn .25s ease;">
+<!-- auth-modal.html - paste this once before <!-- ══ AUTH MODAL ══ -->
+<div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;position:relative;animation:authPop .25s ease;">
+    <style>@keyframes authPop{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}</style>
 
     <!-- Tabs -->
     <div style="display:flex;border-bottom:1.5px solid #e4e6f0;">
-      <button id="tab-signin" onclick="authTab('signin')"
-        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#4ecca3;border-bottom:2px solid #4ecca3;transition:all .2s;">
+      <button id="tab-si" onclick="authTab('si')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#4ecca3;border-bottom:2.5px solid #4ecca3;margin-bottom:-1.5px;">
         Sign In
       </button>
-      <button id="tab-signup" onclick="authTab('signup')"
-        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#8b8fa8;border-bottom:2px solid transparent;transition:all .2s;">
+      <button id="tab-su" onclick="authTab('su')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#8b8fa8;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;">
         Create Account
       </button>
     </div>
 
-    <div style="padding:32px;">
+    <div style="padding:28px 28px 24px;">
 
-      <!-- SIGN IN FORM -->
-      <div id="form-signin">
-        <p style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">Welcome back. Sign in to access your courses.</p>
-        <div style="margin-bottom:14px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email address</label>
+      <!-- SIGN IN -->
+      <div id="form-si">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:20px;">Welcome back. Sign in to access your courses.</p>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Email</label>
           <input id="si-email" type="email" placeholder="you@example.com"
-            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
             onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
         </div>
-        <div style="margin-bottom:20px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Password</label>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Password</label>
           <input id="si-pass" type="password" placeholder="••••••••"
-            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
             onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
-            onkeydown="if(event.key==='Enter') authSubmit('signin')"/>
+            onkeydown="if(event.key==='Enter') doAuth('si')"/>
         </div>
-        <div id="si-error" style="display:none;background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:#e84545;margin-bottom:16px;"></div>
-        <button onclick="authSubmit('signin')" id="si-btn"
-          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:all .2s;"
-          onmouseover="this.style.background='#2db88a'" onmouseout="this.style.background='#4ecca3'">
+        <div id="si-err" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+        <button onclick="doAuth('si')" id="si-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;">
           Sign in
         </button>
       </div>
 
-      <!-- SIGN UP FORM -->
-      <div id="form-signup" style="display:none;">
-        <p style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">Join thousands of learners earning with digital skills.</p>
-        <div style="margin-bottom:14px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name</label>
+      <!-- SIGN UP -->
+      <div id="form-su" style="display:none;">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:20px;">Join thousands learning and earning with SkillsLibry.</p>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Full name</label>
           <input id="su-name" type="text" placeholder="Your full name"
-            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
             onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
         </div>
-        <div style="margin-bottom:14px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email address</label>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Email</label>
           <input id="su-email" type="email" placeholder="you@example.com"
-            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
             onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
         </div>
-        <div style="margin-bottom:20px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Password</label>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Password</label>
           <input id="su-pass" type="password" placeholder="Min 6 characters"
-            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border .2s;"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
             onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
-            onkeydown="if(event.key==='Enter') authSubmit('signup')"/>
+            onkeydown="if(event.key==='Enter') doAuth('su')"/>
         </div>
-        <div id="su-error" style="display:none;background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:#e84545;margin-bottom:16px;"></div>
-        <button onclick="authSubmit('signup')" id="su-btn"
-          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:all .2s;"
-          onmouseover="this.style.background='#2db88a'" onmouseout="this.style.background='#4ecca3'">
+        <div id="su-err" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+        <button onclick="doAuth('su')" id="su-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;">
           Create account
         </button>
-        <p style="font-size:11px;color:#8b8fa8;text-align:center;margin-top:14px;line-height:1.6;">
-          By creating an account you agree to our Terms of Service and Privacy Policy.
-        </p>
+        <p style="font-size:11px;color:#8b8fa8;text-align:center;margin-top:12px;line-height:1.6;">By signing up you agree to our Terms &amp; Privacy Policy.</p>
       </div>
 
     </div>
 
-    <!-- Close -->
+    <!-- Close button -->
     <button onclick="closeAuthModal()"
-      style="position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:#f0f2f7;cursor:pointer;font-size:16px;color:#8b8fa8;display:flex;align-items:center;justify-content:center;transition:all .2s;"
-      onmouseover="this.style.background='#e4e6f0'" onmouseout="this.style.background='#f0f2f7'">&#10005;</button>
-
+      style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#f0f2f7;cursor:pointer;font-size:15px;color:#8b8fa8;line-height:1;">&#10005;</button>
   </div>
 </div>
 
-<style>
-@keyframes authIn{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
-#auth-modal.open{display:flex!important;}
-</style>
-
 <script>
-/* ── AUTH MODAL CONTROLS ── */
-var _pendingAction = null; // store what to do after auth
+var _authPending = null;
 
-function openAuthModal(action, tab) {
-  _pendingAction = action || null;
-  authTab(tab || 'signin');
-  document.getElementById('auth-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+function openAuthModal(cb, tab) {
+  _authPending = cb || null;
+  authTab(tab || 'si');
+  var m = document.getElementById('auth-modal');
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
 }
-
 function closeAuthModal() {
-  document.getElementById('auth-modal').classList.remove('open');
-  document.body.style.overflow = '';
-  _pendingAction = null;
-  clearAuthErrors();
+  var m = document.getElementById('auth-modal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+  _authPending = null;
+}
+function authTab(t) {
+  var isSi = t === 'si';
+  document.getElementById('form-si').style.display = isSi ? 'block' : 'none';
+  document.getElementById('form-su').style.display = isSi ? 'none'  : 'block';
+  var tsi = document.getElementById('tab-si');
+  var tsu = document.getElementById('tab-su');
+  if(tsi){ tsi.style.color = isSi ? '#4ecca3' : '#8b8fa8'; tsi.style.borderBottomColor = isSi ? '#4ecca3' : 'transparent'; }
+  if(tsu){ tsu.style.color = isSi ? '#8b8fa8' : '#4ecca3'; tsu.style.borderBottomColor = isSi ? 'transparent' : '#4ecca3'; }
+}
+function authErr(f, msg) {
+  var el = document.getElementById(f+'-err');
+  if(el){ el.textContent = msg; el.style.display = 'block'; }
+}
+function authClearErr() {
+  ['si-err','su-err'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.display='none'; el.textContent=''; }
+  });
+}
+function authSetLoading(f, on) {
+  var btn = document.getElementById(f+'-btn');
+  if(btn){ btn.disabled=on; btn.textContent=on?'Please wait...':(f==='si'?'Sign in':'Create account'); btn.style.opacity=on?'.7':'1'; }
 }
 
-function authTab(tab) {
-  var isSignin = tab === 'signin';
-  document.getElementById('form-signin').style.display = isSignin ? 'block' : 'none';
-  document.getElementById('form-signup').style.display = isSignin ? 'none' : 'block';
-  document.getElementById('tab-signin').style.color       = isSignin ? '#4ecca3' : '#8b8fa8';
-  document.getElementById('tab-signin').style.borderBottomColor = isSignin ? '#4ecca3' : 'transparent';
-  document.getElementById('tab-signup').style.color       = isSignin ? '#8b8fa8' : '#4ecca3';
-  document.getElementById('tab-signup').style.borderBottomColor = isSignin ? 'transparent' : '#4ecca3';
-}
-
-function clearAuthErrors() {
-  var si = document.getElementById('si-error');
-  var su = document.getElementById('su-error');
-  if(si){si.style.display='none';si.textContent='';}
-  if(su){su.style.display='none';su.textContent='';}
-}
-
-function showAuthError(form, msg) {
-  var el = document.getElementById(form === 'signin' ? 'si-error' : 'su-error');
-  if(el){el.textContent=msg;el.style.display='block';}
-}
-
-function setAuthBtnLoading(form, loading) {
-  var btn = document.getElementById(form === 'signin' ? 'si-btn' : 'su-btn');
-  if(btn){
-    btn.disabled = loading;
-    btn.textContent = loading ? 'Please wait...' : (form === 'signin' ? 'Sign in' : 'Create account');
-    btn.style.opacity = loading ? '.7' : '1';
-  }
-}
-
-async function authSubmit(form) {
-  clearAuthErrors();
-
-  if (form === 'signin') {
-    var email = document.getElementById('si-email').value.trim();
-    var pass  = document.getElementById('si-pass').value;
-    if(!email || !pass){ showAuthError('signin','Please fill in all fields.'); return; }
-    setAuthBtnLoading('signin', true);
-    var result = await window.slSignIn(email, pass);
-    setAuthBtnLoading('signin', false);
-    if(!result.ok){ showAuthError('signin', result.error); return; }
-
+async function doAuth(f) {
+  authClearErr();
+  if(f === 'si') {
+    var email = (document.getElementById('si-email')||{}).value||'';
+    var pass  = (document.getElementById('si-pass')||{}).value||'';
+    if(!email||!pass){ authErr('si','Please fill in all fields.'); return; }
+    authSetLoading('si', true);
+    var r = await window.slSignIn(email.trim(), pass);
+    authSetLoading('si', false);
+    if(!r.ok){ authErr('si', r.error); return; }
   } else {
-    var name  = document.getElementById('su-name').value.trim();
-    var email = document.getElementById('su-email').value.trim();
-    var pass  = document.getElementById('su-pass').value;
-    if(!name || !email || !pass){ showAuthError('signup','Please fill in all fields.'); return; }
-    setAuthBtnLoading('signup', true);
-    var result = await window.slSignUp(name, email, pass, 'student');
-    setAuthBtnLoading('signup', false);
-    if(!result.ok){ showAuthError('signup', result.error); return; }
+    var name  = (document.getElementById('su-name')||{}).value||'';
+    var email = (document.getElementById('su-email')||{}).value||'';
+    var pass  = (document.getElementById('su-pass')||{}).value||'';
+    if(!name||!email||!pass){ authErr('su','Please fill in all fields.'); return; }
+    authSetLoading('su', true);
+    var r = await window.slSignUp(name.trim(), email.trim(), pass, 'student');
+    authSetLoading('su', false);
+    if(!r.ok){ authErr('su', r.error); return; }
   }
-
-  /* Auth succeeded */
   closeAuthModal();
-
-  /* Execute pending action (e.g. open checkout) */
-  if(typeof _pendingAction === 'function') {
-    _pendingAction();
-    _pendingAction = null;
-  } else {
-    showToast && showToast('✓', 'Welcome to SkillsLibry!');
-  }
+  if(typeof _authPending === 'function'){ var fn=_authPending; _authPending=null; fn(); }
+  else if(typeof showToast==='function') showToast('✓','Welcome to SkillsLibry!');
 }
 
-/* Close on backdrop click */
+/* Close on backdrop */
 document.getElementById('auth-modal').addEventListener('click', function(e){
-  if(e.target === this) closeAuthModal();
-});
-
-/* ── Update nav based on auth state ── */
-document.addEventListener('authReady', function(e){
-  var user = e.detail.user;
-  var myLearningLink = document.querySelector('a[href="dashboard.html"]');
-  if(myLearningLink && user){
-    myLearningLink.textContent = window._userName || 'My Learning';
-  }
+  if(e.target===this) closeAuthModal();
 });
 </script>
+</body> on every page -->
+
+
 
 </body>
 </html>
