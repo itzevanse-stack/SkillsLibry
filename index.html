@@ -1688,8 +1688,8 @@ function prevInstStep(){
 }
 
 function validateInstStep(n){
-  var err = document.getElementById('inst-error');
-  if(err) err.style.display = 'none';
+  // Show error in the right step
+  showInstErr(''); // clear first
 
   if(n===1){
     var name  = (document.getElementById('io-name')||{}).value||'';
@@ -1699,7 +1699,7 @@ function validateInstStep(n){
     if(!name.trim())  { showInstErr('Please enter your full name.'); return false; }
     if(!email.trim()) { showInstErr('Please enter your email address.'); return false; }
     if(!phone.trim()) { showInstErr('Please enter your phone number.'); return false; }
-    if(!bio.trim() || bio.trim().length < 50) { showInstErr('Please write a bio of at least 50 characters.'); return false; }
+    if(!bio.trim())   { showInstErr('Please write a short bio about yourself.'); return false; }
   }
   if(n===2){
     var skill   = (document.getElementById('io-skill')||{}).value||'';
@@ -1707,7 +1707,7 @@ function validateInstStep(n){
     if(!skill)          { showInstErr('Please select the skill you want to teach.'); return false; }
     if(!_instExp)       { showInstErr('Please select how long you have been practising this skill.'); return false; }
     if(!_instEarn)      { showInstErr('Please indicate if you are currently earning from this skill.'); return false; }
-    if(!results.trim() || results.trim().length < 80) { showInstErr('Please describe your results in detail (at least 80 characters). Be specific with numbers.'); return false; }
+    if(!results.trim()) { showInstErr('Please describe the specific results you have achieved with this skill.'); return false; }
   }
   if(n===3){
     // Proof upload is strongly recommended but not blocking
@@ -1722,17 +1722,27 @@ function validateInstStep(n){
     if(!title.trim())    { showInstErr('Please enter your proposed course title.'); return false; }
     if(!audience.trim()) { showInstErr('Please describe who this course is for.'); return false; }
     if(!outcomes.trim()) { showInstErr('Please describe what students will achieve.'); return false; }
-    if(!why.trim() || why.trim().length < 60) { showInstErr('Please tell us why we should choose you (at least 60 characters).'); return false; }
+    if(!why.trim()) { showInstErr('Please tell us why SkillsLibry should choose you.'); return false; }
     if(!agree||!agree.checked) { showInstErr('Please agree to the Instructor Terms before submitting.'); return false; }
   }
   return true;
 }
 
 function showInstErr(msg){
-  var err = document.getElementById('inst-error');
-  if(err){ err.textContent=msg; err.style.display='block'; }
-  // Scroll to error
-  if(err) err.scrollIntoView({behavior:'smooth',block:'center'});
+  // Remove any existing inline errors
+  document.querySelectorAll('.inst-inline-err').forEach(function(el){ el.remove(); });
+  if(!msg) return;
+
+  // Show in current visible step
+  var stepEl = document.getElementById('inst-step-'+_instStep);
+  if(!stepEl) return;
+
+  var errDiv = document.createElement('div');
+  errDiv.className = 'inst-inline-err';
+  errDiv.style.cssText = 'background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-top:16px;';
+  errDiv.textContent = msg;
+  stepEl.appendChild(errDiv);
+  errDiv.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function selectExp(val){
