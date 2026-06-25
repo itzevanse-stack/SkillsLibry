@@ -891,7 +891,7 @@ function slErr(code) {
     </div>
     <div class="footer-col">
       <h4>Platform</h4>
-      <a href="instructor.html">Become an Instructor</a>
+      <a href="#" onclick="openInstructorOnboarding(); return false;">Become an Instructor</a>
       <a href="dashboard.html">Affiliate Programme</a>
       <a href="#">SkillsLibry Pro</a>
       <a href="#">Certificates</a>
@@ -1321,6 +1321,492 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
 </script>
+
+<!-- ══ INSTRUCTOR ONBOARDING MODAL ══ -->
+<div id="inst-modal" style="display:none;position:fixed;inset:0;z-index:998;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(10px);padding:16px;">
+  <div style="background:#fff;border-radius:24px;width:100%;max-width:680px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 32px 80px rgba(13,13,26,.25);animation:instPop .3s ease;">
+
+    <!-- Header -->
+    <div style="padding:28px 32px 0;flex-shrink:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#4ecca3,#6c63ff);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:18px;color:#fff;">S</div>
+          <div>
+            <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;">Become an Instructor</div>
+            <div style="font-size:12px;color:#8b8fa8;">SkillsLibry Instructor Application</div>
+          </div>
+        </div>
+        <button onclick="closeInstModal()" style="width:32px;height:32px;border-radius:50%;border:none;background:#f0f2f7;cursor:pointer;font-size:16px;color:#8b8fa8;">&#10005;</button>
+      </div>
+
+      <!-- Step indicator -->
+      <div style="display:flex;gap:0;margin:20px 0 0;border-bottom:1.5px solid #e4e6f0;">
+        <div class="inst-step-tab active" id="istt-1" style="padding:12px 0;margin-right:28px;font-size:12px;font-weight:600;color:#4ecca3;border-bottom:2.5px solid #4ecca3;margin-bottom:-1.5px;cursor:pointer;" onclick="goInstStep(1)">1. About You</div>
+        <div class="inst-step-tab" id="istt-2" style="padding:12px 0;margin-right:28px;font-size:12px;font-weight:600;color:#8b8fa8;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;cursor:pointer;" onclick="goInstStep(2)">2. Your Expertise</div>
+        <div class="inst-step-tab" id="istt-3" style="padding:12px 0;margin-right:28px;font-size:12px;font-weight:600;color:#8b8fa8;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;cursor:pointer;" onclick="goInstStep(3)">3. Proof & Results</div>
+        <div class="inst-step-tab" id="istt-4" style="padding:12px 0;font-size:12px;font-weight:600;color:#8b8fa8;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;cursor:pointer;" onclick="goInstStep(4)">4. Course Idea</div>
+      </div>
+    </div>
+
+    <!-- Body (scrollable) -->
+    <div style="padding:28px 32px;overflow-y:auto;flex:1;">
+
+      <!-- STEP 1: About You -->
+      <div id="inst-step-1">
+        <div style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">Tell us about yourself</div>
+        <div style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">We vet every instructor personally. This helps us understand who you are.</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name *</label>
+            <input id="io-name" type="text" placeholder="Your full name" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email address *</label>
+            <input id="io-email" type="email" placeholder="your@email.com" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Phone number *</label>
+            <input id="io-phone" type="tel" placeholder="+234..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Country *</label>
+            <select id="io-country" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;appearance:none;background:#fff;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'">
+              <option value="">Select country</option>
+              <option>Nigeria</option><option>Ghana</option><option>Kenya</option><option>South Africa</option>
+              <option>Uganda</option><option>Tanzania</option><option>Rwanda</option><option>Egypt</option>
+              <option>United Kingdom</option><option>United States</option><option>Canada</option>
+              <option>UAE</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Brief bio — who are you? *</label>
+          <textarea id="io-bio" placeholder="Tell us about your background, what you do, and what makes you qualified to teach..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:90px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">LinkedIn profile</label>
+            <input id="io-linkedin" type="url" placeholder="https://linkedin.com/in/..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Website / social profile</label>
+            <input id="io-website" type="url" placeholder="https://..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Expertise -->
+      <div id="inst-step-2" style="display:none;">
+        <div style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">Prove your expertise</div>
+        <div style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">We only approve instructors who are actively doing the work they want to teach. No theory-only applicants.</div>
+
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:8px;">What skill do you want to teach? *</label>
+          <select id="io-skill" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;appearance:none;background:#fff;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'">
+            <option value="">Select a skill category</option>
+            <option>Affiliate Marketing</option><option>Digital Products</option>
+            <option>Content & Monetisation</option><option>AI Skills & Tools</option>
+            <option>Freelancing</option><option>Copywriting</option>
+            <option>E-Commerce</option><option>Social Media Marketing</option>
+            <option>Email Marketing</option><option>Video Editing</option>
+            <option>Web Development</option><option>Other</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">How long have you been practising this skill? *</label>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;" id="exp-1y" onclick="selectExp('1y')">Under 1 year</label>
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;" id="exp-2y" onclick="selectExp('2y')">1–2 years</label>
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;" id="exp-5y" onclick="selectExp('5y')">3–5 years</label>
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:13px;font-weight:500;transition:all .2s;" id="exp-5y+" onclick="selectExp('5y+')">5+ years</label>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Are you currently actively earning from this skill? *</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13px;transition:all .2s;" id="earn-yes" onclick="selectEarning('yes')">
+              <span style="font-size:20px;">&#128176;</span> Yes, this is my primary income
+            </label>
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13px;transition:all .2s;" id="earn-side" onclick="selectEarning('side')">
+              <span style="font-size:20px;">&#128200;</span> Yes, as a side income
+            </label>
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13px;transition:all .2s;" id="earn-no" onclick="selectEarning('no')">
+              <span style="font-size:20px;">&#128218;</span> Not yet, but I have deep knowledge
+            </label>
+            <label style="border:1.5px solid #e4e6f0;border-radius:8px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:13px;transition:all .2s;" id="earn-other" onclick="selectEarning('other')">
+              <span style="font-size:20px;">&#128101;</span> I teach professionally
+            </label>
+          </div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">What specific results have you achieved with this skill? *</label>
+          <textarea id="io-results" placeholder="Be specific. E.g: I generated ₦1.2M in affiliate commissions in 2024, built a product that has 400+ paying customers, grew a client's revenue by 300%..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:100px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+
+        <div style="margin-bottom:8px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Have you ever taught or mentored others in this skill?</label>
+          <textarea id="io-teaching" placeholder="E.g: I've coached 30+ students privately, run workshops, created YouTube tutorials with 50k+ views..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:80px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+      </div>
+
+      <!-- STEP 3: Proof -->
+      <div id="inst-step-3" style="display:none;">
+        <div style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">Upload your proof</div>
+        <div style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">Upload screenshots of results, income proof, certificates, or any evidence that proves your expertise. The more proof you show, the faster we approve you.</div>
+
+        <!-- Income / results screenshots -->
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#4a4d6a;margin-bottom:4px;">&#128176; Income or results screenshots *</label>
+          <div style="font-size:12px;color:#8b8fa8;margin-bottom:10px;">Bank statements, affiliate dashboard, product sales, client payments — anything showing real income or results.</div>
+          <div id="income-drop" style="border:2px dashed #e4e6f0;border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:#f8f9fc;position:relative;" ondragover="event.preventDefault();this.style.borderColor='#4ecca3';this.style.background='rgba(78,204,163,.05)'" ondragleave="this.style.borderColor='#e4e6f0';this.style.background='#f8f9fc'" ondrop="handleProofDrop(event,'income')">
+            <div style="font-size:32px;margin-bottom:8px;">&#128444;</div>
+            <div style="font-size:13px;font-weight:600;color:#4a4d6a;margin-bottom:4px;">Click to upload or drag & drop</div>
+            <div style="font-size:12px;color:#8b8fa8;">JPG, PNG, PDF · Max 10MB each · Multiple files allowed</div>
+            <input type="file" accept="image/*,.pdf" multiple onchange="handleProofFiles(this,'income','income-preview')" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>
+          </div>
+          <div id="income-preview" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+        </div>
+
+        <!-- Certificates -->
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#4a4d6a;margin-bottom:4px;">&#127941; Certificates or qualifications <span style="font-weight:400;color:#8b8fa8;">(optional)</span></label>
+          <div style="font-size:12px;color:#8b8fa8;margin-bottom:10px;">Industry certifications, course completions, professional qualifications.</div>
+          <div id="cert-drop" style="border:2px dashed #e4e6f0;border-radius:12px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;background:#f8f9fc;position:relative;" ondragover="event.preventDefault();this.style.borderColor='#4ecca3';this.style.background='rgba(78,204,163,.05)'" ondragleave="this.style.borderColor='#e4e6f0';this.style.background='#f8f9fc'" ondrop="handleProofDrop(event,'cert')">
+            <div style="font-size:32px;margin-bottom:8px;">&#127941;</div>
+            <div style="font-size:13px;font-weight:600;color:#4a4d6a;margin-bottom:4px;">Upload certificates</div>
+            <div style="font-size:12px;color:#8b8fa8;">JPG, PNG, PDF · Max 10MB each</div>
+            <input type="file" accept="image/*,.pdf" multiple onchange="handleProofFiles(this,'cert','cert-preview')" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>
+          </div>
+          <div id="cert-preview" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+        </div>
+
+        <!-- Portfolio / social proof -->
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:600;color:#4a4d6a;margin-bottom:4px;">&#127760; Online presence / portfolio links <span style="font-weight:400;color:#8b8fa8;">(optional)</span></label>
+          <textarea id="io-portfolio" placeholder="Paste links to your work — YouTube channel, Twitter, case studies, portfolio, client testimonials..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:80px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+
+        <!-- Sample video -->
+        <div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#4a4d6a;margin-bottom:4px;">&#127909; Sample teaching video link <span style="font-weight:400;color:#8b8fa8;">(strongly recommended)</span></label>
+          <div style="font-size:12px;color:#8b8fa8;margin-bottom:8px;">A short 2–5 min video of you explaining something in your skill area. YouTube, Loom, or Google Drive link. This is the single biggest factor in approval.</div>
+          <input id="io-video" type="url" placeholder="https://youtube.com/... or https://loom.com/..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+      </div>
+
+      <!-- STEP 4: Course Idea -->
+      <div id="inst-step-4" style="display:none;">
+        <div style="font-family:'Poppins',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;">Your course idea</div>
+        <div style="font-size:13px;color:#8b8fa8;margin-bottom:24px;">Tell us what course you want to create. This helps us see if it's a good fit for our catalog.</div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Proposed course title *</label>
+          <input id="io-course-title" type="text" placeholder="E.g: WhatsApp Marketing Mastery: How to Generate ₦300k/Month" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Who is this course for? *</label>
+          <textarea id="io-audience" placeholder="E.g: Nigerian entrepreneurs who want to use WhatsApp to grow their business without spending on ads..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:80px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">What will students be able to DO after this course? *</label>
+          <textarea id="io-outcomes" placeholder="List 3–5 concrete outcomes. E.g: Build a WhatsApp broadcast list of 1,000+ leads, Create automated follow-up sequences, Close ₦50k+ deals from WhatsApp..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:100px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Proposed price (NGN) *</label>
+            <input id="io-price" type="number" placeholder="e.g. 35000" min="5000" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Estimated course length</label>
+            <select id="io-length" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;appearance:none;background:#fff;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'">
+              <option>Under 2 hours</option><option>2–5 hours</option>
+              <option>5–10 hours</option><option>10+ hours</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Why should SkillsLibry approve you over someone else? *</label>
+          <textarea id="io-why" placeholder="This is your pitch. Tell us what makes you uniquely qualified and why students will get results from your course specifically..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:90px;resize:vertical;line-height:1.6;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+        </div>
+
+        <!-- Agreement -->
+        <div style="background:rgba(78,204,163,.06);border:1.5px solid rgba(78,204,163,.2);border-radius:12px;padding:16px 20px;margin-bottom:16px;">
+          <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:13px;color:#4a4d6a;line-height:1.6;">
+            <input type="checkbox" id="io-agree" style="margin-top:2px;width:16px;height:16px;accent-color:#4ecca3;flex-shrink:0;"/>
+            I confirm that all information I have provided is accurate. I understand that providing false information will result in permanent disqualification. I agree to SkillsLibry's Instructor Terms and commit to delivering real, results-driven content.
+          </label>
+        </div>
+
+        <div id="inst-error" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+      </div>
+
+    </div><!-- /body -->
+
+    <!-- Footer -->
+    <div style="padding:20px 32px;border-top:1.5px solid #e4e6f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f8f9fc;">
+      <div style="font-size:12px;color:#8b8fa8;">Step <span id="inst-step-num">1</span> of 4</div>
+      <div style="display:flex;gap:10px;">
+        <button id="inst-prev-btn" onclick="prevInstStep()" style="display:none;padding:10px 22px;background:transparent;border:1.5px solid #e4e6f0;border-radius:8px;font-size:13px;font-weight:600;color:#4a4d6a;cursor:pointer;">&#8592; Back</button>
+        <button id="inst-next-btn" onclick="nextInstStep()" style="padding:10px 28px;background:#4ecca3;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;">Continue &#8594;</button>
+        <button id="inst-submit-btn" onclick="submitInstApp()" style="display:none;padding:10px 28px;background:#6c63ff;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;">Submit application &#10003;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes instPop{from{opacity:0;transform:scale(.95) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+
+<script>
+/* ── INSTRUCTOR ONBOARDING ── */
+var _instStep   = 1;
+var _instExp    = null;
+var _instEarn   = null;
+var _instFiles  = { income:[], cert:[] };
+
+function openInstructorOnboarding(){
+  _instStep = 1;
+  var m = document.getElementById('inst-modal');
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
+  updateInstStep();
+}
+function closeInstModal(){
+  var m = document.getElementById('inst-modal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+}
+
+function goInstStep(n){
+  if(n > _instStep) return; // can't skip forward
+  _instStep = n;
+  updateInstStep();
+}
+
+function updateInstStep(){
+  // Show/hide panels
+  for(var i=1;i<=4;i++){
+    var panel = document.getElementById('inst-step-'+i);
+    if(panel) panel.style.display = i===_instStep ? 'block' : 'none';
+  }
+  // Update tab styles
+  for(var i=1;i<=4;i++){
+    var tab = document.getElementById('istt-'+i);
+    if(tab){
+      tab.style.color       = i===_instStep ? '#4ecca3' : (i<_instStep ? '#2db88a' : '#8b8fa8');
+      tab.style.borderBottomColor = i<=_instStep ? '#4ecca3' : 'transparent';
+      tab.style.fontWeight  = i===_instStep ? '700' : '600';
+    }
+  }
+  document.getElementById('inst-step-num').textContent = _instStep;
+
+  // Buttons
+  var prev   = document.getElementById('inst-prev-btn');
+  var next   = document.getElementById('inst-next-btn');
+  var submit = document.getElementById('inst-submit-btn');
+  if(prev)   prev.style.display   = _instStep > 1 ? 'block' : 'none';
+  if(next)   next.style.display   = _instStep < 4 ? 'block' : 'none';
+  if(submit) submit.style.display = _instStep === 4 ? 'block' : 'none';
+}
+
+function nextInstStep(){
+  if(!validateInstStep(_instStep)) return;
+  _instStep++;
+  updateInstStep();
+}
+function prevInstStep(){
+  _instStep = Math.max(1, _instStep-1);
+  updateInstStep();
+}
+
+function validateInstStep(n){
+  var err = document.getElementById('inst-error');
+  if(err) err.style.display = 'none';
+
+  if(n===1){
+    var name  = (document.getElementById('io-name')||{}).value||'';
+    var email = (document.getElementById('io-email')||{}).value||'';
+    var phone = (document.getElementById('io-phone')||{}).value||'';
+    var bio   = (document.getElementById('io-bio')||{}).value||'';
+    if(!name.trim())  { showInstErr('Please enter your full name.'); return false; }
+    if(!email.trim()) { showInstErr('Please enter your email address.'); return false; }
+    if(!phone.trim()) { showInstErr('Please enter your phone number.'); return false; }
+    if(!bio.trim() || bio.trim().length < 50) { showInstErr('Please write a bio of at least 50 characters.'); return false; }
+  }
+  if(n===2){
+    var skill   = (document.getElementById('io-skill')||{}).value||'';
+    var results = (document.getElementById('io-results')||{}).value||'';
+    if(!skill)          { showInstErr('Please select the skill you want to teach.'); return false; }
+    if(!_instExp)       { showInstErr('Please select how long you have been practising this skill.'); return false; }
+    if(!_instEarn)      { showInstErr('Please indicate if you are currently earning from this skill.'); return false; }
+    if(!results.trim() || results.trim().length < 80) { showInstErr('Please describe your results in detail (at least 80 characters). Be specific with numbers.'); return false; }
+  }
+  if(n===3){
+    // Proof upload is strongly recommended but not blocking
+    // Just pass
+  }
+  if(n===4){
+    var title    = (document.getElementById('io-course-title')||{}).value||'';
+    var audience = (document.getElementById('io-audience')||{}).value||'';
+    var outcomes = (document.getElementById('io-outcomes')||{}).value||'';
+    var why      = (document.getElementById('io-why')||{}).value||'';
+    var agree    = document.getElementById('io-agree');
+    if(!title.trim())    { showInstErr('Please enter your proposed course title.'); return false; }
+    if(!audience.trim()) { showInstErr('Please describe who this course is for.'); return false; }
+    if(!outcomes.trim()) { showInstErr('Please describe what students will achieve.'); return false; }
+    if(!why.trim() || why.trim().length < 60) { showInstErr('Please tell us why we should choose you (at least 60 characters).'); return false; }
+    if(!agree||!agree.checked) { showInstErr('Please agree to the Instructor Terms before submitting.'); return false; }
+  }
+  return true;
+}
+
+function showInstErr(msg){
+  var err = document.getElementById('inst-error');
+  if(err){ err.textContent=msg; err.style.display='block'; }
+  // Scroll to error
+  if(err) err.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function selectExp(val){
+  _instExp = val;
+  ['1y','2y','5y','5y+'].forEach(function(id){
+    var el = document.getElementById('exp-'+id);
+    if(el){
+      el.style.borderColor = id===val ? '#4ecca3' : '#e4e6f0';
+      el.style.background  = id===val ? 'rgba(78,204,163,.08)' : '#fff';
+      el.style.color       = id===val ? '#2db88a' : '#4a4d6a';
+      el.style.fontWeight  = id===val ? '700' : '500';
+    }
+  });
+}
+
+function selectEarning(val){
+  _instEarn = val;
+  ['yes','side','no','other'].forEach(function(id){
+    var el = document.getElementById('earn-'+id);
+    if(el){
+      el.style.borderColor = id===val ? '#4ecca3' : '#e4e6f0';
+      el.style.background  = id===val ? 'rgba(78,204,163,.08)' : '#fff';
+    }
+  });
+}
+
+function handleProofFiles(input, type, previewId){
+  var files = Array.from(input.files);
+  _instFiles[type] = (_instFiles[type]||[]).concat(files);
+  var preview = document.getElementById(previewId);
+  if(!preview) return;
+  preview.innerHTML = _instFiles[type].map(function(f,i){
+    return '<div style="display:flex;align-items:center;gap:8px;background:#f8f9fc;border:1px solid #e4e6f0;border-radius:8px;padding:8px 12px;font-size:12px;">'
+      +'<span style="font-size:16px;">'+(f.name.endsWith('.pdf')?'&#128196;':'&#128444;')+'</span>'
+      +'<span style="color:#4a4d6a;font-weight:500;">'+f.name+'</span>'
+      +'<span style="color:#8b8fa8;">('+Math.round(f.size/1024)+'kb)</span>'
+    +'</div>';
+  }).join('');
+}
+
+function handleProofDrop(event, type){
+  event.preventDefault();
+  var input = { files: event.dataTransfer.files };
+  handleProofFiles(input, type, type+'-preview');
+  document.getElementById(type+'-drop').style.borderColor='#e4e6f0';
+  document.getElementById(type+'-drop').style.background='#f8f9fc';
+}
+
+async function submitInstApp(){
+  if(!validateInstStep(4)) return;
+
+  var btn = document.getElementById('inst-submit-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
+
+  try {
+    // Collect all data
+    var application = {
+      name:        document.getElementById('io-name').value.trim(),
+      email:       document.getElementById('io-email').value.trim(),
+      phone:       document.getElementById('io-phone').value.trim(),
+      country:     document.getElementById('io-country').value,
+      bio:         document.getElementById('io-bio').value.trim(),
+      linkedin:    document.getElementById('io-linkedin').value.trim(),
+      website:     document.getElementById('io-website').value.trim(),
+      skill:       document.getElementById('io-skill').value,
+      experience:  _instExp,
+      earning:     _instEarn,
+      results:     document.getElementById('io-results').value.trim(),
+      teaching:    document.getElementById('io-teaching').value.trim(),
+      portfolio:   document.getElementById('io-portfolio').value.trim(),
+      sampleVideo: document.getElementById('io-video').value.trim(),
+      courseTitle: document.getElementById('io-course-title').value.trim(),
+      audience:    document.getElementById('io-audience').value.trim(),
+      outcomes:    document.getElementById('io-outcomes').value.trim(),
+      price:       document.getElementById('io-price').value,
+      courseLength:document.getElementById('io-length').value,
+      why:         document.getElementById('io-why').value.trim(),
+      proofFiles:  _instFiles.income.length + _instFiles.cert.length,
+      status:      'pending',
+      submittedAt: new Date().toISOString(),
+    };
+
+    // Save to Firestore if Firebase is ready
+    if(window._db){
+      var { collection, addDoc, serverTimestamp } =
+        await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await addDoc(collection(window._db, 'instructorApplications'), Object.assign({}, application, {
+        submittedAt: serverTimestamp(),
+        userId: window._user ? window._user.uid : null,
+      }));
+    }
+
+    // Show success
+    var modalBody = document.querySelector('#inst-modal > div > div[style*="overflow-y"]');
+    var modalFooter = document.querySelector('#inst-modal > div > div[style*="border-top"]');
+    if(modalBody){
+      modalBody.innerHTML = '<div style="text-align:center;padding:48px 24px;">'
+        +'<div style="font-size:64px;margin-bottom:20px;">&#127881;</div>'
+        +'<div style="font-family:\'Poppins\',sans-serif;font-size:22px;font-weight:800;margin-bottom:10px;color:#0d0d1a;">Application submitted!</div>'
+        +'<div style="font-size:15px;color:#4a4d6a;max-width:420px;margin:0 auto 28px;line-height:1.75;">'
+          +'We\'ll review your application within <strong>3–5 business days</strong>. '
+          +'You\'ll receive an email at <strong>'+application.email+'</strong> with our decision and next steps.'
+        +'</div>'
+        +'<div style="background:#f8f9fc;border:1.5px solid #e4e6f0;border-radius:12px;padding:16px 20px;text-align:left;max-width:380px;margin:0 auto;">'
+          +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8b8fa8;margin-bottom:10px;">What happens next</div>'
+          +'<div style="font-size:13px;color:#4a4d6a;line-height:1.8;">'
+            +'&#128336; Our team reviews your application<br>'
+            +'&#9989; We verify your proof and credentials<br>'
+            +'&#128172; You\'ll receive an email with our decision<br>'
+            +'&#127891; If approved, you\'ll get access to the instructor portal'
+          +'</div>'
+        +'</div>'
+        +'<button onclick="closeInstModal()" style="margin-top:28px;padding:12px 32px;background:#4ecca3;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;">Done</button>'
+      +'</div>';
+    }
+    if(modalFooter) modalFooter.style.display = 'none';
+
+  } catch(err){
+    console.error(err);
+    showInstErr('Failed to submit. Please try again.');
+    if(btn){ btn.disabled=false; btn.textContent='Submit application ✓'; }
+  }
+}
+
+/* Close on backdrop */
+document.getElementById('inst-modal').addEventListener('click', function(e){
+  if(e.target===this) closeInstModal();
+});
+</script>
+
 </body> on every page -->
 
 
