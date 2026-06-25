@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Community — SkillsLibry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--bg3:#f1f3f9;--bg4:#e8eaf0;
+  --border:#e4e6f0;--text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--orange:#f59e0b;--red:#ef4444;
+  --r:10px;--r-sm:6px;--r-lg:16px;--r-xl:24px;
+  --sh:0 2px 12px rgba(13,13,26,.06);--sh-md:0 8px 32px rgba(13,13,26,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+a{text-decoration:none;color:inherit}
+button{font-family:'Inter',sans-serif;cursor:pointer}
+
+/* ── NAV ── */
+.nav{
+  position:sticky;top:0;z-index:100;height:64px;
+  display:flex;align-items:center;padding:0 28px;gap:20px;
+  background:rgba(255,255,255,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer;}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;color:#fff;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;color:var(--text);}
+.nav-logo-text span{color:var(--teal);}
+.nav-center{flex:1;display:flex;flex-direction:column;align-items:center;}
+.nav-course-name{font-size:13px;font-weight:600;color:var(--text);max-width:400px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nav-community-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal-dark);background:var(--teal-dim);border:1px solid rgba(78,204,163,.2);border-radius:4px;padding:2px 8px;margin-top:2px;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;border:none;border-radius:var(--r-sm);cursor:pointer;transition:all .2s;padding:8px 16px;}
+.btn-ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+.btn-teal{background:var(--teal);color:#0d0d1a;font-weight:700;}
+.btn-teal:hover{background:var(--teal-dark);}
+
+/* ── LAYOUT ── */
+.shell{
+  max-width:1160px;margin:0 auto;padding:28px 24px;
+  display:grid;grid-template-columns:260px 1fr 280px;gap:24px;
+  align-items:start;
+}
+
+/* ── LEFT SIDEBAR ── */
+.left-panel{
+  position:sticky;top:88px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.panel-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--sh);
+}
+.panel-head{
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;
+  color:var(--text);display:flex;align-items:center;justify-content:space-between;
+}
+.panel-head span{font-size:11px;color:var(--text3);font-weight:500;}
+.tab-nav{display:flex;flex-direction:column;gap:2px;padding:10px;}
+.tab-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--r-sm);
+  font-size:13px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all .2s;
+}
+.tab-item:hover{background:var(--bg2);color:var(--text);}
+.tab-item.active{background:var(--teal-dim);color:var(--teal-dark);font-weight:600;}
+.tab-item .ti-icon{font-size:16px;width:28px;text-align:center;}
+.tab-item .ti-count{margin-left:auto;font-size:11px;font-weight:700;background:var(--bg3);color:var(--text3);border-radius:100px;padding:2px 7px;}
+.tab-item.active .ti-count{background:rgba(78,204,163,.2);color:var(--teal-dark);}
+
+/* Course info card */
+.course-mini{padding:16px 18px;}
+.cm-thumb{
+  width:100%;aspect-ratio:16/9;border-radius:var(--r-sm);
+  background:linear-gradient(135deg,#0d0d1a,#1a1a2e);
+  margin-bottom:12px;display:flex;align-items:center;justify-content:center;
+  font-size:32px;overflow:hidden;
+}
+.cm-title{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4;}
+.cm-meta{font-size:11px;color:var(--text3);}
+.cm-progress{margin-top:10px;}
+.cm-progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px;}
+.cm-progress-bar{height:5px;background:var(--bg3);border-radius:100px;overflow:hidden;}
+.cm-progress-fill{height:100%;background:var(--teal);border-radius:100px;transition:width .4s;}
+
+/* ── FEED ── */
+.feed{display:flex;flex-direction:column;gap:16px;}
+.tab-section{display:none;}
+.tab-section.active{display:flex;flex-direction:column;gap:16px;}
+
+/* Post composer */
+.composer{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:18px;box-shadow:var(--sh);
+}
+.composer-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.composer-avatar{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;
+}
+.composer-input{
+  flex:1;border:1.5px solid var(--border);border-radius:var(--r);
+  padding:11px 14px;font-size:14px;color:var(--text);
+  font-family:'Inter',sans-serif;resize:none;min-height:80px;
+  outline:none;transition:border .2s;line-height:1.65;
+}
+.composer-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(78,204,163,.1);}
+.composer-input::placeholder{color:var(--text3);}
+.composer-footer{display:flex;align-items:center;justify-content:space-between;}
+.composer-tools{display:flex;gap:6px;}
+.composer-tool{
+  width:32px;height:32px;border-radius:var(--r-sm);
+  border:1.5px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;cursor:pointer;color:var(--text3);
+  transition:all .2s;
+}
+.composer-tool:hover{border-color:var(--teal);color:var(--teal-dark);}
+.post-btn{
+  background:var(--teal);color:#0d0d1a;
+  font-size:13px;font-weight:700;border:none;
+  border-radius:var(--r-sm);padding:9px 22px;cursor:pointer;
+  transition:all .2s;
+}
+.post-btn:hover{background:var(--teal-dark);}
+.post-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* Post card */
+.post-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);padding:0;overflow:hidden;
+  box-shadow:var(--sh);transition:border-color .2s;
+}
+.post-card:hover{border-color:var(--border2);}
+.post-header{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:18px 20px 14px;
+}
+.post-avatar{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#fff;
+}
+.post-meta{flex:1;}
+.post-author{font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;}
+.inst-badge{font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--teal),var(--purple));color:#fff;border-radius:4px;padding:2px 7px;}
+.pinned-badge{font-size:10px;font-weight:700;background:var(--orange);color:#fff;border-radius:4px;padding:2px 7px;}
+.post-time{font-size:12px;color:var(--text3);margin-top:2px;}
+.post-options{margin-left:auto;cursor:pointer;font-size:18px;color:var(--text3);padding:4px;}
+.post-body{padding:0 20px 16px;font-size:14px;color:var(--text2);line-height:1.8;}
+.post-body p{margin-bottom:8px;}
+.post-body p:last-child{margin-bottom:0;}
+.post-image{width:100%;max-height:360px;object-fit:cover;display:block;}
+.post-attachment{
+  margin:0 20px 14px;padding:12px 16px;
+  background:var(--bg2);border:1.5px solid var(--border);
+  border-radius:var(--r-sm);display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:border-color .2s;
+}
+.post-attachment:hover{border-color:var(--teal);}
+.pa-icon{font-size:22px;flex-shrink:0;}
+.pa-name{font-size:13px;font-weight:600;color:var(--text);}
+.pa-size{font-size:11px;color:var(--text3);}
+.post-footer{
+  display:flex;align-items:center;gap:0;
+  padding:0 14px 14px;
+}
+.reaction-btn{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--text3);font-weight:500;
+  background:transparent;border:none;cursor:pointer;
+  padding:7px 12px;border-radius:var(--r-sm);transition:all .2s;
+}
+.reaction-btn:hover{background:var(--bg2);color:var(--text);}
+.reaction-btn.liked{color:var(--red);}
+.reaction-btn.liked .ricon{color:var(--red);}
+.ricon{font-size:16px;}
+.post-divider{height:1px;background:var(--border);margin:0 20px;}
+
+/* Comments under post */
+.comments-section{padding:14px 20px;background:var(--bg2);border-top:1px solid var(--border);}
+.comment-thread{display:flex;flex-direction:column;gap:12px;margin-bottom:14px;}
+.comment-item{display:flex;gap:10px;}
+.comment-av{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+}
+.comment-bubble{
+  flex:1;background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-sm);padding:10px 14px;
+}
+.comment-author{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.comment-text{font-size:13px;color:var(--text2);line-height:1.65;}
+.comment-time{font-size:11px;color:var(--text3);margin-top:4px;}
+.reply-input-row{display:flex;gap:10px;align-items:center;}
+.reply-input{
+  flex:1;padding:9px 13px;border:1.5px solid var(--border);
+  border-radius:100px;font-size:13px;color:var(--text);
+  font-family:'Inter',sans-serif;outline:none;transition:border .2s;
+}
+.reply-input:focus{border-color:var(--teal);}
+.reply-send{
+  width:34px;height:34px;border-radius:50%;background:var(--teal);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:all .2s;flex-shrink:0;
+}
+.reply-send:hover{background:var(--teal-dark);}
+
+/* ── ANNOUNCEMENTS ── */
+.announcement-card{
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:var(--sh);
+}
+.ann-header{
+  background:linear-gradient(135deg,var(--teal-dim),var(--purple-dim));
+  border-bottom:1.5px solid rgba(78,204,163,.15);
+  padding:16px 20px;display:flex;align-items:center;gap:10px;
+}
+.ann-icon{font-size:20px;}
+.ann-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);}
+.ann-body{padding:16px 20px;font-size:14px;color:var(--text2);line-height:1.75;}
+.ann-meta{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--text3);}
+
+/* ── MEMBERS ── */
+.member-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 18px;border-bottom:1px solid var(--border);
+  transition:background .15s;cursor:pointer;
+}
+.member-item:last-child{border-bottom:none;}
+.member-item:hover{background:var(--bg2);}
+.member-av{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;
+}
+.member-name{font-size:13px;font-weight:600;color:var(--text);}
+.member-joined{font-size:11px;color:var(--text3);margin-top:1px;}
+.member-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;}
+.badge-inst{background:linear-gradient(135deg,var(--teal),var(--purple));color:#fff;}
+.badge-student{background:var(--bg3);color:var(--text3);}
+
+/* ── RESOURCES ── */
+.resource-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+  cursor:pointer;transition:background .15s;
+}
+.resource-item:last-child{border-bottom:none;}
+.resource-item:hover{background:var(--bg2);}
+.resource-icon{
+  width:42px;height:42px;border-radius:var(--r-sm);flex-shrink:0;
+  background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.resource-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.resource-meta{font-size:11px;color:var(--text3);}
+.resource-dl{font-size:18px;color:var(--text3);margin-left:auto;transition:color .2s;}
+.resource-item:hover .resource-dl{color:var(--teal-dark);}
+
+/* ── RIGHT PANEL ── */
+.right-panel{
+  position:sticky;top:88px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.live-card{
+  background:linear-gradient(135deg,#0d0d1a,#1a1a2e);
+  border-radius:var(--r-lg);padding:20px;
+  box-shadow:var(--sh-md);border:1.5px solid rgba(255,255,255,.06);
+}
+.live-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--red);
+  display:inline-block;margin-right:6px;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5);margin-bottom:12px;display:flex;align-items:center;}
+.live-title{font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.4;}
+.live-time{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px;}
+.live-join-btn{
+  width:100%;padding:11px;background:var(--teal);
+  color:#0d0d1a;font-family:'Poppins',sans-serif;
+  font-size:14px;font-weight:700;border:none;
+  border-radius:var(--r-sm);cursor:pointer;transition:all .2s;
+}
+.live-join-btn:hover{background:var(--teal-dark);}
+
+.stats-card{padding:16px 18px;}
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.stat-row:last-child{border-bottom:none;}
+.stat-label{color:var(--text3);}
+.stat-val{font-family:'Poppins',sans-serif;font-weight:700;color:var(--text);}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:12px 18px;font-size:13px;color:var(--text);display:none;box-shadow:var(--sh-md);max-width:300px;}
+.toast.show{display:flex;align-items:center;gap:10px;animation:tin .2s ease;}
+@keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:1024px){.shell{grid-template-columns:220px 1fr 240px;}}
+@media(max-width:860px){.shell{grid-template-columns:1fr;}.left-panel,.right-panel{position:static;}.left-panel{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">S</div>
+    <span class="nav-logo-text">Skills<span>Libry</span></span>
+  </a>
+  <div class="nav-center">
+    <div class="nav-course-name" id="nav-course-name">Course Community</div>
+    <div class="nav-community-tag">&#128101; Private Community</div>
+  </div>
+  <div class="nav-right">
+    <a class="btn btn-ghost" href="player.html" id="back-to-course">&#9654; Continue learning</a>
+  </div>
+</nav>
+
+<!-- ── SHELL ── -->
+<div class="shell">
+
+  <!-- ── LEFT ── -->
+  <div class="left-panel">
+
+    <!-- Nav tabs -->
+    <div class="panel-card">
+      <div class="tab-nav">
+        <div class="tab-item active" onclick="switchTab('feed')" id="tab-feed">
+          <span class="ti-icon">&#128226;</span> Discussion
+          <span class="ti-count" id="tc-feed">0</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('announcements')" id="tab-announcements">
+          <span class="ti-icon">&#128276;</span> Announcements
+          <span class="ti-count" id="tc-ann">0</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('members')" id="tab-members">
+          <span class="ti-icon">&#128101;</span> Members
+          <span class="ti-count" id="tc-members">0</span>
+        </div>
+        <div class="tab-item" onclick="switchTab('resources')" id="tab-resources">
+          <span class="ti-icon">&#128190;</span> Resources
+          <span class="ti-count" id="tc-resources">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course mini card -->
+    <div class="panel-card">
+      <div class="course-mini">
+        <div class="cm-thumb">&#127891;</div>
+        <div class="cm-title" id="cm-title">Course name</div>
+        <div class="cm-meta" id="cm-meta">Loading...</div>
+        <div class="cm-progress">
+          <div class="cm-progress-label">
+            <span>Your progress</span>
+            <span id="cm-pct">0%</span>
+          </div>
+          <div class="cm-progress-bar">
+            <div class="cm-progress-fill" id="cm-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── MAIN FEED ── -->
+  <div class="feed">
+
+    <!-- DISCUSSION TAB -->
+    <div class="tab-section active" id="section-feed">
+
+      <!-- Composer -->
+      <div class="composer" id="post-composer">
+        <div class="composer-top">
+          <div class="composer-avatar" id="composer-av">?</div>
+          <textarea class="composer-input" id="post-input" placeholder="Share a question, insight, or win with the community..."></textarea>
+        </div>
+        <div class="composer-footer">
+          <div class="composer-tools">
+            <label class="composer-tool" title="Attach image" for="post-image-input">&#128444;</label>
+            <input type="file" id="post-image-input" accept="image/*" style="display:none;" onchange="attachPostImage(this)"/>
+            <label class="composer-tool" title="Attach file" for="post-file-input">&#128206;</label>
+            <input type="file" id="post-file-input" style="display:none;" onchange="attachPostFile(this)"/>
+          </div>
+          <button class="post-btn" id="post-submit-btn" onclick="submitPost()">Post</button>
+        </div>
+        <div id="post-attachment-preview" style="margin-top:10px;display:none;"></div>
+      </div>
+
+      <!-- Posts feed -->
+      <div id="posts-feed"></div>
+
+    </div>
+
+    <!-- ANNOUNCEMENTS TAB -->
+    <div class="tab-section" id="section-announcements">
+      <div id="announcements-feed">
+        <!-- Instructor-only compose -->
+        <div id="ann-composer" style="display:none;" class="composer" style="margin-bottom:16px;">
+          <div class="composer-top">
+            <div class="composer-avatar" id="ann-av">?</div>
+            <textarea class="composer-input" id="ann-input" placeholder="Post an announcement to all students..."></textarea>
+          </div>
+          <div class="composer-footer">
+            <div></div>
+            <button class="post-btn" onclick="submitAnnouncement()">Post announcement</button>
+          </div>
+        </div>
+        <div id="ann-list"></div>
+      </div>
+    </div>
+
+    <!-- MEMBERS TAB -->
+    <div class="tab-section" id="section-members">
+      <div class="panel-card">
+        <div class="panel-head">Community Members <span id="member-count-label">0 members</span></div>
+        <div id="members-list"></div>
+      </div>
+    </div>
+
+    <!-- RESOURCES TAB -->
+    <div class="tab-section" id="section-resources">
+      <!-- Instructor upload -->
+      <div id="resource-composer" style="display:none;" class="composer">
+        <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;margin-bottom:14px;">Add a resource</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;">Resource name</label>
+            <input id="res-name" type="text" placeholder="e.g. Funnel Template" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text2);display:block;margin-bottom:5px;">URL or link</label>
+            <input id="res-url" type="url" placeholder="https://..." style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+          </div>
+        </div>
+        <div style="text-align:right;"><button class="post-btn" onclick="addResource()">Add resource</button></div>
+      </div>
+      <div class="panel-card"><div id="resources-list"></div></div>
+    </div>
+
+  </div>
+
+  <!-- ── RIGHT PANEL ── -->
+  <div class="right-panel">
+
+    <!-- Live session card -->
+    <div class="live-card" id="live-card">
+      <div class="live-label"><span class="live-dot"></span> Next live session</div>
+      <div class="live-title" id="live-title">Weekly Q&A with Chidi</div>
+      <div class="live-time" id="live-time">&#128336; Saturday, 7:00 PM WAT</div>
+      <button class="live-join-btn" onclick="joinLiveSession()">&#127909; Set reminder</button>
+    </div>
+
+    <!-- Community stats -->
+    <div class="panel-card">
+      <div class="panel-head">Community</div>
+      <div class="stats-card">
+        <div class="stat-row"><span class="stat-label">Members</span><span class="stat-val" id="stat-members">0</span></div>
+        <div class="stat-row"><span class="stat-label">Posts this week</span><span class="stat-val" id="stat-posts">0</span></div>
+        <div class="stat-row"><span class="stat-label">Resources</span><span class="stat-val" id="stat-resources">0</span></div>
+        <div class="stat-row"><span class="stat-label">Your progress</span><span class="stat-val" id="stat-progress">0%</span></div>
+      </div>
+    </div>
+
+    <!-- Top contributors -->
+    <div class="panel-card">
+      <div class="panel-head">Top contributors</div>
+      <div id="top-contributors" style="padding:8px 0;"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+<!-- ══ FIREBASE + AUTH ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app  = initializeApp({
+  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain:        "skillslibry.firebaseapp.com",
+  projectId:         "skillslibry",
+  storageBucket:     "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+window._auth = auth;
+window._db   = db;
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if (user) {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  } else {
+    window._userRole = null;
+    window._userName = null;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
+});
+
+window.slSignUp = async function(name, email, password, role) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email,
+      role: role || 'student',
+      createdAt: serverTimestamp(),
+      enrolledCourses: [],
+      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+    });
+    window._userRole = role || 'student';
+    window._userName = name;
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignIn = async function(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slGoogleSignIn = async function() {
+  try {
+    const { GoogleAuthProvider, signInWithPopup } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const provider = new GoogleAuthProvider();
+    const cred = await signInWithPopup(auth, provider);
+    // Create user doc if new
+    const { doc, getDoc, setDoc, serverTimestamp } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db, 'users', cred.user.uid));
+    if (!snap.exists()) {
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name: cred.user.displayName || '',
+        email: cred.user.email,
+        role: 'student',
+        createdAt: serverTimestamp(),
+        enrolledCourses: [],
+        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+      });
+    }
+    window._userName = cred.user.displayName || cred.user.email;
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    return { ok: true };
+  } catch(e) {
+    if(e.code === 'auth/popup-closed-by-user') return { ok: false, error: null };
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignOut = async function() {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
+window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
+  if (!window._user) return { ok: false, error: 'Not logged in' };
+  const id = courseId + '_' + window._user.uid;
+  await setDoc(doc(db, 'enrollments', id), {
+    studentId: window._user.uid,
+    courseId, instructorId,
+    paidAmount: amount, currency, transactionId,
+    platformCut: amount * 0.40,
+    instructorCut: amount * 0.60,
+    affiliateCode: affiliateCode || null,
+    progress: { completedLessons: [], percentComplete: 0 },
+    enrolledAt: serverTimestamp(),
+  });
+  return { ok: true };
+};
+
+function slErr(code) {
+  const m = {
+    'auth/email-already-in-use':   'An account with this email already exists.',
+    'auth/invalid-email':          'Please enter a valid email address.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password. Please try again.',
+    'auth/invalid-credential':     'Incorrect email or password.',
+    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/operation-not-allowed':  'Email sign-up is not enabled. Please contact support.',
+    'auth/internal-error':         'Server error. Please try again.',
+    'auth/admin-restricted-operation': 'Sign-up is currently restricted.',
+  };
+  return m[code] || ('Error: ' + code + ' — please try again.');
+}
+</script>
+
+<!-- ══ AUTH MODAL ══ -->
+<div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;position:relative;animation:authPop .25s ease;">
+    <style>@keyframes authPop{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}</style>
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1.5px solid #e4e6f0;">
+      <button id="tab-si" onclick="authTab('si')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#4ecca3;border-bottom:2.5px solid #4ecca3;margin-bottom:-1.5px;">
+        Sign In
+      </button>
+      <button id="tab-su" onclick="authTab('su')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#8b8fa8;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;">
+        Create Account
+      </button>
+    </div>
+
+    <div style="padding:28px 28px 24px;">
+
+      <!-- Google -->
+      <div style="margin-bottom:18px;">
+        <button onclick="doGoogleAuth()" style="width:100%;padding:11px;background:#fff;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-weight:600;color:#4a4d6a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;font-family:'Inter',sans-serif;" onmouseover="this.style.borderColor='#4a4d6a'" onmouseout="this.style.borderColor='#e4e6f0'">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:0;">
+          <div style="flex:1;height:1px;background:#e4e6f0;"></div>
+          <span style="font-size:12px;color:#8b8fa8;font-weight:500;">or continue with email</span>
+          <div style="flex:1;height:1px;background:#e4e6f0;"></div>
+        </div>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="form-si">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:20px;">Welcome back. Sign in to access your courses.</p>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Email</label>
+          <input id="si-email" type="email" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Password</label>
+          <input id="si-pass" type="password" placeholder="••••••••"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
+            onkeydown="if(event.key==='Enter') doAuth('si')"/>
+        </div>
+        <div id="si-err" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+        <button onclick="doAuth('si')" id="si-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;">
+          Sign in
+        </button>
+      </div>
+
+      <!-- SIGN UP -->
+      <div id="form-su" style="display:none;">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:20px;">Join thousands learning and earning with SkillsLibry.</p>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Full name</label>
+          <input id="su-name" type="text" placeholder="Your full name"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Email</label>
+          <input id="su-email" type="email" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Password</label>
+          <input id="su-pass" type="password" placeholder="Min 6 characters"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
+            onkeydown="if(event.key==='Enter') doAuth('su')"/>
+        </div>
+        <div id="su-err" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+        <button onclick="doAuth('su')" id="su-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;">
+          Create account
+        </button>
+        <p style="font-size:11px;color:#8b8fa8;text-align:center;margin-top:12px;line-height:1.6;">By signing up you agree to our Terms &amp; Privacy Policy.</p>
+      </div>
+
+    </div>
+
+    <!-- Close button -->
+    <button onclick="closeAuthModal()"
+      style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#f0f2f7;cursor:pointer;font-size:15px;color:#8b8fa8;line-height:1;">&#10005;</button>
+  </div>
+</div>
+
+<script>
+var _authPending = null;
+
+function openAuthModal(cb, tab) {
+  _authPending = cb || null;
+  authTab(tab || 'si');
+  var m = document.getElementById('auth-modal');
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
+}
+function closeAuthModal() {
+  var m = document.getElementById('auth-modal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+  _authPending = null;
+}
+function authTab(t) {
+  var isSi = t === 'si';
+  document.getElementById('form-si').style.display = isSi ? 'block' : 'none';
+  document.getElementById('form-su').style.display = isSi ? 'none'  : 'block';
+  var tsi = document.getElementById('tab-si');
+  var tsu = document.getElementById('tab-su');
+  if(tsi){ tsi.style.color = isSi ? '#4ecca3' : '#8b8fa8'; tsi.style.borderBottomColor = isSi ? '#4ecca3' : 'transparent'; }
+  if(tsu){ tsu.style.color = isSi ? '#8b8fa8' : '#4ecca3'; tsu.style.borderBottomColor = isSi ? 'transparent' : '#4ecca3'; }
+}
+function authErr(f, msg) {
+  var el = document.getElementById(f+'-err');
+  if(el){ el.textContent = msg; el.style.display = 'block'; }
+}
+function authClearErr() {
+  ['si-err','su-err'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.display='none'; el.textContent=''; }
+  });
+}
+function authSetLoading(f, on) {
+  var btn = document.getElementById(f+'-btn');
+  if(btn){ btn.disabled=on; btn.textContent=on?'Please wait...':(f==='si'?'Sign in':'Create account'); btn.style.opacity=on?'.7':'1'; }
+}
+
+async function doAuth(f) {
+  authClearErr();
+
+  /* Wait for Firebase to finish loading (module scripts load async) */
+  if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
+    authErr(f, 'Connecting to server... please try again in a moment.');
+    /* Retry automatically after 1.5s */
+    setTimeout(function(){ authClearErr(); }, 1500);
+    return;
+  }
+
+  if(f === 'si') {
+    var email = (document.getElementById('si-email')||{}).value||'';
+    var pass  = (document.getElementById('si-pass')||{}).value||'';
+    if(!email||!pass){ authErr('si','Please fill in all fields.'); return; }
+    authSetLoading('si', true);
+    var r = await window.slSignIn(email.trim(), pass);
+    authSetLoading('si', false);
+    if(!r.ok){ authErr('si', r.error); return; }
+  } else {
+    var name  = (document.getElementById('su-name')||{}).value||'';
+    var email = (document.getElementById('su-email')||{}).value||'';
+    var pass  = (document.getElementById('su-pass')||{}).value||'';
+    if(!name||!email||!pass){ authErr('su','Please fill in all fields.'); return; }
+    authSetLoading('su', true);
+    var r = await window.slSignUp(name.trim(), email.trim(), pass, 'student');
+    authSetLoading('su', false);
+    if(!r.ok){ authErr('su', r.error); return; }
+  }
+  closeAuthModal();
+  if(typeof _authPending === 'function'){ var fn=_authPending; _authPending=null; fn(); }
+  else if(typeof showToast==='function') showToast('✓','Welcome to SkillsLibry!');
+}
+
+async function doGoogleAuth() {
+  if(typeof window.slGoogleSignIn !== 'function'){
+    showToast && showToast('⏳','Connecting... please try again.');
+    return;
+  }
+  var r = await window.slGoogleSignIn();
+  if(r && r.ok){
+    closeAuthModal();
+    if(typeof _authPending === 'function'){ var fn=_authPending; _authPending=null; fn(); }
+    else if(typeof showToast==='function') showToast('✓','Welcome to SkillsLibry!');
+  } else if(r && r.error){
+    authErr('si', r.error);
+  }
+}
+
+/* Close on backdrop */
+document.getElementById('auth-modal').addEventListener('click', function(e){
+  if(e.target===this) closeAuthModal();
+});
+</script>
+
+<script>
+/* ══════════════════════════════════════════
+   COMMUNITY ENGINE
+══════════════════════════════════════════ */
+var _courseId   = null;
+var _courseName = 'Course Community';
+var _isInstructor = false;
+var _posts      = [];
+var _announcements = [];
+var _members    = [];
+var _resources  = [];
+var _postAttachment = null;
+var _activeTab  = 'feed';
+
+/* ── TOAST ── */
+function showToast(icon, msg){
+  var t=document.getElementById('toast');
+  document.getElementById('toast-icon').innerHTML=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3200);
+}
+
+/* ── TAB SWITCHING ── */
+function switchTab(tab){
+  _activeTab = tab;
+  document.querySelectorAll('.tab-item').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.tab-section').forEach(function(el){ el.classList.remove('active'); });
+  var ti = document.getElementById('tab-'+tab);
+  var sc = document.getElementById('section-'+tab);
+  if(ti) ti.classList.add('active');
+  if(sc) sc.classList.add('active');
+}
+
+/* ── INIT ── */
+(function(){
+  var params  = new URLSearchParams(window.location.search);
+  _courseId   = params.get('course') || '1';
+  _courseName = params.get('name') ? decodeURIComponent(params.get('name')) : 'Affiliate Marketing Mastery';
+
+  var nn = document.getElementById('nav-course-name');
+  var ct = document.getElementById('cm-title');
+  if(nn) nn.textContent = _courseName;
+  if(ct) ct.innerHTML   = _courseName;
+
+  var bl = document.getElementById('back-to-course');
+  if(bl) bl.href = 'player.html?course=' + _courseId;
+
+  // Load from localStorage (in production: Firestore)
+  loadCommunityData();
+})();
+
+document.addEventListener('authReady', function(e){
+  var user = e.detail.user;
+  if(!user){ openAuthModal(null, 'si'); return; }
+
+  var initials = (window._userName||'U').split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+  ['composer-av','ann-av'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.textContent = initials;
+  });
+
+  // Check if instructor
+  _isInstructor = window._userRole === 'instructor' || window._userRole === 'admin';
+  if(_isInstructor){
+    var ac = document.getElementById('ann-composer');
+    var rc = document.getElementById('resource-composer');
+    if(ac) ac.style.display = 'block';
+    if(rc) rc.style.display = 'block';
+  }
+
+  // Auto-join community on load if enrolled
+  autoJoinCommunity();
+  renderAll();
+});
+
+function autoJoinCommunity(){
+  if(!window._user) return;
+  var key  = 'sl_community_'+_courseId+'_members';
+  var members = JSON.parse(localStorage.getItem(key)||'[]');
+  var exists  = members.find(function(m){ return m.uid === window._user.uid; });
+  if(!exists){
+    var initials = (window._userName||'U').split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+    members.unshift({
+      uid:      window._user.uid,
+      name:     window._userName || 'Student',
+      initials: initials,
+      role:     _isInstructor ? 'instructor' : 'student',
+      joinedAt: new Date().toISOString(),
+    });
+    localStorage.setItem(key, JSON.stringify(members));
+    _members = members;
+  } else {
+    _members = members;
+  }
+}
+
+function loadCommunityData(){
+  var key = 'sl_community_'+_courseId;
+  _posts         = JSON.parse(localStorage.getItem(key+'_posts')||'[]');
+  _announcements = JSON.parse(localStorage.getItem(key+'_ann')||'[]');
+  _members       = JSON.parse(localStorage.getItem(key+'_members')||'[]');
+  _resources     = JSON.parse(localStorage.getItem(key+'_resources')||'[]');
+
+  // Seed with sample data if empty
+  if(_posts.length === 0){
+    _posts = [
+      {id:'p1',author:'Amaka Obi',initials:'AO',role:'student',time:'2 hours ago',text:'Just completed module 3 and already set up my funnel! Who else is at this stage? Would love to connect and share notes.',likes:12,liked:false,comments:[
+        {id:'c1',author:'Instructor',initials:'CO',role:'instructor',time:'1 hour ago',text:'Amazing Amaka! Make sure to post your funnel link here when it\'s live — I\'ll give you direct feedback.'},
+        {id:'c2',author:'Taiwo M.',initials:'TM',role:'student',time:'45 min ago',text:'Just started module 3 myself! Let\'s connect.'},
+      ]},
+      {id:'p2',author:'Emmanuel N.',initials:'EN',role:'student',time:'1 day ago',text:'Quick question for anyone — does the WhatsApp strategy in module 4 still work if you\'re targeting Ghana? I\'m getting decent clicks but low conversions.',likes:8,liked:false,comments:[
+        {id:'c3',author:'Instructor',initials:'CO',role:'instructor',time:'23 hours ago',text:'Yes! Actually Ghana has one of the highest WhatsApp engagement rates in West Africa. The key is your CTA — share your copy in the comments and I\'ll review it.'},
+      ]},
+    ];
+    localStorage.setItem('sl_community_'+_courseId+'_posts', JSON.stringify(_posts));
+  }
+  if(_announcements.length === 0){
+    _announcements = [
+      {id:'a1',title:'Welcome to the community!',text:'This is your private space. Ask questions, share wins, help each other. I read every post personally and reply within 24 hours. Let\'s get you to your first commission.',author:'Chidi Okafor',initials:'CO',time:'3 days ago',pinned:true},
+      {id:'a2',title:'Live Q&A this Saturday — bring your questions!',text:'I\'m hosting a live session this Saturday at 7PM WAT. We\'ll cover traffic strategies, funnel optimisation, and I\'ll critique a few funnels live. Drop your questions below.',author:'Chidi Okafor',initials:'CO',time:'1 day ago',pinned:false},
+    ];
+    localStorage.setItem('sl_community_'+_courseId+'_ann', JSON.stringify(_announcements));
+  }
+  if(_resources.length === 0){
+    _resources = [
+      {id:'r1',name:'Affiliate Funnel Template',desc:'Canva template — edit and make it yours',icon:'&#127912;',url:'#'},
+      {id:'r2',name:'Email Swipe File',desc:'15 proven subject lines + body templates',icon:'&#128140;',url:'#'},
+      {id:'r3',name:'Traffic Tracker Spreadsheet',desc:'Track clicks, conversions and ROI',icon:'&#128202;',url:'#'},
+    ];
+    localStorage.setItem('sl_community_'+_courseId+'_resources', JSON.stringify(_resources));
+  }
+}
+
+function renderAll(){
+  renderPosts();
+  renderAnnouncements();
+  renderMembers();
+  renderResources();
+  updateCounts();
+  renderTopContributors();
+}
+
+/* ══════════════════════════════════════════
+   POSTS
+══════════════════════════════════════════ */
+function renderPosts(){
+  var feed = document.getElementById('posts-feed');
+  if(!feed) return;
+  if(_posts.length === 0){
+    feed.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);background:#fff;border-radius:var(--r-lg);border:1.5px solid var(--border);">'
+      +'<div style="font-size:36px;margin-bottom:12px;">&#128226;</div>'
+      +'<div style="font-weight:600;margin-bottom:6px;">No posts yet</div>'
+      +'<div style="font-size:13px;">Be the first to post a question or share a win!</div>'
+      +'</div>';
+    return;
+  }
+  feed.innerHTML = _posts.map(function(p){ return renderPost(p); }).join('');
+}
+
+function renderPost(p){
+  var commentsHtml = (p.comments||[]).map(function(c){
+    return '<div class="comment-item">'
+      +'<div class="comment-av" style="'+(c.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+(c.initials)+'</div>'
+      +'<div class="comment-bubble">'
+        +'<div class="comment-author">'+c.author+(c.role==='instructor'?'<span class="inst-badge">Instructor</span>':'')+'</div>'
+        +'<div class="comment-text">'+c.text+'</div>'
+        +'<div class="comment-time">'+c.time+'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+
+  return '<div class="post-card" id="post-'+p.id+'">'
+    +'<div class="post-header">'
+      +'<div class="post-avatar" style="'+(p.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+(p.initials)+'</div>'
+      +'<div class="post-meta">'
+        +'<div class="post-author">'+p.author+(p.role==='instructor'?'<span class="inst-badge">Instructor</span>':'')+'</div>'
+        +'<div class="post-time">'+p.time+'</div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="post-body"><p>'+p.text+'</p></div>'
+    +(p.imageUrl?'<img class="post-image" src="'+p.imageUrl+'" alt="Post image"/>':'')
+    +'<div class="post-footer">'
+      +'<button class="reaction-btn'+(p.liked?' liked':'')+'" onclick="toggleLike(\''+p.id+'\')">'
+        +'<span class="ricon">'+(p.liked?'&#10084;&#65039;':'&#128077;')+'</span> '+(p.likes||0)
+      +'</button>'
+      +'<button class="reaction-btn" onclick="toggleComments(\''+p.id+'\')"><span class="ricon">&#128172;</span> '+(p.comments||[]).length+' Comments</button>'
+    +'</div>'
+    +'<div class="comments-section" id="comments-'+p.id+'" style="display:'+(p.comments&&p.comments.length?'block':'none')+';">'
+      +'<div class="comment-thread">'+commentsHtml+'</div>'
+      +'<div class="reply-input-row">'
+        +'<div class="comment-av" style="width:32px;height:32px;font-size:11px;">'+((window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase())+'</div>'
+        +'<input class="reply-input" type="text" placeholder="Write a reply..." id="reply-'+p.id+'" onkeydown="if(event.key===\'Enter\')submitReply(\''+p.id+'\')"/>'
+        +'<button class="reply-send" onclick="submitReply(\''+p.id+'\')">&#10148;</button>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+}
+
+function toggleLike(postId){
+  var p = _posts.find(function(x){ return x.id===postId; });
+  if(!p) return;
+  p.liked = !p.liked;
+  p.likes = (p.likes||0) + (p.liked?1:-1);
+  savePosts();
+  renderPosts();
+}
+
+function toggleComments(postId){
+  var el = document.getElementById('comments-'+postId);
+  if(el) el.style.display = el.style.display==='none' ? 'block' : 'none';
+}
+
+function submitReply(postId){
+  var input = document.getElementById('reply-'+postId);
+  var text  = input ? input.value.trim() : '';
+  if(!text) return;
+  if(!window._user){ openAuthModal(null,'si'); return; }
+
+  var p = _posts.find(function(x){ return x.id===postId; });
+  if(!p) return;
+  if(!p.comments) p.comments = [];
+  var initials = (window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  p.comments.push({
+    id:       'c_'+Date.now(),
+    author:   window._userName||'Student',
+    initials: initials,
+    role:     _isInstructor?'instructor':'student',
+    text:     text,
+    time:     'Just now',
+  });
+  savePosts();
+  if(input) input.value='';
+  renderPosts();
+  // Re-open comments
+  setTimeout(function(){
+    var el=document.getElementById('comments-'+postId);
+    if(el) el.style.display='block';
+  },50);
+}
+
+function submitPost(){
+  var input = document.getElementById('post-input');
+  var text  = input ? input.value.trim() : '';
+  if(!text && !_postAttachment){ showToast('&#9888;&#65039;','Write something first.'); return; }
+  if(!window._user){ openAuthModal(function(){ submitPost(); },'si'); return; }
+
+  var btn = document.getElementById('post-submit-btn');
+  if(btn) btn.disabled = true;
+
+  var initials = (window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  _posts.unshift({
+    id:       'p_'+Date.now(),
+    author:   window._userName||'Student',
+    initials: initials,
+    role:     _isInstructor?'instructor':'student',
+    time:     'Just now',
+    text:     text||'',
+    imageUrl: _postAttachment,
+    likes:    0,
+    liked:    false,
+    comments: [],
+  });
+  savePosts();
+  if(input) input.value='';
+  _postAttachment = null;
+  var preview = document.getElementById('post-attachment-preview');
+  if(preview){ preview.innerHTML=''; preview.style.display='none'; }
+  renderPosts();
+  updateCounts();
+  if(btn) btn.disabled=false;
+  showToast('&#128226;','Post shared with the community!');
+}
+
+function attachPostImage(input){
+  var file = input.files[0]; if(!file) return;
+  var url  = URL.createObjectURL(file);
+  _postAttachment = url;
+  var preview = document.getElementById('post-attachment-preview');
+  if(preview){
+    preview.style.display='block';
+    preview.innerHTML='<img src="'+url+'" style="max-height:180px;border-radius:8px;display:block;"/>'
+      +'<div style="font-size:12px;color:var(--text3);margin-top:6px;cursor:pointer;" onclick="_postAttachment=null;document.getElementById(\'post-attachment-preview\').innerHTML=\'\';document.getElementById(\'post-attachment-preview\').style.display=\'none\'">Remove</div>';
+  }
+}
+
+function attachPostFile(input){
+  var file = input.files[0]; if(!file) return;
+  showToast('&#128206;',file.name+' attached');
+}
+
+function savePosts(){ localStorage.setItem('sl_community_'+_courseId+'_posts', JSON.stringify(_posts)); }
+
+/* ══════════════════════════════════════════
+   ANNOUNCEMENTS
+══════════════════════════════════════════ */
+function renderAnnouncements(){
+  var list = document.getElementById('ann-list');
+  if(!list) return;
+  if(_announcements.length===0){
+    list.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);">No announcements yet.</div>';
+    return;
+  }
+  list.innerHTML = _announcements.map(function(a){
+    return '<div class="announcement-card" style="margin-bottom:14px;">'
+      +'<div class="ann-header">'
+        +'<span class="ann-icon">'+(a.pinned?'&#128204;':'&#128276;')+'</span>'
+        +'<div>'
+          +'<div class="ann-title">'+a.title+(a.pinned?'&nbsp;<span style="font-size:10px;font-weight:700;background:var(--orange);color:#fff;border-radius:4px;padding:2px 7px;">Pinned</span>':'')+'</div>'
+        +'</div>'
+      +'</div>'
+      +'<div class="ann-body">'+a.text+'</div>'
+      +'<div class="ann-meta">'
+        +'<span>&#128100; '+a.author+'</span>'
+        +'<span>'+a.time+'</span>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function submitAnnouncement(){
+  var input = document.getElementById('ann-input');
+  var text  = input?input.value.trim():'';
+  if(!text){ showToast('&#9888;&#65039;','Write an announcement first.'); return; }
+  _announcements.unshift({
+    id:     'a_'+Date.now(),
+    title:  text.split('\n')[0].slice(0,80),
+    text:   text,
+    author: window._userName||'Instructor',
+    initials:'CO',time:'Just now',pinned:false
+  });
+  localStorage.setItem('sl_community_'+_courseId+'_ann',JSON.stringify(_announcements));
+  if(input) input.value='';
+  renderAnnouncements();
+  updateCounts();
+  showToast('&#128276;','Announcement posted!');
+}
+
+/* ══════════════════════════════════════════
+   MEMBERS
+══════════════════════════════════════════ */
+function renderMembers(){
+  var list  = document.getElementById('members-list');
+  var label = document.getElementById('member-count-label');
+  var stat  = document.getElementById('stat-members');
+  var tc    = document.getElementById('tc-members');
+  if(label) label.textContent = _members.length+' member'+(_members.length!==1?'s':'');
+  if(stat)  stat.textContent  = _members.length;
+  if(tc)    tc.textContent    = _members.length;
+  if(!list) return;
+  if(_members.length===0){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);">No members yet.</div>';
+    return;
+  }
+  // Sort: instructors first
+  var sorted = _members.slice().sort(function(a,b){ return a.role==='instructor'?-1:b.role==='instructor'?1:0; });
+  list.innerHTML = sorted.map(function(m){
+    return '<div class="member-item">'
+      +'<div class="member-av" style="'+(m.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+(m.initials||'?')+'</div>'
+      +'<div><div class="member-name">'+m.name+'</div><div class="member-joined">Joined '+new Date(m.joinedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'})+'</div></div>'
+      +'<span class="member-badge '+(m.role==='instructor'?'badge-inst':'badge-student')+'">'+(m.role==='instructor'?'Instructor':'Student')+'</span>'
+    +'</div>';
+  }).join('');
+}
+
+/* ══════════════════════════════════════════
+   RESOURCES
+══════════════════════════════════════════ */
+function renderResources(){
+  var list = document.getElementById('resources-list');
+  var tc   = document.getElementById('tc-resources');
+  var stat = document.getElementById('stat-resources');
+  if(tc)   tc.textContent   = _resources.length;
+  if(stat) stat.textContent = _resources.length;
+  if(!list) return;
+  if(_resources.length===0){
+    list.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);">No resources yet.</div>';
+    return;
+  }
+  list.innerHTML = _resources.map(function(r){
+    return '<div class="resource-item" onclick="window.open(\''+r.url+'\',\'_blank\')">'
+      +'<div class="resource-icon">'+r.icon+'</div>'
+      +'<div><div class="resource-name">'+r.name+'</div><div class="resource-meta">'+r.desc+'</div></div>'
+      +'<div class="resource-dl">&#11015;</div>'
+    +'</div>';
+  }).join('');
+}
+
+function addResource(){
+  var name = (document.getElementById('res-name')||{}).value||'';
+  var url  = (document.getElementById('res-url')||{}).value||'';
+  if(!name||!url){ showToast('&#9888;&#65039;','Please fill in name and URL.'); return; }
+  _resources.unshift({id:'r_'+Date.now(),name:name,desc:'Added by instructor',icon:'&#128190;',url:url});
+  localStorage.setItem('sl_community_'+_courseId+'_resources',JSON.stringify(_resources));
+  document.getElementById('res-name').value='';
+  document.getElementById('res-url').value='';
+  renderResources();
+  updateCounts();
+  showToast('&#128190;','Resource added!');
+}
+
+/* ══════════════════════════════════════════
+   MISC
+══════════════════════════════════════════ */
+function updateCounts(){
+  var tf = document.getElementById('tc-feed');
+  var ta = document.getElementById('tc-ann');
+  var sp = document.getElementById('stat-posts');
+  if(tf) tf.textContent = _posts.length;
+  if(ta) ta.textContent = _announcements.length;
+  if(sp) sp.textContent = _posts.length;
+}
+
+function renderTopContributors(){
+  var el = document.getElementById('top-contributors');
+  if(!el) return;
+  var top = _members.slice(0,5);
+  if(top.length===0){ el.innerHTML='<div style="padding:14px 18px;font-size:13px;color:var(--text3);">No contributors yet.</div>'; return; }
+  el.innerHTML = top.map(function(m){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);">'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">'+(m.initials||'?')+'</div>'
+      +'<div style="font-size:13px;font-weight:500;color:var(--text);">'+m.name+'</div>'
+      +(m.role==='instructor'?'<span style="margin-left:auto;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--teal),var(--purple));color:#fff;border-radius:4px;padding:2px 7px;">Instructor</span>':'')
+    +'</div>';
+  }).join('');
+}
+
+function joinLiveSession(){
+  showToast('&#128336;','Reminder set! You\'ll be notified before the session.');
+}
+</script>
+</body>
+</html>
