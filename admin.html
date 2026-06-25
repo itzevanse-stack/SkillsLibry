@@ -545,15 +545,19 @@ window.slEnroll = async function({ courseId, instructorId, amount, currency, tra
 
 function slErr(code) {
   const m = {
-    'auth/email-already-in-use': 'An account with this email already exists.',
-    'auth/invalid-email':        'Please enter a valid email address.',
-    'auth/weak-password':        'Password must be at least 6 characters.',
-    'auth/user-not-found':       'No account found with this email.',
-    'auth/wrong-password':       'Incorrect password. Please try again.',
-    'auth/invalid-credential':   'Incorrect email or password.',
-    'auth/too-many-requests':    'Too many attempts. Please wait a moment.',
+    'auth/email-already-in-use':   'An account with this email already exists.',
+    'auth/invalid-email':          'Please enter a valid email address.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password. Please try again.',
+    'auth/invalid-credential':     'Incorrect email or password.',
+    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/operation-not-allowed':  'Email sign-up is not enabled. Please contact support.',
+    'auth/internal-error':         'Server error. Please try again.',
+    'auth/admin-restricted-operation': 'Sign-up is currently restricted.',
   };
-  return m[code] || 'Something went wrong. Please try again.';
+  return m[code] || ('Error: ' + code + ' — please try again.');
 }
 </script>
 </head>
@@ -1168,6 +1172,15 @@ function authSetLoading(f, on) {
 
 async function doAuth(f) {
   authClearErr();
+
+  /* Wait for Firebase to finish loading (module scripts load async) */
+  if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
+    authErr(f, 'Connecting to server... please try again in a moment.');
+    /* Retry automatically after 1.5s */
+    setTimeout(function(){ authClearErr(); }, 1500);
+    return;
+  }
+
   if(f === 'si') {
     var email = (document.getElementById('si-email')||{}).value||'';
     var pass  = (document.getElementById('si-pass')||{}).value||'';
