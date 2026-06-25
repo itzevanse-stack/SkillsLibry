@@ -606,6 +606,10 @@ function slErr(code) {
     <a class="nav-link" href="#">Blog</a>
   </div>
   <div class="nav-right">
+      <div style="position:relative;" title="Change profile photo">
+        <div class="student-avatar-wrap" id="nav-avatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;border:2px solid var(--border);" onclick="document.getElementById('nav-avatar-input').click()">?</div>
+        <input type="file" id="nav-avatar-input" accept="image/*" style="display:none;" onchange="handleStudentAvatarUpload(this)"/>
+      </div>
     <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='dashboard.html' : openAuthModal(null,'signin')">My Learning</a>
     <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
   </div>
@@ -1251,9 +1255,37 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
 </script>
-</body> on every page -->
 
+<script>
+/* ── STUDENT AVATAR ── */
+function initStudentAvatar() {
+  var saved = localStorage.getItem('sl_student_avatar');
+  var name  = window._userName || localStorage.getItem('sl_student_name') || '';
+  var initials = name ? name.split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase() : '?';
 
+  document.querySelectorAll('.student-avatar-wrap').forEach(function(wrap){
+    if(saved){
+      wrap.innerHTML = '<img src="'+saved+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    } else {
+      wrap.textContent = initials;
+    }
+  });
+}
 
-</body>
-</html>
+function handleStudentAvatarUpload(input) {
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ alert('Max 5MB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var url = e.target.result;
+    localStorage.setItem('sl_student_avatar', url);
+    document.querySelectorAll('.student-avatar-wrap').forEach(function(wrap){
+      wrap.innerHTML = '<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+document.addEventListener('authReady', initStudentAvatar);
+</script>
+<script>
