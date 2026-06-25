@@ -1753,6 +1753,15 @@ function authSetLoading(f, on) {
 
 async function doAuth(f) {
   authClearErr();
+
+  /* Wait for Firebase to finish loading (module scripts load async) */
+  if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
+    authErr(f, 'Connecting to server... please try again in a moment.');
+    /* Retry automatically after 1.5s */
+    setTimeout(function(){ authClearErr(); }, 1500);
+    return;
+  }
+
   if(f === 'si') {
     var email = (document.getElementById('si-email')||{}).value||'';
     var pass  = (document.getElementById('si-pass')||{}).value||'';
