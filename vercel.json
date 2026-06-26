@@ -1,21 +1,23 @@
 {
   "rewrites": [
-    { "source": "/",              "destination": "/index.html" },
-    { "source": "/catalog",       "destination": "/catalog.html" },
-    { "source": "/course",        "destination": "/course.html" },
-    { "source": "/dashboard",     "destination": "/dashboard.html" },
-    { "source": "/player",        "destination": "/player.html" },
-    { "source": "/instructor",    "destination": "/instructor.html" },
-    { "source": "/admin",         "destination": "/admin.html" }
+    { "source": "/",                    "destination": "/index.html" },
+    { "source": "/catalog",             "destination": "/catalog.html" },
+    { "source": "/course",              "destination": "/course.html" },
+    { "source": "/dashboard",           "destination": "/dashboard.html" },
+    { "source": "/player",              "destination": "/player.html" },
+    { "source": "/instructor",          "destination": "/instructor.html" },
+    { "source": "/instructor/signup",   "destination": "/instructor-signup.html" },
+    { "source": "/admin",               "destination": "/admin.html" },
+    { "source": "/community",           "destination": "/community.html" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options",    "value": "nosniff" },
-        { "key": "X-Frame-Options",           "value": "DENY" },
-        { "key": "X-XSS-Protection",          "value": "1; mode=block" },
-        { "key": "Referrer-Policy",           "value": "strict-origin-when-cross-origin" }
+        { "key": "X-Content-Type-Options",  "value": "nosniff" },
+        { "key": "X-Frame-Options",         "value": "DENY" },
+        { "key": "X-XSS-Protection",        "value": "1; mode=block" },
+        { "key": "Referrer-Policy",         "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]
