@@ -384,7 +384,11 @@ a{text-decoration:none;color:inherit}
         <div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127464;&#127462;</span><span class="c-name">Canadian Dollar</span><span class="c-symbol">CA$</span></div>
       </div>
     </div>
-    <a class="btn btn-ghost" href="#" onclick="window._user?window.location.href='dashboard.html':openAuthModal(null,'si')">My Learning</a>
+    <a class="btn btn-ghost" href="#" id="nav-my-learning" onclick="window._user?window.location.href='dashboard.html':openAuthModal(null,'si')">My Learning</a>
+    <div id="nav-user-menu" style="display:none;align-items:center;gap:10px;">
+      <span id="nav-user-name" style="font-size:13px;font-weight:600;color:var(--text2);"></span>
+      <button onclick="slSignOut&&slSignOut()" class="btn btn-ghost" style="font-size:12px;padding:7px 14px;">Sign out</button>
+    </div>
     <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
   </div>
 </nav>
@@ -839,11 +843,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
@@ -1110,20 +1125,76 @@ function showToast(icon,msg){
 })();
 
 /* ── LOAD COURSE FROM URL PARAM ── */
-(function(){
-  var params=new URLSearchParams(window.location.search);
-  var id=parseInt(params.get('id'))||1;
-  var c=COURSES.find(function(x){return x.id===id;})||COURSES[0];
-  var set=function(elId,val){var el=document.getElementById(elId);if(el)el.textContent=val;};
-  set('cd-title',c.title);
-  set('cd-category',c.catLabel);
-  set('cd-instructor',c.instructor);
-  set('cd-avatar',c.initials);
-  set('cd-price',c.price);
-  set('cd-price-old',c.priceOld);
-  set('cd-students',c.students);
-  var eb=document.querySelector('.purchase-card-enroll');
-  if(eb) eb.textContent='Enroll now — '+c.price;
+(async function(){
+  var params = new URLSearchParams(window.location.search);
+  var id     = params.get('id') || '1';
+
+  // Wait for Firebase
+  if(!window._db){
+    await new Promise(function(resolve){
+      document.addEventListener('authReady', function(){ resolve(); }, {once:true});
+      setTimeout(resolve, 3000);
+    });
+  }
+
+  var courseData = null;
+
+  // Try Firestore first
+  if(window._db){
+    try {
+      var fb   = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var snap = await fb.getDoc(fb.doc(window._db,'courses',id));
+      if(snap.exists()){
+        courseData = Object.assign({id:snap.id}, snap.data());
+      }
+    } catch(e){ console.warn('Course load error:', e.message); }
+  }
+
+  // Fall back to sample COURSES array
+  if(!courseData){
+    var numId = parseInt(id)||1;
+    courseData = (typeof COURSES !== 'undefined' && COURSES.find(function(x){return x.id===numId;}))
+      || (typeof COURSES !== 'undefined' && COURSES[0])
+      || { title:'Course', category:'', instructor:'Instructor', initials:'I', priceNGN:50000, instructorId:'instructor_1' };
+  }
+
+  // Update page
+  var set = function(elId,val){var el=document.getElementById(elId);if(el) el.innerHTML=val;};
+  set('cd-title',      courseData.title||'Course');
+  set('cd-category',   courseData.category||'');
+  set('cd-instructor', courseData.instructorName||courseData.instructor||'Instructor');
+  set('cd-avatar',     (courseData.instructorName||courseData.instructor||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase());
+  set('inst-name',     courseData.instructorName||courseData.instructor||'Instructor');
+  set('inst-avatar',   (courseData.instructorName||courseData.instructor||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase());
+
+  var priceNGN = courseData.priceNGN || courseData.price || 50000;
+  var rate     = (window.CURRENCIES&&window.CURRENCIES[window._cur||'NGN'])?window.CURRENCIES[window._cur||'NGN'].rate:1;
+  var sym      = (window.CURRENCIES&&window.CURRENCIES[window._cur||'NGN'])?window.CURRENCIES[window._cur||'NGN'].symbol:'₦';
+  var subFee   = 10500;
+
+  var priceEl = document.getElementById('cd-price');
+  if(priceEl){ priceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString(); priceEl.dataset.ngn = priceNGN; }
+
+  var enrollPriceEl = document.getElementById('enroll-price');
+  if(enrollPriceEl) enrollPriceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString()+' + '+sym+' '+(Math.round(subFee*rate)).toLocaleString()+'/mo';
+
+  // Set active course for enrollment
+  _activeCourse = {
+    id:           courseData.id || id,
+    title:        courseData.title || 'Course',
+    instructorId: courseData.instructorId || 'instructor_1',
+    priceNGN:     priceNGN,
+  };
+
+  // Auto-detect currency
+  updateCurrencyBtn();
+  if(!localStorage.getItem('sl_currency_manual')){
+    fetch('https://ipapi.co/json/').then(function(r){return r.json();}).then(function(d){
+      var det = COUNTRY_CURRENCY[d.country_code]||'USD';
+      _cur = det; localStorage.setItem('sl_currency',det);
+      updateCurrencyBtn(); updateAllPrices();
+    }).catch(function(){});
+  }
 })();
 
 /* ── CURRENCY SYSTEM ── */
