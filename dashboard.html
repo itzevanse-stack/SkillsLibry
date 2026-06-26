@@ -626,7 +626,7 @@ function slErr(code) {
       <div class="sidebar-item" onclick="switchDash(this,'dash-certificates')"><span class="sidebar-icon">◇</span>Certificates</div>
       <div class="sidebar-label">Account</div>
       <div class="sidebar-item" onclick="switchDash(this,'dash-affiliate')"><span class="sidebar-icon">⟡</span>Affiliate Links</div>
-      <div class="sidebar-item"><span class="sidebar-icon">⚙</span>Settings</div>
+      <div class="sidebar-item" onclick="switchDash(this,'dash-settings')"><span class="sidebar-icon">⚙</span>Settings</div>
       <div style="margin-top:auto;padding:20px">
         <div style="background:var(--gold-dim2);border:1px solid rgba(78,204,163,0.12);border-radius:var(--radius);padding:16px">
           <div style="font-size:12px;font-weight:600;color:var(--teal-dark);margin-bottom:6px">SkillsLibry Pro</div>
@@ -725,6 +725,84 @@ function slErr(code) {
 
       <div id="dash-affiliate" class="dash-view">
         <div class="dash-header"><div class="dash-title">Affiliate Links</div><div class="dash-sub">Earn 40% commission on every referral</div></div>
+
+      </div>
+      <div class="dash-view" id="dash-settings">
+        <div class="section-header">
+          <div class="section-title">Settings</div>
+        </div>
+        <div style="max-width:560px;display:flex;flex-direction:column;gap:16px;">
+
+          <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);">
+            <div style="padding:18px 22px;border-bottom:1px solid var(--border);font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:var(--text);">Profile</div>
+            <div style="padding:20px 22px;display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;gap:16px;margin-bottom:4px;">
+                <div id="set-avatar" class="student-avatar-wrap" style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;">?</div>
+                <div>
+                  <label for="set-avatar-file" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:6px;padding:6px 14px;cursor:pointer;">Upload photo</label>
+                  <input type="file" id="set-avatar-file" accept="image/*" style="display:none;" onchange="uploadStudentAvatar(this)"/>
+                  <div style="font-size:11px;color:var(--text3);margin-top:4px;">JPG or PNG &middot; Max 5MB</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;">Full name</label>
+                  <input id="set-name" type="text" placeholder="Your name" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;">Email</label>
+                  <input id="set-email" type="email" readonly style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;font-family:Inter,sans-serif;background:var(--bg2);color:var(--text3);"/>
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;">Phone</label>
+                  <input id="set-phone" type="tel" placeholder="+234..." style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+                </div>
+                <div>
+                  <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;">Country</label>
+                  <select id="set-country" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;font-family:Inter,sans-serif;background:#fff;appearance:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+                    <option value="">Select country</option>
+                    <option>Nigeria</option><option>Ghana</option><option>Kenya</option>
+                    <option>South Africa</option><option>United Kingdom</option>
+                    <option>United States</option><option>Canada</option><option>UAE</option><option>Other</option>
+                  </select>
+                </div>
+              </div>
+              <button onclick="saveSettings()" style="padding:10px 24px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;width:fit-content;">Save changes</button>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);">
+            <div style="padding:18px 22px;border-bottom:1px solid var(--border);font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:var(--text);">Password</div>
+            <div style="padding:20px 22px;display:flex;flex-direction:column;gap:13px;">
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;">New password</label>
+                <input id="set-pw1" type="password" placeholder="Min 8 characters" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+              <div>
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;">Confirm password</label>
+                <input id="set-pw2" type="password" placeholder="Repeat password" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+              </div>
+              <button onclick="changePassword()" style="padding:10px 24px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;width:fit-content;">Update password</button>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);">
+            <div style="padding:18px 22px;border-bottom:1px solid var(--border);font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:var(--text);">Subscriptions</div>
+            <div style="padding:20px 22px;" id="set-subscriptions">
+              <div style="font-size:13px;color:var(--text3);">Loading...</div>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1.5px solid rgba(239,68,68,.25);border-radius:14px;overflow:hidden;">
+            <div style="padding:18px 22px;border-bottom:1px solid rgba(239,68,68,.1);font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:#ef4444;">Danger zone</div>
+            <div style="padding:20px 22px;">
+              <div style="font-size:13px;color:var(--text2);margin-bottom:13px;">Sign out from your account on this device.</div>
+              <button onclick="slSignOut&&slSignOut()" style="padding:10px 20px;background:transparent;border:1.5px solid #ef4444;border-radius:8px;font-size:13px;font-weight:600;color:#ef4444;cursor:pointer;">Sign out</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px">
           <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Your referral link</div>
           <div style="display:flex;gap:10px">
@@ -738,7 +816,8 @@ function slErr(code) {
           <div class="stat-card"><div class="stat-card-label">Earned</div><div class="stat-card-value">₦0</div></div>
           <div class="stat-card"><div class="stat-card-label">Pending payout</div><div class="stat-card-value">₦0</div></div>
         </div>
-      </div>
+      
+</div>
 
     </div>
   </div>
@@ -1449,6 +1528,99 @@ async function loadStudentSubscriptions(){
     if(el) el.innerHTML='<img src="'+saved+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
   });
 })();
+</script>
+<script>
+document.addEventListener("authReady", function(e){
+  if(!e.detail.user) return;
+  var emailEl = document.getElementById("set-email");
+  if(emailEl) emailEl.value = e.detail.user.email || "";
+  var nameEl = document.getElementById("set-name");
+  if(nameEl && window._userName) nameEl.value = window._userName;
+  var saved = localStorage.getItem("sl_student_avatar");
+  if(saved){
+    var av = document.getElementById("set-avatar");
+    if(av) av.innerHTML = "<img src=\""+saved+"\" style=\"width:100%;height:100%;object-fit:cover;border-radius:50%;\"/>";
+  }
+  if(window._db){
+    import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(function(fb){
+      fb.getDoc(fb.doc(window._db,"users",e.detail.user.uid)).then(function(snap){
+        if(!snap.exists()) return;
+        var d = snap.data();
+        var s = function(id,v){ var el=document.getElementById(id); if(el&&v) el.value=v; };
+        s("set-name", d.name); s("set-phone", d.phone); s("set-country", d.country);
+      });
+    });
+  }
+  loadSettingsSubscriptions();
+});
+
+async function saveSettings(){
+  if(!window._user){ alert("Sign in first."); return; }
+  var name    = (document.getElementById("set-name")||{}).value||"";
+  var phone   = (document.getElementById("set-phone")||{}).value||"";
+  var country = (document.getElementById("set-country")||{}).value||"";
+  try {
+    if(window._db){
+      var fb = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+      await fb.setDoc(fb.doc(window._db,"users",window._user.uid),
+        {name:name,phone:phone,country:country,updatedAt:fb.serverTimestamp()},{merge:true});
+    }
+    window._userName = name;
+    var nn = document.getElementById("nav-user-name"); if(nn) nn.textContent = name;
+    showDashToast("Changes saved!");
+  } catch(e){ alert("Error: "+e.message); }
+}
+
+async function changePassword(){
+  var pw1 = (document.getElementById("set-pw1")||{}).value||"";
+  var pw2 = (document.getElementById("set-pw2")||{}).value||"";
+  if(!pw1 || pw1.length < 8){ showDashToast("Password must be at least 8 characters."); return; }
+  if(pw1 !== pw2){ showDashToast("Passwords do not match."); return; }
+  if(!window._user){ alert("Sign in first."); return; }
+  try {
+    var auth = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+    await auth.updatePassword(window._user, pw1);
+    document.getElementById("set-pw1").value = "";
+    document.getElementById("set-pw2").value = "";
+    showDashToast("Password updated!");
+  } catch(e){
+    showDashToast(e.code === "auth/requires-recent-login" ? "Please sign out and back in, then retry." : "Error: "+e.message);
+  }
+}
+
+async function loadSettingsSubscriptions(){
+  var el = document.getElementById("set-subscriptions");
+  if(!el||!window._user||!window._db) return;
+  try {
+    var fb   = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,"enrollments"),
+      fb.where("studentEmail","==",window._user.email)
+    ));
+    var list = snap.docs.map(function(d){ return d.data(); });
+    if(!list.length){ el.innerHTML = "<div style=\"font-size:13px;color:var(--text3);\">No active subscriptions. <a href=\"catalog.html\" style=\"color:var(--teal-dark);\">Browse courses</a></div>"; return; }
+    el.innerHTML = list.map(function(en){
+      var s = en.subscriptionStatus||"active";
+      var c = s==="active"?"#22c55e":s==="payment_failed"?"#f59e0b":"#ef4444";
+      var l = s==="active"?"Active":s==="payment_failed"?"Payment failed":"Revoked";
+      var next = en.nextBillingDate ? new Date(en.nextBillingDate).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "N/A";
+      return "<div style=\"display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);\">"
+        +"<div><div style=\"font-size:13px;font-weight:600;color:var(--text);\">Course subscription</div>"
+        +"<div style=\"font-size:12px;color:var(--text3);margin-top:2px;\">Next billing: "+next+" &middot; ₦10,500/mo</div></div>"
+        +"<span style=\"font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:"+c+"20;color:"+c+"\">"+l+"</span>"
+        +"</div>";
+    }).join("");
+  } catch(e){ el.textContent = "Could not load."; }
+}
+
+function showDashToast(msg){
+  var t=document.getElementById("toast");
+  var ti=document.getElementById("toast-icon");
+  var tm=document.getElementById("toast-msg");
+  if(ti) ti.innerHTML="&#10003;";
+  if(tm) tm.textContent=msg;
+  if(t){ t.classList.add("show"); setTimeout(function(){ t.classList.remove("show"); },3000); }
+}
 </script>
 </body>
 </html>
