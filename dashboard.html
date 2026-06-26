@@ -683,32 +683,12 @@ function slErr(code) {
       <div id="dash-courses" class="dash-view">
         <div class="dash-header">
           <div class="dash-title">My Courses</div>
-          <div class="dash-sub">3 courses enrolled · 2 in progress</div>
+          <div class="dash-sub" id="dash-courses-sub">Loading...</div>
         </div>
-        <div class="my-courses-grid">
-          <div class="my-course-card" onclick="showPage('player')">
-            <div class="my-course-thumb">📈<div class="progress-bar-wrap"><div class="progress-bar" style="width:68%"></div></div></div>
-            <div class="my-course-body">
-              <div class="my-course-title">Affiliate Marketing Mastery</div>
-              <div class="my-course-progress">68% complete · Module 4 of 6</div>
-              <button class="continue-btn">Continue learning</button>
-            </div>
-          </div>
-          <div class="my-course-card" onclick="showPage('player')">
-            <div class="my-course-thumb">✍️<div class="progress-bar-wrap"><div class="progress-bar" style="width:22%"></div></div></div>
-            <div class="my-course-body">
-              <div class="my-course-title">Copywriting That Converts</div>
-              <div class="my-course-progress">22% complete · Module 1 of 5</div>
-              <button class="continue-btn">Continue learning</button>
-            </div>
-          </div>
-          <div class="my-course-card" onclick="showPage('player')">
-            <div class="my-course-thumb">🤖<div class="progress-bar-wrap"><div class="progress-bar" style="width:100%"></div></div></div>
-            <div class="my-course-body">
-              <div class="my-course-title">AI Tools for Freelancers</div>
-              <div class="my-course-progress">Completed · Certificate earned</div>
-              <button class="continue-btn" style="background:var(--gold-dim);border-color:rgba(201,151,42,0.3)">Review course</button>
-            </div>
+        <div class="my-courses-grid" id="enrolled-courses-grid">
+          <div style="text-align:center;padding:48px;color:var(--text3);grid-column:1/-1;">
+            <div style="font-size:36px;margin-bottom:12px;">&#128336;</div>
+            <div style="font-weight:600;">Loading your courses...</div>
           </div>
         </div>
       </div>
@@ -1204,11 +1184,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
