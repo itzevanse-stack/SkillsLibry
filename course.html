@@ -68,7 +68,7 @@ a{text-decoration:none;color:inherit}
 /* ── HERO BAND ── */
 .course-hero{
   background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
-  padding:48px 0 0;
+  padding:40px 0 0;
   position:relative;overflow:hidden;
 }
 .course-hero::before{
@@ -80,8 +80,8 @@ a{text-decoration:none;color:inherit}
 }
 .hero-inner{
   max-width:1160px;margin:0 auto;
-  padding:0 32px 48px;
-  display:grid;grid-template-columns:1fr 380px;gap:64px;
+  padding:0 32px 0;
+  display:grid;grid-template-columns:1fr 360px;gap:48px;
   align-items:start;position:relative;z-index:1;
 }
 .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:20px;}
@@ -130,9 +130,10 @@ a{text-decoration:none;color:inherit}
 .purchase-card{
   background:#fff;
   border-radius:var(--r-xl);
-  box-shadow:var(--sh-lg);
+  box-shadow:0 8px 40px rgba(13,13,26,.15);
   overflow:hidden;
   position:sticky;top:80px;
+  border:1.5px solid var(--border);
 }
 .pc-preview{
   position:relative;cursor:pointer;
@@ -199,8 +200,8 @@ a{text-decoration:none;color:inherit}
 /* ── TABS ── */
 .tabs-bar{
   display:flex;border-bottom:2px solid var(--border);
-  margin-bottom:36px;position:sticky;top:64px;
-  background:var(--bg2);z-index:10;
+  margin-bottom:32px;
+  background:var(--bg2);
 }
 .tab-btn{
   padding:16px 24px;font-size:14px;font-weight:600;
@@ -261,11 +262,12 @@ a{text-decoration:none;color:inherit}
 .inst-card-bio{font-size:13px;color:var(--text2);line-height:1.75;}
 
 /* ── TESTIMONIALS TAB ── */
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch;}
 .tcard{
   background:#fff;border:1.5px solid var(--border);
   border-radius:var(--r-lg);overflow:hidden;
   box-shadow:var(--sh);transition:all .2s;
+  display:flex;flex-direction:column;
 }
 .tcard:hover{border-color:var(--teal);box-shadow:var(--sh-md);transform:translateY(-2px);}
 .tcard-media{position:relative;aspect-ratio:16/9;background:#0d0d1a;overflow:hidden;}
@@ -284,15 +286,15 @@ a{text-decoration:none;color:inherit}
 .tcard-play-overlay:hover{background:rgba(0,0,0,.05);}
 .tcard-play-circle{width:44px;height:44px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px rgba(78,204,163,.2);}
 .tcard-play-icon{width:0;height:0;border-top:9px solid transparent;border-bottom:9px solid transparent;border-left:14px solid #0d0d1a;margin-left:2px;}
-.tcard-body{padding:18px 20px 20px;}
+.tcard-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column;}
 .tcard-stars{color:#f59e0b;font-size:12px;margin-bottom:8px;letter-spacing:1px;}
 .tcard-text{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;}
-.tcard-person{display:flex;align-items:center;gap:9px;}
+.tcard-person{display:flex;align-items:center;gap:9px;margin-top:auto;padding-top:14px;}
 .tcard-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;}
 .tcard-name{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;}
 .tcard-loc{font-size:11px;color:var(--text3);}
 .tcard-result{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:10px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:2px 7px;border-radius:100px;}
-.tcard-text-only .tcard-body{padding:28px 24px;}
+.tcard-text-only .tcard-body{padding:28px 24px;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
 
 /* ── MODULES TAB ── */
 .modules-header{
@@ -412,7 +414,7 @@ a{text-decoration:none;color:inherit}
         cursor:pointer;
       " id="hero-promo-wrap" onclick="playHeroVideo(this)">
         <!-- Placeholder / play button -->
-        <div id="hero-promo-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(13,13,26,.9),rgba(26,26,46,.8));">
+        <div id="hero-promo-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);">
           <div id="hero-play-btn" style="width:72px;height:72px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 18px rgba(78,204,163,.12),0 0 0 36px rgba(78,204,163,.05);margin-bottom:16px;transition:transform .2s;">
             <div style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:22px solid #0d0d1a;margin-left:5px;"></div>
           </div>
@@ -452,7 +454,7 @@ a{text-decoration:none;color:inherit}
     </div>
 
     <!-- Purchase card sits in hero on desktop -->
-    <div>
+    <div style="padding-top:64px;">
       <div class="purchase-card">
         <div class="pc-body">
           <div class="pc-price-row">
@@ -473,7 +475,7 @@ a{text-decoration:none;color:inherit}
           </div>
 
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
-            Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000</span>
+            Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
           </button>
           <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
         </div>
@@ -481,6 +483,9 @@ a{text-decoration:none;color:inherit}
     </div>
   </div>
 </div>
+
+<!-- ══ HERO TO CONTENT TRANSITION ══ -->
+<div style="height:40px;background:linear-gradient(to bottom,#0d0d1a,var(--bg2));"></div>
 
 <!-- ══ MAIN CONTENT ══ -->
 <div class="course-content">
@@ -1043,12 +1048,12 @@ function showToast(icon,msg){
   var testi = [
     {type:'video',  mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
      name:'Amaka Obi',loc:'Lagos, Nigeria',initials:'AO',stars:5,
-     text:'I made my first N45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',
-     result:'N45,000 in week 3'},
+     text:'I made my first ₦45,000 commission in week 3. Chidi explains everything in a way that actually makes sense for Nigeria.',
+     result:'₦45,000 in week 3'},
     {type:'image', mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
      name:'Taiwo Musa',loc:'Abuja, Nigeria',initials:'TM',stars:5,
-     text:'Before this I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed N120k in my first month.',
-     result:'N120k first month'},
+     text:'Before this I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',
+     result:'₦120k first month'},
     {type:'text',  mediaSrc:null,
      name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',initials:'GA',stars:5,
      text:'The income activation plan at the end of every module is what separates this from every other course. My rates doubled within 60 days.',
@@ -1057,6 +1062,14 @@ function showToast(icon,msg){
      name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',initials:'EN',stars:5,
      text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
      result:'First sale in 21 days'},
+    {type:'text',  mediaSrc:null,
+     name:'Chisom Eze',loc:'Owerri, Nigeria',initials:'CE',stars:5,
+     text:'This course is the reason I quit my 9-5. Month 2 after completing it, I was earning more from affiliate marketing than my salary. Cannot recommend it enough.',
+     result:'Quit 9-5 in month 2'},
+    {type:'text',  mediaSrc:null,
+     name:'Fatima Bello',loc:'Kano, Nigeria',initials:'FB',stars:5,
+     text:'I have taken 4 different digital marketing courses. This is the only one where I made money within the first month. The WhatsApp strategy alone is worth 10x the price.',
+     result:'₦80k in month 1'},
   ];
 
   grid.innerHTML = testi.map(function(t){
@@ -1310,6 +1323,11 @@ var _activeCourse = {
   instructorId: 'instructor_1', priceNGN: 35000
 };
 
+/* ══════════════════════════════════════════
+   SUBSCRIPTION CONSTANTS
+══════════════════════════════════════════ */
+var PLATFORM_SUB_NGN = 10500; // ₦10,500/month platform subscription
+
 function enrollClick(){
   if(!window._user){
     openAuthModal(function(){ enrollClick(); }, 'su');
@@ -1320,14 +1338,99 @@ function enrollClick(){
     return;
   }
 
+  // Show subscription breakdown modal first
+  openEnrollModal();
+}
+
+function openEnrollModal(){
   var c = _activeCourse;
-  var rate = (CURRENCIES[_cur]||{}).rate || 1;
-  var amount = Math.round(c.priceNGN * rate * 100) / 100;
+  var rate = (CURRENCIES[_cur]||{}).rate||1;
+  var sym  = (CURRENCIES[_cur]||{}).symbol||'₦';
+  var courseFee = Math.round(c.priceNGN * rate * 100)/100;
+  var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
+  var total     = Math.round((courseFee + subFee) * 100)/100;
+
+  // Build modal HTML
+  var modal = document.createElement('div');
+  modal.id  = 'enroll-breakdown-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;';
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(13,13,26,.2);animation:authPop .25s ease;">'
+    +'<div style="padding:24px 28px;border-bottom:1.5px solid #e4e6f0;">'
+      +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;margin-bottom:4px;">Confirm enrollment</div>'
+      +'<div style="font-size:13px;color:#8b8fa8;">Review your payment breakdown before proceeding.</div>'
+    +'</div>'
+    +'<div style="padding:24px 28px;">'
+
+      // Course fee row
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e4e6f0;">'
+        +'<div>'
+          +'<div style="font-size:13px;font-weight:600;color:#0d0d1a;">Course access</div>'
+          +'<div style="font-size:12px;color:#8b8fa8;">One-time fee · 60% to instructor</div>'
+        +'</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:#0d0d1a;">'+sym+' '+courseFee.toLocaleString()+'</div>'
+      +'</div>'
+
+      // Subscription row
+      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e4e6f0;">'
+        +'<div>'
+          +'<div style="font-size:13px;font-weight:600;color:#0d0d1a;">Platform subscription</div>'
+          +'<div style="font-size:12px;color:#8b8fa8;">Billed monthly · Community + video access</div>'
+        +'</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:#0d0d1a;">'+sym+' '+subFee.toLocaleString()+'/mo</div>'
+      +'</div>'
+
+      // What you get
+      +'<div style="background:#f8f9fc;border-radius:10px;padding:14px 16px;margin:16px 0;">'
+        +'<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8b8fa8;margin-bottom:10px;">What you get</div>'
+        +'<div style="font-size:13px;color:#4a4d6a;line-height:1.8;">'
+          +'✓ Full access to all course videos<br/>'
+          +'✓ Private student community<br/>'
+          +'✓ Direct instructor Q&A<br/>'
+          +'✓ Course updates as they happen<br/>'
+          +'✓ Verified certificate on completion'
+        +'</div>'
+      +'</div>'
+
+      // Access warning
+      +'<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#92400e;">'
+        +'⚠️ Access is tied to your active subscription. If payment fails twice, access is removed automatically.'
+      +'</div>'
+
+      // Total
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
+        +'<div style="font-size:14px;font-weight:600;color:#0d0d1a;">Due today</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:800;color:#4ecca3;">'+sym+' '+total.toLocaleString()+'</div>'
+      +'</div>'
+
+      +'<div style="display:flex;gap:10px;">'
+        +'<button onclick="closeEnrollModal()" style="flex:1;padding:12px;background:transparent;border:1.5px solid #e4e6f0;border-radius:8px;font-size:13px;font-weight:600;color:#4a4d6a;cursor:pointer;">Cancel</button>'
+        +'<button onclick="proceedToCheckout()" style="flex:2;padding:12px;background:#4ecca3;border:none;border-radius:8px;font-size:15px;font-weight:700;color:#0d0d1a;cursor:pointer;">Pay & Enroll</button>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===this) closeEnrollModal(); });
+}
+
+function closeEnrollModal(){
+  var m = document.getElementById('enroll-breakdown-modal');
+  if(m) m.remove();
+}
+
+function proceedToCheckout(){
+  closeEnrollModal();
+
+  var c = _activeCourse;
+  var rate = (CURRENCIES[_cur]||{}).rate||1;
+  var courseFee = Math.round(c.priceNGN * rate * 100)/100;
+  var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
+  var total     = Math.round((courseFee + subFee) * 100)/100;
 
   FlutterwaveCheckout({
     public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
     tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-    amount:     amount,
+    amount:     total,
     currency:   _cur,
     payment_options: 'card,banktransfer,ussd,mobilemoney',
     customer:{
@@ -1338,6 +1441,9 @@ function enrollClick(){
       courseId:      String(c.id),
       instructorId:  c.instructorId,
       affiliateCode: localStorage.getItem('sl_aff') || null,
+      paymentType:   'enrollment',
+      courseFeeNGN:  String(c.priceNGN || 50000),
+      subFeeNGN:     String(PLATFORM_SUB_NGN),
     },
     customizations:{
       title:       'SkillsLibry',
@@ -1357,7 +1463,7 @@ function enrollClick(){
         });
         if(result && result.ok){
           showToast('🎉','Enrolled! Redirecting...');
-          setTimeout(function(){ window.location.href='player.html?course='+c.id; }, 1500);
+          setTimeout(function(){ window.location.href='player.html?course='+c.id+'&community=1'; }, 1500);
         } else {
           showToast('⚠️','Payment received. Contact support if access is delayed.');
         }
@@ -1451,7 +1557,7 @@ function enrollClick(){
     set('cd-price', convertPrice(c.priceNGN||35000));
     document.getElementById('cd-price').dataset.ngn = c.priceNGN||35000;
     set('cd-price-old', '₦'+((c.priceNGN||35000)*1.7|0).toLocaleString());
-    set('enroll-price', convertPrice(c.priceNGN||35000));
+    set('enroll-price', convertPrice(c.priceNGN||35000)+' + '+convertPrice(PLATFORM_SUB_NGN)+'/mo');
     set('inst-name', c.instructor);
     set('inst-avatar', c.initials);
     _activeCourse.id = c.id;
