@@ -1301,11 +1301,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
@@ -1352,6 +1363,95 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
 </script>
+
+<script>
+/* ── NAV AUTH STATE ── */
+document.addEventListener('authReady', function(e){
+  var user = e.detail.user;
+  var myLearningBtn = document.getElementById('nav-my-learning');
+  var signInBtn     = document.getElementById('nav-signin');
+  var userMenu      = document.getElementById('nav-user-menu');
+  var userName      = document.getElementById('nav-user-name');
+
+  if(user){
+    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(signInBtn)     signInBtn.style.display = 'none';
+    if(userMenu)      userMenu.style.display  = 'flex';
+    if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
+  } else {
+    if(signInBtn)  signInBtn.style.display = 'inline-flex';
+    if(userMenu)   userMenu.style.display  = 'none';
+  }
+});
+</script>
+
+
+<script>
+/* ══ CATALOG — LOAD REAL COURSES FROM FIRESTORE ══ */
+(async function loadRealCourses(){
+  var grid = document.getElementById('catalog-grid');
+  if(!grid) return;
+
+  // Wait for Firebase to be ready
+  var waitForDb = function(){ return new Promise(function(resolve){
+    if(window._db){ resolve(); return; }
+    document.addEventListener('authReady', function(){ resolve(); }, { once:true });
+    setTimeout(resolve, 3000); // fallback
+  });};
+  await waitForDb();
+
+  if(!window._db){
+    // Fall back to sample data - already rendered
+    return;
+  }
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(
+      fb.query(fb.collection(window._db,'courses'), fb.where('status','==','approved'))
+    );
+
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    if(courses.length === 0){
+      // Keep sample data shown
+      return;
+    }
+
+    // Render real courses
+    var rate = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].rate : 1;
+    var sym  = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].symbol : '₦';
+
+    grid.innerHTML = courses.map(function(c){
+      var price    = Math.round((c.priceNGN||0) * rate);
+      var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      return '<div class="course-card" onclick="goCourse(this.dataset.id)" data-id="'+c.id+'">'
+        +'<div class="course-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1a2e);display:flex;align-items:center;justify-content:center;font-size:40px;">&#127891;'
+          +'<div class="course-thumb-cat">'+( c.category||'Course')+'</div>'
+        +'</div>'
+        +'<div class="course-body">'
+          +'<div class="course-instructor">'
+            +'<div class="avatar-xs">'+initials+'</div>'
+            +'<span class="course-instructor-name">'+(c.instructorName||'Instructor')+'</span>'
+          +'</div>'
+          +'<div class="course-title">'+(c.title||'Course')+'</div>'
+          +'<div class="course-footer">'
+            +'<div>'
+              +'<span class="course-price">'+sym+' '+price.toLocaleString()+'</span>'
+            +'</div>'
+            +'<a class="enroll-mini" href="course.html?id='+c.id+'">Learn more</a>'
+          +'</div>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+
+  } catch(err){
+    console.warn('Could not load courses from Firestore:', err.message);
+    // Keep sample data
+  }
+})();
+</script>
+<script>function goCourse(id){window.location.href="course.html?id="+id;}</script>
 </body> on every page -->
 
 
