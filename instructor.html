@@ -1273,7 +1273,42 @@ function slErr(code) {
             <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Website</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
             <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">LinkedIn</label><input class="fi" id="pf-linkedin" type="url" placeholder="https://linkedin.com/in/..."/></div>
           </div>
-          <div class="fg"><label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
+          <!-- Payout Details -->
+          <div style="border-top:1.5px solid var(--border);padding-top:20px;margin-top:4px;">
+            <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">&#128176; Payout details</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Your earnings are paid automatically within 24-72 hours of each sale. Make sure your bank details are correct.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+              <div class="fg">
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bank name *</label>
+                <select id="pf-bank-name" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;background:#fff;appearance:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+                  <option value="">Select bank</option>
+                  <option>Access Bank</option><option>First Bank of Nigeria</option>
+                  <option>Guaranty Trust Bank (GTB)</option><option>United Bank for Africa (UBA)</option>
+                  <option>Zenith Bank</option><option>Stanbic IBTC Bank</option>
+                  <option>Fidelity Bank</option><option>Union Bank</option>
+                  <option>Sterling Bank</option><option>Polaris Bank</option>
+                  <option>Wema Bank</option><option>FCMB</option>
+                  <option>Ecobank Nigeria</option><option>Keystone Bank</option>
+                  <option>Heritage Bank</option><option>Opay</option>
+                  <option>Kuda Bank</option><option>Moniepoint</option>
+                  <option>PalmPay</option><option>Other</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Account number *</label>
+                <input id="pf-account-number" type="text" maxlength="10" placeholder="10-digit account number" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10); resolveAccountName(this.value)"/>
+              </div>
+            </div>
+            <div id="account-name-preview" style="display:none;background:rgba(78,204,163,.08);border:1px solid rgba(78,204,163,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--teal-dark);font-weight:600;margin-bottom:14px;"></div>
+            <div class="fg" style="margin-bottom:14px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Account name *</label>
+              <input id="pf-account-name" type="text" placeholder="Account holder name (must match bank records)" style="width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            </div>
+            <div style="background:var(--bg2);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text3);margin-bottom:14px;">
+              &#128274; Your bank details are encrypted and only used for automatic payouts. Payouts are processed within 24-72 hours of each sale.
+            </div>
+          </div>
+
           <button class="btn btn-teal" onclick="saveProfile()" style="width:fit-content;padding:11px 28px;">Save profile</button>
         </div>
       </div>
@@ -1880,17 +1915,53 @@ async function saveDraft() {
   showToast('&#128190;','Draft saved locally.');
 }
 
-function saveProfile() {
-  var name = (document.getElementById('pf-name')||{}).value||'';
-  if(name) {
-    var spName = document.getElementById('sp-name');
-    if(spName) spName.textContent = name;
-    var initials = name.split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
-    var spAvatar = document.getElementById('sp-avatar');
-    if(spAvatar && !document.getElementById('pf-avatar-img').src) spAvatar.textContent = initials;
-    localStorage.setItem('sl_inst_name', name);
+async function saveProfile() {
+  var name      = (document.getElementById('pf-name')||{}).value||'';
+  var bankName  = (document.getElementById('pf-bank-name')||{}).value||'';
+  var accNumber = (document.getElementById('pf-account-number')||{}).value||'';
+  var accName   = (document.getElementById('pf-account-name')||{}).value||'';
+
+  if(!name){ showToast('⚠️','Please enter your display name.'); return; }
+  if(bankName && !accNumber){ showToast('⚠️','Please enter your account number.'); return; }
+  if(bankName && !accName){ showToast('⚠️','Please enter your account name.'); return; }
+
+  var btn = document.querySelector('.btn-teal[onclick="saveProfile()"]');
+  if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
+
+  try {
+    if(window._user && window._db){
+      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await fb.setDoc(fb.doc(window._db,'users',window._user.uid), {
+        name:        name,
+        headline:    (document.getElementById('pf-headline')||{}).value||'',
+        bio:         (document.getElementById('pf-bio')||{}).value||'',
+        website:     (document.getElementById('pf-url')||{}).value||'',
+        linkedin:    (document.getElementById('pf-linkedin')||{}).value||'',
+        payoutBank:  bankName,
+        payoutAccountNumber: accNumber,
+        payoutAccountName:   accName,
+        updatedAt:   fb.serverTimestamp(),
+      }, { merge: true });
+    }
+
+    if(name){
+      var spName = document.getElementById('sp-name');
+      if(spName) spName.textContent = name;
+      localStorage.setItem('sl_inst_name', name);
+    }
+    showToast('✓','Profile saved!');
+  } catch(e){
+    showToast('❌','Save failed: '+e.message);
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='Save profile'; }
   }
-  showToast('✓', 'Profile saved!');
+}
+
+function resolveAccountName(number){
+  // In production this would call Flutterwave's account resolution API
+  // For now just clear the preview
+  var preview = document.getElementById('account-name-preview');
+  if(preview) preview.style.display='none';
 }
 
 function handleAvatarUpload(input, imgId, initialsId, sidebarAvatarId) {
