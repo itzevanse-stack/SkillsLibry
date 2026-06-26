@@ -624,6 +624,35 @@ function slErr(code) {
     <div class="admin-main">
 
       <div id="admin-overview" class="admin-view active">
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--sh);">
+          <div style="font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:var(--text);" id="ov-total-courses">—</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">Total courses</div>
+          <div style="font-size:11px;color:var(--orange);margin-top:2px;" id="ov-pending-courses">0 pending review</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--sh);">
+          <div style="font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:var(--text);" id="ov-total-students">—</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">Total students</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--sh);">
+          <div style="font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:var(--teal-dark);" id="ov-total-revenue">—</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">Total revenue</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--sh);">
+          <div style="font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:var(--text);" id="ov-total-instructors">—</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">Instructors</div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:22px;box-shadow:var(--sh);">
+          <div style="font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:var(--orange);" id="ov-pending-apps">—</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">Pending applications</div>
+        </div>
+      </div>
+      <!-- Activity feed -->
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:24px;box-shadow:var(--sh);">
+        <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text);">Action Required</div>
+        <div id="recent-activity">Loading...</div>
+      </div>
         <div class="admin-page-title">Platform Overview</div>
         <div class="admin-page-sub">SkillsLibry · Live dashboard</div>
         <div class="admin-stats-row">
@@ -656,6 +685,7 @@ function slErr(code) {
       </div>
 
       <div id="admin-courses" class="admin-view">
+      <div id="courses-table" style="margin-top:20px;"></div>
         <div class="admin-page-title">Courses</div>
         <div class="admin-page-sub">Review, approve, feature, or remove courses</div>
         <table class="admin-table">
@@ -671,6 +701,7 @@ function slErr(code) {
       </div>
 
       <div id="admin-students" class="admin-view">
+      <div id="students-table" style="margin-top:20px;"></div>
         <div class="admin-page-title">Students</div>
         <div class="admin-page-sub">12,841 total enrolled students</div>
         <table class="admin-table">
@@ -684,6 +715,7 @@ function slErr(code) {
       </div>
 
       <div id="admin-instructors" class="admin-view">
+      <div id="instructors-table" style="margin-top:20px;"></div>
         <div class="admin-page-title">Instructors</div>
         <div class="admin-page-sub">48 active · 6 applications pending</div>
         <div style="font-size:13px;font-weight:500;color:var(--teal-dark);margin-bottom:12px">New applications</div>
@@ -706,6 +738,7 @@ function slErr(code) {
       </div>
 
       <div id="admin-payouts" class="admin-view">
+      <div id="payouts-table" style="margin-top:20px;"></div>
         <div class="admin-page-title">Payouts</div>
         <div class="admin-page-sub">Instructor and affiliate payout requests</div>
         <div class="admin-stats-row">
@@ -780,305 +813,392 @@ function slErr(code) {
 </div>
 
 <script>
+/* ══════════════════════════════════════════
+   ADMIN PANEL — FIRESTORE CONNECTED
+══════════════════════════════════════════ */
 
-function goTo(page){
-  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
-    dashboard:'dashboard.html',player:'player.html',
-    instructor:'instructor.html',admin:'admin.html'};
-  if(routes[page]) window.location.href=routes[page];
-}
-function showPage(page){ goTo(page); }
-function showCourseDetail(id){ window.location.href='course.html?id='+id; }
-
-
-// ── NULL-SAFE FUNCTIONS (override any duplicates below) ──
-
-function openEnrollModal(){
-  var em=document.getElementById('enroll-modal');
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-installment-btn');
-  if(pd) pd.textContent='₦35,000';
-  if(pn) pn.textContent='Full access · Lifetime';
-  if(ib) ib.style.display='block';
-  if(em) em.classList.add('open');
-}
-function openInstallModal(){ openEnrollModal(); switchToInstallment(); }
-function switchToInstallment(){
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-installment-btn');
-  if(pd) pd.textContent='₦17,500';
-  if(pn) pn.textContent='First payment today · ₦17,500 in 30 days';
-  if(ib) ib.style.display='none';
-}
-function closeModal(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.classList.remove('open');
-}
-function showToast(icon,msg){
+function showToast(icon, msg){
   var t=document.getElementById('toast'); if(!t) return;
-  var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
+  var ti=document.getElementById('toast-icon'); if(ti) ti.innerHTML=icon;
   var tm=document.getElementById('toast-msg'); if(tm) tm.textContent=msg;
   t.classList.add('show');
-  setTimeout(function(){ t.classList.remove('show'); }, 3000);
-}
-// Safe modal backdrop close
-(function(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-})();
-
-// ── DATA ──
-const COURSES = [
-  {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
-  {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
-  {id:3,title:'Content to Cash: Monetise Every Platform You Touch',instructor:'Femi Ogunwale',initials:'FO',cat:'content',catLabel:'Content & Monetisation',price:'₦22,000',priceOld:'₦40,000',rating:'4.7',students:'2,104',badge:'New',icon:'🎬'},
-  {id:4,title:'AI Tools Mastery: Work 10x Faster, Earn 10x More',instructor:'Kemi Adeyemi',initials:'KA',cat:'ai',catLabel:'AI Skills',price:'₦32,000',priceOld:'₦55,000',rating:'4.9',students:'1,120',badge:'Trending',icon:'🤖'},
-  {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
-  {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
-];
-
-const INSTRUCTORS = [
-  {name:'Chidi Okafor',title:'Affiliate Marketing Expert',initials:'CO',courses:3,students:'4,801'},
-  {name:'Ngozi Adeola',title:'Copywriter & Digital Creator',initials:'NA',courses:2,students:'2,829'},
-  {name:'Femi Ogunwale',title:'Content Monetisation Coach',initials:'FO',courses:2,students:'2,104'},
-  {name:'Kemi Adeyemi',title:'AI Productivity Specialist',initials:'KA',courses:1,students:'1,120'},
-];
-
-const TESTIMONIALS = [
-  {name:'Amaka Obi',loc:'Lagos, Nigeria',text:'I made my first ₦45,000 commission in week 3 of the affiliate course. Chidi explains everything in a way that actually makes sense for Nigeria.',stars:5,initials:'AO'},
-  {name:'Taiwo Musa',loc:'Abuja, Nigeria',text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',stars:5,initials:'TM'},
-  {name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take me 2 days. My rates doubled.',stars:5,initials:'GA'},
-  {name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',stars:5,initials:'EN'},
-  {name:'Blessing Okafor',loc:'Lagos, Nigeria',text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',stars:5,initials:'BO'},
-  {name:'Ibrahim Suleiman',loc:'Kano, Nigeria',text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',stars:5,initials:'IS'},
-];
-
-const MODULES = [
-  {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
-  {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
-  {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
-  {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
-  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
-  {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
-];
-
-// ── RENDER FUNCTIONS ──
-function courseCard(c, onclick=''){
-  return `<div class="course-card" onclick="showCourseDetail(${c.id})">
-    <div class="course-thumb">
-      <span class="course-thumb-icon">${c.icon}</span>
-      <span class="course-thumb-cat">${c.catLabel}</span>
-      ${c.badge?`<span class="course-thumb-badge">${c.badge}</span>`:''}
-    </div>
-    <div class="course-body">
-      <div class="course-instructor">
-        <div class="avatar-xs">${c.initials}</div>
-        <span class="course-instructor-name">${c.instructor}</span>
-      </div>
-      <div class="course-title">${c.title}</div>
-      <div class="course-meta">
-        <span class="rating">★ ${c.rating}</span>
-        <span>${c.students} students</span>
-      </div>
-      <div class="course-footer">
-        <div><span class="course-price">${c.price}</span><span class="course-price-old">${c.priceOld}</span></div>
-        <div class="enroll-mini" onclick="event.stopPropagation();openEnrollModal()">Enroll</div>
-      </div>
-    </div>
-  </div>`;
+  setTimeout(function(){ t.classList.remove('show'); },3200);
 }
 
-function renderHomeGrid(){
-  const g = document.getElementById('home-course-grid');
-  if(g) g.innerHTML = COURSES.map(c=>courseCard(c)).join('');
-}
-function renderCatalogGrid(list){
-  const g = document.getElementById('catalog-grid');
-  if(g) g.innerHTML = (list||COURSES).map(c=>courseCard(c)).join('');
-}
-function renderInstructors(){
-  const g = document.getElementById('instructor-grid');
-  if(!g) return;
-  g.innerHTML = INSTRUCTORS.map(i=>`
-    <div class="instructor-card">
-      <div class="instructor-avatar">${i.initials}</div>
-      <div class="instructor-name">${i.name}</div>
-      <div class="instructor-title">${i.title}</div>
-      <div class="instructor-stats">
-        <div class="istat"><div class="istat-num">${i.courses}</div><div class="istat-label">Courses</div></div>
-        <div class="istat"><div class="istat-num">${i.students}</div><div class="istat-label">Students</div></div>
-      </div>
-    </div>`).join('');
-}
-function renderTestimonials(){
-  const g = document.getElementById('home-testimonials');
-  if(!g) return;
-  g.innerHTML = TESTIMONIALS.slice(0,6).map(t=>`
-    <div class="tcard">
-      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
-      <div class="tcard-text">"${t.text}"</div>
-      <div class="tcard-person">
-        <div class="tcard-avatar">${t.initials}</div>
-        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
-      </div>
-    </div>`).join('');
-  const g2 = document.getElementById('course-testimonials-grid');
-  if(g2) g2.innerHTML = TESTIMONIALS.map(t=>`
-    <div class="tcard">
-      <div class="tcard-stars">${'★'.repeat(t.stars)}</div>
-      <div class="tcard-text">"${t.text}"</div>
-      <div class="tcard-person">
-        <div class="tcard-avatar">${t.initials}</div>
-        <div><div class="tcard-name">${t.name}</div><div class="tcard-loc">${t.loc}</div></div>
-      </div>
-    </div>`).join('');
-}
-function renderModules(){
-  const g = document.getElementById('module-list');
-  if(!g) return;
-  g.innerHTML = MODULES.map((m,mi)=>`
-    <div class="module-item">
-      <div class="module-header" onclick="toggleModule(this)">
-        <div class="module-header-left">
-          <span class="module-num">${m.num}</span>
-          <span class="module-title">${m.title}</span>
-        </div>
-        <span class="module-meta">${m.meta}</span>
-        <span class="chevron-icon ${mi===0?'open':''}">⌄</span>
-      </div>
-      <div class="lesson-list ${mi===0?'open':''}">
-        ${m.lessons.map((l,li)=>`
-          <div class="lesson-item">
-            <div class="lesson-icon">▶</div>
-            <span class="lesson-title">${l.t}</span>
-            <span class="lesson-duration">${l.dur}</span>
-            <span class="lesson-tag ${l.free?'tag-free':'tag-lock'}">${l.free?'Free preview':'Enrolled'}</span>
-          </div>`).join('')}
-      </div>
-    </div>`).join('');
-}
-function renderPlayerCurriculum(){
-  const g = document.getElementById('player-curriculum');
-  if(!g) return;
-  g.innerHTML = MODULES.map((m,mi)=>`
-    <div class="player-module">
-      <div class="player-module-header">Module ${m.num} — ${m.title}</div>
-      ${m.lessons.map((l,li)=>`
-        <div class="player-lesson-item ${mi===3&&li===1?'active':''}">
-          <div class="lesson-check ${(mi<3||(mi===0))?'done':''}">${(mi<3||(mi===0))?'✓':''}</div>
-          <span style="flex:1;font-size:12px">${l.t}</span>
-          <span style="font-size:10px;color:var(--text3)">${l.dur}</span>
-        </div>`).join('')}
-    </div>`).join('');
+function showView(v){
+  // Hide all admin sections
+  ['overview','courses','students','instructors','payouts','affiliates'].forEach(function(sec){
+    var el = document.getElementById('admin-'+sec);
+    if(el) el.style.display='none';
+  });
+  document.querySelectorAll('.nav-item').forEach(function(el){ el.classList.remove('active'); });
+  var view = document.getElementById('admin-'+v);
+  var nav  = document.getElementById('nav-'+v);
+  if(view) view.style.display='block';
+  if(nav)  nav.classList.add('active');
+  if(v==='courses')      loadCourses();
+  if(v==='instructors')  loadInstructors();
+  if(v==='students')     loadStudents();
+  if(v==='payouts')      loadPayouts();
 }
 
-// ── NAVIGATION ──
-function showPage(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  window.scrollTo(0,0);
-}
-function showCourseDetail(id){
-  const c = COURSES.find(x=>x.id===id)||COURSES[0];
-  document.getElementById('cd-title').textContent = c.title;
-  document.getElementById('cd-category').textContent = c.catLabel;
-  document.getElementById('cd-instructor').textContent = c.instructor;
-  document.getElementById('cd-avatar').textContent = c.initials;
-  document.getElementById('cd-price').textContent = c.price;
-  document.getElementById('cd-price-old').textContent = c.priceOld;
-  document.getElementById('cd-students').textContent = c.students;
-  showPage('course');
-  document.querySelector('.tab-btn.active')?.click();
+/* ── FIRESTORE HELPER ── */
+async function db(){
+  if(!window._db) throw new Error('Firestore not ready');
+  return window._db;
 }
 
-// ── TABS ──
-function switchTab(btn, pane){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(pane).classList.add('active');
-}
-function toggleModule(header){
-  const list = header.nextElementSibling;
-  const ch = header.querySelector('.chevron-icon');
-  list.classList.toggle('open');
-  ch.classList.toggle('open');
-}
-function switchDash(el, view){
-  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.dash-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-function switchInstTab(el, view){
-  document.querySelectorAll('.inst-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.inst-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
-}
-function switchAdmin(el, view){
-  document.querySelectorAll('.admin-sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.querySelectorAll('.admin-view').forEach(v=>v.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(view).classList.add('active');
+async function fbImport(){
+  return await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 }
 
-// ── FILTERS ──
-function filterCat(el, cat){
-  document.querySelectorAll('.category-row .cat-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const filtered = cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
-  renderHomeGrid();
-  if(cat!=='all'){
-    const g=document.getElementById('home-course-grid');
-    if(g) g.innerHTML=filtered.map(c=>courseCard(c)).join('');
+/* ══ OVERVIEW ══ */
+async function loadOverview(){
+  try {
+    var fb = await fbImport();
+    var database = await db();
+
+    var [coursesSnap, enrollSnap, usersSnap, appsSnap] = await Promise.all([
+      fb.getDocs(fb.collection(database,'courses')),
+      fb.getDocs(fb.collection(database,'enrollments')),
+      fb.getDocs(fb.collection(database,'users')),
+      fb.getDocs(fb.collection(database,'instructorApplications')),
+    ]);
+
+    var courses     = coursesSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    var pending     = courses.filter(function(c){ return c.status==='pending_review'; });
+    var students    = usersSnap.docs.filter(function(d){ return d.data().role==='student'; });
+    var instructors = usersSnap.docs.filter(function(d){ return d.data().role==='instructor'; });
+    var pendingApps = appsSnap.docs.filter(function(d){ return d.data().status==='pending'; });
+
+    var totalRevenue = enrollSnap.docs.reduce(function(a,d){ return a+(d.data().paidAmount||0); },0);
+
+    setText('ov-total-courses',   courses.length);
+    setText('ov-pending-courses', pending.length);
+    setText('ov-total-students',  students.length);
+    setText('ov-total-instructors',instructors.length);
+    setText('ov-total-revenue',   '₦'+totalRevenue.toLocaleString());
+    setText('ov-pending-apps',    pendingApps.length);
+
+    // Recent activity
+    renderRecentActivity(courses.slice(0,5), pendingApps.slice(0,3));
+
+  } catch(e){
+    console.error('Overview error:',e);
+    showToast('❌','Failed to load overview: '+e.message);
   }
 }
-function filterCatalog(el, cat){
-  document.querySelectorAll('.filter-row .cat-pill').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  const filtered=cat==='all'?COURSES:COURSES.filter(c=>c.cat===cat);
-  renderCatalogGrid(filtered);
+
+function setText(id,val){ var el=document.getElementById(id); if(el) el.textContent=val; }
+
+function renderRecentActivity(courses, apps){
+  var el = document.getElementById('recent-activity');
+  if(!el) return;
+  var html = '';
+
+  if(apps.length > 0){
+    html += '<div style="font-family:Poppins,sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">Pending Instructor Applications</div>';
+    html += apps.map(function(a){
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">'
+        +'<div>'
+          +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+a.name+'</div>'
+          +'<div style="font-size:12px;color:var(--text3);">'+a.skill+' · '+a.country+'</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;">'
+          +'<button data-id="'+a.id+'" data-email="'+a.email+'" onclick="approveInstructor(this.dataset.id,this.dataset.email)" style="padding:6px 14px;background:var(--teal);border:none;border-radius:6px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;">Approve</button>'
+          +'<button data-id="'+a.id+'" onclick="rejectApp(this.dataset.id,this.dataset.col)" data-col="instructorApplications" style="padding:6px 14px;background:transparent;border:1.5px solid var(--red);border-radius:6px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;">Reject</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+    html += '<br/>';
+  }
+
+  if(courses.length > 0){
+    html += '<div style="font-family:Poppins,sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px;">Pending Courses</div>';
+    html += courses.filter(function(c){ return c.status==='pending_review'; }).map(function(c){
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);">'
+        +'<div>'
+          +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+c.title+'</div>'
+          +'<div style="font-size:12px;color:var(--text3);">by '+c.instructorName+' · ₦'+(c.priceNGN||0).toLocaleString()+'</div>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;">'
+          +'<button onclick="approveCourse(this.dataset.id)" data-id="\'+ c.id +\'" style="padding:6px 14px;background:var(--teal);border:none;border-radius:6px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;">✓ Approve</button>'
+          +'<button data-idf="+c.id+" onclick="rejectCourse(this.dataset.idf)" style="padding:6px 14px;background:transparent;border:1.5px solid var(--red);border-radius:6px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;">Reject</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  }
+
+  if(!html) html = '<div style="text-align:center;padding:32px;color:var(--text3);">No pending items. Everything is up to date.</div>';
+  el.innerHTML = html;
 }
-function searchCourses(){
-  const q = document.getElementById('catalog-search-input').value.toLowerCase();
-  const filtered = q?COURSES.filter(c=>c.title.toLowerCase().includes(q)||c.instructor.toLowerCase().includes(q)):COURSES;
-  renderCatalogGrid(filtered);
+
+/* ══ COURSES ══ */
+async function loadCourses(){
+  var el = document.getElementById('courses-table');
+  if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">Loading...</div>';
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    var snap = await fb.getDocs(fb.collection(database,'courses'));
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    if(courses.length===0){
+      el.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3);">No courses submitted yet.</div>';
+      return;
+    }
+
+    var statusColor = {
+      pending_review:'rgba(245,158,11,.1)',approved:'rgba(34,197,94,.1)',rejected:'rgba(239,68,68,.08)',draft:'rgba(139,143,168,.1)',
+    };
+    var statusText = {pending_review:'Pending review',approved:'Approved',rejected:'Rejected',draft:'Draft'};
+    var statusFg   = {pending_review:'#92400e',approved:'#166534',rejected:'#991b1b',draft:'#8b8fa8'};
+
+    el.innerHTML = '<table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="border-bottom:2px solid var(--border);">'
+        +'<th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--text3);">Course</th>'
+        +'<th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--text3);">Instructor</th>'
+        +'<th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--text3);">Price</th>'
+        +'<th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--text3);">Status</th>'
+        +'<th style="text-align:left;padding:10px 14px;font-size:12px;font-weight:700;color:var(--text3);">Actions</th>'
+      +'</tr></thead>'
+      +'<tbody>'
+      + courses.map(function(c){
+          var st = c.status||'draft';
+          return '<tr style="border-bottom:1px solid var(--border);transition:background .15s;" style=\"cursor:pointer;\">'
+            +'<td style="padding:14px;"><div style="font-size:13px;font-weight:600;color:var(--text);max-width:280px;">'+(c.title||'Untitled')+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(c.category||'')+'</div></td>'
+            +'<td style="padding:14px;font-size:13px;color:var(--text2);">'+(c.instructorName||'—')+'</td>'
+            +'<td style="padding:14px;font-size:13px;font-weight:600;color:var(--text);">₦'+(c.priceNGN||0).toLocaleString()+'</td>'
+            +'<td style="padding:14px;"><span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;background:'+(statusColor[st]||'var(--bg3)')+';color:'+(statusFg[st]||'var(--text3)')+';">'+(statusText[st]||st)+'</span></td>'
+            +'<td style="padding:14px;">'
+              +(st==='pending_review'
+                ? '<button onclick="approveCourse(this.dataset.id)" data-id="\'+ c.id +\'" style="padding:6px 14px;background:var(--teal);border:none;border-radius:6px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;margin-right:6px;">✓ Approve</button>'
+                  +'<button data-idf="+c.id+" onclick="rejectCourse(this.dataset.idf)" style="padding:6px 14px;background:transparent;border:1.5px solid var(--red);border-radius:6px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;">Reject</button>'
+                : st==='approved'
+                  ? '<button data-id="'+c.id+'" onclick="rejectCourse(this.dataset.id)" style="padding:6px 14px;background:transparent;border:1.5px solid var(--border);border-radius:6px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;">Unpublish</button>'
+                  : '<button data-id="'+c.id+'" onclick="approveCourse(this.dataset.id)" style="padding:6px 14px;background:var(--teal);border:none;border-radius:6px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;">✓ Approve</button>'
+              )
+            +'</td>'
+          +'</tr>';
+        }).join('')
+      +'</tbody></table>';
+  } catch(e){
+    el.innerHTML='<div style="text-align:center;padding:32px;color:var(--red);">Error: '+e.message+'</div>';
+  }
 }
 
-// ── MODAL ──
-// openEnrollModal defined above
-// openInstallModal defined above
-// switchToInstallment defined above
-// closeModal defined above
-// modal listener defined above
-// ── TOAST ──
-function showToast(icon, msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toast-icon').textContent=icon;
-  document.getElementById('toast-msg').textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+async function approveCourse(id){
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    await fb.updateDoc(fb.doc(database,'courses',id),{ status:'approved', approvedAt: fb.serverTimestamp() });
+    showToast('✓','Course approved and live!');
+    loadCourses();
+    loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
 }
 
-// ── INIT ──
-renderHomeGrid();
-renderCatalogGrid();
-renderInstructors();
-renderTestimonials();
-renderModules();
-renderPlayerCurriculum();
-
-function switchAdmin(el,v){
-  document.querySelectorAll('.admin-sidebar-item').forEach(function(i){i.classList.remove('active');});
-  document.querySelectorAll('.admin-view').forEach(function(x){x.classList.remove('active');});
-  el.classList.add('active');
-  var t=document.getElementById(v); if(t) t.classList.add('active');
+async function rejectCourse(id){
+  var reason = prompt('Reason for rejection (optional — will be shared with instructor):');
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    await fb.updateDoc(fb.doc(database,'courses',id),{ status:'rejected', rejectionReason: reason||'', rejectedAt: fb.serverTimestamp() });
+    showToast('❌','Course rejected.');
+    loadCourses();
+    loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
 }
 
+/* ══ INSTRUCTORS ══ */
+async function loadInstructors(){
+  var el = document.getElementById('instructors-table');
+  if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">Loading...</div>';
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    var [appsSnap, usersSnap] = await Promise.all([
+      fb.getDocs(fb.collection(database,'instructorApplications')),
+      fb.getDocs(fb.query(fb.collection(database,'users'), fb.where('role','==','instructor'))),
+    ]);
 
+    var apps     = appsSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    var approved = usersSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    var html = '';
+
+    var pending = apps.filter(function(a){ return a.status==='pending'; });
+    if(pending.length > 0){
+      html += '<div style="font-family:Poppins,sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text);">Pending Applications ('+pending.length+')</div>';
+      html += pending.map(function(a){
+        return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:12px;box-shadow:var(--sh);">'
+          +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;">'
+            +'<div style="flex:1;">'
+              +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">'+a.name+'</div>'
+              +'<div style="font-size:12px;color:var(--text3);margin-bottom:10px;">'+a.email+' · '+a.phone+' · '+a.country+'</div>'
+              +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">'
+                +'<div style="background:var(--bg2);border-radius:8px;padding:10px 14px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:4px;">Skill</div><div style="font-size:13px;font-weight:600;color:var(--text);">'+a.skill+'</div></div>'
+                +'<div style="background:var(--bg2);border-radius:8px;padding:10px 14px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:4px;">Experience</div><div style="font-size:13px;font-weight:600;color:var(--text);">'+(a.experience||'—')+'</div></div>'
+              +'</div>'
+              +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;">Their results</div>'
+              +'<div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;">'+a.results+'</div>'
+              +(a.sampleVideo?'<div style="margin-bottom:12px;"><a href="'+a.sampleVideo+'" target="_blank" style="font-size:13px;color:var(--teal-dark);font-weight:600;">▶ Watch sample video</a></div>':'')
+              +'<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;">Proposed course</div>'
+              +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+(a.courseTitle||'—')+'</div>'
+              +'<div style="font-size:13px;color:var(--text2);">₦'+(parseInt(a.price||0)).toLocaleString()+' · '+a.courseLength+'</div>'
+            +'</div>'
+          +'</div>'
+          +'<div style="display:flex;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">'
+            +'<button data-id="'+a.id+'" data-email="'+a.email+'" onclick="approveInstructor(this.dataset.id,this.dataset.email)" style="padding:10px 24px;background:var(--teal);border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;">✓ Approve as Instructor</button>'
+            +'<button data-id="'+a.id+'" onclick="rejectApp(this.dataset.id,this.dataset.col)" data-col="instructorApplications" style="padding:10px 24px;background:transparent;border:1.5px solid var(--red);border-radius:8px;font-size:14px;font-weight:600;color:var(--red);cursor:pointer;">Reject</button>'
+          +'</div>'
+        +'</div>';
+      }).join('');
+    }
+
+    if(approved.length > 0){
+      html += '<div style="font-family:Poppins,sans-serif;font-size:14px;font-weight:700;margin:20px 0 14px;color:var(--text);">Approved Instructors ('+approved.length+')</div>';
+      html += '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);">'
+        + approved.map(function(u){
+            return '<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">'
+              +'<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">'+(u.name||'?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase()+'</div>'
+              +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(u.name||'—')+'</div><div style="font-size:12px;color:var(--text3);">'+(u.email||'')+'</div></div>'
+              +'<span style="font-size:11px;font-weight:700;background:rgba(34,197,94,.1);color:#166534;border:1px solid rgba(34,197,94,.25);border-radius:100px;padding:3px 10px;">Instructor</span>'
+            +'</div>';
+          }).join('')
+        +'</div>';
+    }
+
+    if(!html) html = '<div style="text-align:center;padding:48px;color:var(--text3);">No instructor applications yet.</div>';
+    el.innerHTML = html;
+  } catch(e){
+    el.innerHTML='<div style="text-align:center;padding:32px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+async function approveInstructor(appId, email){
+  try {
+    var fb = await fbImport();
+    var database = await db();
+
+    // Update application status
+    await fb.updateDoc(fb.doc(database,'instructorApplications',appId),{
+      status: 'approved', approvedAt: fb.serverTimestamp()
+    });
+
+    // Find user by email and update their role to instructor
+    var usersSnap = await fb.getDocs(fb.query(fb.collection(database,'users'), fb.where('email','==',email)));
+    if(!usersSnap.empty){
+      await fb.updateDoc(usersSnap.docs[0].ref,{ role:'instructor' });
+      showToast('✓',email+' is now an approved instructor!');
+    } else {
+      showToast('⚠️','Application approved but user account not found. They need to sign up first.');
+    }
+    loadInstructors();
+    loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function rejectApp(id, collection_name){
+  var reason = prompt('Reason for rejection (optional):');
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    await fb.updateDoc(fb.doc(database,collection_name,id),{
+      status:'rejected', rejectionReason:reason||'', rejectedAt:fb.serverTimestamp()
+    });
+    showToast('❌','Application rejected.');
+    loadInstructors();
+    loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+/* ══ STUDENTS ══ */
+async function loadStudents(){
+  var el = document.getElementById('students-table');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3);">Loading...</div>';
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    var snap = await fb.getDocs(fb.query(fb.collection(database,'users'), fb.where('role','==','student')));
+    var students = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if(students.length===0){
+      el.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3);">No students yet.</div>';
+      return;
+    }
+    el.innerHTML='<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);">'
+      +students.map(function(u){
+        return '<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">'
+          +'<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;">'+((u.name||'S').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase())+'</div>'
+          +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(u.name||'—')+'</div><div style="font-size:12px;color:var(--text3);">'+(u.email||'')+'</div></div>'
+          +'<span style="font-size:11px;color:var(--text3);">'+new Date().toLocaleDateString()+'</span>'
+        +'</div>';
+      }).join('')
+    +'</div>';
+  } catch(e){
+    el.innerHTML='<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+/* ══ PAYOUTS ══ */
+async function loadPayouts(){
+  var el = document.getElementById('payouts-table');
+  if(!el) return;
+  el.innerHTML='<div style="text-align:center;padding:32px;color:var(--text3);">Loading...</div>';
+  try {
+    var fb = await fbImport();
+    var database = await db();
+    var snap = await fb.getDocs(fb.collection(database,'enrollments'));
+    var enrollments = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if(enrollments.length===0){
+      el.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3);">No transactions yet.</div>';
+      return;
+    }
+    // Group by instructor
+    var byInstructor = {};
+    enrollments.forEach(function(e){
+      var id = e.instructorId||'unknown';
+      if(!byInstructor[id]) byInstructor[id]={instructorId:id,total:0,count:0};
+      byInstructor[id].total  += e.instructorCut||0;
+      byInstructor[id].count  += 1;
+    });
+    el.innerHTML='<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);">'
+      +'<table style="width:100%;border-collapse:collapse;">'
+      +'<thead><tr style="border-bottom:2px solid var(--border);"><th style="text-align:left;padding:12px 16px;font-size:12px;font-weight:700;color:var(--text3);">Instructor</th><th style="padding:12px 16px;font-size:12px;font-weight:700;color:var(--text3);">Enrollments</th><th style="padding:12px 16px;font-size:12px;font-weight:700;color:var(--text3);">Pending Payout</th><th style="padding:12px 16px;font-size:12px;font-weight:700;color:var(--text3);">Action</th></tr></thead>'
+      +'<tbody>'
+      +Object.values(byInstructor).map(function(i){
+        return '<tr style="border-bottom:1px solid var(--border);">'
+          +'<td style="padding:14px 16px;font-size:13px;font-weight:600;color:var(--text);">'+i.instructorId.slice(0,12)+'...</td>'
+          +'<td style="padding:14px 16px;text-align:center;font-size:13px;color:var(--text2);">'+i.count+'</td>'
+          +'<td style="padding:14px 16px;text-align:center;font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:var(--teal-dark);">₦'+i.total.toLocaleString()+'</td>'
+          +'<td style="padding:14px 16px;"><button data-id="'+i.instructorId+'" onclick="markPaid(this.dataset.id)" style="padding:6px 14px;background:var(--teal);border:none;border-radius:6px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;">Mark Paid</button></td>'
+        +'</tr>';
+      }).join('')
+      +'</tbody></table></div>';
+  } catch(e){
+    el.innerHTML='<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+async function markPaid(instructorId){
+  showToast('✔️','Payout marked as paid for '+instructorId.slice(0,8)+'...');
+}
+
+/* ── INIT ── */
+document.addEventListener('authReady', function(e){
+  if(!e.detail.user){
+    openAuthModal(function(){ location.reload(); },'si');
+    return;
+  }
+  // Small delay to ensure Firestore is connected
+  setTimeout(function(){
+    loadOverview();
+    showView('overview');
+  }, 300);
+});
 </script>
 <!-- ══ AUTH MODAL ══ -->
 <div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
@@ -1214,11 +1334,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
@@ -1265,5 +1396,27 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
 </script>
+
+<script>
+/* ── NAV AUTH STATE ── */
+document.addEventListener('authReady', function(e){
+  var user = e.detail.user;
+  var myLearningBtn = document.getElementById('nav-my-learning');
+  var signInBtn     = document.getElementById('nav-signin');
+  var userMenu      = document.getElementById('nav-user-menu');
+  var userName      = document.getElementById('nav-user-name');
+
+  if(user){
+    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(signInBtn)     signInBtn.style.display = 'none';
+    if(userMenu)      userMenu.style.display  = 'flex';
+    if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
+  } else {
+    if(signInBtn)  signInBtn.style.display = 'inline-flex';
+    if(userMenu)   userMenu.style.display  = 'none';
+  }
+});
+</script>
+
 </body>
 </html>
