@@ -465,10 +465,10 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
   <div class="right-panel">
 
     <!-- Live session card -->
-    <div class="live-card" id="live-card">
+    <div class="live-card" id="live-card" style="display:none;">
       <div class="live-label"><span class="live-dot"></span> Next live session</div>
-      <div class="live-title" id="live-title">Weekly Live Session</div>
-      <div class="live-time" id="live-time">&#128336; Saturday, 7:00 PM WAT</div>
+      <div class="live-title" id="live-title" style="display:none;"></div>
+      <div class="live-time" id="live-time" style="display:none;"></div>
       <button class="live-join-btn" onclick="joinLiveSession()">&#127909; Set reminder</button>
     </div>
 
@@ -891,7 +891,7 @@ function switchTab(tab){
   }, 1000);
 })();
 
-document.addEventListener('authReady', function(e){
+document.addEventListener('authReady', async function(e){
   var user = e.detail.user;
   if(!user){ openAuthModal(null, 'si'); return; }
 
@@ -900,7 +900,6 @@ document.addEventListener('authReady', function(e){
     var el = document.getElementById(id); if(el) el.textContent = initials;
   });
 
-  // Check if instructor
   _isInstructor = window._userRole === 'instructor' || window._userRole === 'admin';
   if(_isInstructor){
     var ac = document.getElementById('ann-composer');
@@ -909,30 +908,34 @@ document.addEventListener('authReady', function(e){
     if(rc) rc.style.display = 'block';
   }
 
-  // Auto-join community on load if enrolled
-  autoJoinCommunity();
+  await autoJoinCommunity();
+  await loadCommunityData();
   renderAll();
+  updateCounts();
+  renderTopContributors();
 });
 
-function autoJoinCommunity(){
+async function autoJoinCommunity(){
   if(!window._user) return;
-  var key  = 'sl_community_'+_courseId+'_members';
-  var members = JSON.parse(localStorage.getItem(key)||'[]');
-  var exists  = members.find(function(m){ return m.uid === window._user.uid; });
-  if(!exists){
-    var initials = (window._userName||'U').split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
-    members.unshift({
-      uid:      window._user.uid,
-      name:     window._userName || 'Student',
-      initials: initials,
-      role:     _isInstructor ? 'instructor' : 'student',
-      joinedAt: new Date().toISOString(),
-    });
-    localStorage.setItem(key, JSON.stringify(members));
-    _members = members;
-  } else {
-    _members = members;
-  }
+  if(!window._db) return;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var db = window._db;
+    var colId = 'community_'+_courseId+'_members';
+    var memberId = window._user.uid;
+    var existSnap = await fb.getDoc(fb.doc(db, colId, memberId));
+    if(!existSnap.exists()){
+      var initials = (window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var memberData = {
+        uid:      memberId,
+        name:     window._userName || 'Student',
+        initials: initials,
+        role:     _isInstructor ? 'instructor' : 'student',
+        joinedAt: fb.serverTimestamp(),
+      };
+      await fb.setDoc(fb.doc(db, colId, memberId), memberData);
+    }
+  } catch(e){ console.warn('Join community failed:', e.message); }
 }
 
 function loadCommunityData(){
@@ -1079,7 +1082,7 @@ function submitReply(postId){
   },50);
 }
 
-function submitPost(){
+async function submitPost(){
   var input = document.getElementById('post-input');
   var text  = input ? input.value.trim() : '';
   if(!text && !_postAttachment){ showToast('&#9888;&#65039;','Write something first.'); return; }
@@ -1089,19 +1092,31 @@ function submitPost(){
   if(btn) btn.disabled = true;
 
   var initials = (window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-  _posts.unshift({
-    id:       'p_'+Date.now(),
+  var newPost = {
     author:   window._userName||'Student',
     initials: initials,
+    uid:      window._user ? window._user.uid : '',
     role:     _isInstructor?'instructor':'student',
     time:     'Just now',
     text:     text||'',
-    imageUrl: _postAttachment,
+    imageUrl: _postAttachment||null,
     likes:    0,
     liked:    false,
     comments: [],
-  });
-  savePosts();
+    createdAt: new Date().toISOString(),
+  };
+
+  if(window._db && window._user){
+    try {
+      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var ref = await fb.addDoc(fb.collection(window._db,'community_'+_courseId+'_posts'),
+        Object.assign({},newPost,{createdAt:fb.serverTimestamp()}));
+      newPost.id = ref.id;
+    } catch(e){ newPost.id = 'p_'+Date.now(); }
+  } else {
+    newPost.id = 'p_'+Date.now();
+  }
+  _posts.unshift(newPost);
   if(input) input.value='';
   _postAttachment = null;
   var preview = document.getElementById('post-attachment-preview');
@@ -1129,7 +1144,10 @@ function attachPostFile(input){
   showToast('&#128206;',file.name+' attached');
 }
 
-function savePosts(){ localStorage.setItem('sl_community_'+_courseId+'_posts', JSON.stringify(_posts)); }
+async function savePosts(){
+  if(!window._db) return;
+  // Firestore writes happen per-post in submitPost/submitReply
+}
 
 /* ══════════════════════════════════════════
    ANNOUNCEMENTS
@@ -1158,18 +1176,31 @@ function renderAnnouncements(){
   }).join('');
 }
 
-function submitAnnouncement(){
+async function submitAnnouncement(){
   var input = document.getElementById('ann-input');
   var text  = input?input.value.trim():'';
   if(!text){ showToast('&#9888;&#65039;','Write an announcement first.'); return; }
-  _announcements.unshift({
-    id:     'a_'+Date.now(),
+  var newAnn = {
     title:  text.split('\n')[0].slice(0,80),
     text:   text,
     author: window._userName||'Instructor',
-    initials:'CO',time:'Just now',pinned:false
-  });
-  localStorage.setItem('sl_community_'+_courseId+'_ann',JSON.stringify(_announcements));
+    uid:    window._user ? window._user.uid : '',
+    time:   'Just now',
+    pinned: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  if(window._db && window._user){
+    try {
+      var fb2 = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var ref2 = await fb2.addDoc(fb2.collection(window._db,'community_'+_courseId+'_ann'),
+        Object.assign({},newAnn,{createdAt:fb2.serverTimestamp()}));
+      newAnn.id = ref2.id;
+    } catch(e){ newAnn.id = 'a_'+Date.now(); }
+  } else {
+    newAnn.id = 'a_'+Date.now();
+  }
+  _announcements.unshift(newAnn);
   if(input) input.value='';
   renderAnnouncements();
   updateCounts();
@@ -1226,12 +1257,20 @@ function renderResources(){
   }).join('');
 }
 
-function addResource(){
+async function addResource(){
   var name = (document.getElementById('res-name')||{}).value||'';
   var url  = (document.getElementById('res-url')||{}).value||'';
   if(!name||!url){ showToast('&#9888;&#65039;','Please fill in name and URL.'); return; }
-  _resources.unshift({id:'r_'+Date.now(),name:name,desc:'Added by instructor',icon:'&#128190;',url:url});
-  localStorage.setItem('sl_community_'+_courseId+'_resources',JSON.stringify(_resources));
+  var newRes = {name:name,desc:'Added by instructor',icon:'&#128190;',url:url,createdAt:new Date().toISOString()};
+  if(window._db && window._user){
+    try {
+      var fbr = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var rref = await fbr.addDoc(fbr.collection(window._db,'community_'+_courseId+'_resources'),
+        Object.assign({},newRes,{createdAt:fbr.serverTimestamp()}));
+      newRes.id = rref.id;
+    } catch(e){ newRes.id = 'r_'+Date.now(); }
+  } else { newRes.id = 'r_'+Date.now(); }
+  _resources.unshift(newRes);
   document.getElementById('res-name').value='';
   document.getElementById('res-url').value='';
   renderResources();
