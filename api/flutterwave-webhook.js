@@ -13,9 +13,11 @@ if (!getApps().length) {
 }
 
 const db = getFirestore();
-const PLATFORM_SUB_NGN = 10500;
-const INSTRUCTOR_SHARE = 0.60;
-const PLATFORM_SHARE   = 0.40;
+const PLATFORM_SUB_NGN      = 10500;
+const INSTRUCTOR_SHARE      = 0.60;   // 60% of course fee
+const PLATFORM_SHARE        = 0.40;   // 40% of course fee
+const SUB_INSTRUCTOR_SHARE  = 0.20;   // 20% of monthly subscription to instructor
+const SUB_PLATFORM_SHARE    = 0.80;   // 80% of monthly subscription to platform
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -54,8 +56,9 @@ export default async function handler(req, res) {
       const rate         = courseFeeNGN > 0 ? totalAmount / (courseFeeNGN + PLATFORM_SUB_NGN) : 1;
       const courseFee    = Math.round(courseFeeNGN * rate * 100) / 100;
       const subFee       = Math.round(PLATFORM_SUB_NGN * rate * 100) / 100;
-      const instructorCut = Math.round(courseFee * INSTRUCTOR_SHARE * 100) / 100;
-      const platformCut   = Math.round((courseFee * PLATFORM_SHARE + subFee) * 100) / 100;
+      const instructorCut    = Math.round((courseFee * INSTRUCTOR_SHARE + subFee * SUB_INSTRUCTOR_SHARE) * 100) / 100;
+      const platformCut      = Math.round((courseFee * PLATFORM_SHARE  + subFee * SUB_PLATFORM_SHARE)  * 100) / 100;
+      const instructorSubCut = Math.round(subFee * SUB_INSTRUCTOR_SHARE * 100) / 100; // ₦2,100 of the ₦10,500
       const affiliateCut  = affiliateCode ? Math.round(courseFee * 0.10 * 100) / 100 : 0;
 
       const enrollId = courseId + '_' + studentEmail.replace(/[^a-z0-9]/gi, '_');
@@ -101,6 +104,14 @@ export default async function handler(req, res) {
       const nextBilling = new Date();
       nextBilling.setDate(nextBilling.getDate() + 30);
 
+      // 80/20 split on renewal: platform gets 80%, instructor gets 20%
+      const renewalInstructorCut = Math.round(totalAmount * SUB_INSTRUCTOR_SHARE * 100) / 100;
+      const renewalPlatformCut   = Math.round(totalAmount * SUB_PLATFORM_SHARE   * 100) / 100;
+
+      // Get instructorId from enrollment
+      const enrollDoc = await db.collection('enrollments').doc(enrollId).get();
+      const renewInstructorId = enrollDoc.exists ? enrollDoc.data().instructorId : null;
+
       await db.collection('enrollments').doc(enrollId).update({
         subscriptionStatus: 'active',
         failedPayments:     0,
@@ -109,10 +120,18 @@ export default async function handler(req, res) {
         lastRenewalTxId:    txId,
       });
 
+      // Credit instructor their 20% cut
+      if(renewInstructorId){
+        await db.collection('instructorPayouts').doc(renewInstructorId).set({
+          pendingAmount: FieldValue.increment(renewalInstructorCut),
+          currency, updatedAt: FieldValue.serverTimestamp(),
+        }, { merge: true });
+      }
+
       await db.collection('platformRevenue').add({
         type: 'subscription_renewal', enrollmentId: enrollId,
-        amount: totalAmount, currency, txId,
-        createdAt: FieldValue.serverTimestamp(),
+        amount: renewalPlatformCut, instructorCut: renewalInstructorCut,
+        currency, txId, createdAt: FieldValue.serverTimestamp(),
       });
 
     } else if (paymentType === 'subscription_failed') {
