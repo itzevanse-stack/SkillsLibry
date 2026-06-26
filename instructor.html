@@ -1143,13 +1143,84 @@ function slErr(code) {
     <!-- PROFILE -->
     <div class="page-view" id="view-profile">
       <div class="sec-header"><div class="sec-title">Profile</div></div>
-      <div style="max-width:600px;">
-        <div class="frow-1" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);">
-          <div class="fg"><label>Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your name"/></div>
-          <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and expertise..." style="min-height:100px;"></textarea></div>
-          <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
-          <div class="fg"><label>Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
-          <button class="btn btn-teal" onclick="saveProfile()">Save profile</button>
+      <div style="max-width:620px;display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Avatar card -->
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);display:flex;align-items:center;gap:24px;">
+          <div style="position:relative;flex-shrink:0;">
+            <div id="pf-avatar-wrap" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:30px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--border);position:relative;">
+              <span id="pf-avatar-initials">?</span>
+              <img id="pf-avatar-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%;"/>
+            </div>
+            <label for="pf-avatar-input" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--teal);border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;line-height:1;" title="Change photo">&#9998;</label>
+            <input type="file" id="pf-avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)"/>
+          </div>
+          <div>
+            <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;" id="pf-avatar-name">Your name</div>
+            <div style="font-size:13px;color:var(--text3);margin-bottom:10px;">Instructor</div>
+            <label for="pf-avatar-input" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:var(--r-sm);padding:6px 14px;cursor:pointer;">
+              &#128444; Upload photo
+            </label>
+            <div style="font-size:11px;color:var(--text3);margin-top:6px;">JPG, PNG · Max 5MB · Square recommended</div>
+          </div>
+        </div>
+
+        <!-- Info card -->
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:16px;">
+          <div class="fg">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Display name *</label>
+            <input class="fi" id="pf-name" type="text" placeholder="Your full name" oninput="document.getElementById('pf-avatar-name').textContent=this.value||'Your name'"/>
+          </div>
+          <div class="fg">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Headline</label>
+            <input class="fi" id="pf-headline" type="text" placeholder="e.g. Affiliate Marketer · ₦1.2M/month"/>
+          </div>
+          <div class="fg">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bio</label>
+            <textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and results..." style="min-height:110px;resize:vertical;"></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="fg">
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Website</label>
+              <input class="fi" id="pf-url" type="url" placeholder="https://..."/>
+            </div>
+            <div class="fg">
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">LinkedIn</label>
+              <input class="fi" id="pf-linkedin" type="url" placeholder="https://linkedin.com/in/..."/>
+            </div>
+          </div>
+
+          <!-- Payout Details -->
+          <div style="border-top:1.5px solid var(--border);padding-top:20px;">
+            <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">&#128176; Payout bank details</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Earnings paid automatically within 24-72 hours of each sale.</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+              <div class="fg">
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bank name</label>
+                <select id="pf-bank-name" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;background:#fff;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
+                  <option value="">Select bank</option>
+                  <option>Access Bank</option><option>First Bank of Nigeria</option>
+                  <option>Guaranty Trust Bank (GTB)</option><option>United Bank for Africa (UBA)</option>
+                  <option>Zenith Bank</option><option>Stanbic IBTC Bank</option>
+                  <option>Fidelity Bank</option><option>Union Bank</option>
+                  <option>Wema Bank</option><option>FCMB</option>
+                  <option>Opay</option><option>Kuda Bank</option>
+                  <option>Moniepoint</option><option>PalmPay</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Account number</label>
+                <input id="pf-account-number" type="text" maxlength="10" placeholder="10-digit account number" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"/>
+              </div>
+            </div>
+            <div class="fg" style="margin-bottom:4px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Account name</label>
+              <input id="pf-account-name" type="text" placeholder="Account holder name" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+            </div>
+          </div>
+
+          <button class="btn btn-teal" onclick="saveProfile()" style="width:fit-content;padding:11px 28px;">Save profile</button>
         </div>
       </div>
     </div>
@@ -2008,6 +2079,73 @@ function renderInstructorCourses(courses){
 }
 
 /* ── AUTH GUARD ── */
+
+function handleAvatarUpload(input){
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ showToast('❌','Max 5MB for profile photo.'); return; }
+  var url = URL.createObjectURL(file);
+  var img      = document.getElementById('pf-avatar-img');
+  var initials = document.getElementById('pf-avatar-initials');
+  var sidebar  = document.getElementById('sp-avatar');
+  if(img)      { img.src=url; img.style.display='block'; }
+  if(initials)   initials.style.display='none';
+  if(sidebar)    sidebar.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  // Save to localStorage
+  var reader = new FileReader();
+  reader.onload = function(e){ localStorage.setItem('sl_inst_avatar', e.target.result); };
+  reader.readAsDataURL(file);
+  showToast('✓','Profile photo updated!');
+}
+
+async function saveProfile(){
+  var name    = (document.getElementById('pf-name')||{}).value||'';
+  var bank    = (document.getElementById('pf-bank-name')||{}).value||'';
+  var accNum  = (document.getElementById('pf-account-number')||{}).value||'';
+  var accName = (document.getElementById('pf-account-name')||{}).value||'';
+
+  if(!name){ showToast('⚠️','Please enter your display name.'); return; }
+
+  var btn = document.querySelector('[onclick="saveProfile()"]');
+  if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
+
+  try {
+    if(window._user && window._db){
+      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),{
+        name, 
+        headline:   (document.getElementById('pf-headline')||{}).value||'',
+        bio:        (document.getElementById('pf-bio')||{}).value||'',
+        website:    (document.getElementById('pf-url')||{}).value||'',
+        linkedin:   (document.getElementById('pf-linkedin')||{}).value||'',
+        payoutBank: bank,
+        payoutAccountNumber: accNum,
+        payoutAccountName:   accName,
+        updatedAt:  fb.serverTimestamp(),
+      }, {merge:true});
+    }
+    var spName = document.getElementById('sp-name');
+    if(spName) spName.textContent = name;
+    localStorage.setItem('sl_inst_name', name);
+    showToast('✓','Profile saved!');
+  } catch(e){
+    showToast('❌','Save failed: '+e.message);
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='Save profile'; }
+  }
+}
+
+// Restore saved avatar on load
+(function(){
+  var saved = localStorage.getItem('sl_inst_avatar');
+  if(!saved) return;
+  var img     = document.getElementById('pf-avatar-img');
+  var initial = document.getElementById('pf-avatar-initials');
+  var sidebar = document.getElementById('sp-avatar');
+  if(img)     { img.src=saved; img.style.display='block'; }
+  if(initial)   initial.style.display='none';
+  if(sidebar)   sidebar.innerHTML='<img src="'+saved+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+})();
+
 document.addEventListener('authReady', function(e){
   if(!e.detail.user){
     openAuthModal(function(){ location.reload(); }, 'si');
