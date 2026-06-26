@@ -761,11 +761,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
@@ -851,7 +862,7 @@ function switchTab(tab){
 (function(){
   var params  = new URLSearchParams(window.location.search);
   _courseId   = params.get('course') || '1';
-  _courseName = params.get('name') ? decodeURIComponent(params.get('name')) : 'Affiliate Marketing Mastery';
+  _courseName = params.get('name') ? decodeURIComponent(params.get('name')) : 'Community';
 
   var nn = document.getElementById('nav-course-name');
   var ct = document.getElementById('cm-title');
@@ -861,8 +872,23 @@ function switchTab(tab){
   var bl = document.getElementById('back-to-course');
   if(bl) bl.href = 'player.html?course=' + _courseId;
 
-  // Load from localStorage (in production: Firestore)
   loadCommunityData();
+
+  // Try to load real course name from Firestore
+  setTimeout(async function(){
+    if(!window._db) return;
+    try {
+      var fb   = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var snap = await fb.getDoc(fb.doc(window._db,'courses',_courseId));
+      if(snap.exists()){
+        _courseName = snap.data().title || _courseName;
+        var nn2 = document.getElementById('nav-course-name');
+        var ct2 = document.getElementById('cm-title');
+        if(nn2) nn2.textContent = _courseName;
+        if(ct2) ct2.textContent = _courseName;
+      }
+    } catch(e){}
+  }, 1000);
 })();
 
 document.addEventListener('authReady', function(e){
@@ -1243,5 +1269,27 @@ function joinLiveSession(){
   showToast('&#128336;','Reminder set! You\'ll be notified before the session.');
 }
 </script>
+
+<script>
+/* ── NAV AUTH STATE ── */
+document.addEventListener('authReady', function(e){
+  var user = e.detail.user;
+  var myLearningBtn = document.getElementById('nav-my-learning');
+  var signInBtn     = document.getElementById('nav-signin');
+  var userMenu      = document.getElementById('nav-user-menu');
+  var userName      = document.getElementById('nav-user-name');
+
+  if(user){
+    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(signInBtn)     signInBtn.style.display = 'none';
+    if(userMenu)      userMenu.style.display  = 'flex';
+    if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
+  } else {
+    if(signInBtn)  signInBtn.style.display = 'inline-flex';
+    if(userMenu)   userMenu.style.display  = 'none';
+  }
+});
+</script>
+
 </body>
 </html>
