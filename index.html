@@ -1326,11 +1326,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
@@ -1636,9 +1647,73 @@ var _instFiles  = { income:[], cert:[] };
 
 function openInstructorOnboarding(){
   _instStep = 1;
+  // Restore saved progress
+  restoreInstProgress();
   var m = document.getElementById('inst-modal');
   if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
   updateInstStep();
+}
+
+function saveInstProgress(){
+  var data = {
+    name:     (document.getElementById('io-name')||{}).value||'',
+    email:    (document.getElementById('io-email')||{}).value||'',
+    phone:    (document.getElementById('io-phone')||{}).value||'',
+    country:  (document.getElementById('io-country')||{}).value||'',
+    bio:      (document.getElementById('io-bio')||{}).value||'',
+    linkedin: (document.getElementById('io-linkedin')||{}).value||'',
+    website:  (document.getElementById('io-website')||{}).value||'',
+    skill:    (document.getElementById('io-skill')||{}).value||'',
+    results:  (document.getElementById('io-results')||{}).value||'',
+    teaching: (document.getElementById('io-teaching')||{}).value||'',
+    portfolio:(document.getElementById('io-portfolio')||{}).value||'',
+    video:    (document.getElementById('io-video')||{}).value||'',
+    courseTitle:(document.getElementById('io-course-title')||{}).value||'',
+    audience: (document.getElementById('io-audience')||{}).value||'',
+    outcomes: (document.getElementById('io-outcomes')||{}).value||'',
+    price:    (document.getElementById('io-price')||{}).value||'',
+    why:      (document.getElementById('io-why')||{}).value||'',
+    exp:      _instExp,
+    earn:     _instEarn,
+    step:     _instStep,
+  };
+  localStorage.setItem('sl_inst_app', JSON.stringify(data));
+}
+
+function restoreInstProgress(){
+  var saved = localStorage.getItem('sl_inst_app');
+  if(!saved) return;
+  try {
+    var d = JSON.parse(saved);
+    var set = function(id, val){ var el=document.getElementById(id); if(el&&val) el.value=val; };
+    set('io-name',        d.name);
+    set('io-email',       d.email);
+    set('io-phone',       d.phone);
+    set('io-country',     d.country);
+    set('io-bio',         d.bio);
+    set('io-linkedin',    d.linkedin);
+    set('io-website',     d.website);
+    set('io-skill',       d.skill);
+    set('io-results',     d.results);
+    set('io-teaching',    d.teaching);
+    set('io-portfolio',   d.portfolio);
+    set('io-video',       d.video);
+    set('io-course-title',d.courseTitle);
+    set('io-audience',    d.audience);
+    set('io-outcomes',    d.outcomes);
+    set('io-price',       d.price);
+    set('io-why',         d.why);
+    if(d.exp)  selectExp(d.exp);
+    if(d.earn) selectEarning(d.earn);
+    if(d.step && d.step > 1){
+      // Show resume banner
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:rgba(78,204,163,.1);border:1px solid rgba(78,204,163,.25);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--teal-dark);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;';
+      banner.innerHTML = '<span>&#128190; Your progress has been restored.</span><button onclick="this.parentNode.remove()" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--teal-dark);">&#10005;</button>';
+      var step1 = document.getElementById('inst-step-1');
+      if(step1) step1.insertBefore(banner, step1.firstChild);
+    }
+  } catch(e){}
 }
 function closeInstModal(){
   var m = document.getElementById('inst-modal');
@@ -1679,6 +1754,7 @@ function updateInstStep(){
 
 function nextInstStep(){
   if(!validateInstStep(_instStep)) return;
+  saveInstProgress();
   _instStep++;
   updateInstStep();
 }
@@ -1869,10 +1945,85 @@ async function submitInstApp(){
 
 /* Close on backdrop */
 document.getElementById('inst-modal').addEventListener('click', function(e){
-  if(e.target===this) closeInstModal();
+  if(e.target===this){ saveInstProgress(); closeInstModal(); }
+});
+
+// Auto-save on every input
+document.getElementById('inst-modal').addEventListener('input', function(){
+  saveInstProgress();
+});
+document.getElementById('inst-modal').addEventListener('change', function(){
+  saveInstProgress();
 });
 </script>
 
+
+<script>
+/* ── NAV AUTH STATE ── */
+document.addEventListener('authReady', function(e){
+  var user = e.detail.user;
+  var myLearningBtn = document.getElementById('nav-my-learning');
+  var signInBtn     = document.getElementById('nav-signin');
+  var userMenu      = document.getElementById('nav-user-menu');
+  var userName      = document.getElementById('nav-user-name');
+
+  if(user){
+    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(signInBtn)     signInBtn.style.display = 'none';
+    if(userMenu)      userMenu.style.display  = 'flex';
+    if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
+  } else {
+    if(signInBtn)  signInBtn.style.display = 'inline-flex';
+    if(userMenu)   userMenu.style.display  = 'none';
+  }
+});
+</script>
+
+
+<script>
+/* ══ HOMEPAGE — LOAD REAL APPROVED COURSES ══ */
+(async function loadHomePageCourses(){
+  var grid = document.getElementById('home-course-grid');
+  if(!grid) return;
+
+  var waitForDb = function(){ return new Promise(function(resolve){
+    if(window._db){ resolve(); return; }
+    document.addEventListener('authReady', function(){ resolve(); }, { once:true });
+    setTimeout(resolve, 3000);
+  });};
+  await waitForDb();
+  if(!window._db) return;
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(
+      fb.query(fb.collection(window._db,'courses'), fb.where('status','==','approved'))
+    );
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if(courses.length === 0) return; // keep sample
+
+    var rate = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].rate : 1;
+    var sym  = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].symbol : '₦';
+
+    grid.innerHTML = courses.slice(0,6).map(function(c){
+      var price    = Math.round((c.priceNGN||0)*rate);
+      var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      return '<div class="course-card" onclick="goCourse(this.dataset.id)" data-id="'+c.id+'">'
+        +'<div class="course-thumb">&#127891;<div class="course-thumb-cat">'+(c.category||'Course')+'</div></div>'
+        +'<div class="course-body">'
+          +'<div class="course-instructor"><div class="avatar-xs">'+initials+'</div><span class="course-instructor-name">'+(c.instructorName||'Instructor')+'</span></div>'
+          +'<div class="course-title">'+(c.title||'Course')+'</div>'
+          +'<div class="course-footer">'
+            +'<div><span class="course-price" data-ngn="'+(c.priceNGN||0)+'">'+sym+' '+price.toLocaleString()+'</span></div>'
+            +'<a class="enroll-mini" href="course.html?id='+c.id+'">Learn more</a>'
+          +'</div>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } catch(e){ console.warn('Homepage courses:', e.message); }
+})();
+</script>
+<script>function goCourse(id){window.location.href="course.html?id="+id;}</script>
 </body> on every page -->
 
 
