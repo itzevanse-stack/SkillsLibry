@@ -454,19 +454,18 @@ a{text-decoration:none;color:inherit}
         <div class="pc-body">
           <div class="pc-price-row">
             <div class="pc-price" id="cd-price" data-ngn="35000">&#x20a6;35,000</div>
-            <div class="pc-price-old" id="cd-price-old">&#x20a6;60,000</div>
-            <div class="pc-discount">42% off</div>
+            <div class="pc-price-old" id="cd-price-old" style="display:none;"></div>
+            <div class="pc-discount" id="pc-discount" style="display:none;"></div>
           </div>
-          <div class="pc-timer">&#9203; Offer ends in 2 days</div>
+          <div class="pc-timer" id="pc-timer" style="display:none;"></div>
 
-          <div class="pc-includes">
+          <div class="pc-includes" id="pc-includes">
             <div class="pc-includes-title">This course includes</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>6+ hours of HD video content</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Downloadable resources &amp; templates</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Private student community access</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Full course video access</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Private student community</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Direct instructor Q&amp;A</div>
             <div class="include-item"><div class="include-check">&#10003;</div>Verified certificate on completion</div>
-            
-            <div class="include-item"><div class="include-check">&#10003;</div>Income activation plan included</div>
+            <div class="include-item"><div class="include-check">&#10003;</div>Course updates included</div>
           </div>
 
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
@@ -502,7 +501,7 @@ a{text-decoration:none;color:inherit}
           
           
           
-          <div class="learn-item"><div class="learn-check">&#10003;</div>Scale your first &#x20a6;50k month to &#x20a6;500k/month systematically</div>
+          
           
           
         </div>
@@ -513,7 +512,7 @@ a{text-decoration:none;color:inherit}
         <div class="desc-body">
           
           
-          <p>By the end of this course, you'll have a live funnel, a working traffic strategy, and a clear path from your first sale to &#x20a6;500k/month.</p>
+          
         </div>
       </div>
 
@@ -997,8 +996,8 @@ function openEnrollModal(){
   var pd=document.getElementById('modal-price-display');
   var pn=document.getElementById('modal-price-note');
   var ib=document.getElementById('modal-install-btn');
-  if(pd) pd.textContent='₦35,000';
-  if(pn) pn.textContent='Full access · Lifetime';
+  if(pd) pd.textContent='';
+  if(pn) pn.textContent='';
   if(ib) ib.style.display='block';
   if(em) em.classList.add('open');
 }
