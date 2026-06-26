@@ -884,19 +884,107 @@ var SAMPLE_ASSIGNMENT = {
 /* ══════════════════════════════════════════
    INIT
 ══════════════════════════════════════════ */
-(function init(){
-  _course = SAMPLE_COURSE;
+/* Load course from Firestore or fall back to sample */
+async function init(){
+  var params   = new URLSearchParams(window.location.search);
+  var courseId = params.get('course') || '1';
+
+  // Try Firestore first
+  if(window._db){
+    try {
+      var fb   = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var snap = await fb.getDoc(fb.doc(window._db,'courses',courseId));
+      if(snap.exists()){
+        var data = snap.data();
+        _course  = {
+          id:          snap.id,
+          title:       data.title || 'Course',
+          instructor:  data.instructorName || 'Instructor',
+          instructorInitials: (data.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase(),
+          instructorBio: data.bio || 'Verified SkillsLibry Instructor',
+          description: data.description || '',
+          learns:      data.learns || [],
+          requirements:data.requirements || [],
+          modules:     (data.modules||[]).map(function(m,mi){
+            return {
+              title:   m.title || ('Module '+(mi+1)),
+              lessons: (m.lessons||[]).map(function(l,li){
+                return {
+                  title:   l.title || ('Lesson '+(li+1)),
+                  type:    l.type  || 'video',
+                  duration:l.duration || '',
+                  free:    l.free || false,
+                  videoId: l.videoId || null,
+                };
+              }),
+            };
+          }),
+        };
+
+        // Also check enrollment + subscription status
+        if(window._user){
+          var enrollId = courseId+'_'+window._user.email.replace(/[^a-z0-9]/gi,'_');
+          var enrollSnap = await fb.getDoc(fb.doc(window._db,'enrollments',enrollId));
+          if(enrollSnap.exists()){
+            var enrollment = enrollSnap.data();
+            if(enrollment.subscriptionStatus === 'revoked'){
+              showAccessRevoked();
+              return;
+            }
+          } else {
+            showAccessDenied();
+            return;
+          }
+        }
+      }
+    } catch(e){
+      console.warn('Firestore load failed, using sample:', e.message);
+      _course = SAMPLE_COURSE;
+    }
+  } else {
+    _course = SAMPLE_COURSE;
+  }
+
+  if(!_course) _course = SAMPLE_COURSE;
+  if(!_course.modules) _course.modules = [];
   renderCurriculum();
   loadCourseDetails();
   loadLesson(0, 0);
   updateProgress();
 
-  // Update nav title
   var nt = document.getElementById('nav-course-title');
-  if(nt) nt.textContent = _course.title.replace(/&#x\w+;/g,'').replace(/&\w+;/g,'');
+  if(nt) nt.textContent = (_course.title||'').replace(/&#x[\w]+;/g,'').replace(/&[\w]+;/g,'');
   var st = document.getElementById('sidebar-course-title');
-  if(st) st.innerHTML = _course.title;
-})();
+  if(st) st.textContent = _course.title||'Course';
+}
+
+function showAccessRevoked(){
+  document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d0d1a;font-family:Inter,sans-serif;">'
+    +'<div style="text-align:center;padding:48px;max-width:480px;">'
+    +'<div style="font-size:56px;margin-bottom:20px;">&#128274;</div>'
+    +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:12px;">Access suspended</div>'
+    +'<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:28px;">Your subscription payment failed twice. Your access has been suspended. Renew your subscription to continue learning.</div>'
+    +'<a href="course.html" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Renew access</a>'
+    +'</div></div>';
+}
+
+function showAccessDenied(){
+  document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d0d1a;font-family:Inter,sans-serif;">'
+    +'<div style="text-align:center;padding:48px;max-width:480px;">'
+    +'<div style="font-size:56px;margin-bottom:20px;">&#128683;</div>'
+    +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:12px;">Access denied</div>'
+    +'<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:28px;">You are not enrolled in this course. Purchase the course to get access.</div>'
+    +'<a href="course.html" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Enroll now</a>'
+    +'</div></div>';
+}
+
+// Init — try immediately, retry when auth ready
+function tryInit(){
+  if(window._fbReady !== false){ init(); }
+  else { document.addEventListener('authReady', function(){ init(); }, {once:true}); }
+}
+// Small delay to let Firebase module finish
+setTimeout(tryInit, 500);
 
 /* ══════════════════════════════════════════
    CURRICULUM SIDEBAR
@@ -905,6 +993,7 @@ function renderCurriculum(){
   var body = document.getElementById('curriculum-body');
   if(!body||!_course) return;
 
+  if(!_course.modules||!_course.modules.length){ body.innerHTML='<div style="padding:20px;color:rgba(255,255,255,.4);text-align:center;">No lessons yet.</div>'; return; }
   body.innerHTML = _course.modules.map(function(mod, mIdx){
     var isOpen = _openMods[mIdx] !== false;
     if(_openMods[mIdx]===undefined) _openMods[mIdx] = mIdx===0;
@@ -1445,11 +1534,22 @@ function authSetLoading(f, on) {
 async function doAuth(f) {
   authClearErr();
 
-  /* Wait for Firebase to finish loading (module scripts load async) */
+  /* Wait for Firebase to finish loading — retry up to 5s */
   if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
-    authErr(f, 'Connecting to server... please try again in a moment.');
-    /* Retry automatically after 1.5s */
-    setTimeout(function(){ authClearErr(); }, 1500);
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
     return;
   }
 
