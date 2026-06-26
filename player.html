@@ -693,7 +693,7 @@ function slErr(code) {
               <div class="comment-avatar">AO</div>
               <div class="comment-body">
                 <div class="comment-meta">
-                  <span class="comment-name">Amaka Obi</span>
+                  <span class="comment-name"></span>
                   <span class="comment-time">2 days ago</span>
                 </div>
                 <div class="comment-text">This lesson is incredible. The way you broke down the funnel structure made it so easy to understand. I set mine up last night and already got my first click!</div>
@@ -716,7 +716,7 @@ function slErr(code) {
               <div class="comment-avatar" style="background:linear-gradient(135deg,#6c63ff,#a78bfa);">TM</div>
               <div class="comment-body">
                 <div class="comment-meta">
-                  <span class="comment-name">Taiwo Musa</span>
+                  <span class="comment-name"></span>
                   <span class="comment-time">5 days ago</span>
                 </div>
                 <div class="comment-text">Quick question — does this strategy also work for WhatsApp traffic or is it strictly for Facebook?</div>
@@ -764,69 +764,9 @@ var _completed = {}; // {mIdx_lIdx: true}
 var _openMods  = {};
 
 /* Sample course data — replaced by Firestore in production */
-var SAMPLE_COURSE = {
-  id: '1',
-  title: 'Affiliate Marketing Mastery: From Zero to &#x20a6;500k/Month',
-  instructor: 'Chidi Okafor',
-  instructorInitials: 'CO',
-  instructorBio: 'Affiliate marketer generating &#x20a6;1.2M/month. Teaching what actually works.',
-  description: 'The most complete affiliate marketing course built specifically for the African market.',
-  learns: [
-    'Identify and join high-paying affiliate programs that convert for African audiences',
-    'Build a proven funnel that works with free and paid traffic',
-    'Write email sequences that warm cold leads into buyers',
-    'Scale your first &#x20a6;50k month to &#x20a6;500k/month',
-    'Your first commission within 7 days of completing the course',
-  ],
-  requirements: [
-    'A smartphone or laptop with internet access',
-    'A Flutterwave account (free to create)',
-    'No prior marketing experience needed',
-  ],
-  modules: [
-    {
-      title: 'Module 1: Foundation & Mindset',
-      lessons: [
-        { title: 'Welcome — What this course will do for you', type:'video', duration:'4:20', free:true, videoId:null },
-        { title: 'The affiliate marketing opportunity in Africa', type:'video', duration:'12:45', free:false, videoId:null },
-        { title: 'Foundation Quiz', type:'quiz', duration:'5 questions', free:false, videoId:null },
-      ]
-    },
-    {
-      title: 'Module 2: Choosing Your Niche & Products',
-      lessons: [
-        { title: 'How to find high-converting affiliate products', type:'video', duration:'18:30', free:false, videoId:null },
-        { title: 'Top affiliate platforms for African marketers', type:'video', duration:'14:55', free:false, videoId:null },
-        { title: 'Niche selection assignment', type:'assignment', duration:'Submit', free:false, videoId:null },
-      ]
-    },
-    {
-      title: 'Module 3: Building Your Funnel',
-      lessons: [
-        { title: 'Anatomy of a converting affiliate funnel', type:'video', duration:'22:10', free:false, videoId:null },
-        { title: 'Creating your landing page (step by step)', type:'video', duration:'31:05', free:false, videoId:null },
-        { title: 'Email sequence setup', type:'video', duration:'19:40', free:false, videoId:null },
-        { title: 'Funnel review assignment', type:'assignment', duration:'Submit', free:false, videoId:null },
-      ]
-    },
-    {
-      title: 'Module 4: Traffic & Promotion',
-      lessons: [
-        { title: 'Free traffic — Facebook groups', type:'video', duration:'16:20', free:false, videoId:null },
-        { title: 'Free traffic — WhatsApp marketing', type:'video', duration:'13:55', free:false, videoId:null },
-        { title: 'Paid traffic — Meta Ads for affiliates', type:'video', duration:'28:30', free:false, videoId:null },
-      ]
-    },
-    {
-      title: 'Module 5: Scale & Income Activation',
-      lessons: [
-        { title: 'Income activation plan — your first 7 days', type:'video', duration:'20:15', free:false, videoId:null },
-        { title: 'Scaling from &#x20a6;50k to &#x20a6;500k/month', type:'video', duration:'25:40', free:false, videoId:null },
-        { title: 'Final assessment', type:'quiz', duration:'20 questions', free:false, videoId:null },
-      ]
-    },
-  ]
-};
+var SAMPLE_COURSE = {title:"Loading...",modules:[]};
+
+
 
 /* Sample quiz for Module 1 quiz lesson */
 var SAMPLE_QUIZ = {
