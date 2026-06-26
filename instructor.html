@@ -524,136 +524,6 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   .price-cards{grid-template-columns:1fr;}
 }
 </style>
-<!-- ══ FIREBASE + AUTH ══ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-         signOut, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app  = initializeApp({
-  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
-  authDomain:        "skillslibry.firebaseapp.com",
-  projectId:         "skillslibry",
-  storageBucket:     "skillslibry.firebasestorage.app",
-  messagingSenderId: "363745273879",
-  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
-});
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-window._auth = auth;
-window._db   = db;
-
-onAuthStateChanged(auth, async (user) => {
-  window._user = user || null;
-  if (user) {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    window._userName = snap.exists() ? snap.data().name : user.email;
-  } else {
-    window._userRole = null;
-    window._userName = null;
-  }
-  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
-});
-
-window.slSignUp = async function(name, email, password, role) {
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, 'users', cred.user.uid), {
-      name, email,
-      role: role || 'student',
-      createdAt: serverTimestamp(),
-      enrolledCourses: [],
-      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
-    });
-    window._userRole = role || 'student';
-    window._userName = name;
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slSignIn = async function(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slGoogleSignIn = async function() {
-  try {
-    const { GoogleAuthProvider, signInWithPopup } =
-      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-    const provider = new GoogleAuthProvider();
-    const cred = await signInWithPopup(auth, provider);
-    // Create user doc if new
-    const { doc, getDoc, setDoc, serverTimestamp } =
-      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const snap = await getDoc(doc(db, 'users', cred.user.uid));
-    if (!snap.exists()) {
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        name: cred.user.displayName || '',
-        email: cred.user.email,
-        role: 'student',
-        createdAt: serverTimestamp(),
-        enrolledCourses: [],
-        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
-      });
-    }
-    window._userName = cred.user.displayName || cred.user.email;
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    return { ok: true };
-  } catch(e) {
-    if(e.code === 'auth/popup-closed-by-user') return { ok: false, error: null };
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slSignOut = async function() {
-  await signOut(auth);
-  window.location.href = 'index.html';
-};
-
-window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
-  if (!window._user) return { ok: false, error: 'Not logged in' };
-  const id = courseId + '_' + window._user.uid;
-  await setDoc(doc(db, 'enrollments', id), {
-    studentId: window._user.uid,
-    courseId, instructorId,
-    paidAmount: amount, currency, transactionId,
-    platformCut: amount * 0.40,
-    instructorCut: amount * 0.60,
-    affiliateCode: affiliateCode || null,
-    progress: { completedLessons: [], percentComplete: 0 },
-    enrolledAt: serverTimestamp(),
-  });
-  return { ok: true };
-};
-
-function slErr(code) {
-  const m = {
-    'auth/email-already-in-use':   'An account with this email already exists.',
-    'auth/invalid-email':          'Please enter a valid email address.',
-    'auth/weak-password':          'Password must be at least 6 characters.',
-    'auth/user-not-found':         'No account found with this email.',
-    'auth/wrong-password':         'Incorrect password. Please try again.',
-    'auth/invalid-credential':     'Incorrect email or password.',
-    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
-    'auth/network-request-failed': 'Network error. Check your connection.',
-    'auth/operation-not-allowed':  'Email sign-up is not enabled. Please contact support.',
-    'auth/internal-error':         'Server error. Please try again.',
-    'auth/admin-restricted-operation': 'Sign-up is currently restricted.',
-  };
-  return m[code] || ('Error: ' + code + ' — please try again.');
-}
-</script>
 </head>
 <body>
 
@@ -835,7 +705,7 @@ function slErr(code) {
           <div class="frow-1">
             <div class="fg">
               <label>Course title *</label>
-              <input class="fi" id="ci-title" type="text" placeholder="e.g. Affiliate Marketing Mastery: From Zero to ₦500k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
+              <input class="fi" id="ci-title" type="text" placeholder="e.g.  ₦500k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
               <div class="char-count"><span id="ci-title-count">0</span>/120</div>
             </div>
           </div>
@@ -1013,7 +883,7 @@ function slErr(code) {
                     <input type="checkbox" id="inc-cert" checked/> Verified certificate on completion
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-lifetime" checked/> Lifetime access & free updates
+                    <input type="checkbox" id="inc-updates" checked/> Course updates included
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
                     <input type="checkbox" id="inc-dl"/> Downloadable resources
@@ -1143,84 +1013,13 @@ function slErr(code) {
     <!-- PROFILE -->
     <div class="page-view" id="view-profile">
       <div class="sec-header"><div class="sec-title">Profile</div></div>
-      <div style="max-width:620px;display:flex;flex-direction:column;gap:16px;">
-
-        <!-- Avatar card -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);display:flex;align-items:center;gap:24px;">
-          <div style="position:relative;flex-shrink:0;">
-            <div id="pf-avatar-wrap" style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:30px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--border);position:relative;">
-              <span id="pf-avatar-initials">?</span>
-              <img id="pf-avatar-img" src="" alt="" style="display:none;width:100%;height:100%;object-fit:cover;position:absolute;inset:0;border-radius:50%;"/>
-            </div>
-            <label for="pf-avatar-input" style="position:absolute;bottom:0;right:0;width:26px;height:26px;border-radius:50%;background:var(--teal);border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;line-height:1;" title="Change photo">&#9998;</label>
-            <input type="file" id="pf-avatar-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(this)"/>
-          </div>
-          <div>
-            <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;" id="pf-avatar-name">Your name</div>
-            <div style="font-size:13px;color:var(--text3);margin-bottom:10px;">Instructor</div>
-            <label for="pf-avatar-input" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:var(--r-sm);padding:6px 14px;cursor:pointer;">
-              &#128444; Upload photo
-            </label>
-            <div style="font-size:11px;color:var(--text3);margin-top:6px;">JPG, PNG · Max 5MB · Square recommended</div>
-          </div>
-        </div>
-
-        <!-- Info card -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);display:flex;flex-direction:column;gap:16px;">
-          <div class="fg">
-            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Display name *</label>
-            <input class="fi" id="pf-name" type="text" placeholder="Your full name" oninput="document.getElementById('pf-avatar-name').textContent=this.value||'Your name'"/>
-          </div>
-          <div class="fg">
-            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Headline</label>
-            <input class="fi" id="pf-headline" type="text" placeholder="e.g. Affiliate Marketer · ₦1.2M/month"/>
-          </div>
-          <div class="fg">
-            <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bio</label>
-            <textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and results..." style="min-height:110px;resize:vertical;"></textarea>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-            <div class="fg">
-              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Website</label>
-              <input class="fi" id="pf-url" type="url" placeholder="https://..."/>
-            </div>
-            <div class="fg">
-              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">LinkedIn</label>
-              <input class="fi" id="pf-linkedin" type="url" placeholder="https://linkedin.com/in/..."/>
-            </div>
-          </div>
-
-          <!-- Payout Details -->
-          <div style="border-top:1.5px solid var(--border);padding-top:20px;">
-            <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;">&#128176; Payout bank details</div>
-            <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Earnings paid automatically within 24-72 hours of each sale.</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-              <div class="fg">
-                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Bank name</label>
-                <select id="pf-bank-name" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;background:#fff;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'">
-                  <option value="">Select bank</option>
-                  <option>Access Bank</option><option>First Bank of Nigeria</option>
-                  <option>Guaranty Trust Bank (GTB)</option><option>United Bank for Africa (UBA)</option>
-                  <option>Zenith Bank</option><option>Stanbic IBTC Bank</option>
-                  <option>Fidelity Bank</option><option>Union Bank</option>
-                  <option>Wema Bank</option><option>FCMB</option>
-                  <option>Opay</option><option>Kuda Bank</option>
-                  <option>Moniepoint</option><option>PalmPay</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div class="fg">
-                <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Account number</label>
-                <input id="pf-account-number" type="text" maxlength="10" placeholder="10-digit account number" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"/>
-              </div>
-            </div>
-            <div class="fg" style="margin-bottom:4px;">
-              <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Account name</label>
-              <input id="pf-account-name" type="text" placeholder="Account holder name" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-            </div>
-          </div>
-
-          <button class="btn btn-teal" onclick="saveProfile()" style="width:fit-content;padding:11px 28px;">Save profile</button>
+      <div style="max-width:600px;">
+        <div class="frow-1" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);">
+          <div class="fg"><label>Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your name"/></div>
+          <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and expertise..." style="min-height:100px;"></textarea></div>
+          <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
+          <div class="fg"><label>Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
+          <button class="btn btn-teal" onclick="saveProfile()">Save profile</button>
         </div>
       </div>
     </div>
@@ -2029,134 +1828,215 @@ async function doGoogleAuth() {
 document.getElementById('auth-modal').addEventListener('click', function(e){
   if(e.target===this) closeAuthModal();
 });
+</script>
 
+<!-- TESTIMONIAL MODAL -->
+<div id="testi-modal" style="display:none;position:fixed;inset:0;z-index:600;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(13,13,26,.2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--border);">
+      <div style="font-family:Poppins,sans-serif;font-size:17px;font-weight:700;">Add Testimonial</div>
+      <button onclick="closeTestiModal()" style="background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer;">&#10005;</button>
+    </div>
+    <div style="padding:24px 28px;display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Type</label>
+        <div style="display:flex;gap:8px;">
+          <button id="ttype-text"  onclick="setTestiType('text')"  style="flex:1;padding:10px;border:1.5px solid var(--teal);border-radius:8px;font-size:13px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);cursor:pointer;">Text</button>
+          <button id="ttype-photo" onclick="setTestiType('photo')" style="flex:1;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);background:#fff;cursor:pointer;">Photo</button>
+          <button id="ttype-video" onclick="setTestiType('video')" style="flex:1;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);background:#fff;cursor:pointer;">Video</button>
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Student name *</label>
+        <input id="testi-name" type="text" placeholder="e.g. " style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Location</label>
+        <input id="testi-location" type="text" placeholder="e.g. Lagos, Nigeria" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Rating *</label>
+        <div id="star-picker" style="display:flex;gap:8px;">
+          <span onclick="setStars(1)" data-star="1" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
+          <span onclick="setStars(2)" data-star="2" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
+          <span onclick="setStars(3)" data-star="3" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
+          <span onclick="setStars(4)" data-star="4" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
+          <span onclick="setStars(5)" data-star="5" style="font-size:30px;cursor:pointer;color:#f59e0b;">&#9733;</span>
+        </div>
+      </div>
+      <div id="testi-text-field">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Testimonial text *</label>
+        <textarea id="testi-text" placeholder="What did the student say?" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;min-height:100px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Result achieved <span style="font-weight:400;color:var(--text3);">(optional)</span></label>
+        <input id="testi-result" type="text" placeholder="e.g. &#8358;45,000 in week 3" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+      </div>
+      <div id="testi-media-field" style="display:none;">
+        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;" id="testi-media-label">Upload media</label>
+        <div onclick="document.getElementById('testi-media-input').click()" style="border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
+          <div style="font-size:13px;font-weight:600;color:var(--text2);">Click to upload</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;" id="testi-upload-hint">JPG or PNG</div>
+        </div>
+        <input type="file" id="testi-media-input" style="display:none;" onchange="handleTestiMedia(this)"/>
+        <div id="testi-media-preview" style="display:none;margin-top:12px;"></div>
+      </div>
+      <button onclick="saveTestimonial()" id="testi-save-btn" style="padding:13px;background:var(--teal);border:none;border-radius:10px;font-size:15px;font-weight:700;color:#0d0d1a;cursor:pointer;width:100%;">Save testimonial</button>
+    </div>
+  </div>
+</div>
+<script>
+var _testiStars = 5;
+var _testiType  = 'text';
+var _testiMedia = null;
+var _testimonials = [];
 
-/* ── LOAD REAL INSTRUCTOR STATS ── */
-async function loadInstructorStats(){
-  if(!window._user || !window._db) return;
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var db = window._db;
-    var snap = await fb.getDocs(fb.query(fb.collection(db,'courses'), fb.where('instructorId','==',window._user.uid)));
-    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-    var totalStudents = courses.reduce(function(a,c){ return a+(c.totalStudents||0); },0);
-    var totalEarnings = courses.reduce(function(a,c){ return a+(c.totalRevenue||0)*0.6; },0);
-
-    var set = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
-    set('sp-courses',  courses.length);
-    set('sp-students', totalStudents);
-    set('sp-earnings', '₦'+Math.round(totalEarnings).toLocaleString());
-    set('ov-courses',  courses.length);
-    set('ov-students', totalStudents);
-    set('ov-earnings', '₦'+Math.round(totalEarnings).toLocaleString());
-
-    renderInstructorCourses(courses);
-  } catch(e){ console.warn('Stats error:', e.message); }
+function openTestiForm(){
+  ['testi-name','testi-location','testi-text','testi-result'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  _testiStars=5; _testiMedia=null; _testiType='text';
+  setStars(5); setTestiType('text');
+  var prev=document.getElementById('testi-media-preview');
+  if(prev){ prev.innerHTML=''; prev.style.display='none'; }
+  document.getElementById('testi-modal').style.display='flex';
 }
 
-function renderInstructorCourses(courses){
-  var statusLabel = {pending_review:'Pending review',approved:'Live',rejected:'Rejected',draft:'Draft'};
-  var statusClass = {pending_review:'status-pending',approved:'status-approved',rejected:'status-rejected',draft:'status-draft'};
+function closeTestiModal(){
+  document.getElementById('testi-modal').style.display='none';
+}
 
-  var html = courses.length === 0
-    ? '<div style="text-align:center;padding:48px;color:var(--text3);"><div style="font-size:40px;margin-bottom:12px;">&#127891;</div><div style="font-weight:600;margin-bottom:6px;">No courses yet</div><button class="btn btn-teal" onclick="goBuilder()">Create first course</button></div>'
-    : courses.map(function(c){
-        return '<div class="course-list-card">'
-          +'<div class="clc-thumb">&#127891;</div>'
-          +'<div class="clc-info">'
-            +'<div class="clc-title">'+(c.title||'Untitled')+'</div>'
-            +'<div class="clc-meta"><span>&#128101; '+(c.totalStudents||0)+' students</span><span>&#20a6; '+(c.priceNGN||0).toLocaleString()+'</span></div>'
-          +'</div>'
-          +'<span class="clc-status '+(statusClass[c.status]||'status-draft')+'">'+(statusLabel[c.status]||'Draft')+'</span>'
-          +(c.status==='approved' ? '<a class="btn btn-ghost btn-sm" href="course.html?id='+c.id+'" target="_blank">View live</a>' : '')
-        +'</div>';
-      }).join('');
+document.getElementById('testi-modal').addEventListener('click',function(e){
+  if(e.target===this) closeTestiModal();
+});
 
-  ['ov-course-list','courses-list'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.innerHTML = html;
+function setTestiType(type){
+  _testiType=type;
+  ['text','photo','video'].forEach(function(t){
+    var btn=document.getElementById('ttype-'+t); if(!btn) return;
+    if(t===type){ btn.style.border='1.5px solid var(--teal)'; btn.style.color='var(--teal-dark)'; btn.style.background='var(--teal-dim)'; }
+    else { btn.style.border='1.5px solid var(--border)'; btn.style.color='var(--text2)'; btn.style.background='#fff'; }
+  });
+  var mf=document.getElementById('testi-media-field');
+  var ml=document.getElementById('testi-media-label');
+  var mh=document.getElementById('testi-upload-hint');
+  var mi=document.getElementById('testi-media-input');
+  if(type==='text'){ if(mf) mf.style.display='none'; }
+  else if(type==='photo'){
+    if(mf) mf.style.display='block';
+    if(ml) ml.textContent='Upload photo';
+    if(mh) mh.textContent='JPG or PNG - Max 5MB';
+    if(mi) mi.accept='image/*';
+  } else {
+    if(mf) mf.style.display='block';
+    if(ml) ml.textContent='Upload video testimonial';
+    if(mh) mh.textContent='MP4 - Max 200MB';
+    if(mi) mi.accept='video/mp4,video/*';
+  }
+}
+
+function setStars(n){
+  _testiStars=n;
+  document.querySelectorAll('#star-picker span').forEach(function(el){
+    var s=parseInt(el.dataset.star);
+    el.innerHTML=s<=n?'&#9733;':'&#9734;';
+    el.style.color=s<=n?'#f59e0b':'var(--text3)';
   });
 }
 
-/* ── AUTH GUARD ── */
-
-function handleAvatarUpload(input){
-  var file = input.files[0]; if(!file) return;
-  if(file.size > 5*1024*1024){ showToast('❌','Max 5MB for profile photo.'); return; }
-  var url = URL.createObjectURL(file);
-  var img      = document.getElementById('pf-avatar-img');
-  var initials = document.getElementById('pf-avatar-initials');
-  var sidebar  = document.getElementById('sp-avatar');
-  if(img)      { img.src=url; img.style.display='block'; }
-  if(initials)   initials.style.display='none';
-  if(sidebar)    sidebar.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
-  // Save to localStorage
-  var reader = new FileReader();
-  reader.onload = function(e){ localStorage.setItem('sl_inst_avatar', e.target.result); };
+function handleTestiMedia(input){
+  var file=input.files[0]; if(!file) return;
+  var max=_testiType==='video'?200*1024*1024:5*1024*1024;
+  if(file.size>max){ showToast('&#9888;&#65039;','File too large.'); return; }
+  var reader=new FileReader();
+  reader.onload=function(e){
+    _testiMedia=e.target.result;
+    var prev=document.getElementById('testi-media-preview');
+    if(prev){
+      prev.style.display='block';
+      prev.innerHTML=_testiType==='video'
+        ?'<video src="'+e.target.result+'" controls style="width:100%;border-radius:8px;max-height:200px;"></video>'
+        :'<img src="'+e.target.result+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover;"/>';
+    }
+  };
   reader.readAsDataURL(file);
-  showToast('✓','Profile photo updated!');
 }
 
-async function saveProfile(){
-  var name    = (document.getElementById('pf-name')||{}).value||'';
-  var bank    = (document.getElementById('pf-bank-name')||{}).value||'';
-  var accNum  = (document.getElementById('pf-account-number')||{}).value||'';
-  var accName = (document.getElementById('pf-account-name')||{}).value||'';
+async function saveTestimonial(){
+  var name=(document.getElementById('testi-name')||{}).value||'';
+  var text=(document.getElementById('testi-text')||{}).value||'';
+  var loc=(document.getElementById('testi-location')||{}).value||'';
+  var result=(document.getElementById('testi-result')||{}).value||'';
 
-  if(!name){ showToast('⚠️','Please enter your display name.'); return; }
+  if(!name){ showToast('&#9888;&#65039;','Enter the student name.'); return; }
+  if(!text && _testiType==='text'){ showToast('&#9888;&#65039;','Enter the testimonial text.'); return; }
 
-  var btn = document.querySelector('[onclick="saveProfile()"]');
+  var btn=document.getElementById('testi-save-btn');
   if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
 
   try {
     if(window._user && window._db){
-      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),{
-        name, 
-        headline:   (document.getElementById('pf-headline')||{}).value||'',
-        bio:        (document.getElementById('pf-bio')||{}).value||'',
-        website:    (document.getElementById('pf-url')||{}).value||'',
-        linkedin:   (document.getElementById('pf-linkedin')||{}).value||'',
-        payoutBank: bank,
-        payoutAccountNumber: accNum,
-        payoutAccountName:   accName,
-        updatedAt:  fb.serverTimestamp(),
-      }, {merge:true});
+      var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      var ref=await fb.addDoc(fb.collection(window._db,'testimonials'),{
+        name:name, location:loc, type:_testiType, text:text,
+        stars:_testiStars, result:result, status:'pending',
+        instructorId:window._user.uid, createdAt:fb.serverTimestamp(),
+      });
+      _testimonials.unshift({id:ref.id,name:name,location:loc,type:_testiType,text:text,stars:_testiStars,result:result,status:'pending',mediaSrc:_testiMedia});
     }
-    var spName = document.getElementById('sp-name');
-    if(spName) spName.textContent = name;
-    localStorage.setItem('sl_inst_name', name);
-    showToast('✓','Profile saved!');
-  } catch(e){
-    showToast('❌','Save failed: '+e.message);
-  } finally {
-    if(btn){ btn.disabled=false; btn.textContent='Save profile'; }
-  }
+    closeTestiModal();
+    renderTestimonialsList();
+    showToast('&#10003;','Testimonial submitted for review!');
+  } catch(e){ showToast('&#10007;','Error: '+e.message); }
+  finally { if(btn){ btn.disabled=false; btn.textContent='Save testimonial'; } }
 }
 
-// Restore saved avatar on load
-(function(){
-  var saved = localStorage.getItem('sl_inst_avatar');
-  if(!saved) return;
-  var img     = document.getElementById('pf-avatar-img');
-  var initial = document.getElementById('pf-avatar-initials');
-  var sidebar = document.getElementById('sp-avatar');
-  if(img)     { img.src=saved; img.style.display='block'; }
-  if(initial)   initial.style.display='none';
-  if(sidebar)   sidebar.innerHTML='<img src="'+saved+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
-})();
-
-document.addEventListener('authReady', function(e){
-  if(!e.detail.user){
-    openAuthModal(function(){ location.reload(); }, 'si');
+function renderTestimonialsList(){
+  var el=document.getElementById('testi-list'); if(!el) return;
+  if(!_testimonials.length){
+    el.innerHTML='<div style="color:var(--text3);text-align:center;padding:48px;"><div style="font-size:36px;margin-bottom:12px;">&#11088;</div><div>No testimonials yet. Add your first student result.</div></div>';
     return;
   }
-  var spName = document.getElementById('sp-name');
-  var spAv   = document.getElementById('sp-avatar');
-  var initials = (window._userName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-  if(spName) spName.textContent = window._userName || 'Instructor';
-  if(spAv && !spAv.querySelector('img')) spAv.textContent = initials;
-  loadInstructorStats();
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'
+    +_testimonials.map(function(t){
+      var stars=''; for(var i=1;i<=5;i++) stars+=i<=t.stars?'&#9733;':'&#9734;';
+      return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);">'
+        +(t.mediaSrc&&t.type==='photo'?'<img src="'+t.mediaSrc+'" style="width:100%;height:160px;object-fit:cover;display:block;"/>':'')
+        +(t.mediaSrc&&t.type==='video'?'<video src="'+t.mediaSrc+'" controls style="width:100%;height:160px;display:block;"></video>':'')
+        +'<div style="padding:16px;">'
+          +'<div style="color:#f59e0b;font-size:16px;margin-bottom:8px;">'+stars+'</div>'
+          +'<div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;">'+t.text+'</div>'
+          +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+t.name+'</div>'
+          +(t.location?'<div style="font-size:11px;color:var(--text3);">'+t.location+'</div>':'')
+          +(t.result?'<div style="margin-top:8px;font-size:11px;font-weight:700;background:var(--teal-dim);color:var(--teal-dark);border-radius:6px;padding:4px 10px;display:inline-block;">&#128640; '+t.result+'</div>':'')
+          +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">'
+            +'<span style="font-size:11px;padding:3px 8px;border-radius:100px;background:'+(t.status==='pending'?'rgba(245,158,11,.1)':'rgba(34,197,94,.1)')+';color:'+(t.status==='pending'?'#92400e':'#166534')+';">'+(t.status==='pending'?'Pending':'Approved')+'</span>'
+            +'<button data-id="'+t.id+'" onclick="deleteTestimonial(this.dataset.id)" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;" >Delete</button>'
+          +'</div>'
+        +'</div>'
+      +'</div>';
+    }).join('')
+  +'</div>';
+}
+
+async function deleteTestimonial(id){
+  if(!confirm('Delete this testimonial?')) return;
+  _testimonials=_testimonials.filter(function(t){ return t.id!==id; });
+  if(window._user && window._db){
+    try { var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'); await fb.deleteDoc(fb.doc(window._db,'testimonials',id)); } catch(e){}
+  }
+  renderTestimonialsList();
+  showToast('&#10007;','Testimonial deleted.');
+}
+
+document.addEventListener('authReady',function(e){
+  if(!e.detail.user||!window._db) return;
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+    fb.getDocs(fb.query(fb.collection(window._db,'testimonials'),fb.where('instructorId','==',e.detail.user.uid))).then(function(snap){
+      _testimonials=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+      renderTestimonialsList();
+    });
+  });
 });
 </script>
 </body>
