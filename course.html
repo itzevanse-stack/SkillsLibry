@@ -404,8 +404,7 @@ a{text-decoration:none;color:inherit}
       </div>
 
       <h1 class="course-hero-title" id="cd-title">
-        Affiliate Marketing Mastery: From Zero to &#x20a6;500k/Month
-      </h1>
+        </h1>
 
       <!-- Promo video — sits directly below headline -->
       <div style="
@@ -431,29 +430,21 @@ a{text-decoration:none;color:inherit}
       </div>
 
       <div class="hero-badges" style="margin:-8px 0 20px;">
-        <span class="badge badge-bestseller">&#11088; Bestseller</span>
-        <span class="badge badge-updated">&#9989; Updated Dec 2024</span>
-        <span class="badge badge-students">&#128101; 3,241 students</span>
+        <span class="badge badge-updated" id="cd-updated" style="display:none;"></span>
+        <span class="badge badge-students" id="cd-students" style="display:none;"></span>
       </div>
 
-      <p class="course-hero-sub">
-        The most complete affiliate marketing course built specifically for the African market. Actual strategies that convert Nigerian and African audiences.
-      </p>
+      <p class="course-hero-sub" id="cd-description" style="display:none;"></p>
 
-      <div class="course-hero-meta">
-        <div class="meta-item">
-          <span class="rating-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-          <strong>4.9</strong>
-          <span>(847 ratings)</span>
-        </div>
-        <div class="meta-item">&#128336; <strong>6h 20min</strong> total</div>
-        <div class="meta-item">&#127891; <strong>6 modules</strong> · 28 lessons</div>
+      <div class="course-hero-meta" id="cd-meta" style="display:none;">
+        <div class="meta-item" id="cd-duration-item" style="display:none;">&#128336; <strong id="cd-duration"></strong></div>
+        <div class="meta-item" id="cd-modules-item" style="display:none;">&#127891; <strong id="cd-modules"></strong></div>
       </div>
 
       <div class="hero-instructor">
-        <div class="hero-inst-avatar" id="cd-avatar">CO</div>
+        <div class="hero-inst-avatar" id="cd-avatar" id="cd-avatar"></div>
         <span>Created by&nbsp;</span>
-        <span class="hero-inst-name" id="cd-instructor">Chidi Okafor</span>
+        <span class="hero-inst-name" id="cd-instructor" id="cd-instructor"></span>
       </div>
     </div>
 
@@ -474,7 +465,7 @@ a{text-decoration:none;color:inherit}
             <div class="include-item"><div class="include-check">&#10003;</div>Downloadable resources &amp; templates</div>
             <div class="include-item"><div class="include-check">&#10003;</div>Private student community access</div>
             <div class="include-item"><div class="include-check">&#10003;</div>Verified certificate on completion</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Lifetime access &amp; free updates</div>
+            
             <div class="include-item"><div class="include-check">&#10003;</div>Income activation plan included</div>
           </div>
 
@@ -521,7 +512,7 @@ a{text-decoration:none;color:inherit}
         <div class="desc-section-title">&#128196; Course description</div>
         <div class="desc-body">
           <p>This course teaches you everything you need to build a consistent affiliate marketing income in Nigeria and across Africa — even if you have zero experience, no audience, and no product of your own.</p>
-          <p>Every module is built around one goal: your first real income. Not theory. Not fluff. Step-by-step systems that have been tested and refined specifically for African markets, African payment systems, and African audiences.</p>
+          <p>Every module is built around one goal: your first real income. Not theory. Not fluff. Step-by-step systems that have been tested and refined specifically for global markets, African payment systems, and African audiences.</p>
           <p>By the end of this course, you'll have a live funnel, a working traffic strategy, and a clear path from your first sale to &#x20a6;500k/month.</p>
         </div>
       </div>
@@ -538,13 +529,14 @@ a{text-decoration:none;color:inherit}
       <div class="desc-section">
         <div class="desc-section-title">&#128100; About the instructor</div>
         <div class="inst-card">
-          <div class="inst-card-avatar" id="inst-avatar">CO</div>
+          <div class="inst-card-avatar" id="inst-avatar" id="cd-avatar"></div>
           <div>
-            <div class="inst-card-name" id="inst-name">Chidi Okafor</div>
+            <div class="inst-card-name" id="inst-name"></div>
+            <div class="inst-card-title" id="inst-headline" style="display:none;"></div>
             <div class="inst-card-title">Affiliate Marketer &amp; Digital Entrepreneur</div>
             <div class="inst-card-stats">
-              <div class="inst-stat"><strong>3,241</strong> students</div>
-              <div class="inst-stat"><strong>4.9</strong> &#9733; rating</div>
+              <div class="inst-stat" style="display:none;" id="inst-stats-row"><strong id="inst-students">0</strong> students</div>
+              <div class="inst-stat" style="display:none;"><strong id="inst-rating">—</strong> &#9733; rating</div>
               <div class="inst-stat"><strong>1</strong> course</div>
             </div>
             <div class="inst-card-bio">Chidi has been generating consistent affiliate income in Nigeria for 5+ years, with monthly earnings exceeding &#x20a6;1.2M. He teaches the exact systems he uses — no theory, no recycled content from YouTube.</div>
@@ -909,66 +901,12 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
 <script>
 
 /* ── DATA ── */
-const COURSES = [
-  {id:1,title:'Affiliate Marketing Mastery: From Zero to ₦500k/Month',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦35,000',priceOld:'₦60,000',rating:'4.9',students:'3,241',badge:'Bestseller',icon:'📈'},
-  {id:2,title:'Digital Product Empire: Create, Launch, Scale',instructor:'Ngozi Adeola',initials:'NA',cat:'digital',catLabel:'Digital Products',price:'₦28,000',priceOld:'₦50,000',rating:'4.8',students:'1,842',badge:'Hot',icon:'📦'},
-  {id:3,title:'Content to Cash: Monetise Every Platform You Touch',instructor:'Femi Ogunwale',initials:'FO',cat:'content',catLabel:'Content & Monetisation',price:'₦22,000',priceOld:'₦40,000',rating:'4.7',students:'2,104',badge:'New',icon:'🎬'},
-  {id:4,title:'AI Tools Mastery: Work 10x Faster, Earn 10x More',instructor:'Kemi Adeyemi',initials:'KA',cat:'ai',catLabel:'AI Skills',price:'₦32,000',priceOld:'₦55,000',rating:'4.9',students:'1,120',badge:'Trending',icon:'🤖'},
-  {id:5,title:'Freelance Copywriting: Land ₦300k Clients on Demand',instructor:'Ngozi Adeola',initials:'NA',cat:'freelance',catLabel:'Freelancing',price:'₦25,000',priceOld:'₦45,000',rating:'4.8',students:'987',badge:'',icon:'✍️'},
-  {id:6,title:'Email Marketing Secrets: Build a List That Buys',instructor:'Chidi Okafor',initials:'CO',cat:'affiliate',catLabel:'Affiliate Marketing',price:'₦18,000',priceOld:'₦35,000',rating:'4.7',students:'1,560',badge:'',icon:'📧'},
-];
-const TESTIMONIALS = [
-  {
-    name:'Amaka Obi', loc:'Lagos, Nigeria', initials:'AO', stars:5,
-    type:'video',
-    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
-    text:'I made my first ₦45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',
-    result:'₦45,000 in week 3'
-  },
-  {
-    name:'Taiwo Musa', loc:'Abuja, Nigeria', initials:'TM', stars:5,
-    type:'image',
-    mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
-    text:'Before SkillsLibry I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',
-    result:'₦120k first month'
-  },
-  {
-    name:'Grace Abiodun', loc:'Port Harcourt, Nigeria', initials:'GA', stars:5,
-    type:'video',
-    mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
-    text:'The AI Tools course changed everything. I now deliver client work in 2 hours that used to take 2 days. My rates doubled.',
-    result:'Rates doubled'
-  },
-  {
-    name:'Emmanuel Nwosu', loc:'Enugu, Nigeria', initials:'EN', stars:5,
-    type:'image',
-    mediaSrc:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&q=80',
-    text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
-    result:'First sale in 21 days'
-  },
-  {
-    name:'Blessing Okafor', loc:'Lagos, Nigeria', initials:'BO', stars:5,
-    type:'text',
-    mediaSrc:null,
-    text:'The copywriting course helped me land my first international client at $400/month. Nobody teaches like this in Nigeria.',
-    result:'$400/month client'
-  },
-  {
-    name:'Ibrahim Suleiman', loc:'Kano, Nigeria', initials:'IS', stars:5,
-    type:'text',
-    mediaSrc:null,
-    text:'What I love most is the monetisation module at the end of every course. They actually hold your hand until you earn your first income.',
-    result:'First income in 14 days'
-  },
-];
-const MODULES = [
-  {num:'01',title:'The affiliate mindset and model',meta:'4 lessons · 42 min',lessons:[{t:'How affiliate marketing actually works',dur:'12 min',free:true},{t:'Why most people fail and how to avoid it',dur:'18 min'},{t:'Setting your income target',dur:'8 min'},{t:'The tools you need',dur:'4 min'}]},
-  {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
-  {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
-  {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
-  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
-  {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
-];
+var COURSES = [];
+
+var TESTIMONIALS = [];
+
+var MODULES = [];
+
 
 /* ── NAVIGATION ── */
 function goTo(page){
@@ -987,6 +925,60 @@ function switchTab(btn, pane){
   btn.classList.add('active');
   var el = document.getElementById(pane);
   if(el) el.classList.add('active');
+  if(pane === 'tab-testi') loadTestimonialsForCourse();
+}
+
+async function loadTestimonialsForCourse(){
+  var grid = document.getElementById('course-testimonials-grid');
+  if(!grid) return;
+  if(grid.dataset.loaded) return; // already loaded
+
+  grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">Loading testimonials...</div>';
+
+  if(!window._db || !_activeCourse || !_activeCourse.instructorId){
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">No testimonials yet.</div>';
+    return;
+  }
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'testimonials'),
+      fb.where('instructorId','==', _activeCourse.instructorId),
+      fb.where('status','==','approved')
+    ));
+
+    var testis = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    if(!testis.length){
+      grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);"><div style="font-size:36px;margin-bottom:12px;">&#11088;</div><div>No testimonials yet.</div></div>';
+      return;
+    }
+
+    grid.innerHTML = testis.map(function(t){
+      var stars = '';
+      for(var i=1;i<=5;i++) stars += i<=(t.stars||5)?'&#9733;':'&#9734;';
+      return '<div class="tcard">'
+        +(t.type==='video' && t.mediaUrl?'<video src="'+t.mediaUrl+'" controls style="width:100%;height:180px;object-fit:cover;display:block;"></video>':'')
+        +(t.type==='photo' && t.mediaUrl?'<img src="'+t.mediaUrl+'" style="width:100%;height:180px;object-fit:cover;display:block;"/>':'')
+        +'<div style="padding:16px;flex:1;display:flex;flex-direction:column;">'
+          +'<div style="color:#f59e0b;font-size:16px;margin-bottom:10px;">'+stars+'</div>'
+          +(t.text?'<div style="font-size:13px;color:var(--text2);line-height:1.75;flex:1;margin-bottom:14px;">'+t.text+'</div>':'')
+          +'<div style="display:flex;align-items:center;gap:10px;">'
+            +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+(t.name||'?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase()+'</div>'
+            +'<div>'
+              +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+(t.name||'Student')+'</div>'
+              +(t.location?'<div style="font-size:11px;color:var(--text3);">'+t.location+'</div>':'')
+            +'</div>'
+          +'</div>'
+          +(t.result?'<div style="margin-top:10px;font-size:11px;font-weight:700;background:var(--teal-dim);color:var(--teal-dark);border-radius:6px;padding:5px 10px;display:inline-block;">&#128640; '+t.result+'</div>':'')
+        +'</div>'
+      +'</div>';
+    }).join('');
+    grid.dataset.loaded = '1';
+  } catch(e){
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">Could not load testimonials.</div>';
+  }
 }
 
 /* ── MODULES ACCORDION ── */
@@ -1060,32 +1052,8 @@ function showToast(icon,msg){
   var grid = document.getElementById('course-testimonials-grid');
   if(!grid) return;
 
-  var testi = [
-    {type:'video',  mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',
-     name:'Amaka Obi',loc:'Lagos, Nigeria',initials:'AO',stars:5,
-     text:'I made my first ₦45,000 commission in week 3. Chidi explains everything in a way that actually makes sense for Nigeria.',
-     result:'₦45,000 in week 3'},
-    {type:'image', mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',
-     name:'Taiwo Musa',loc:'Abuja, Nigeria',initials:'TM',stars:5,
-     text:'Before this I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',
-     result:'₦120k first month'},
-    {type:'text',  mediaSrc:null,
-     name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',initials:'GA',stars:5,
-     text:'The income activation plan at the end of every module is what separates this from every other course. My rates doubled within 60 days.',
-     result:'Income doubled'},
-    {type:'text',  mediaSrc:null,
-     name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',initials:'EN',stars:5,
-     text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',
-     result:'First sale in 21 days'},
-    {type:'text',  mediaSrc:null,
-     name:'Chisom Eze',loc:'Owerri, Nigeria',initials:'CE',stars:5,
-     text:'This course is the reason I quit my 9-5. Month 2 after completing it, I was earning more from affiliate marketing than my salary. Cannot recommend it enough.',
-     result:'Quit 9-5 in month 2'},
-    {type:'text',  mediaSrc:null,
-     name:'Fatima Bello',loc:'Kano, Nigeria',initials:'FB',stars:5,
-     text:'I have taken 4 different digital marketing courses. This is the only one where I made money within the first month. The WhatsApp strategy alone is worth 10x the price.',
-     result:'₦80k in month 1'},
-  ];
+  var testi = [];
+
 
   grid.innerHTML = testi.map(function(t){
     var mediaHtml = '';
@@ -1160,12 +1128,182 @@ function showToast(icon,msg){
 
   // Update page
   var set = function(elId,val){var el=document.getElementById(elId);if(el) el.innerHTML=val;};
+  var instructorName = courseData.instructorName || courseData.instructor || '';
+  var initials = instructorName ? instructorName.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase() : 'I';
+
   set('cd-title',      courseData.title||'Course');
   set('cd-category',   courseData.category||'');
-  set('cd-instructor', courseData.instructorName||courseData.instructor||'Instructor');
-  set('cd-avatar',     (courseData.instructorName||courseData.instructor||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase());
-  set('inst-name',     courseData.instructorName||courseData.instructor||'Instructor');
-  set('inst-avatar',   (courseData.instructorName||courseData.instructor||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase());
+  set('cd-instructor', instructorName || 'Instructor');
+  set('inst-name',     instructorName || 'Instructor');
+
+  // Initials in avatars
+  var cdAv = document.getElementById('cd-avatar');
+  var instAv = document.getElementById('inst-avatar');
+  if(cdAv)   cdAv.textContent   = initials;
+  if(instAv) instAv.textContent = initials;
+
+  // Load instructor profile from Firestore
+  if(courseData.instructorId && window._db){
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+      fb.getDoc(fb.doc(window._db,'users',courseData.instructorId)).then(function(snap){
+        if(!snap.exists()) return;
+        var inst = snap.data();
+
+        // Profile photo
+        var photo = inst.photoURL || inst.avatarUrl || '';
+        if(photo){
+          var imgTag = '<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+          if(cdAv)   cdAv.innerHTML   = imgTag;
+          if(instAv) instAv.innerHTML = imgTag;
+        }
+
+        // Headline
+        if(inst.headline){
+          var hl = document.getElementById('inst-headline');
+          if(hl){ hl.textContent = inst.headline; hl.style.display = 'block'; }
+        }
+
+        // Bio
+        var bioEl = document.getElementById('inst-bio');
+        if(bioEl && inst.bio) bioEl.textContent = inst.bio;
+
+        // Real student count
+        if(courseData.totalStudents > 0){
+          var studEl = document.getElementById('inst-students');
+          if(studEl) studEl.textContent = courseData.totalStudents.toLocaleString();
+          var statsEl = document.getElementById('inst-stats');
+          if(statsEl) statsEl.style.display = 'flex';
+        }
+      }).catch(function(){});
+    });
+  }
+
+  // Description
+  var descEl = document.getElementById('cd-description');
+  if(descEl && courseData.description){
+    descEl.textContent = courseData.description;
+    descEl.style.display = 'block';
+  }
+
+  // Duration & modules from real course data
+  var metaEl = document.getElementById('cd-meta');
+  if(metaEl) metaEl.style.display = 'flex';
+
+  if(courseData.duration){
+    var durEl = document.getElementById('cd-duration');
+    var durItem = document.getElementById('cd-duration-item');
+    if(durEl){ durEl.textContent = courseData.duration; }
+    if(durItem) durItem.style.display = 'flex';
+  }
+
+  var totalModules = courseData.totalModules || (courseData.modules && courseData.modules.length) || 0;
+  var totalLessons = courseData.totalLessons || 0;
+  if(totalModules > 0){
+    var modEl  = document.getElementById('cd-modules');
+    var modItem = document.getElementById('cd-modules-item');
+    if(modEl) modEl.textContent = totalModules + ' module' + (totalModules!==1?'s':'') + (totalLessons?' · '+totalLessons+' lessons':'');
+    if(modItem) modItem.style.display = 'flex';
+  }
+
+  // Students count (only show if > 0)
+  var studentsEl = document.getElementById('cd-students');
+  if(studentsEl && courseData.totalStudents > 0){
+    studentsEl.innerHTML = '&#128101; '+courseData.totalStudents.toLocaleString()+' students';
+    studentsEl.style.display = 'inline-flex';
+  }
+
+  // Updated date
+  var updatedEl = document.getElementById('cd-updated');
+  if(updatedEl && courseData.updatedAt){
+    var d = courseData.updatedAt.toDate ? courseData.updatedAt.toDate() : new Date(courseData.updatedAt);
+    updatedEl.innerHTML = '&#9989; Updated '+d.toLocaleDateString('en-GB',{month:'short',year:'numeric'});
+    updatedEl.style.display = 'inline-flex';
+  }
+
+  // Apply thumbnail
+  var thumb = courseData.thumbnailUrl || courseData.thumbnail || '';
+  if(thumb){
+    var tEl = document.getElementById('course-thumbnail');
+    if(tEl) tEl.style.backgroundImage = 'url('+thumb+')';
+  }
+
+  // Apply promo video (Bunny Stream)
+  var promoId = courseData.promoVideoId || courseData.promoVideo || '';
+  var promoUrl = courseData.promoVideoUrl || '';
+  if(promoId || promoUrl){
+    var heroWrap = document.querySelector('.hero-video-wrap,.hero-thumb');
+    var existVid = document.getElementById('hero-promo-video');
+    if(heroWrap && (promoId || promoUrl)){
+      var iframe = document.createElement('iframe');
+      iframe.src = promoId
+        ? 'https://iframe.mediadelivery.net/embed/690865/'+promoId+'?autoplay=false&preload=true'
+        : promoUrl;
+      iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;border-radius:8px;';
+      iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
+      iframe.allowFullscreen = true;
+      heroWrap.style.position = 'relative';
+      heroWrap.style.paddingTop = '56.25%';
+      heroWrap.style.height = '0';
+      if(existVid) existVid.style.display = 'none';
+      var playBtn = document.getElementById('play-preview-btn');
+      if(playBtn) playBtn.style.display = 'none';
+      heroWrap.appendChild(iframe);
+    }
+  }
+
+  // Update page title
+  if(courseData.title) document.title = courseData.title + ' — SkillsLibry';
+  
+  // Apply instructor bio
+  var bioEl = document.getElementById('inst-bio');
+  if(bioEl && courseData.instructorBio) bioEl.textContent = courseData.instructorBio;
+
+  // Apply thumbnail
+  var thumb = courseData.thumbnailUrl || courseData.thumbnail || '';
+  if(thumb){
+    var thumbEl = document.getElementById('course-thumbnail');
+    if(thumbEl) thumbEl.style.backgroundImage = 'url('+thumb+')';
+    // Also set og image if present
+    var heroImg = document.querySelector('.hero-thumb-img');
+    if(heroImg){ heroImg.src = thumb; heroImg.style.display = 'block'; }
+  }
+
+  // Apply promo video
+  var promoUrl = courseData.promoVideoUrl || courseData.promoVideo || courseData.sampleVideo || '';
+  if(promoUrl){
+    var vid = document.getElementById('hero-promo-video');
+    var playBtn = document.getElementById('play-preview-btn');
+    if(vid){
+      // Check if it's a Bunny Stream video ID or full URL
+      if(promoUrl.startsWith('http')){
+        vid.querySelector('source').src = promoUrl;
+        vid.load();
+      } else {
+        // Bunny Stream embed
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://iframe.mediadelivery.net/embed/690865/'+promoUrl+'?autoplay=false&loop=false&muted=false&preload=true';
+        iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;';
+        iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
+        iframe.allowFullscreen = true;
+        var heroVid = document.querySelector('.hero-video-wrap') || vid.parentElement;
+        if(heroVid){
+          heroVid.style.position = 'relative';
+          vid.style.display = 'none';
+          if(playBtn) playBtn.style.display = 'none';
+          heroVid.appendChild(iframe);
+        }
+      }
+    }
+  }
+
+  // Apply instructor bio
+  if(courseData.bio || courseData.instructorBio){
+    var bioEl = document.getElementById('inst-bio');
+    if(bioEl) bioEl.textContent = courseData.bio || courseData.instructorBio;
+  }
+
+  // Update page title
+  document.title = (courseData.title||'Course') + ' — SkillsLibry';
 
   var priceNGN = courseData.priceNGN || courseData.price || 50000;
   var rate     = (window.CURRENCIES&&window.CURRENCIES[window._cur||'NGN'])?window.CURRENCIES[window._cur||'NGN'].rate:1;
@@ -1389,10 +1527,7 @@ document.addEventListener('click',function(e){
 });
 
 /* ── ENROLL ── */
-var _activeCourse = {
-  id: 1, title: 'Affiliate Marketing Mastery: From Zero to ₦500k/Month',
-  instructorId: 'instructor_1', priceNGN: 35000
-};
+var _activeCourse = null;
 
 /* ══════════════════════════════════════════
    SUBSCRIPTION CONSTANTS
@@ -1400,6 +1535,7 @@ var _activeCourse = {
 var PLATFORM_SUB_NGN = 10500; // ₦10,500/month platform subscription
 
 function enrollClick(){
+  if(!_activeCourse){ showToast('⏳','Course loading, please wait a moment...'); return; }
   if(!window._user){
     openAuthModal(function(){ enrollClick(); }, 'su');
     return;
@@ -1436,7 +1572,7 @@ function openEnrollModal(){
       +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e4e6f0;">'
         +'<div>'
           +'<div style="font-size:13px;font-weight:600;color:#0d0d1a;">Course access</div>'
-          +'<div style="font-size:12px;color:#8b8fa8;">One-time fee · 60% to instructor</div>'
+          +'<div style="font-size:12px;color:#8b8fa8;">One-time course fee</div>'
         +'</div>'
         +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:#0d0d1a;">'+sym+' '+courseFee.toLocaleString()+'</div>'
       +'</div>'
@@ -1551,12 +1687,8 @@ function proceedToCheckout(){
   var grid = document.getElementById('course-testimonials-grid');
   if(!grid) return;
 
-  var testi = [
-    {type:'video',mediaSrc:'https://www.w3schools.com/html/mov_bbb.mp4',name:'Amaka Obi',loc:'Lagos, Nigeria',initials:'AO',stars:5,text:'I made my first ₦45,000 commission in week 3 of this course. Chidi explains everything in a way that actually makes sense for Nigeria.',result:'₦45,000 in week 3'},
-    {type:'image',mediaSrc:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80',name:'Taiwo Musa',loc:'Abuja, Nigeria',initials:'TM',stars:5,text:'Before this I spent 6 months trying different things and made nothing. After module 3 I had my funnel running and closed ₦120k in my first month.',result:'₦120k first month'},
-    {type:'text',mediaSrc:null,name:'Grace Abiodun',loc:'Port Harcourt, Nigeria',initials:'GA',stars:5,text:'The income activation plan at the end of every module is what separates this from every other course. My rates doubled within 60 days.',result:'Income doubled'},
-    {type:'text',mediaSrc:null,name:'Emmanuel Nwosu',loc:'Enugu, Nigeria',initials:'EN',stars:5,text:'I was skeptical but the guarantee sold me. Within 21 days I had my first digital product sale. SkillsLibry is the real deal.',result:'First sale in 21 days'},
-  ];
+  var testi = [];
+
 
   grid.innerHTML = testi.map(function(t){
     var mediaHtml = '';
@@ -1615,37 +1747,7 @@ function proceedToCheckout(){
 })();
 
 /* ── LOAD COURSE FROM URL ── */
-(function(){
-  var params = new URLSearchParams(window.location.search);
-  var id = parseInt(params.get('id'))||1;
-  if(typeof COURSES !== 'undefined'){
-    var c = COURSES.find(function(x){ return x.id===id; }) || COURSES[0];
-    var set = function(elId,val){ var el=document.getElementById(elId); if(el) el.innerHTML=val; };
-    set('cd-title', c.title);
-    set('cd-category', c.catLabel||'Course');
-    set('cd-instructor', c.instructor);
-    set('cd-avatar', c.initials);
-    set('cd-price', convertPrice(c.priceNGN||35000));
-    document.getElementById('cd-price').dataset.ngn = c.priceNGN||35000;
-    set('cd-price-old', '₦'+((c.priceNGN||35000)*1.7|0).toLocaleString());
-    set('enroll-price', convertPrice(c.priceNGN||35000)+' + '+convertPrice(PLATFORM_SUB_NGN)+'/mo');
-    set('inst-name', c.instructor);
-    set('inst-avatar', c.initials);
-    _activeCourse.id = c.id;
-    _activeCourse.title = c.title;
-    _activeCourse.priceNGN = c.priceNGN||35000;
-  }
-  updateCurrencyBtn();
-  updateAllPrices();
-  // Auto-detect currency
-  if(!localStorage.getItem('sl_currency_manual')){
-    fetch('https://ipapi.co/json/').then(function(r){return r.json();}).then(function(d){
-      var det=COUNTRY_CURRENCY[d.country_code]||'USD';
-      _cur=det; localStorage.setItem('sl_currency',det);
-      updateCurrencyBtn(); updateAllPrices();
-    }).catch(function(){});
-  }
-})();
+
 
 function playHeroVideo(wrap) {
   var placeholder = document.getElementById('hero-promo-placeholder');
