@@ -467,7 +467,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
     <!-- Live session card -->
     <div class="live-card" id="live-card">
       <div class="live-label"><span class="live-dot"></span> Next live session</div>
-      <div class="live-title" id="live-title">Weekly Q&A with Chidi</div>
+      <div class="live-title" id="live-title">Weekly Live Session</div>
       <div class="live-time" id="live-time">&#128336; Saturday, 7:00 PM WAT</div>
       <button class="live-join-btn" onclick="joinLiveSession()">&#127909; Set reminder</button>
     </div>
@@ -943,26 +943,26 @@ function loadCommunityData(){
   _resources     = JSON.parse(localStorage.getItem(key+'_resources')||'[]');
 
   // Seed with sample data if empty
-  if(_posts.length === 0){
+  if(false && _posts.length === 0){
     _posts = [
-      {id:'p1',author:'Amaka Obi',initials:'AO',role:'student',time:'2 hours ago',text:'Just completed module 3 and already set up my funnel! Who else is at this stage? Would love to connect and share notes.',likes:12,liked:false,comments:[
+      {id:'p1',author:'Student',initials:'AO',role:'student',time:'2 hours ago',text:'Just completed module 3 and already set up my funnel! Who else is at this stage? Would love to connect and share notes.',likes:12,liked:false,comments:[
         {id:'c1',author:'Instructor',initials:'CO',role:'instructor',time:'1 hour ago',text:'Amazing Amaka! Make sure to post your funnel link here when it\'s live — I\'ll give you direct feedback.'},
         {id:'c2',author:'Taiwo M.',initials:'TM',role:'student',time:'45 min ago',text:'Just started module 3 myself! Let\'s connect.'},
       ]},
       {id:'p2',author:'Emmanuel N.',initials:'EN',role:'student',time:'1 day ago',text:'Quick question for anyone — does the WhatsApp strategy in module 4 still work if you\'re targeting Ghana? I\'m getting decent clicks but low conversions.',likes:8,liked:false,comments:[
-        {id:'c3',author:'Instructor',initials:'CO',role:'instructor',time:'23 hours ago',text:'Yes! Actually Ghana has one of the highest WhatsApp engagement rates in West Africa. The key is your CTA — share your copy in the comments and I\'ll review it.'},
+        {id:'c3',author:'Instructor',initials:'CO',role:'instructor',time:'23 hours ago',text:'Yes! Actually Ghana has one of the highest WhatsApp engagement rates in this region. The key is your CTA — share your copy in the comments and I\'ll review it.'},
       ]},
     ];
     localStorage.setItem('sl_community_'+_courseId+'_posts', JSON.stringify(_posts));
   }
-  if(_announcements.length === 0){
+  if(false && _announcements.length === 0){
     _announcements = [
-      {id:'a1',title:'Welcome to the community!',text:'This is your private space. Ask questions, share wins, help each other. I read every post personally and reply within 24 hours. Let\'s get you to your first commission.',author:'Chidi Okafor',initials:'CO',time:'3 days ago',pinned:true},
-      {id:'a2',title:'Live Q&A this Saturday — bring your questions!',text:'I\'m hosting a live session this Saturday at 7PM WAT. We\'ll cover traffic strategies, funnel optimisation, and I\'ll critique a few funnels live. Drop your questions below.',author:'Chidi Okafor',initials:'CO',time:'1 day ago',pinned:false},
+      {id:'a1',title:'Welcome to the community!',text:'This is your private space. Ask questions, share wins, help each other. I read every post personally and reply within 24 hours. Let\'s get you to your first commission.',author:'',initials:'CO',time:'3 days ago',pinned:true},
+      {id:'a2',title:'Live Q&A this Saturday — bring your questions!',text:'I\'m hosting a live session this Saturday at 7PM WAT. We\'ll cover traffic strategies, funnel optimisation, and I\'ll critique a few funnels live. Drop your questions below.',author:'',initials:'CO',time:'1 day ago',pinned:false},
     ];
     localStorage.setItem('sl_community_'+_courseId+'_ann', JSON.stringify(_announcements));
   }
-  if(_resources.length === 0){
+  if(false && _resources.length === 0){
     _resources = [
       {id:'r1',name:'Affiliate Funnel Template',desc:'Canva template — edit and make it yours',icon:'&#127912;',url:'#'},
       {id:'r2',name:'Email Swipe File',desc:'15 proven subject lines + body templates',icon:'&#128140;',url:'#'},
