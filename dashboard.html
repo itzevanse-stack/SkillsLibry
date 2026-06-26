@@ -606,6 +606,7 @@ function slErr(code) {
     <a class="nav-link" href="#">Blog</a>
   </div>
   <div class="nav-right">
+      <a class="nav-link" onclick="showDashSection('profile')" style="cursor:pointer;">Profile</a>
       <div style="position:relative;" title="Change profile photo">
         <div class="student-avatar-wrap" id="nav-avatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;border:2px solid var(--border);" onclick="document.getElementById('nav-avatar-input').click()">?</div>
         <input type="file" id="nav-avatar-input" accept="image/*" style="display:none;" onchange="handleStudentAvatarUpload(this)"/>
@@ -741,6 +742,73 @@ function slErr(code) {
 
     </div>
   </div>
+</div>
+
+<!-- STUDENT PROFILE SECTION -->
+<div id="dash-profile-section" style="display:none;max-width:1060px;margin:0 auto;padding:32px 24px;">
+
+  <!-- Avatar + name card -->
+  <div style="background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:32px;box-shadow:0 2px 12px rgba(13,13,26,.06);display:flex;align-items:center;gap:28px;margin-bottom:20px;">
+    <div style="position:relative;flex-shrink:0;">
+      <div id="student-avatar-large" class="student-avatar-wrap" style="width:96px;height:96px;border-radius:50%;background:linear-gradient(135deg,#4ecca3,#6c63ff);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:32px;font-weight:700;color:#fff;overflow:hidden;border:3px solid #e4e6f0;position:relative;">?</div>
+      <label for="student-avatar-upload" style="position:absolute;bottom:2px;right:2px;width:28px;height:28px;border-radius:50%;background:#4ecca3;border:2px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;line-height:1;" title="Upload photo">&#9998;</label>
+      <input type="file" id="student-avatar-upload" accept="image/*" style="display:none;" onchange="uploadStudentAvatar(this)"/>
+    </div>
+    <div>
+      <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;margin-bottom:4px;" id="profile-display-name">Your name</div>
+      <div style="font-size:13px;color:#8b8fa8;margin-bottom:12px;">SkillsLibry Student</div>
+      <label for="student-avatar-upload" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#2db88a;background:rgba(78,204,163,.1);border:1.5px solid rgba(78,204,163,.25);border-radius:6px;padding:6px 14px;cursor:pointer;">
+        &#128444; Change photo
+      </label>
+      <div style="font-size:11px;color:#8b8fa8;margin-top:6px;">JPG or PNG &middot; Max 5MB</div>
+    </div>
+  </div>
+
+  <!-- Info card -->
+  <div style="background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(13,13,26,.06);display:flex;flex-direction:column;gap:16px;margin-bottom:20px;">
+    <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#0d0d1a;margin-bottom:4px;">Personal information</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name</label>
+        <input id="student-name" type="text" placeholder="Your full name" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:border .2s;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'" oninput="document.getElementById('profile-display-name').textContent=this.value||'Your name'"/>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email</label>
+        <input id="student-email" type="email" placeholder="your@email.com" readonly style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;background:#f8f9fc;color:#8b8fa8;"/>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Phone number</label>
+        <input id="student-phone" type="tel" placeholder="+234..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+      </div>
+      <div>
+        <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Country</label>
+        <select id="student-country" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;background:#fff;appearance:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'">
+          <option value="">Select country</option>
+          <option>Nigeria</option><option>Ghana</option><option>Kenya</option>
+          <option>South Africa</option><option>Uganda</option><option>Tanzania</option>
+          <option>United Kingdom</option><option>United States</option><option>Canada</option>
+          <option>UAE</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Bio <span style="font-weight:400;color:#8b8fa8;">(optional)</span></label>
+      <textarea id="student-bio" placeholder="Tell instructors a bit about yourself and your goals..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;outline:none;font-family:'Inter',sans-serif;min-height:90px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button onclick="saveStudentProfile()" style="padding:11px 28px;background:#4ecca3;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='#2db88a'" onmouseout="this.style.background='#4ecca3'">Save profile</button>
+      <div id="profile-save-msg" style="font-size:13px;color:#2db88a;display:none;">&#10003; Saved!</div>
+    </div>
+  </div>
+
+  <!-- Subscription status -->
+  <div style="background:#fff;border:1.5px solid #e4e6f0;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(13,13,26,.06);">
+    <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#0d0d1a;margin-bottom:16px;">&#128274; Subscription & access</div>
+    <div id="student-subscriptions" style="color:#8b8fa8;font-size:13px;">Loading your subscriptions...</div>
+  </div>
+
 </div>
 
 
@@ -1279,4 +1347,108 @@ function handleStudentAvatarUpload(input) {
 
 document.addEventListener('authReady', initStudentAvatar);
 </script>
+
+
 <script>
+function showDashSection(section){
+  var profileEl = document.getElementById('dash-profile-section');
+  if(!profileEl) return;
+  var isHidden = profileEl.style.display === 'none' || profileEl.style.display === '';
+  profileEl.style.display = isHidden ? 'block' : 'none';
+  if(isHidden){ loadStudentProfile(); loadStudentSubscriptions(); }
+}
+
+function uploadStudentAvatar(input){
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ alert('Max 5MB'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var url = e.target.result;
+    localStorage.setItem('sl_student_avatar', url);
+    ['student-avatar-large','nav-avatar'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+async function loadStudentProfile(){
+  if(!window._user) return;
+  var emailEl = document.getElementById('student-email');
+  if(emailEl) emailEl.value = window._user.email||'';
+  if(!window._db) return;
+  try {
+    var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap=await fb.getDoc(fb.doc(window._db,'users',window._user.uid));
+    if(snap.exists()){
+      var d=snap.data();
+      ['name','phone','bio'].forEach(function(k){
+        var el=document.getElementById('student-'+k);
+        if(el&&d[k]) el.value=d[k];
+      });
+      var c=document.getElementById('student-country');
+      if(c&&d.country) c.value=d.country;
+      var n=document.getElementById('profile-display-name');
+      if(n) n.textContent=d.name||window._userName||'Your name';
+    }
+  } catch(e){}
+  var saved=localStorage.getItem('sl_student_avatar');
+  if(saved){
+    ['student-avatar-large','nav-avatar'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.innerHTML='<img src="'+saved+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    });
+  }
+}
+
+async function saveStudentProfile(){
+  if(!window._user){alert('Sign in first.');return;}
+  var data={
+    name:(document.getElementById('student-name')||{}).value||'',
+    phone:(document.getElementById('student-phone')||{}).value||'',
+    country:(document.getElementById('student-country')||{}).value||'',
+    bio:(document.getElementById('student-bio')||{}).value||''
+  };
+  try {
+    if(window._db){
+      var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),Object.assign({},data,{updatedAt:fb.serverTimestamp()}),{merge:true});
+    }
+    var msg=document.getElementById('profile-save-msg');
+    if(msg){msg.style.display='block';setTimeout(function(){msg.style.display='none';},3000);}
+    window._userName=data.name;
+    var nn=document.getElementById('nav-user-name');
+    if(nn) nn.textContent=data.name;
+  } catch(e){alert('Error: '+e.message);}
+}
+
+async function loadStudentSubscriptions(){
+  var el=document.getElementById('student-subscriptions');
+  if(!el||!window._user||!window._db) return;
+  try {
+    var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap=await fb.getDocs(fb.query(fb.collection(window._db,'enrollments'),fb.where('studentEmail','==',window._user.email)));
+    var list=snap.docs.map(function(d){return d.data();});
+    if(!list.length){el.innerHTML='<div style="padding:16px;color:#8b8fa8;text-align:center;">No subscriptions yet. <a href="catalog.html" style="color:#4ecca3;">Browse courses</a></div>';return;}
+    el.innerHTML=list.map(function(en){
+      var s=en.subscriptionStatus||'active';
+      var c=s==='active'?'#22c55e':s==='payment_failed'?'#f59e0b':'#ef4444';
+      var l=s==='active'?'Active':s==='payment_failed'?'Payment failed':'Revoked';
+      var n=en.nextBillingDate?new Date(en.nextBillingDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'N/A';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #e4e6f0;"><div><div style="font-size:13px;font-weight:600;">Course subscription</div><div style="font-size:12px;color:#8b8fa8;">Next billing: '+n+' · ₦10,500/mo</div></div><span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px;background:'+c+'20;color:'+c+';">'+l+'</span></div>';
+    }).join('');
+  } catch(e){el.textContent='Could not load.';}
+}
+
+(function(){
+  var saved=localStorage.getItem('sl_student_avatar');
+  if(!saved) return;
+  ['student-avatar-large','nav-avatar'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.innerHTML='<img src="'+saved+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  });
+})();
+</script>
+</body>
+</html>
