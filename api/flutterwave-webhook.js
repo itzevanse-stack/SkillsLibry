@@ -1,12 +1,7 @@
 // api/flutterwave-webhook.js
-// Deploy this on Vercel — it lives at /api/flutterwave-webhook
-
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
-import { Resend } from 'resend';
-import crypto from 'crypto';
+import { getFirestore, FieldValue }      from 'firebase-admin/firestore';
 
-/* ── Init Firebase Admin (server-side) ── */
 if (!getApps().length) {
   initializeApp({
     credential: cert({
@@ -17,150 +12,126 @@ if (!getApps().length) {
   });
 }
 
-const db     = getFirestore();
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-/* ── Flutterwave secret hash ── */
-const FLW_SECRET_HASH = process.env.FLW_SECRET_HASH; // set in Vercel env vars
+const db = getFirestore();
+const PLATFORM_SUB_NGN = 10500;
+const INSTRUCTOR_SHARE = 0.60;
+const PLATFORM_SHARE   = 0.40;
 
 export default async function handler(req, res) {
-  /* Only allow POST */
-  if (req.method !== 'POST') return res.status(405).end('Method not allowed');
+  if (req.method !== 'POST') return res.status(405).end();
 
-  /* Verify the request is from Flutterwave */
   const signature = req.headers['verif-hash'];
-  if (!signature || signature !== FLW_SECRET_HASH) {
-    console.error('Invalid Flutterwave signature');
+  if (!signature || signature !== process.env.FLW_SECRET_HASH)
     return res.status(401).json({ error: 'Unauthorized' });
-  }
 
   const { event, data } = req.body;
-
-  /* Only process successful charges */
   if (event !== 'charge.completed') return res.status(200).json({ received: true });
   if (data.status !== 'successful')  return res.status(200).json({ received: true });
 
   try {
-    /* ── Verify transaction with Flutterwave API ── */
     const verifyRes = await fetch(
       `https://api.flutterwave.com/v3/transactions/${data.id}/verify`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
-          'Content-Type': 'application/json',
-        },
-      }
+      { headers: { Authorization: `Bearer ${process.env.FLW_SECRET_KEY}` } }
     );
     const verify = await verifyRes.json();
-
-    if (verify.status !== 'success' || verify.data.status !== 'successful') {
-      console.error('Transaction verification failed', verify);
+    if (verify.status !== 'success' || verify.data.status !== 'successful')
       return res.status(200).json({ error: 'Verification failed' });
-    }
 
     const tx           = verify.data;
     const meta         = tx.meta || {};
+    const paymentType  = meta.paymentType || 'enrollment';
     const courseId     = meta.courseId;
     const instructorId = meta.instructorId;
     const affiliateCode = meta.affiliateCode || null;
-    const plan         = meta.plan || 'full';
     const studentEmail = tx.customer.email;
-    const studentName  = tx.customer.name;
-    const amount       = tx.amount;
+    const studentName  = tx.customer.name || '';
+    const totalAmount  = tx.amount;
     const currency     = tx.currency;
     const txId         = String(tx.id);
 
-    /* ── Check for duplicate enrollment ── */
-    const enrollId = courseId + '_' + tx.customer.email.replace(/[^a-z0-9]/gi,'_');
-    const existing = await db.collection('enrollments').doc(enrollId).get();
-    if (existing.exists) {
-      console.log('Duplicate enrollment ignored:', enrollId);
-      return res.status(200).json({ received: true, note: 'duplicate' });
-    }
+    if (paymentType === 'enrollment') {
+      const courseFeeNGN = parseFloat(meta.courseFeeNGN || 0);
+      const rate         = courseFeeNGN > 0 ? totalAmount / (courseFeeNGN + PLATFORM_SUB_NGN) : 1;
+      const courseFee    = Math.round(courseFeeNGN * rate * 100) / 100;
+      const subFee       = Math.round(PLATFORM_SUB_NGN * rate * 100) / 100;
+      const instructorCut = Math.round(courseFee * INSTRUCTOR_SHARE * 100) / 100;
+      const platformCut   = Math.round((courseFee * PLATFORM_SHARE + subFee) * 100) / 100;
+      const affiliateCut  = affiliateCode ? Math.round(courseFee * 0.10 * 100) / 100 : 0;
 
-    /* ── Revenue split ── */
-    const instructorCut = Math.round(amount * 0.60 * 100) / 100;
-    const platformCut   = Math.round(amount * 0.40 * 100) / 100;
-    const affiliateCut  = affiliateCode ? Math.round(amount * 0.10 * 100) / 100 : 0;
+      const enrollId = courseId + '_' + studentEmail.replace(/[^a-z0-9]/gi, '_');
+      const existing = await db.collection('enrollments').doc(enrollId).get();
+      if (existing.exists) return res.status(200).json({ received: true, note: 'duplicate' });
 
-    /* ── Write enrollment ── */
-    await db.collection('enrollments').doc(enrollId).set({
-      courseId,
-      instructorId,
-      studentEmail,
-      studentName,
-      paidAmount:    amount,
-      currency,
-      transactionId: txId,
-      plan,
-      instructorCut,
-      platformCut,
-      affiliateCut,
-      affiliateCode,
-      progress: { completedLessons: [], percentComplete: 0 },
-      enrolledAt: FieldValue.serverTimestamp(),
-    });
+      const nextBilling = new Date();
+      nextBilling.setDate(nextBilling.getDate() + 30);
 
-    /* ── Update course student count ── */
-    await db.collection('courses').doc(courseId).update({
-      totalStudents: FieldValue.increment(1),
-      totalRevenue:  FieldValue.increment(amount),
-    }).catch(() => {}); /* ignore if course doc doesn't exist yet */
+      await db.collection('enrollments').doc(enrollId).set({
+        courseId, instructorId, studentEmail, studentName,
+        paidAmount: totalAmount, courseFee, subFee, currency, transactionId: txId,
+        instructorCut, platformCut, affiliateCut, affiliateCode,
+        subscriptionStatus: 'active',
+        failedPayments:     0,
+        nextBillingDate:    nextBilling.toISOString(),
+        nextBillingAmount:  subFee,
+        progress: { completedLessons: [], percentComplete: 0 },
+        enrolledAt: FieldValue.serverTimestamp(),
+      });
 
-    /* ── Update instructor pending payout ── */
-    await db.collection('instructorPayouts').doc(instructorId).set({
-      pendingAmount: FieldValue.increment(instructorCut),
-      currency,
-      updatedAt: FieldValue.serverTimestamp(),
-    }, { merge: true });
+      await db.collection('courses').doc(courseId).update({
+        totalStudents: FieldValue.increment(1),
+        totalRevenue:  FieldValue.increment(totalAmount),
+      }).catch(() => {});
 
-    /* ── Record affiliate commission ── */
-    if (affiliateCode && affiliateCut > 0) {
-      await db.collection('affiliateEarnings').add({
-        affiliateCode,
-        courseId,
-        commission: affiliateCut,
-        currency,
-        txId,
+      await db.collection('instructorPayouts').doc(instructorId).set({
+        pendingAmount: FieldValue.increment(instructorCut),
+        currency, updatedAt: FieldValue.serverTimestamp(),
+      }, { merge: true });
+
+      if (affiliateCode && affiliateCut > 0) {
+        await db.collection('affiliateEarnings').add({
+          affiliateCode, courseId, commission: affiliateCut, currency, txId,
+          createdAt: FieldValue.serverTimestamp(),
+        });
+      }
+
+      console.log(`ENROLLED: ${studentEmail} | Instructor: ${instructorCut} | Platform: ${platformCut}`);
+
+    } else if (paymentType === 'subscription_renewal') {
+      const enrollId    = meta.enrollmentId;
+      const nextBilling = new Date();
+      nextBilling.setDate(nextBilling.getDate() + 30);
+
+      await db.collection('enrollments').doc(enrollId).update({
+        subscriptionStatus: 'active',
+        failedPayments:     0,
+        lastRenewalDate:    FieldValue.serverTimestamp(),
+        nextBillingDate:    nextBilling.toISOString(),
+        lastRenewalTxId:    txId,
+      });
+
+      await db.collection('platformRevenue').add({
+        type: 'subscription_renewal', enrollmentId: enrollId,
+        amount: totalAmount, currency, txId,
         createdAt: FieldValue.serverTimestamp(),
       });
+
+    } else if (paymentType === 'subscription_failed') {
+      const enrollId    = meta.enrollmentId;
+      const enrollSnap  = await db.collection('enrollments').doc(enrollId).get();
+      if (!enrollSnap.exists) return res.status(200).json({ error: 'Not found' });
+
+      const failCount = (enrollSnap.data().failedPayments || 0) + 1;
+
+      await db.collection('enrollments').doc(enrollId).update({
+        subscriptionStatus: failCount >= 2 ? 'revoked' : 'payment_failed',
+        failedPayments:     failCount,
+        ...(failCount >= 2 ? { revokedAt: FieldValue.serverTimestamp(), revokedReason: 'payment_failed_twice' } : {}),
+      });
+
+      console.log(`SUBSCRIPTION ${failCount >= 2 ? 'REVOKED' : 'FAILED'}: ${enrollId} (${failCount}/2)`);
     }
 
-    /* ── Send welcome email via Resend ── */
-    await resend.emails.send({
-      from: 'SkillsLibry <hello@skillslibry.com>',
-      to:   studentEmail,
-      subject: '🎉 You\'re enrolled! Let\'s get started',
-      html: `
-        <div style="font-family:'Inter',sans-serif;max-width:560px;margin:0 auto;padding:40px 24px;">
-          <div style="background:linear-gradient(135deg,#4ecca3,#6c63ff);border-radius:12px;padding:32px;text-align:center;margin-bottom:32px;">
-            <h1 style="color:#fff;font-size:28px;margin:0 0 8px;font-family:'Poppins',sans-serif;">Welcome aboard, ${studentName}! 🚀</h1>
-            <p style="color:rgba(255,255,255,.85);margin:0;font-size:15px;">Your enrollment is confirmed.</p>
-          </div>
-          <p style="color:#4a4d6a;font-size:15px;line-height:1.7;">
-            You now have full access to your course. Your journey to earning with digital skills starts right now.
-          </p>
-          <div style="background:#f8f9fc;border-radius:10px;padding:20px 24px;margin:24px 0;">
-            <p style="margin:0 0 4px;font-size:12px;color:#8b8fa8;font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Transaction details</p>
-            <p style="margin:0;font-size:14px;color:#0d0d1a;">Amount: <strong>${currency} ${amount}</strong></p>
-            <p style="margin:4px 0 0;font-size:14px;color:#0d0d1a;">Reference: <strong>${txId}</strong></p>
-          </div>
-          <div style="text-align:center;margin-top:32px;">
-            <a href="https://skillslibry.com/player?course=${courseId}"
-              style="background:#4ecca3;color:#0d0d1a;padding:14px 32px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none;display:inline-block;">
-              Start your course →
-            </a>
-          </div>
-          <p style="color:#8b8fa8;font-size:12px;text-align:center;margin-top:32px;">
-            SkillsLibry · People with passion to learn &amp; execute can change the world for good.
-          </p>
-        </div>
-      `,
-    });
-
-    console.log(`✓ Enrollment complete: ${studentEmail} → course ${courseId} (${currency} ${amount})`);
     return res.status(200).json({ success: true });
-
   } catch (err) {
     console.error('Webhook error:', err);
     return res.status(500).json({ error: 'Internal server error' });
