@@ -2029,6 +2029,57 @@ async function deleteTestimonial(id){
   showToast('&#10007;','Testimonial deleted.');
 }
 
+/* ── AUTH GUARD + STATS ── */
+document.addEventListener('authReady', function(e){
+  if(!e.detail.user){
+    window.location.href = 'instructor-signup.html?next=instructor';
+    return;
+  }
+
+  // Set sidebar name
+  var spName = document.getElementById('sp-name');
+  var spAv   = document.getElementById('sp-avatar');
+  var initials = (window._userName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  if(spName) spName.textContent = window._userName || 'Instructor';
+  if(spAv && !spAv.querySelector('img')) spAv.textContent = initials;
+
+  // Load real stats
+  if(window._db){
+    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+      fb.getDocs(fb.query(
+        fb.collection(window._db,'courses'),
+        fb.where('instructorId','==',e.detail.user.uid)
+      )).then(function(snap){
+        var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+        var totalStudents = courses.reduce(function(a,c){ return a+(c.totalStudents||0); },0);
+        var totalEarnings = courses.reduce(function(a,c){ return a+((c.totalRevenue||0)*0.6); },0);
+        var s = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
+        s('sp-courses',  courses.length);
+        s('sp-students', totalStudents);
+        s('sp-earnings', '₦'+Math.round(totalEarnings).toLocaleString());
+        s('ov-courses',  courses.length);
+        s('ov-students', totalStudents);
+        s('ov-earnings', '₦'+Math.round(totalEarnings).toLocaleString());
+
+        // Render course list
+        var el = document.getElementById('ov-course-list') || document.getElementById('courses-list');
+        if(el && courses.length === 0){
+          el.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);"><div style="font-size:40px;margin-bottom:12px;">&#127891;</div><div style="font-weight:600;margin-bottom:6px;">No courses yet</div><button class="btn btn-teal" onclick="goBuilder()">Create first course</button></div>';
+        } else if(el){
+          var statusLabel = {pending_review:'Pending review',approved:'Live',rejected:'Rejected',draft:'Draft'};
+          el.innerHTML = courses.map(function(c){
+            return '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);">'
+              +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(c.title||'Untitled')+'</div>'
+              +'<div style="font-size:12px;color:var(--text3);">'+(statusLabel[c.status]||c.status||'Draft')+' &middot; '+(c.totalStudents||0)+' students</div></div>'
+              +(c.status==='approved'?'<a href="course.html?id='+c.id+'" target="_blank" style="font-size:12px;color:var(--teal-dark);font-weight:600;">View live</a>':'')
+            +'</div>';
+          }).join('');
+        }
+      });
+    });
+  }
+});
+
 document.addEventListener('authReady',function(e){
   if(!e.detail.user||!window._db) return;
   import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
