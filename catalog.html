@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Courses — SkillsLibry</title>
+<title>Browse Courses — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -620,7 +625,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -660,12 +665,12 @@ function slErr(code) {
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="catalog.html" style="color:var(--teal-dark);font-weight:600;">Courses</a>
+    <a class="nav-link" href="/catalog" style="color:var(--teal-dark);font-weight:600;">Courses</a>
     <a class="nav-link" href="#">Community</a>
     <a class="nav-link" href="#">Blog</a>
   </div>
@@ -718,8 +723,8 @@ function slErr(code) {
         </div>
       </div>
     </div>
-    <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='dashboard.html' : openAuthModal(null,'signin')">My Learning</a>
-    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+    <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='/dashboard' : openAuthModal(null,'signin')">My Learning</a>
+    <a class="btn btn-teal" href="/catalog">Browse Courses</a>
   </div>
 </nav>
 
@@ -789,13 +794,13 @@ function slErr(code) {
 <script>
 
 function goTo(page){
-  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
-    dashboard:'dashboard.html',player:'player.html',
-    instructor:'instructor.html',admin:'admin.html'};
+  var routes={home:'/',catalog:'/catalog',course:'/course',
+    dashboard:'/dashboard',player:'/player',
+    instructor:'/instructor',admin:'/admin'};
   if(routes[page]) window.location.href=routes[page];
 }
 function showPage(page){ goTo(page); }
-function showCourseDetail(id){ window.location.href='course.html?id='+id; }
+function showCourseDetail(id){ window.location.href='/course?id='+id; }
 
 
 // ── NULL-SAFE FUNCTIONS (override any duplicates below) ──
@@ -876,7 +881,7 @@ function courseCard(c, onclick=''){
       </div>
       <div class="course-footer">
         <div><span class="course-price">${c.price}</span><span class="course-price-old">${c.priceOld}</span></div>
-        <a class="enroll-mini" href="course.html?id=${c.id}" onclick="event.stopPropagation()">Learn More →</a>
+        <a class="enroll-mini" href="/course?id=${c.id}" onclick="event.stopPropagation()">Learn More →</a>
       </div>
     </div>
   </div>`;
@@ -1383,7 +1388,7 @@ document.addEventListener('authReady', function(e){
   var userName      = document.getElementById('nav-user-name');
 
   if(user){
-    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(myLearningBtn) myLearningBtn.href = '/dashboard';
     if(signInBtn)     signInBtn.style.display = 'none';
     if(userMenu)      userMenu.style.display  = 'flex';
     if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
@@ -1448,7 +1453,7 @@ document.addEventListener('authReady', function(e){
             +'<div>'
               +'<span class="course-price">'+sym+' '+price.toLocaleString()+'</span>'
             +'</div>'
-            +'<a class="enroll-mini" href="course.html?id='+c.id+'">Learn more</a>'
+            +'<a class="enroll-mini" href="/course?id='+c.id+'">Learn more</a>'
           +'</div>'
         +'</div>'
       +'</div>';
@@ -1460,7 +1465,7 @@ document.addEventListener('authReady', function(e){
   }
 })();
 </script>
-<script>function goCourse(id){window.location.href="course.html?id="+id;}</script>
+<script>function goCourse(id){window.location.href="/course?id="+id;}</script>
 </body> on every page -->
 
 
