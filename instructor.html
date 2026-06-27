@@ -2625,10 +2625,11 @@ async function handleTestiMedia(input){
 
 async function uploadTestiVideoToBunny(file){
   // Step 1: Create video on Bunny
-  var createRes = await fetch('/api/bunny-create-video', {
+  var testiName = (document.getElementById('testi-name')||{}).value||'Student';
+  var createRes = await fetch('/api/bunny-upload', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ title: 'Testimonial - '+(document.getElementById('testi-name')||{}).value||'Student' })
+    body: JSON.stringify({ title: 'Testimonial - '+testiName, courseId: 'testimonials', lessonIndex: 0 })
   });
   if(!createRes.ok) throw new Error('Could not create Bunny video');
   var createData = await createRes.json();
