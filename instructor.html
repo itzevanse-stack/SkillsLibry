@@ -594,7 +594,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('profile')" id="nav-profile">
         <div class="si-icon">&#128100;</div> Profile
       </div>
-      <div class="sidebar-item" onclick="slSignOut && slSignOut()">
+      <div class="sidebar-item" onclick="doSignOut()">
         <div class="si-icon">&#128682;</div> Sign out
       </div>
     </div>
@@ -1153,7 +1153,159 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <span id="toast-msg"></span>
 </div>
 
+<!-- ══ FIREBASE + AUTH ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app  = initializeApp({
+  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain:        "skillslibry.firebaseapp.com",
+  projectId:         "skillslibry",
+  storageBucket:     "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+window._auth = auth;
+window._db   = db;
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if (user) {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  } else {
+    window._userRole = null;
+    window._userName = null;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
+});
+
+window.slSignUp = async function(name, email, password, role) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email,
+      role: role || 'student',
+      createdAt: serverTimestamp(),
+      enrolledCourses: [],
+      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+    });
+    window._userRole = role || 'student';
+    window._userName = name;
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignIn = async function(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slGoogleSignIn = async function() {
+  try {
+    const { GoogleAuthProvider, signInWithPopup } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const provider = new GoogleAuthProvider();
+    const cred = await signInWithPopup(auth, provider);
+    // Create user doc if new
+    const { doc, getDoc, setDoc, serverTimestamp } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db, 'users', cred.user.uid));
+    if (!snap.exists()) {
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name: cred.user.displayName || '',
+        email: cred.user.email,
+        role: 'student',
+        createdAt: serverTimestamp(),
+        enrolledCourses: [],
+        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+      });
+    }
+    window._userName = cred.user.displayName || cred.user.email;
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    return { ok: true };
+  } catch(e) {
+    if(e.code === 'auth/popup-closed-by-user') return { ok: false, error: null };
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignOut = async function() {
+  await signOut(auth);
+  window.location.href = 'index.html';
+};
+
+window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
+  if (!window._user) return { ok: false, error: 'Not logged in' };
+  const id = courseId + '_' + window._user.uid;
+  await setDoc(doc(db, 'enrollments', id), {
+    studentId: window._user.uid,
+    courseId, instructorId,
+    paidAmount: amount, currency, transactionId,
+    platformCut: amount * 0.40,
+    instructorCut: amount * 0.60,
+    affiliateCode: affiliateCode || null,
+    progress: { completedLessons: [], percentComplete: 0 },
+    enrolledAt: serverTimestamp(),
+  });
+  return { ok: true };
+};
+
+function slErr(code) {
+  const m = {
+    'auth/email-already-in-use':   'An account with this email already exists.',
+    'auth/invalid-email':          'Please enter a valid email address.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password. Please try again.',
+    'auth/invalid-credential':     'Incorrect email or password.',
+    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/operation-not-allowed':  'Email sign-up is not enabled. Please contact support.',
+    'auth/internal-error':         'Server error. Please try again.',
+    'auth/admin-restricted-operation': 'Sign-up is currently restricted.',
+  };
+  return m[code] || ('Error: ' + code + ' — please try again.');
+}
+</script>
+
 <script>
+
+function doSignOut(){
+  // Try slSignOut if already loaded
+  if(typeof window.slSignOut === 'function'){
+    window.slSignOut();
+    return;
+  }
+  // Fall back: import Firebase auth and sign out directly
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
+    .then(function(m){ 
+      var auth = window._auth || m.getAuth();
+      return m.signOut(auth); 
+    })
+    .then(function(){ window.location.href = 'index.html'; })
+    .catch(function(){ 
+      // Last resort: clear storage and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = 'index.html'; 
+    });
+}
 /* ══════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════ */
