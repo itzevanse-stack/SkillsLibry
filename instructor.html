@@ -2488,7 +2488,7 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
       </div>
       <div>
         <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Location</label>
-        <input id="testi-location" type="text" placeholder="e.g. Lagos, Nigeria" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+        <input id="testi-location" type="text" placeholder="e.g. London, UK" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
       </div>
       <div>
         <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Rating *</label>
@@ -2566,7 +2566,7 @@ function setTestiType(type){
   } else {
     if(mf) mf.style.display='block';
     if(ml) ml.textContent='Upload video testimonial';
-    if(mh) mh.textContent='MP4 - Max 200MB';
+    if(mh) mh.textContent='MP4 - Up to 5GB via Bunny Stream';
     if(mi) mi.accept='video/mp4,video/*';
   }
 }
@@ -2580,22 +2580,68 @@ function setStars(n){
   });
 }
 
-function handleTestiMedia(input){
-  var file=input.files[0]; if(!file) return;
-  var max=_testiType==='video'?200*1024*1024:5*1024*1024;
-  if(file.size>max){ showToast('&#9888;&#65039;','File too large.'); return; }
-  var reader=new FileReader();
-  reader.onload=function(e){
-    _testiMedia=e.target.result;
-    var prev=document.getElementById('testi-media-preview');
+var _testiVideoFile = null;
+var _testiVideoId   = null;
+
+async function handleTestiMedia(input){
+  var file = input.files[0]; if(!file) return;
+  var isVideo = _testiType === 'video';
+  var maxSize = isVideo ? 5*1024*1024*1024 : 5*1024*1024; // 5GB video, 5MB photo
+
+  if(file.size > maxSize){
+    showToast('⚠️', isVideo ? 'Max 5GB for video.' : 'Max 5MB for photo.');
+    return;
+  }
+
+  var prev = document.getElementById('testi-media-preview');
+
+  if(isVideo){
+    // Store file for Bunny upload on save
+    _testiVideoFile = file;
+    _testiVideoId   = null;
+    _testiMedia     = null;
+
+    // Show local preview
+    var objUrl = URL.createObjectURL(file);
     if(prev){
-      prev.style.display='block';
-      prev.innerHTML=_testiType==='video'
-        ?'<video src="'+e.target.result+'" controls style="width:100%;border-radius:8px;max-height:200px;"></video>'
-        :'<img src="'+e.target.result+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover;"/>';
+      prev.style.display = 'block';
+      prev.innerHTML = '<video src="'+objUrl+'" controls style="width:100%;border-radius:8px;max-height:200px;"></video>'
+        +'<div style="font-size:12px;color:var(--text3);margin-top:6px;text-align:center;">&#128248; Video ready — will upload to Bunny Stream when you save</div>';
     }
-  };
-  reader.readAsDataURL(file);
+  } else {
+    // Photo: read as data URL
+    _testiVideoFile = null;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      _testiMedia = e.target.result;
+      if(prev){
+        prev.style.display = 'block';
+        prev.innerHTML = '<img src="'+e.target.result+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover;"/>';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function uploadTestiVideoToBunny(file){
+  // Step 1: Create video on Bunny
+  var createRes = await fetch('/api/bunny-create-video', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ title: 'Testimonial - '+(document.getElementById('testi-name')||{}).value||'Student' })
+  });
+  if(!createRes.ok) throw new Error('Could not create Bunny video');
+  var createData = await createRes.json();
+  var videoId = createData.guid;
+
+  // Step 2: Upload file to Bunny
+  var uploadRes = await fetch('https://video.bunnycdn.com/library/690865/videos/'+videoId, {
+    method: 'PUT',
+    headers: { 'AccessKey': '6c4e5625-43cc-40d1-837892724178-134a-459b' },
+    body: file
+  });
+  if(!uploadRes.ok) throw new Error('Bunny upload failed');
+  return videoId;
 }
 
 async function saveTestimonial(){
@@ -2611,14 +2657,32 @@ async function saveTestimonial(){
   if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
 
   try {
+    var videoId  = null;
+    var mediaUrl = _testiMedia || null;
+
+    // Upload video to Bunny if present
+    if(_testiType === 'video' && _testiVideoFile){
+      var uploadBtn = document.getElementById('testi-save-btn');
+      if(uploadBtn) uploadBtn.textContent = 'Uploading video...';
+      try {
+        videoId  = await uploadTestiVideoToBunny(_testiVideoFile);
+        mediaUrl = 'https://vz-4ec805fa-2e2.b-cdn.net/'+videoId+'/play_720p.mp4';
+        _testiVideoId = videoId;
+      } catch(uploadErr){
+        showToast('⚠️','Video upload failed: '+uploadErr.message+'. Saving without video.');
+        videoId = null; mediaUrl = null;
+      }
+    }
+
     if(window._user && window._db){
       var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
       var ref=await fb.addDoc(fb.collection(window._db,'testimonials'),{
         name:name, location:loc, type:_testiType, text:text,
         stars:_testiStars, result:result, status:'pending',
+        mediaUrl:mediaUrl, videoId:videoId,
         instructorId:window._user.uid, createdAt:fb.serverTimestamp(),
       });
-      _testimonials.unshift({id:ref.id,name:name,location:loc,type:_testiType,text:text,stars:_testiStars,result:result,status:'pending',mediaSrc:_testiMedia});
+      _testimonials.unshift({id:ref.id,name:name,location:loc,type:_testiType,text:text,stars:_testiStars,result:result,status:'pending',mediaSrc:mediaUrl});
     }
     closeTestiModal();
     renderTestimonialsList();
