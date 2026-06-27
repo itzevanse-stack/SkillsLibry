@@ -4,11 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Instructor Portal — SkillsLibry</title>
-  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
-
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -533,13 +528,13 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="/">
+  <a class="nav-logo" href="index.html">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-tag">Instructor Portal</div>
   <div class="nav-right">
-    <a class="btn btn-ghost btn-sm" href="/">View site</a>
+    <a class="btn btn-ghost btn-sm" href="index.html">View site</a>
     <button class="btn btn-teal btn-sm" onclick="showView('builder'); startNewCourse();">+ New course</button>
   </div>
 </nav>
@@ -570,10 +565,6 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('builder'); startNewCourse();" id="nav-builder">
         <div class="si-icon">&#43;</div> Create Course
       </div>
-      <div class="sidebar-item" onclick="showView('community')" id="nav-community" style="position:relative;">
-        <div class="si-icon">&#128101;</div> Community
-        <span id="comm-notif-badge" style="display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;"></span>
-      </div>
     </div>
 
     <div class="sidebar-section">
@@ -591,7 +582,6 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('payouts')" id="nav-payouts">
         <div class="si-icon">&#128176;</div> Payouts
       </div>
-
     </div>
 
     <div class="sidebar-section">
@@ -599,7 +589,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('profile')" id="nav-profile">
         <div class="si-icon">&#128100;</div> Profile
       </div>
-      <div class="sidebar-item" onclick="doSignOut()">
+      <div class="sidebar-item" onclick="slSignOut && slSignOut()">
         <div class="si-icon">&#128682;</div> Sign out
       </div>
     </div>
@@ -715,7 +705,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
           <div class="frow-1">
             <div class="fg">
               <label>Course title *</label>
-              <input class="fi" id="ci-title" type="text" placeholder="e.g.  ₦500k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
+              <input class="fi" id="ci-title" type="text" placeholder="e.g. Affiliate Marketing Mastery: From Zero to ₦500k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
               <div class="char-count"><span id="ci-title-count">0</span>/120</div>
             </div>
           </div>
@@ -725,35 +715,14 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
               <label>Category *</label>
               <select class="fi" id="ci-cat">
                 <option value="">Select a category</option>
-                <option value="ai">AI & Machine Learning</option>
-                <option value="cybersecurity">Cybersecurity</option>
-                <option value="cloud">Cloud Computing</option>
-                <option value="software">Software Development</option>
-                <option value="data">Data Science & Analytics</option>
-                <option value="blockchain">Blockchain & Web3</option>
-                <option value="prompt">Prompt Engineering</option>
                 <option value="affiliate">Affiliate Marketing</option>
                 <option value="digital">Digital Products</option>
+                <option value="content">Content & Monetisation</option>
+                <option value="ai">AI Skills</option>
+                <option value="freelance">Freelancing</option>
+                <option value="copywriting">Copywriting</option>
                 <option value="ecommerce">E-Commerce</option>
                 <option value="social">Social Media Marketing</option>
-                <option value="copywriting">Copywriting</option>
-                <option value="content">Content & Monetisation</option>
-                <option value="email">Email Marketing</option>
-                <option value="seo">SEO & Content Strategy</option>
-                <option value="funnel">Funnel Building</option>
-                <option value="video">Video Marketing</option>
-                <option value="finance">Finance & Investing</option>
-                <option value="sales">Sales & Business Dev</option>
-                <option value="consulting">Coaching & Consulting</option>
-                <option value="trading">Trading & Crypto</option>
-                <option value="design">UX/UI Design</option>
-                <option value="branding">Branding & Strategy</option>
-                <option value="leadership">Leadership & Management</option>
-                <option value="freelance">Freelancing</option>
-                <option value="speaking">Public Speaking</option>
-                <option value="health">Health & Wellness</option>
-                <option value="realestate">Real Estate</option>
-                <option value="personal">Personal Development</option>
               </select>
             </div>
             <div class="fg">
@@ -914,7 +883,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
                     <input type="checkbox" id="inc-cert" checked/> Verified certificate on completion
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-updates" checked/> Course updates included
+                    <input type="checkbox" id="inc-lifetime" checked/> Lifetime access & free updates
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
                     <input type="checkbox" id="inc-dl"/> Downloadable resources
@@ -1041,111 +1010,17 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div style="color:var(--text3);text-align:center;padding:32px;">No payout history yet.</div>
     </div>
 
-
-    <!-- COMMUNITY VIEW -->
-    <div class="page-view" id="view-community">
-      <div class="sec-header">
-        <div>
-          <div class="sec-title">Community</div>
-          <div class="sec-sub">Manage your private student communities. One is auto-created per course when a student enrolls.</div>
-        </div>
-      </div>
-
-      <div id="inst-comm-notifications" style="display:none;background:#fff;border:1.5px solid var(--teal);border-radius:12px;overflow:hidden;margin-bottom:20px;">
-        <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;background:var(--teal-dim);">
-          <span>&#128276; New student activity</span>
-          <button onclick="markInstNotifsRead()" style="font-size:12px;color:var(--teal-dark);background:none;border:none;cursor:pointer;font-weight:600;">Mark all read</button>
-        </div>
-        <div id="inst-notif-list"></div>
-      </div>
-
-      <div id="inst-community-list"><div style="text-align:center;padding:48px;color:var(--text3);"><div style="width:28px;height:28px;border:2.5px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;"></div>Loading communities...</div></div>
-
-      <div id="inst-community-detail" style="display:none;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
-          <button onclick="backToCommunityList()" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;">&#8592; Back</button>
-          <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;" id="comm-detail-title">Community</div>
-          <span style="font-size:12px;padding:3px 10px;background:var(--teal-dim);color:var(--teal-dark);border-radius:100px;font-weight:700;" id="comm-detail-count">0 members</span>
-        </div>
-
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;box-shadow:var(--sh);margin-bottom:20px;">
-          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;">&#128162; Post Announcement</div>
-          <input id="ann-title-input" type="text" placeholder="Announcement title..." style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-          <textarea id="ann-body-input" placeholder="Message to all students..." style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-          <button onclick="postAnnouncement()" style="margin-top:10px;padding:10px 24px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Post to all students &#128162;</button>
-        </div>
-
-        <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;width:fit-content;">
-          <button id="ctab-posts"     onclick="switchCommTab('posts')"     style="padding:9px 20px;font-size:13px;font-weight:600;border:none;background:var(--teal);color:#0d0d1a;cursor:pointer;">Posts</button>
-          <button id="ctab-members"   onclick="switchCommTab('members')"   style="padding:9px 20px;font-size:13px;font-weight:600;border:none;background:#fff;color:var(--text2);cursor:pointer;border-left:1px solid var(--border);">Members</button>
-          <button id="ctab-resources" onclick="switchCommTab('resources')" style="padding:9px 20px;font-size:13px;font-weight:600;border:none;background:#fff;color:var(--text2);cursor:pointer;border-left:1px solid var(--border);">Resources</button>
-        </div>
-
-        <div id="ctab-posts-content"><div id="comm-posts-list"></div></div>
-        <div id="ctab-members-content" style="display:none;"><div id="comm-members-list" style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;"></div></div>
-        <div id="ctab-resources-content" style="display:none;">
-          <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:20px;margin-bottom:12px;">
-            <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;">Add resource</div>
-            <div style="display:flex;gap:10px;">
-              <input id="res-name-input" type="text" placeholder="Resource name..." style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-              <input id="res-url-input"  type="url"  placeholder="https://..." style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-              <button onclick="addResource()" style="padding:10px 18px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Add</button>
-            </div>
-          </div>
-          <div id="comm-resources-list"></div>
-        </div>
-      </div>
-    </div>
-
     <!-- PROFILE -->
     <div class="page-view" id="view-profile">
       <div class="sec-header"><div class="sec-title">Profile</div></div>
-      <div style="max-width:600px;display:flex;flex-direction:column;gap:16px;">
-
-        <!-- Photo card -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);">
-          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px;">Profile photo</div>
-          <div style="display:flex;align-items:center;gap:20px;">
-            <div style="position:relative;flex-shrink:0;">
-              <div id="pf-avatar-wrap" style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--border);" id="pf-avatar-wrap">
-                <span id="pf-avatar-initials">?</span>
-              </div>
-              <label for="pf-photo-input" style="position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:13px;" title="Upload photo">&#9998;</label>
-              <input type="file" id="pf-photo-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(this)"/>
-            </div>
-            <div>
-              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;" id="pf-name-display">Instructor</div>
-              <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">JPG or PNG · Max 5MB · Square recommended</div>
-              <label for="pf-photo-input" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);border-radius:6px;padding:7px 14px;cursor:pointer;">&#128444; Upload photo</label>
-            </div>
-          </div>
+      <div style="max-width:600px;">
+        <div class="frow-1" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);">
+          <div class="fg"><label>Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your name"/></div>
+          <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and expertise..." style="min-height:100px;"></textarea></div>
+          <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
+          <div class="fg"><label>Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
+          <button class="btn btn-teal" onclick="saveProfile()">Save profile</button>
         </div>
-
-        <!-- Info card -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);">
-          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px;">Public information</div>
-          <div style="display:flex;flex-direction:column;gap:14px;">
-            <div class="fg"><label>Display name *</label><input class="fi" id="pf-name" type="text" placeholder="Your full name"/></div>
-            <div class="fg"><label>Headline</label><input class="fi" id="pf-headline" type="text" placeholder="e.g. Digital Marketing Expert &amp; Course Creator"/></div>
-            <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience, results, and what makes you qualified to teach this..." style="min-height:120px;resize:vertical;"></textarea></div>
-            <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
-          </div>
-        </div>
-
-        <!-- Payout card -->
-        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);">
-          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;">Payout details</div>
-          <div style="font-size:12px;color:var(--text3);margin-bottom:18px;">Earnings are sent here. Keep this accurate.</div>
-          <div style="display:flex;flex-direction:column;gap:14px;">
-            <div class="fg"><label>Bank name</label><input class="fi" id="pf-bank-name" type="text" placeholder="e.g. GTBank, Zenith Bank, Chase..."/></div>
-            <div class="fg"><label>Account number</label><input class="fi" id="pf-account-number" type="text" maxlength="20" placeholder="Account number"/></div>
-            <div class="fg"><label>Account name</label><input class="fi" id="pf-account-name" type="text" placeholder="Name on account"/></div>
-          </div>
-        </div>
-
-        <button class="btn btn-teal" style="width:100%;padding:13px;font-size:15px;" onclick="saveProfile()">Save profile</button>
-        <div id="pf-save-status" style="text-align:center;font-size:13px;color:var(--teal-dark);display:none;">&#10003; Profile saved</div>
-
       </div>
     </div>
 
@@ -1290,26 +1165,14 @@ function slErr(code) {
 </script>
 
 <script>
-
 function doSignOut(){
-  // Try slSignOut if already loaded
-  if(typeof window.slSignOut === 'function'){
-    window.slSignOut();
-    return;
-  }
-  // Fall back: import Firebase auth and sign out directly
-  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
-    .then(function(m){ 
-      var auth = window._auth || m.getAuth();
-      return m.signOut(auth); 
-    })
-    .then(function(){ window.location.href = '/'; })
-    .catch(function(){ 
-      // Last resort: clear storage and redirect
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = '/'; 
-    });
+  if(typeof window.slSignOut === 'function'){ window.slSignOut(); return; }
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js').then(function(m){
+    var auth = window._auth || m.getAuth();
+    return m.signOut(auth);
+  }).then(function(){ window.location.href = '/'; }).catch(function(){
+    localStorage.clear(); window.location.href = '/';
+  });
 }
 /* ══════════════════════════════════════════
    NAVIGATION
@@ -1321,9 +1184,6 @@ function showView(v) {
   var nav  = document.getElementById('nav-'+v);
   if(view) view.classList.add('active');
   if(nav)  nav.classList.add('active');
-  if(v === 'courses')   loadMyCourses();
-  if(v === 'community') loadInstructorCommunities();
-  if(v === 'profile')   loadProfile();
 }
 
 /* ══════════════════════════════════════════
@@ -1904,628 +1764,8 @@ async function saveDraft() {
   showToast('&#128190;','Draft saved locally.');
 }
 
-async function handleProfilePhoto(input){
-  var file = input.files[0]; if(!file) return;
-  if(file.size > 5*1024*1024){ showToast('❌','Max 5MB for profile photo.'); return; }
-  var reader = new FileReader();
-  reader.onload = async function(e){
-    var dataUrl = e.target.result;
-    // Show preview immediately
-    var wrap = document.getElementById('pf-avatar-wrap');
-    if(wrap){
-      wrap.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/><label for="pf-photo-input" style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:13px;">&#9998;</label>';
-    }
-    // Update sidebar avatar
-    var sidebarAv = document.getElementById('sp-avatar');
-    if(sidebarAv) sidebarAv.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
-    // Save to Firestore
-    if(window._db && window._user){
-      try {
-        var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-        await fb.setDoc(fb.doc(window._db,'users',window._user.uid),
-          { photoURL: dataUrl, updatedAt: fb.serverTimestamp() },
-          { merge: true }
-        );
-        showToast('✓','Profile photo updated!');
-        // Save locally for fast load
-        localStorage.setItem('sl_inst_photo', dataUrl);
-      } catch(e){ showToast('❌','Upload failed: '+e.message); }
-    }
-  };
-  reader.readAsDataURL(file);
-}
-
-async function saveProfile(){
-  var name    = (document.getElementById('pf-name')||{}).value||'';
-  var headline= (document.getElementById('pf-headline')||{}).value||'';
-  var bio     = (document.getElementById('pf-bio')||{}).value||'';
-  var url     = (document.getElementById('pf-url')||{}).value||'';
-  var bankName= (document.getElementById('pf-bank-name')||{}).value||'';
-  var bankAcc = (document.getElementById('pf-account-number')||{}).value||'';
-  var bankAccName=(document.getElementById('pf-account-name')||{}).value||'';
-
-  if(!name.trim()){ showToast('⚠️','Enter your display name.'); return; }
-
-  var btn = document.querySelector('#view-profile .btn-teal');
-  if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
-
-  try {
-    if(window._db && window._user){
-      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),{
-        name, headline, bio, website:url,
-        bankName, accountNumber:bankAcc, accountName:bankAccName,
-        updatedAt: fb.serverTimestamp()
-      },{ merge:true });
-    }
-    window._userName = name;
-    var nameDisplay = document.getElementById('pf-name-display');
-    if(nameDisplay) nameDisplay.textContent = name;
-    var spName = document.getElementById('sp-name');
-    if(spName) spName.textContent = name;
-    // Show initials if no photo
-    var initials = name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-    var initialsEl = document.getElementById('pf-avatar-initials');
-    if(initialsEl) initialsEl.textContent = initials;
-    var spAv = document.getElementById('sp-avatar');
-    if(spAv && !spAv.querySelector('img')) spAv.textContent = initials;
-
-    showToast('✓','Profile saved!');
-    var status = document.getElementById('pf-save-status');
-    if(status){ status.style.display='block'; setTimeout(function(){ status.style.display='none'; },3000); }
-  } catch(e){
-    showToast('❌','Error: '+e.message);
-  } finally {
-    if(btn){ btn.disabled=false; btn.textContent='Save profile'; }
-  }
-}
-
-async function loadProfile(){
-  if(!window._user || !window._db) return;
-  // Restore photo from local cache immediately
-  var cached = localStorage.getItem('sl_inst_photo');
-  if(cached){
-    var wrap = document.getElementById('pf-avatar-wrap');
-    if(wrap) wrap.innerHTML = '<img src="'+cached+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/><label for="pf-photo-input" style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:13px;">&#9998;</label>';
-    var sidebarAv = document.getElementById('sp-avatar');
-    if(sidebarAv) sidebarAv.innerHTML = '<img src="'+cached+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
-  }
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap = await fb.getDoc(fb.doc(window._db,'users',window._user.uid));
-    if(!snap.exists()) return;
-    var d = snap.data();
-    var setVal = function(id,v){ var el=document.getElementById(id); if(el) el.value=v||''; };
-    setVal('pf-name',     d.name);
-    setVal('pf-headline', d.headline);
-    setVal('pf-bio',      d.bio);
-    setVal('pf-url',      d.website);
-    setVal('pf-bank-name',     d.bankName);
-    setVal('pf-account-number',d.accountNumber);
-    setVal('pf-account-name',  d.accountName);
-    if(d.name){
-      var nd = document.getElementById('pf-name-display');
-      if(nd) nd.textContent = d.name;
-      var initials = d.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-      var initialsEl = document.getElementById('pf-avatar-initials');
-      if(initialsEl && !cached) initialsEl.textContent = initials;
-    }
-    if(d.photoURL && d.photoURL !== cached){
-      localStorage.setItem('sl_inst_photo', d.photoURL);
-      var wrap2 = document.getElementById('pf-avatar-wrap');
-      if(wrap2) wrap2.innerHTML = '<img src="'+d.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/><label for="pf-photo-input" style="position:absolute;bottom:-2px;right:-2px;width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #fff;font-size:13px;">&#9998;</label>';
-      var sidebarAv2 = document.getElementById('sp-avatar');
-      if(sidebarAv2) sidebarAv2.innerHTML = '<img src="'+d.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
-    }
-  } catch(e){ console.warn('Profile load failed:', e.message); }
-}
+function saveProfile() { showToast('✓','Profile saved.'); }
 function openTestiForm() { showToast('&#128247;','Testimonial form coming soon.'); }
-
-
-/* ══════════════════════════════════════════
-   INSTRUCTOR COMMUNITY SYSTEM
-══════════════════════════════════════════ */
-
-var _activeCourseId   = null;
-var _activeCourseName = null;
-var _commUnread       = 0;
-
-async function loadInstructorCommunities(){
-  var el = document.getElementById('inst-community-list'); if(!el) return;
-  if(!window._user || !window._db) return;
-
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var db = window._db;
-
-    // Get all courses by this instructor
-    var coursesSnap = await fb.getDocs(fb.query(
-      fb.collection(db,'courses'),
-      fb.where('instructorId','==',window._user.uid)
-    ));
-    var courses = coursesSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-
-    if(!courses.length){
-      el.innerHTML = '<div style="text-align:center;padding:48px 20px;color:var(--text3);">'
-        +'<div style="font-size:48px;margin-bottom:16px;">&#128101;</div>'
-        +'<div style="font-family:Poppins,sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:10px;">No communities yet</div>'
-        +'<div style="font-size:13px;line-height:1.8;max-width:400px;margin:0 auto 20px;">'
-          +'Communities are <strong>created automatically</strong> — you do not need to do anything.<br/><br/>'
-          +'Once you create a course and a student enrolls, their private community appears here instantly.'
-        +'</div>'
-        +"<button onclick=\"showView('builder'); startNewCourse();\" style=\"padding:11px 24px;background:var(--teal);border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;\">+ Create your first course</button>"
-        +'</div>';
-      return;
-    }
-
-    // Show courses that are pending (no students yet) vs live with students
-    var pendingCourses = courses.filter(function(c){ return c.status !== 'approved'; });
-    if(courses.length && !courses.some(function(c){ return c.status === 'approved'; })){
-      el.innerHTML = '<div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:28px;text-align:center;">'
-        +'<div style="font-size:40px;margin-bottom:14px;">&#9203;</div>'
-        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;">Your course is pending approval</div>'
-        +'<div style="font-size:13px;color:var(--text3);line-height:1.8;max-width:360px;margin:0 auto;">Once admin approves your course and your first student enrolls, your community will appear here automatically.</div>'
-        +'</div>';
-      return;
-    }
-
-    // For each course, get member count and unread posts
-    var communities = await Promise.all(courses.map(async function(c){
-      var membersSnap = await fb.getDocs(fb.collection(db,'community_'+c.id+'_members')).catch(function(){ return {size:0}; });
-      var lastCheck   = localStorage.getItem('inst_comm_check_'+c.id) || '2020-01-01T00:00:00Z';
-      var unreadSnap  = await fb.getDocs(fb.query(
-        fb.collection(db,'community_'+c.id+'_posts'),
-        fb.where('createdAt','>',new Date(lastCheck)),
-        fb.where('role','==','student'),
-        fb.limit(50)
-      )).catch(function(){ return {docs:[]}; });
-
-      return {
-        courseId:    c.id,
-        courseTitle: c.title || 'Untitled course',
-        status:      c.status || 'draft',
-        members:     membersSnap.size || 0,
-        unread:      unreadSnap.docs ? unreadSnap.docs.length : 0,
-      };
-    }));
-
-    // Total unread
-    _commUnread = communities.reduce(function(a,c){ return a+(c.unread||0); },0);
-    updateCommBadge();
-
-    // Show notification banner if any unread
-    renderInstNotifications(communities.filter(function(c){ return c.unread > 0; }));
-
-    // Render community cards
-    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'
-      + communities.map(function(c){
-          return '<div data-id="'+c.courseId+'" data-title="'+c.courseTitle+'" class="comm-course-card" style="background:#fff;border:1.5px solid '+(c.unread>0?'var(--teal)':'var(--border)')+';border-radius:14px;overflow:hidden;box-shadow:var(--sh);cursor:pointer;transition:all .2s;" onclick="handleCommCardClick(this)">'+
-            '<div style="background:linear-gradient(135deg,#0d0d1a,#1a1a2e);padding:20px;position:relative;">'
-              +(c.unread>0?'<div style="position:absolute;top:12px;right:12px;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:100px;">'+c.unread+' new</div>':'')
-              +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:4px;">'+c.courseTitle+'</div>'
-              +'<div style="font-size:12px;color:rgba(255,255,255,.4);">Private community</div>'
-            +'</div>'
-            +'<div style="padding:16px;">'
-              +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
-                +'<div style="font-size:13px;color:var(--text2);">&#128101; <strong>'+c.members+'</strong> member'+(c.members!==1?'s':'')+'</div>'
-                +'<span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:100px;background:'+(c.status==='approved'?'rgba(34,197,94,.1)':'rgba(245,158,11,.1)')+';color:'+(c.status==='approved'?'#166534':'#92400e')+'">'+(c.status==='approved'?'Live':'Pending')+'</span>'
-              +'</div>'
-              +'<button style="width:100%;padding:10px;background:'+(c.unread>0?'var(--teal)':'var(--bg2)')+';border:none;border-radius:8px;font-size:13px;font-weight:700;color:'+(c.unread>0?'#0d0d1a':'var(--text2)')+';cursor:pointer;">'
-                +(c.unread>0?'&#128276; View '+c.unread+' new post'+(c.unread!==1?'s':''):'Open community')
-              +'</button>'
-            +'</div>'
-          +'</div>';
-        }).join('')
-      +'</div>';
-
-  } catch(e){
-    var el2 = document.getElementById('inst-community-list');
-    if(el2) el2.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
-  }
-}
-
-
-function handleCommCardClick(el){
-  var id    = el.dataset.id;
-  var title = el.dataset.title;
-  if(id && title) openCommunityDetail(id, title);
-}
-
-function renderInstNotifications(communities){
-  var banner  = document.getElementById('inst-comm-notifications');
-  var listEl  = document.getElementById('inst-notif-list');
-  if(!banner || !listEl || !communities.length) return;
-
-  banner.style.display = 'block';
-  listEl.innerHTML = communities.map(function(c){
-    return '<div data-id="'+c.courseId+'" data-title="'+c.courseTitle+'" style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);cursor:pointer;" onclick="handleCommCardClick(this)">'
-      +'<div style="width:38px;height:38px;border-radius:50%;background:var(--teal-dim);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">&#128172;</div>'
-      +'<div style="flex:1;">'
-        +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+c.unread+' new student post'+(c.unread!==1?'s':'')+' in '+c.courseTitle+'</div>'
-        +'<div style="font-size:12px;color:var(--text3);margin-top:2px;">Tap to view and reply</div>'
-      +'</div>'
-      +'<div style="background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:100px;">'+c.unread+'</div>'
-    +'</div>';
-  }).join('');
-}
-
-function updateCommBadge(){
-  var badge = document.getElementById('comm-notif-badge');
-  if(!badge) return;
-  if(_commUnread > 0){
-    badge.style.display = 'inline-block';
-    badge.textContent   = _commUnread > 9 ? '9+' : String(_commUnread);
-  } else {
-    badge.style.display = 'none';
-  }
-}
-
-function markInstNotifsRead(){
-  if(_activeCourseId) localStorage.setItem('inst_comm_check_'+_activeCourseId, new Date().toISOString());
-  var banner = document.getElementById('inst-comm-notifications');
-  if(banner) banner.style.display = 'none';
-  _commUnread = 0;
-  updateCommBadge();
-  loadInstructorCommunities();
-}
-
-async function openCommunityDetail(courseId, courseTitle){
-  _activeCourseId   = courseId;
-  _activeCourseName = courseTitle;
-
-  // Mark as read
-  localStorage.setItem('inst_comm_check_'+courseId, new Date().toISOString());
-
-  // Show detail, hide list
-  document.getElementById('inst-community-list').style.display   = 'none';
-  document.getElementById('inst-community-detail').style.display = 'block';
-  document.getElementById('comm-detail-title').textContent       = courseTitle;
-
-  switchCommTab('posts');
-  loadCommunityPosts(courseId);
-  loadCommunityMembers(courseId);
-}
-
-function backToCommunityList(){
-  document.getElementById('inst-community-detail').style.display = 'none';
-  document.getElementById('inst-community-list').style.display   = 'block';
-  _activeCourseId = null;
-  loadInstructorCommunities();
-}
-
-function switchCommTab(tab){
-  ['posts','members','resources'].forEach(function(t){
-    var btn = document.getElementById('ctab-'+t);
-    var content = document.getElementById('ctab-'+t+'-content');
-    if(btn){
-      btn.style.background = t===tab ? 'var(--teal)' : '#fff';
-      btn.style.color      = t===tab ? '#0d0d1a'     : 'var(--text2)';
-    }
-    if(content) content.style.display = t===tab ? 'block' : 'none';
-  });
-  if(tab === 'members' && _activeCourseId)   loadCommunityMembers(_activeCourseId);
-  if(tab === 'resources' && _activeCourseId) loadCommunityResources(_activeCourseId);
-}
-
-async function loadCommunityPosts(courseId){
-  var el = document.getElementById('comm-posts-list'); if(!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">Loading posts...</div>';
-
-  if(!window._db) return;
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap = await fb.getDocs(fb.query(
-      fb.collection(window._db,'community_'+courseId+'_posts'),
-      fb.orderBy('createdAt','desc'),
-      fb.limit(30)
-    ));
-
-    if(!snap.docs.length){
-      el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">No posts yet. Students will post here after enrolling.</div>';
-      return;
-    }
-
-    el.innerHTML = snap.docs.map(function(d){
-      var p = Object.assign({id:d.id},d.data());
-      var isNew = !localStorage.getItem('inst_read_post_'+p.id);
-      var time  = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : (p.time||'');
-      return '<div data-postid="'+p.id+'" style="background:#fff;border:1.5px solid '+(isNew?'var(--teal)':'var(--border)')+';border-radius:12px;padding:18px;box-shadow:var(--sh);" onclick="markPostRead(this.dataset.postid)" id="post-card-'+p.id+'">'
-        +'<div style="display:flex;align-items:flex-start;gap:12px;">'
-          +'<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">'+(p.initials||'S')+'</div>'
-          +'<div style="flex:1;min-width:0;">'
-            +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'
-              +'<span style="font-size:13px;font-weight:700;color:var(--text);">'+(p.author||'Student')+'</span>'
-              +(p.role==='student'?'<span style="font-size:11px;padding:2px 8px;background:var(--bg3);color:var(--text3);border-radius:100px;">Student</span>':'')
-              +(isNew?'<span style="font-size:11px;padding:2px 8px;background:rgba(78,204,163,.15);color:var(--teal-dark);border-radius:100px;font-weight:700;">NEW</span>':'')
-              +'<span style="font-size:11px;color:var(--text3);margin-left:auto;">'+time+'</span>'
-            +'</div>'
-            +'<div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;">'+(p.text||'')+'</div>'
-            +'<button data-pid="" + p.id + "" onclick="showReplyBox(this.dataset.pid)" style="font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:none;border-radius:6px;padding:6px 14px;cursor:pointer;">Reply as instructor</button>'
-            +'<div id="reply-box-'+p.id+'" style="display:none;margin-top:12px;">'
-              +'<textarea id="reply-text-'+p.id+'" placeholder="Write your reply..." style="width:100%;padding:10px 12px;border:1.5px solid var(--teal);border-radius:8px;font-size:13px;font-family:Inter,sans-serif;outline:none;min-height:70px;resize:vertical;line-height:1.6;"></textarea>'
-              +'<div style="display:flex;gap:8px;margin-top:8px;">'
-                +'<button data-cid="" + courseId + "" data-pid="" + p.id + "" onclick="handleSubmitReply(this)" style="padding:8px 18px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Post reply</button>'
-                +'<button data-pid="" + p.id + "" onclick="hideReplyBox(this.dataset.pid)" style="padding:8px 14px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text3);cursor:pointer;">Cancel</button>'
-              +'</div>'
-            +'</div>'
-          +'</div>'
-        +'</div>'
-      +'</div>';
-    }).join('');
-  } catch(e){
-    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
-  }
-}
-
-function markPostRead(postId){
-  localStorage.setItem('inst_read_post_'+postId, '1');
-  var card = document.getElementById('post-card-'+postId);
-  if(card){
-    card.style.borderColor = 'var(--border)';
-    var badge = card.querySelector('span[style*="NEW"]');
-    if(badge) badge.remove();
-  }
-}
-
-function handleSubmitReply(btn){ submitReply(btn.dataset.cid, btn.dataset.pid); }
-function showReplyBox(postId){
-  var box = document.getElementById('reply-box-'+postId);
-  if(box){ box.style.display='block'; var ta=document.getElementById('reply-text-'+postId); if(ta) ta.focus(); }
-}
-function hideReplyBox(postId){
-  var box = document.getElementById('reply-box-'+postId);
-  if(box) box.style.display='none';
-}
-
-async function submitReply(courseId, postId){
-  var ta = document.getElementById('reply-text-'+postId);
-  var text = ta ? ta.value.trim() : '';
-  if(!text) return;
-
-  if(!window._db || !window._user) return;
-  var initials = (window._userName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    // Add reply as a sub-post or comment
-    await fb.addDoc(fb.collection(window._db,'community_'+courseId+'_posts'), {
-      author:    window._userName || 'Instructor',
-      initials:  initials,
-      uid:       window._user.uid,
-      role:      'instructor',
-      replyTo:   postId,
-      text:      text,
-      createdAt: fb.serverTimestamp(),
-    });
-    showToast('✓','Reply posted!');
-    hideReplyBox(postId);
-    if(ta) ta.value = '';
-    loadCommunityPosts(courseId);
-  } catch(e){
-    showToast('❌','Error: '+e.message);
-  }
-}
-
-async function postAnnouncement(){
-  var titleEl = document.getElementById('ann-title-input');
-  var bodyEl  = document.getElementById('ann-body-input');
-  var title   = titleEl ? titleEl.value.trim() : '';
-  var body    = bodyEl  ? bodyEl.value.trim()  : '';
-
-  if(!title){ showToast('⚠️','Enter an announcement title.'); return; }
-  if(!body){  showToast('⚠️','Write your announcement message.'); return; }
-  if(!_activeCourseId || !window._db || !window._user){ showToast('⚠️','Not connected.'); return; }
-
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    await fb.addDoc(fb.collection(window._db,'community_'+_activeCourseId+'_ann'), {
-      title:     title,
-      text:      body,
-      author:    window._userName || 'Instructor',
-      uid:       window._user.uid,
-      pinned:    false,
-      createdAt: fb.serverTimestamp(),
-    });
-    if(titleEl) titleEl.value = '';
-    if(bodyEl)  bodyEl.value  = '';
-    showToast('✓','Announcement posted to all students!');
-  } catch(e){
-    showToast('❌','Error: '+e.message);
-  }
-}
-
-async function loadCommunityMembers(courseId){
-  var el = document.getElementById('comm-members-list'); if(!el) return;
-  if(!window._db) return;
-  try {
-    var fb  = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap = await fb.getDocs(fb.collection(window._db,'community_'+courseId+'_members'));
-    var members = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-
-    var countEl = document.getElementById('comm-detail-count');
-    if(countEl) countEl.textContent = members.length+' member'+(members.length!==1?'s':'');
-
-    if(!members.length){
-      el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">No members yet. Students join automatically when they enroll.</div>';
-      return;
-    }
-    el.innerHTML = members.map(function(m){
-      var isInst = m.role === 'instructor';
-      return '<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">'
-        +'<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">'+(m.initials||'S')+'</div>'
-        +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(m.name||'Student')+'</div><div style="font-size:11px;color:var(--text3);">'+(isInst?'Instructor':'Student')+'</div></div>'
-        +(isInst?'<span style="font-size:11px;padding:2px 8px;background:var(--teal-dim);color:var(--teal-dark);border-radius:100px;font-weight:700;">You</span>':'')
-      +'</div>';
-    }).join('');
-  } catch(e){
-    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
-  }
-}
-
-async function loadCommunityResources(courseId){
-  var el = document.getElementById('comm-resources-list'); if(!el) return;
-  if(!window._db) return;
-  try {
-    var fb  = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap = await fb.getDocs(fb.collection(window._db,'community_'+courseId+'_resources'));
-    var resources = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-
-    if(!resources.length){
-      el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">No resources yet.</div>';
-      return;
-    }
-    el.innerHTML = '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;">'
-      +resources.map(function(r){
-        return '<div style="display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);">'
-          +'<div style="font-size:24px;">&#128190;</div>'
-          +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;">'+(r.name||'Resource')+'</div><div style="font-size:12px;color:var(--text3);">'+(r.desc||'')+'</div></div>'
-          +'<a href="'+(r.url||'#')+'" target="_blank" style="font-size:12px;font-weight:600;color:var(--teal-dark);">Open</a>'
-        +'</div>';
-      }).join('')
-      +'</div>';
-  } catch(e){}
-}
-
-async function addResource(){
-  var nameEl = document.getElementById('res-name-input');
-  var urlEl  = document.getElementById('res-url-input');
-  var name   = nameEl ? nameEl.value.trim() : '';
-  var url    = urlEl  ? urlEl.value.trim()  : '';
-
-  if(!name || !url){ showToast('⚠️','Enter both name and URL.'); return; }
-  if(!_activeCourseId || !window._db) return;
-
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    await fb.addDoc(fb.collection(window._db,'community_'+_activeCourseId+'_resources'), {
-      name, url, desc:'Added by instructor', createdAt:fb.serverTimestamp()
-    });
-    if(nameEl) nameEl.value = '';
-    if(urlEl)  urlEl.value  = '';
-    showToast('✓','Resource added!');
-    loadCommunityResources(_activeCourseId);
-  } catch(e){ showToast('❌','Error: '+e.message); }
-}
-
-/* ══ REAL-TIME COMMUNITY NOTIFICATIONS ══ */
-function startCommunityNotifListener(){
-  if(!window._user || !window._db) return;
-  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
-    var db = window._db;
-    // Listen for new posts across all instructor's courses
-    fb.getDocs(fb.query(fb.collection(db,'courses'), fb.where('instructorId','==',window._user.uid))).then(function(snap){
-      snap.docs.forEach(function(d){
-        var courseId = d.id;
-        var lastCheck = localStorage.getItem('inst_comm_check_'+courseId) || new Date(Date.now()-86400000).toISOString();
-        // Real-time listener on student posts
-        fb.onSnapshot(
-          fb.query(fb.collection(db,'community_'+courseId+'_posts'), fb.where('role','==','student'), fb.orderBy('createdAt','desc'), fb.limit(1)),
-          function(snap2){
-            if(!snap2.docs.length) return;
-            var latest = snap2.docs[0].data();
-            var postTime = latest.createdAt && latest.createdAt.toDate ? latest.createdAt.toDate().toISOString() : new Date().toISOString();
-            if(postTime > lastCheck){
-              _commUnread++;
-              updateCommBadge();
-              // Show toast if not on community view
-              var commView = document.getElementById('view-community');
-              var isActive = commView && commView.classList.contains('active');
-              if(!isActive){
-                showToast('&#128172;', (latest.author||'A student')+' posted in your community');
-              }
-            }
-          },
-          function(){}  // ignore errors
-        );
-      });
-    });
-  });
-}
-
-
-async function loadMyCourses(){
-  var el = document.getElementById('courses-list'); if(!el) return;
-  if(!window._user || !window._db){ el.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3);">Not connected.</div>'; return; }
-
-  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);"><div class="loading-spin" style="margin:0 auto 12px;"></div>Loading courses...</div>';
-
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap = await fb.getDocs(fb.query(
-      fb.collection(window._db,'courses'),
-      fb.where('instructorId','==',window._user.uid)
-    ));
-    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-
-    if(!courses.length){
-      el.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);">'
-        +'<div style="font-size:40px;margin-bottom:12px;">&#127891;</div>'
-        +'<div style="font-weight:600;margin-bottom:8px;">No courses yet</div>'
-        +'<div style="font-size:13px;margin-bottom:20px;">Create your first course to start earning.</div>'
-        +"<button class=\"btn btn-teal\" onclick=\"showView('builder'); startNewCourse()\">+ Create first course</button>"
-        +'</div>';
-      return;
-    }
-
-    var statusColors = { approved:'#22c55e', pending_review:'#f59e0b', rejected:'#ef4444', draft:'#8b8fa8' };
-    var statusLabels = { approved:'Live', pending_review:'Pending review', rejected:'Rejected', draft:'Draft' };
-
-    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">'
-      + courses.map(function(c){
-          var st     = c.status || 'draft';
-          var color  = statusColors[st] || '#8b8fa8';
-          var label  = statusLabels[st] || st;
-          return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);">'
-            +'<div style="flex:1;min-width:0;">'
-              +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">'+(c.title||'Untitled')+'</div>'
-              +'<div style="font-size:12px;color:var(--text3);">'+(c.category||'')+(c.category?' &middot; ':'')+(c.totalStudents||0)+' students &middot; &#8358;'+(c.priceNGN||0).toLocaleString()+'</div>'
-            +'</div>'
-            +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+color+'20;color:'+color+';flex-shrink:0;">'+label+'</span>'
-            +'<div style="display:flex;gap:8px;flex-shrink:0;">'
-              +(st==='approved'?'<a href="/course?id='+c.id+'" target="_blank" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border-radius:6px;text-decoration:none;">View live</a>':'')
-              +'<button data-id="'+c.id+'" onclick="editCourse(this.dataset.id)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);background:var(--bg2);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;">Edit</button>'
-              +'<button data-id="'+c.id+'" data-title="'+(c.title||'this course')+'" onclick="deleteCourse(this.dataset.id, this.dataset.title)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.2);border-radius:6px;cursor:pointer;">Delete</button>'
-            +'</div>'
-          +'</div>';
-        }).join('')
-      +'</div>';
-  } catch(e){
-    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
-  }
-}
-
-async function deleteCourse(id, title){
-  if(!confirm('Delete "'+title+'"? This cannot be undone. Students who enrolled will lose access.')) return;
-  try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    await fb.deleteDoc(fb.doc(window._db,'courses',id));
-    showToast('❌','Course deleted.');
-    loadMyCourses();
-  } catch(e){ showToast('❌','Error: '+e.message); }
-}
-
-function editCourse(id){
-  // Load course into builder for editing
-  showView('builder');
-  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
-    fb.getDoc(fb.doc(window._db,'courses',id)).then(function(snap){
-      if(!snap.exists()) return;
-      var c = snap.data();
-      _course = Object.assign(_course, c, { id: id });
-      // Populate wizard fields
-      var set = function(elId,v){ var el=document.getElementById(elId); if(el) el.value=v||''; };
-      set('ci-title',    c.title);
-      set('ci-subtitle', c.subtitle);
-      set('ci-cat',      c.category);
-      set('ci-level',    c.level);
-      set('ci-lang',     c.language);
-      set('ci-duration', c.duration);
-      set('ci-desc',     c.description);
-      set('ci-price',    c.priceNGN);
-      showToast('✏️','Course loaded for editing. Make changes and resubmit.');
-    });
-  });
-}
 
 /* ══════════════════════════════════════════
    INIT
@@ -2730,339 +1970,320 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
 });
 </script>
 
-<!-- TESTIMONIAL MODAL -->
-<div id="testi-modal" style="display:none;position:fixed;inset:0;z-index:600;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;">
-  <div style="background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(13,13,26,.2);">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--border);">
-      <div style="font-family:Poppins,sans-serif;font-size:17px;font-weight:700;">Add Testimonial</div>
-      <button onclick="closeTestiModal()" style="background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer;">&#10005;</button>
+<!-- PENDING INSTRUCTOR SCREENS -->
+<div id="pending-overlay" style="display:none;position:fixed;inset:0;z-index:900;background:#f8f9fc;overflow-y:auto;font-family:'Inter',sans-serif;">
+  <div id="pending-status" style="display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;">
+    <div style="max-width:480px;margin:0 auto;">
+      <div style="width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#4ecca3,#6c63ff);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:32px;color:#fff;margin:0 auto 24px;">S</div>
+      <div id="pending-icon" style="font-size:56px;margin-bottom:16px;">&#9203;</div>
+      <div id="pending-title" style="font-family:'Poppins',sans-serif;font-size:24px;font-weight:700;color:#0d0d1a;margin-bottom:10px;">Application under review</div>
+      <div id="pending-msg" style="font-size:15px;color:#8b8fa8;line-height:1.8;margin-bottom:28px;">Your instructor application is being reviewed. We will email you within 2-3 business days.</div>
+      <div style="background:#fff;border:1.5px solid #e4e6f0;border-radius:14px;padding:20px 24px;margin-bottom:20px;text-align:left;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8b8fa8;margin-bottom:12px;">What happens next</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span style="width:24px;height:24px;border-radius:50%;background:rgba(78,204,163,.1);color:#2db88a;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><span style="font-size:13px;color:#4a4d6a;">Our team reviews your application (2-3 business days)</span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span style="width:24px;height:24px;border-radius:50%;background:rgba(78,204,163,.1);color:#2db88a;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span><span style="font-size:13px;color:#4a4d6a;">You receive an approval email</span></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;"><span style="width:24px;height:24px;border-radius:50%;background:rgba(78,204,163,.1);color:#2db88a;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span><span style="font-size:13px;color:#4a4d6a;">Your instructor portal unlocks</span></div>
+        </div>
+      </div>
+      <div id="pending-apply-btn-wrap" style="display:none;margin-bottom:16px;">
+        <button onclick="showApplicationForm()" style="padding:12px 28px;background:#4ecca3;border:none;border-radius:8px;font-size:15px;font-weight:700;color:#0d0d1a;cursor:pointer;width:100%;">Complete your application &#8594;</button>
+      </div>
+      <button onclick="doSignOut()" style="padding:10px 20px;background:transparent;border:1.5px solid #e4e6f0;border-radius:8px;font-size:13px;color:#8b8fa8;cursor:pointer;">Sign out</button>
     </div>
-    <div style="padding:24px 28px;display:flex;flex-direction:column;gap:16px;">
-      <div>
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Type</label>
-        <div style="display:flex;gap:8px;">
-          <button id="ttype-text"  onclick="setTestiType('text')"  style="flex:1;padding:10px;border:1.5px solid var(--teal);border-radius:8px;font-size:13px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);cursor:pointer;">Text</button>
-          <button id="ttype-photo" onclick="setTestiType('photo')" style="flex:1;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);background:#fff;cursor:pointer;">Photo</button>
-          <button id="ttype-video" onclick="setTestiType('video')" style="flex:1;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);background:#fff;cursor:pointer;">Video</button>
+  </div>
+  <div id="pending-form" style="display:none;padding:40px 20px;">
+    <div style="max-width:620px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,#4ecca3,#6c63ff);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:18px;color:#fff;">S</div>
+        <div><div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;">Instructor Application</div><div style="font-size:12px;color:#8b8fa8;">Tell us about yourself and your course idea</div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1.5px solid #e4e6f0;border-radius:14px;padding:24px;">
+          <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px;">About you</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name *</label><input id="ap-name" type="text" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/></div>
+            <div><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Country *</label><input id="ap-country" type="text" placeholder="e.g. Nigeria, UK, USA" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/></div>
+          </div>
+          <div style="margin-top:14px;"><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Main skill *</label>
+          <select id="ap-skill" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'">
+            <option value="">Select your skill area</option>
+            <option>AI &amp; Machine Learning</option><option>Cybersecurity</option><option>Software Development</option>
+            <option>Data Science &amp; Analytics</option><option>Affiliate Marketing</option><option>Digital Products</option>
+            <option>E-Commerce</option><option>Social Media Marketing</option><option>Copywriting</option>
+            <option>Email Marketing</option><option>SEO &amp; Content Strategy</option><option>Funnel Building</option>
+            <option>Finance &amp; Investing</option><option>Sales &amp; Business Dev</option><option>Trading &amp; Crypto</option>
+            <option>Coaching &amp; Consulting</option><option>UX/UI Design</option><option>Freelancing</option>
+            <option>Public Speaking</option><option>Real Estate</option><option>Health &amp; Wellness</option><option>Other</option>
+          </select></div>
+          <div style="margin-top:14px;"><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Brief bio - background and results *</label>
+          <textarea id="ap-bio" placeholder="Tell us about your background and results..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;min-height:100px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea></div>
         </div>
-      </div>
-      <div>
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Student name *</label>
-        <input id="testi-name" type="text" placeholder="e.g. " style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-      </div>
-      <div>
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Location</label>
-        <input id="testi-location" type="text" placeholder="e.g. London, UK" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-      </div>
-      <div>
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;">Rating *</label>
-        <div id="star-picker" style="display:flex;gap:8px;">
-          <span onclick="setStars(1)" data-star="1" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
-          <span onclick="setStars(2)" data-star="2" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
-          <span onclick="setStars(3)" data-star="3" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
-          <span onclick="setStars(4)" data-star="4" style="font-size:30px;cursor:pointer;color:var(--text3);">&#9734;</span>
-          <span onclick="setStars(5)" data-star="5" style="font-size:30px;cursor:pointer;color:#f59e0b;">&#9733;</span>
+        <div style="background:#fff;border:1.5px solid #e4e6f0;border-radius:14px;padding:24px;">
+          <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px;">Your course idea</div>
+          <div><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Course title *</label><input id="ap-course" type="text" placeholder="e.g. Affiliate Marketing Mastery" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/></div>
+          <div style="margin-top:14px;"><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">What results will students get? *</label><textarea id="ap-outcomes" placeholder="e.g. Students will generate income within 30 days..." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;min-height:80px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"></textarea></div>
+          <div style="margin-top:14px;"><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Proof of results (portfolio, screenshots, links) *</label><input id="ap-proof" type="text" placeholder="https://... or describe your results" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/></div>
         </div>
+        <div id="ap-error" style="display:none;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:12px 16px;font-size:13px;color:#ef4444;"></div>
+        <button onclick="submitInstructorApplication()" id="ap-submit-btn" style="padding:14px;background:#4ecca3;border:none;border-radius:10px;font-size:15px;font-weight:700;color:#0d0d1a;cursor:pointer;">Submit application &#10003;</button>
+        <div style="text-align:center;font-size:12px;color:#8b8fa8;">We review all applications within 2-3 business days.</div>
       </div>
-      <div id="testi-text-field">
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Testimonial text *</label>
-        <textarea id="testi-text" placeholder="What did the student say?" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;min-height:100px;resize:vertical;line-height:1.65;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
-      </div>
-      <div>
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;">Result achieved <span style="font-weight:400;color:var(--text3);">(optional)</span></label>
-        <input id="testi-result" type="text" placeholder="e.g. &#8358;45,000 in week 3" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:Inter,sans-serif;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
-      </div>
-      <div id="testi-media-field" style="display:none;">
-        <label style="display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;" id="testi-media-label">Upload media</label>
-        <div onclick="document.getElementById('testi-media-input').click()" style="border:2px dashed var(--border);border-radius:10px;padding:28px;text-align:center;cursor:pointer;" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--border)'">
-          <div style="font-size:13px;font-weight:600;color:var(--text2);">Click to upload</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:4px;" id="testi-upload-hint">JPG or PNG</div>
-        </div>
-        <input type="file" id="testi-media-input" style="display:none;" onchange="handleTestiMedia(this)"/>
-        <div id="testi-media-preview" style="display:none;margin-top:12px;"></div>
-      </div>
-      <button onclick="saveTestimonial()" id="testi-save-btn" style="padding:13px;background:var(--teal);border:none;border-radius:10px;font-size:15px;font-weight:700;color:#0d0d1a;cursor:pointer;width:100%;">Save testimonial</button>
     </div>
   </div>
 </div>
+
 <script>
-var _testiStars = 5;
-var _testiType  = 'text';
-var _testiMedia = null;
-var _testimonials = [];
 
-function openTestiForm(){
-  ['testi-name','testi-location','testi-text','testi-result'].forEach(function(id){
-    var el=document.getElementById(id); if(el) el.value='';
-  });
-  _testiStars=5; _testiMedia=null; _testiType='text';
-  setStars(5); setTestiType('text');
-  var prev=document.getElementById('testi-media-preview');
-  if(prev){ prev.innerHTML=''; prev.style.display='none'; }
-  document.getElementById('testi-modal').style.display='flex';
+/* ══ INSTRUCTOR VETTING FLOW ══ */
+
+async function checkApplicationStatus(){
+  if(!window._user || !window._db) return null;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'instructorApplications'),
+      fb.where('uid','==',window._user.uid)
+    ));
+    if(snap.empty) return 'not_submitted';
+    var app = snap.docs[0].data();
+    return app.status || 'pending';
+  } catch(e){ return null; }
 }
 
-function closeTestiModal(){
-  document.getElementById('testi-modal').style.display='none';
-}
+async function showApplicationStatus(){
+  var overlay = document.getElementById('pending-overlay');
+  var statusDiv = document.getElementById('pending-status');
+  if(overlay) overlay.style.display = 'block';
+  if(statusDiv){ statusDiv.style.display = 'flex'; statusDiv.style.flexDirection='column'; }
 
-document.getElementById('testi-modal').addEventListener('click',function(e){
-  if(e.target===this) closeTestiModal();
-});
+  var nameEl = document.getElementById('ap-name');
+  if(nameEl && window._userName) nameEl.value = window._userName;
 
-function setTestiType(type){
-  _testiType=type;
-  ['text','photo','video'].forEach(function(t){
-    var btn=document.getElementById('ttype-'+t); if(!btn) return;
-    if(t===type){ btn.style.border='1.5px solid var(--teal)'; btn.style.color='var(--teal-dark)'; btn.style.background='var(--teal-dim)'; }
-    else { btn.style.border='1.5px solid var(--border)'; btn.style.color='var(--text2)'; btn.style.background='#fff'; }
-  });
-  var mf=document.getElementById('testi-media-field');
-  var ml=document.getElementById('testi-media-label');
-  var mh=document.getElementById('testi-upload-hint');
-  var mi=document.getElementById('testi-media-input');
-  if(type==='text'){ if(mf) mf.style.display='none'; }
-  else if(type==='photo'){
-    if(mf) mf.style.display='block';
-    if(ml) ml.textContent='Upload photo';
-    if(mh) mh.textContent='JPG or PNG - Max 5MB';
-    if(mi) mi.accept='image/*';
+  var status = await checkApplicationStatus();
+  var icon  = document.getElementById('pending-icon');
+  var title = document.getElementById('pending-title');
+  var msg   = document.getElementById('pending-msg');
+  var applyWrap = document.getElementById('pending-apply-btn-wrap');
+
+  if(status === 'not_submitted'){
+    if(icon)  icon.innerHTML = '&#128203;';
+    if(title) title.textContent = 'One more step — complete your application';
+    if(msg)   msg.textContent   = 'Your account is created! Now tell us about yourself and your course idea so we can review your application.';
+    if(applyWrap) applyWrap.style.display = 'block';
+  } else if(status === 'approved'){
+    window.location.reload();
+  } else if(status === 'rejected'){
+    if(icon)  icon.innerHTML = '&#10060;';
+    if(title) title.textContent = 'Application not approved';
+    if(msg)   msg.textContent   = 'Unfortunately your application was not approved at this time. Contact support for more information.';
   } else {
-    if(mf) mf.style.display='block';
-    if(ml) ml.textContent='Upload video testimonial';
-    if(mh) mh.textContent='MP4 - Up to 5GB via Bunny Stream';
-    if(mi) mi.accept='video/mp4,video/*';
+    if(icon)  icon.innerHTML = '&#9203;';
+    if(title) title.textContent = 'Application under review';
+    if(msg)   msg.textContent   = 'Your application has been submitted and is being reviewed. We will email you within 2-3 business days.';
   }
 }
 
-function setStars(n){
-  _testiStars=n;
-  document.querySelectorAll('#star-picker span').forEach(function(el){
-    var s=parseInt(el.dataset.star);
-    el.innerHTML=s<=n?'&#9733;':'&#9734;';
-    el.style.color=s<=n?'#f59e0b':'var(--text3)';
-  });
+function showApplicationForm(){
+  var overlay    = document.getElementById('pending-overlay');
+  var statusDiv  = document.getElementById('pending-status');
+  var formDiv    = document.getElementById('pending-form');
+  if(overlay)   overlay.style.display  = 'block';
+  if(statusDiv) statusDiv.style.display = 'none';
+  if(formDiv)   formDiv.style.display   = 'block';
+  var nameEl = document.getElementById('ap-name');
+  if(nameEl && window._userName) nameEl.value = window._userName;
 }
 
-var _testiVideoFile = null;
-var _testiVideoId   = null;
+async function submitInstructorApplication(){
+  var name     = (document.getElementById('ap-name')||{}).value||'';
+  var country  = (document.getElementById('ap-country')||{}).value||'';
+  var skill    = (document.getElementById('ap-skill')||{}).value||'';
+  var bio      = (document.getElementById('ap-bio')||{}).value||'';
+  var course   = (document.getElementById('ap-course')||{}).value||'';
+  var outcomes = (document.getElementById('ap-outcomes')||{}).value||'';
+  var proof    = (document.getElementById('ap-proof')||{}).value||'';
+  var errEl    = document.getElementById('ap-error');
 
-async function handleTestiMedia(input){
-  var file = input.files[0]; if(!file) return;
-  var isVideo = _testiType === 'video';
-  var maxSize = isVideo ? 5*1024*1024*1024 : 5*1024*1024; // 5GB video, 5MB photo
-
-  if(file.size > maxSize){
-    showToast('⚠️', isVideo ? 'Max 5GB for video.' : 'Max 5MB for photo.');
+  if(!name||!country||!skill||!bio||!course||!outcomes||!proof){
+    if(errEl){ errEl.textContent='Please fill in all required fields.'; errEl.style.display='block'; }
     return;
   }
+  if(errEl) errEl.style.display = 'none';
 
-  var prev = document.getElementById('testi-media-preview');
-
-  if(isVideo){
-    // Store file for Bunny upload on save
-    _testiVideoFile = file;
-    _testiVideoId   = null;
-    _testiMedia     = null;
-
-    // Show local preview
-    var objUrl = URL.createObjectURL(file);
-    if(prev){
-      prev.style.display = 'block';
-      prev.innerHTML = '<video src="'+objUrl+'" controls style="width:100%;border-radius:8px;max-height:200px;"></video>'
-        +'<div style="font-size:12px;color:var(--text3);margin-top:6px;text-align:center;">&#128248; Video ready — will upload to Bunny Stream when you save</div>';
-    }
-  } else {
-    // Photo: read as data URL
-    _testiVideoFile = null;
-    var reader = new FileReader();
-    reader.onload = function(e){
-      _testiMedia = e.target.result;
-      if(prev){
-        prev.style.display = 'block';
-        prev.innerHTML = '<img src="'+e.target.result+'" style="width:100%;border-radius:8px;max-height:200px;object-fit:cover;"/>';
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-async function uploadTestiVideoToBunny(file){
-  // Step 1: Create video on Bunny
-  var testiName = (document.getElementById('testi-name')||{}).value||'Student';
-  var createRes = await fetch('/api/bunny-upload', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ title: 'Testimonial - '+testiName, courseId: 'testimonials', lessonIndex: 0 })
-  });
-  if(!createRes.ok) throw new Error('Could not create Bunny video');
-  var createData = await createRes.json();
-  var videoId = createData.guid;
-
-  // Step 2: Upload file to Bunny
-  var uploadRes = await fetch('https://video.bunnycdn.com/library/690865/videos/'+videoId, {
-    method: 'PUT',
-    headers: { 'AccessKey': '6c4e5625-43cc-40d1-837892724178-134a-459b' },
-    body: file
-  });
-  if(!uploadRes.ok) throw new Error('Bunny upload failed');
-  return videoId;
-}
-
-async function saveTestimonial(){
-  var name=(document.getElementById('testi-name')||{}).value||'';
-  var text=(document.getElementById('testi-text')||{}).value||'';
-  var loc=(document.getElementById('testi-location')||{}).value||'';
-  var result=(document.getElementById('testi-result')||{}).value||'';
-
-  if(!name){ showToast('&#9888;&#65039;','Enter the student name.'); return; }
-  if(!text && _testiType==='text'){ showToast('&#9888;&#65039;','Enter the testimonial text.'); return; }
-
-  var btn=document.getElementById('testi-save-btn');
-  if(btn){ btn.disabled=true; btn.textContent='Saving...'; }
+  var btn = document.getElementById('ap-submit-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
 
   try {
-    var videoId  = null;
-    var mediaUrl = _testiMedia || null;
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.addDoc(fb.collection(window._db,'instructorApplications'),{
+      uid: window._user.uid, email: window._user.email,
+      name, country, skill, bio, courseTitle:course, outcomes, proof,
+      status:'pending', createdAt:fb.serverTimestamp(),
+    });
 
-    // Upload video to Bunny if present
-    if(_testiType === 'video' && _testiVideoFile){
-      var uploadBtn = document.getElementById('testi-save-btn');
-      if(uploadBtn) uploadBtn.textContent = 'Uploading video...';
-      try {
-        videoId  = await uploadTestiVideoToBunny(_testiVideoFile);
-        mediaUrl = 'https://vz-4ec805fa-2e2.b-cdn.net/'+videoId+'/play_720p.mp4';
-        _testiVideoId = videoId;
-      } catch(uploadErr){
-        showToast('⚠️','Video upload failed: '+uploadErr.message+'. Saving without video.');
-        videoId = null; mediaUrl = null;
-      }
-    }
-
-    if(window._user && window._db){
-      var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-      var ref=await fb.addDoc(fb.collection(window._db,'testimonials'),{
-        name:name, location:loc, type:_testiType, text:text,
-        stars:_testiStars, result:result, status:'pending',
-        mediaUrl:mediaUrl, videoId:videoId,
-        instructorId:window._user.uid, createdAt:fb.serverTimestamp(),
-      });
-      _testimonials.unshift({id:ref.id,name:name,location:loc,type:_testiType,text:text,stars:_testiStars,result:result,status:'pending',mediaSrc:mediaUrl});
-    }
-    closeTestiModal();
-    renderTestimonialsList();
-    showToast('&#10003;','Testimonial submitted for review!');
-  } catch(e){ showToast('&#10007;','Error: '+e.message); }
-  finally { if(btn){ btn.disabled=false; btn.textContent='Save testimonial'; } }
-}
-
-function renderTestimonialsList(){
-  var el=document.getElementById('testi-list'); if(!el) return;
-  if(!_testimonials.length){
-    el.innerHTML='<div style="color:var(--text3);text-align:center;padding:48px;"><div style="font-size:36px;margin-bottom:12px;">&#11088;</div><div>No testimonials yet. Add your first student result.</div></div>';
-    return;
+    var formDiv   = document.getElementById('pending-form');
+    var statusDiv = document.getElementById('pending-status');
+    var icon      = document.getElementById('pending-icon');
+    var title     = document.getElementById('pending-title');
+    var msg       = document.getElementById('pending-msg');
+    if(formDiv)   formDiv.style.display   = 'none';
+    if(statusDiv){ statusDiv.style.display='flex'; statusDiv.style.flexDirection='column'; }
+    if(icon)      icon.innerHTML    = '&#9989;';
+    if(title)     title.textContent = 'Application submitted!';
+    if(msg)       msg.textContent   = 'We have received your application and will review it within 2-3 business days. Watch your email for our decision.';
+    showToast('&#10003;','Application submitted!');
+  } catch(e){
+    if(errEl){ errEl.textContent='Error: '+e.message; errEl.style.display='block'; }
+    if(btn){ btn.disabled=false; btn.textContent='Submit application'; }
   }
-  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'
-    +_testimonials.map(function(t){
-      var stars=''; for(var i=1;i<=5;i++) stars+=i<=t.stars?'&#9733;':'&#9734;';
-      return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--sh);">'
-        +(t.mediaSrc&&t.type==='photo'?'<img src="'+t.mediaSrc+'" style="width:100%;height:160px;object-fit:cover;display:block;"/>':'')
-        +(t.mediaSrc&&t.type==='video'?'<video src="'+t.mediaSrc+'" controls style="width:100%;height:160px;display:block;"></video>':'')
-        +'<div style="padding:16px;">'
-          +'<div style="color:#f59e0b;font-size:16px;margin-bottom:8px;">'+stars+'</div>'
-          +'<div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;">'+t.text+'</div>'
-          +'<div style="font-size:13px;font-weight:600;color:var(--text);">'+t.name+'</div>'
-          +(t.location?'<div style="font-size:11px;color:var(--text3);">'+t.location+'</div>':'')
-          +(t.result?'<div style="margin-top:8px;font-size:11px;font-weight:700;background:var(--teal-dim);color:var(--teal-dark);border-radius:6px;padding:4px 10px;display:inline-block;">&#128640; '+t.result+'</div>':'')
-          +'<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">'
-            +'<span style="font-size:11px;padding:3px 8px;border-radius:100px;background:'+(t.status==='pending'?'rgba(245,158,11,.1)':'rgba(34,197,94,.1)')+';color:'+(t.status==='pending'?'#92400e':'#166534')+';">'+(t.status==='pending'?'Pending':'Approved')+'</span>'
-            +'<button data-id="'+t.id+'" onclick="deleteTestimonial(this.dataset.id)" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:12px;" >Delete</button>'
-          +'</div>'
-        +'</div>'
-      +'</div>';
-    }).join('')
-  +'</div>';
 }
 
-async function deleteTestimonial(id){
-  if(!confirm('Delete this testimonial?')) return;
-  _testimonials=_testimonials.filter(function(t){ return t.id!==id; });
-  if(window._user && window._db){
-    try { var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js'); await fb.deleteDoc(fb.doc(window._db,'testimonials',id)); } catch(e){}
-  }
-  renderTestimonialsList();
-  showToast('&#10007;','Testimonial deleted.');
-}
 
-/* ── AUTH GUARD + STATS ── */
+/* ══ AUTH GUARD + VETTING ══ */
 document.addEventListener('authReady', function(e){
   if(!e.detail.user){
-    window.location.href = '/join?next=instructor';
+    window.location.href = '/instructor-signup';
     return;
   }
 
-  // Set sidebar name
-  var spName = document.getElementById('sp-name');
-  var spAv   = document.getElementById('sp-avatar');
-  var initials = (window._userName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-  if(spName) spName.textContent = window._userName || 'Instructor';
-  if(spAv && !spAv.querySelector('img')) spAv.textContent = initials;
+  var role = window._userRole;
 
-  // Load profile photo + name immediately
+  // Pending instructor - show application/status screen
+  if(role === 'pending_instructor'){
+    var params = new URLSearchParams(window.location.search);
+    if(params.get('apply') === '1'){
+      showApplicationForm();
+    } else {
+      showApplicationStatus();
+    }
+    return;
+  }
+
+  // Not instructor/admin - redirect to student dashboard
+  if(role !== 'instructor' && role !== 'admin'){
+    window.location.href = '/dashboard';
+    return;
+  }
+
+  // Load instructor profile and stats
   loadProfile();
-
-  // Load my courses
   loadMyCourses();
-
-  // Start real-time community notification listener
   startCommunityNotifListener();
 
-  // Load real stats
-  if(window._db){
-    import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
-      fb.getDocs(fb.query(
-        fb.collection(window._db,'courses'),
-        fb.where('instructorId','==',e.detail.user.uid)
-      )).then(function(snap){
-        var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-        var totalStudents = courses.reduce(function(a,c){ return a+(c.totalStudents||0); },0);
-        var totalEarnings = courses.reduce(function(a,c){ return a+((c.totalRevenue||0)*0.6); },0);
-        var s = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
-        s('sp-courses',  courses.length);
-        s('sp-students', totalStudents);
-        s('sp-earnings', '₦'+Math.round(totalEarnings).toLocaleString());
-        s('ov-courses',  courses.length);
-        s('ov-students', totalStudents);
-        s('ov-earnings', '₦'+Math.round(totalEarnings).toLocaleString());
+  // Set sidebar name/avatar
+  var spName = document.getElementById('sp-name');
+  if(spName) spName.textContent = window._userName || 'Instructor';
+  var spAv = document.getElementById('sp-avatar');
+  var initials = (window._userName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  if(spAv && !spAv.querySelector('img')) spAv.textContent = initials;
+});
 
-        // Render course list
-        var el = document.getElementById('ov-course-list') || document.getElementById('courses-list');
-        if(el && courses.length === 0){
-          el.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);"><div style="font-size:40px;margin-bottom:12px;">&#127891;</div><div style="font-weight:600;margin-bottom:6px;">No courses yet</div><button class="btn btn-teal" onclick="goBuilder()">Create first course</button></div>';
-        } else if(el){
-          var statusLabel = {pending_review:'Pending review',approved:'Live',rejected:'Rejected',draft:'Draft'};
-          el.innerHTML = courses.map(function(c){
-            return '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);">'
-              +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(c.title||'Untitled')+'</div>'
-              +'<div style="font-size:12px;color:var(--text3);">'+(statusLabel[c.status]||c.status||'Draft')+' &middot; '+(c.totalStudents||0)+' students</div></div>'
-              +(c.status==='approved'?'<a href="/course?id='+c.id+'" target="_blank" style="font-size:12px;color:var(--teal-dark);font-weight:600;">View live</a>':'')
-            +'</div>';
-          }).join('');
-        }
-      });
-    });
+
+/* ══ INSTRUCTOR VETTING FLOW ══ */
+
+async function checkApplicationStatus(){
+  if(!window._user || !window._db) return null;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'instructorApplications'),
+      fb.where('uid','==',window._user.uid)
+    ));
+    if(snap.empty) return 'not_submitted';
+    var app = snap.docs[0].data();
+    return app.status || 'pending';
+  } catch(e){ return null; }
+}
+
+async function showApplicationStatus(){
+  var overlay = document.getElementById('pending-overlay');
+  var statusDiv = document.getElementById('pending-status');
+  if(overlay) overlay.style.display = 'block';
+  if(statusDiv){ statusDiv.style.display = 'flex'; statusDiv.style.flexDirection='column'; }
+
+  var nameEl = document.getElementById('ap-name');
+  if(nameEl && window._userName) nameEl.value = window._userName;
+
+  var status = await checkApplicationStatus();
+  var icon  = document.getElementById('pending-icon');
+  var title = document.getElementById('pending-title');
+  var msg   = document.getElementById('pending-msg');
+  var applyWrap = document.getElementById('pending-apply-btn-wrap');
+
+  if(status === 'not_submitted'){
+    if(icon)  icon.innerHTML = '&#128203;';
+    if(title) title.textContent = 'One more step — complete your application';
+    if(msg)   msg.textContent   = 'Your account is created! Now tell us about yourself and your course idea so we can review your application.';
+    if(applyWrap) applyWrap.style.display = 'block';
+  } else if(status === 'approved'){
+    window.location.reload();
+  } else if(status === 'rejected'){
+    if(icon)  icon.innerHTML = '&#10060;';
+    if(title) title.textContent = 'Application not approved';
+    if(msg)   msg.textContent   = 'Unfortunately your application was not approved at this time. Contact support for more information.';
+  } else {
+    if(icon)  icon.innerHTML = '&#9203;';
+    if(title) title.textContent = 'Application under review';
+    if(msg)   msg.textContent   = 'Your application has been submitted and is being reviewed. We will email you within 2-3 business days.';
   }
-});
+}
 
-document.addEventListener('authReady',function(e){
-  if(!e.detail.user||!window._db) return;
-  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
-    fb.getDocs(fb.query(fb.collection(window._db,'testimonials'),fb.where('instructorId','==',e.detail.user.uid))).then(function(snap){
-      _testimonials=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-      renderTestimonialsList();
+function showApplicationForm(){
+  var overlay    = document.getElementById('pending-overlay');
+  var statusDiv  = document.getElementById('pending-status');
+  var formDiv    = document.getElementById('pending-form');
+  if(overlay)   overlay.style.display  = 'block';
+  if(statusDiv) statusDiv.style.display = 'none';
+  if(formDiv)   formDiv.style.display   = 'block';
+  var nameEl = document.getElementById('ap-name');
+  if(nameEl && window._userName) nameEl.value = window._userName;
+}
+
+async function submitInstructorApplication(){
+  var name     = (document.getElementById('ap-name')||{}).value||'';
+  var country  = (document.getElementById('ap-country')||{}).value||'';
+  var skill    = (document.getElementById('ap-skill')||{}).value||'';
+  var bio      = (document.getElementById('ap-bio')||{}).value||'';
+  var course   = (document.getElementById('ap-course')||{}).value||'';
+  var outcomes = (document.getElementById('ap-outcomes')||{}).value||'';
+  var proof    = (document.getElementById('ap-proof')||{}).value||'';
+  var errEl    = document.getElementById('ap-error');
+
+  if(!name||!country||!skill||!bio||!course||!outcomes||!proof){
+    if(errEl){ errEl.textContent='Please fill in all required fields.'; errEl.style.display='block'; }
+    return;
+  }
+  if(errEl) errEl.style.display = 'none';
+
+  var btn = document.getElementById('ap-submit-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.addDoc(fb.collection(window._db,'instructorApplications'),{
+      uid: window._user.uid, email: window._user.email,
+      name, country, skill, bio, courseTitle:course, outcomes, proof,
+      status:'pending', createdAt:fb.serverTimestamp(),
     });
-  });
-});
+
+    var formDiv   = document.getElementById('pending-form');
+    var statusDiv = document.getElementById('pending-status');
+    var icon      = document.getElementById('pending-icon');
+    var title     = document.getElementById('pending-title');
+    var msg       = document.getElementById('pending-msg');
+    if(formDiv)   formDiv.style.display   = 'none';
+    if(statusDiv){ statusDiv.style.display='flex'; statusDiv.style.flexDirection='column'; }
+    if(icon)      icon.innerHTML    = '&#9989;';
+    if(title)     title.textContent = 'Application submitted!';
+    if(msg)       msg.textContent   = 'We have received your application and will review it within 2-3 business days. Watch your email for our decision.';
+    showToast('&#10003;','Application submitted!');
+  } catch(e){
+    if(errEl){ errEl.textContent='Error: '+e.message; errEl.style.display='block'; }
+    if(btn){ btn.disabled=false; btn.textContent='Submit application'; }
+  }
+}
+
 </script>
 </body>
 </html>
