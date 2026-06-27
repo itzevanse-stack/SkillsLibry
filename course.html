@@ -364,12 +364,12 @@ a{text-decoration:none;color:inherit}
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="catalog.html" style="color:var(--teal-dark);font-weight:600;">Courses</a>
+    <a class="nav-link" href="/catalog" style="color:var(--teal-dark);font-weight:600;">Courses</a>
     <a class="nav-link" href="#">Community</a>
     <a class="nav-link" href="#">Blog</a>
   </div>
@@ -389,12 +389,12 @@ a{text-decoration:none;color:inherit}
         <div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127464;&#127462;</span><span class="c-name">Canadian Dollar</span><span class="c-symbol">CA$</span></div>
       </div>
     </div>
-    <a class="btn btn-ghost" href="#" id="nav-my-learning" onclick="window._user?window.location.href='dashboard.html':openAuthModal(null,'si')">My Learning</a>
+    <a class="btn btn-ghost" href="#" id="nav-my-learning" onclick="window._user?window.location.href='/dashboard':openAuthModal(null,'si')">My Learning</a>
     <div id="nav-user-menu" style="display:none;align-items:center;gap:10px;">
       <span id="nav-user-name" style="font-size:13px;font-weight:600;color:var(--text2);"></span>
       <button onclick="slSignOut&&slSignOut()" class="btn btn-ghost" style="font-size:12px;padding:7px 14px;">Sign out</button>
     </div>
-    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+    <a class="btn btn-teal" href="/catalog">Browse Courses</a>
   </div>
 </nav>
 
@@ -403,7 +403,7 @@ a{text-decoration:none;color:inherit}
   <div class="hero-inner">
     <div class="course-hero-left">
       <div class="breadcrumb">
-        <a href="catalog.html">Courses</a>
+        <a href="/catalog">Courses</a>
         <span class="breadcrumb-sep">/</span>
         <span id="cd-category">Affiliate Marketing</span>
       </div>
@@ -668,7 +668,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -916,13 +916,13 @@ var MODULES = [];
 
 /* ── NAVIGATION ── */
 function goTo(page){
-  var routes={home:'index.html',catalog:'catalog.html',course:'course.html',
-    dashboard:'dashboard.html',player:'player.html',
-    instructor:'instructor.html',admin:'admin.html'};
+  var routes={home:'/',catalog:'/catalog',course:'/course',
+    dashboard:'/dashboard',player:'/player',
+    instructor:'/instructor',admin:'/admin'};
   if(routes[page]) window.location.href=routes[page];
 }
 function showPage(page){ goTo(page); }
-function showCourseDetail(id){ window.location.href='course.html?id='+id; }
+function showCourseDetail(id){ window.location.href='/course?id='+id; }
 
 /* ── TABS ── */
 function switchTab(btn, pane){
@@ -1103,7 +1103,7 @@ function showToast(icon,msg){
   var params = new URLSearchParams(window.location.search);
   var id = params.get('id');
   if(!id){
-    window.location.href = 'catalog.html';
+    window.location.href = '/catalog';
     return;
   }
 
@@ -1135,7 +1135,7 @@ function showToast(icon,msg){
       +'<div style="font-size:56px;margin-bottom:16px;">&#127891;</div>'
       +'<div style="font-family:Poppins,sans-serif;font-size:24px;font-weight:700;margin-bottom:10px;">Course not found</div>'
       +'<div style="font-size:15px;color:#8b8fa8;margin-bottom:28px;">This course may have been removed or the link is incorrect.</div>'
-      +'<a href="catalog.html" style="padding:12px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;font-size:15px;">Browse all courses</a>'
+      +'<a href="/catalog" style="padding:12px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;font-size:15px;">Browse all courses</a>'
       +'</div>';
     return;
   }
@@ -1684,7 +1684,7 @@ function proceedToCheckout(){
         });
         if(result && result.ok){
           showToast('🎉','Enrolled! Redirecting...');
-          setTimeout(function(){ window.location.href='player.html?course='+c.id+'&community=1'; }, 1500);
+          setTimeout(function(){ window.location.href='/player?course='+c.id+'&community=1'; }, 1500);
         } else {
           showToast('⚠️','Payment received. Contact support if access is delayed.');
         }
