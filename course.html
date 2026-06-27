@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Course — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -389,7 +394,6 @@ a{text-decoration:none;color:inherit}
       <span id="nav-user-name" style="font-size:13px;font-weight:600;color:var(--text2);"></span>
       <button onclick="slSignOut&&slSignOut()" class="btn btn-ghost" style="font-size:12px;padding:7px 14px;">Sign out</button>
     </div>
-    <a class="btn btn-ghost" href="instructor-signup.html" style="font-size:13px;font-weight:600;">Instructor Login</a>
     <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
   </div>
 </nav>
@@ -1097,7 +1101,11 @@ function showToast(icon,msg){
 /* ── LOAD COURSE FROM URL PARAM ── */
 (async function(){
   var params = new URLSearchParams(window.location.search);
-  var id     = params.get('id') || '1';
+  var id = params.get('id');
+  if(!id){
+    window.location.href = 'catalog.html';
+    return;
+  }
 
   // Wait for Firebase
   if(!window._db){
@@ -1120,12 +1128,16 @@ function showToast(icon,msg){
     } catch(e){ console.warn('Course load error:', e.message); }
   }
 
-  // Fall back to sample COURSES array
+  // Course not found — redirect
   if(!courseData){
-    var numId = parseInt(id)||1;
-    courseData = (typeof COURSES !== 'undefined' && COURSES.find(function(x){return x.id===numId;}))
-      || (typeof COURSES !== 'undefined' && COURSES[0])
-      || { title:'Course', category:'', instructor:'Instructor', initials:'I', priceNGN:50000, instructorId:'instructor_1' };
+    document.title = 'Course Not Found — SkillsLibry';
+    document.body.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:Inter,sans-serif;color:#0d0d1a;text-align:center;padding:20px;">'
+      +'<div style="font-size:56px;margin-bottom:16px;">&#127891;</div>'
+      +'<div style="font-family:Poppins,sans-serif;font-size:24px;font-weight:700;margin-bottom:10px;">Course not found</div>'
+      +'<div style="font-size:15px;color:#8b8fa8;margin-bottom:28px;">This course may have been removed or the link is incorrect.</div>'
+      +'<a href="catalog.html" style="padding:12px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;font-size:15px;">Browse all courses</a>'
+      +'</div>';
+    return;
   }
 
   // Update page
