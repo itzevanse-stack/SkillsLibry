@@ -977,9 +977,16 @@ function slErr(code) {
 
 /* NAVIGATION */
 function goTo(page){
-  var r={home:"index.html",catalog:"/catalog",course:"course.html",
-    dashboard:"/dashboard",player:"player.html",
-    instructor:"instructor.html",admin:"admin.html"};
+  var r={
+    home:"/",
+    catalog:"/catalog",
+    course:"/course",
+    dashboard:"/dashboard",
+    player:"/player",
+    instructor:"/instructor",
+    admin:"/admin",
+    join:"/instructor-signup"
+  };
   if(r[page]) window.location.href=r[page];
 }
 function showPage(p){ goTo(p); }
