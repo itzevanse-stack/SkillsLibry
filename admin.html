@@ -144,6 +144,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <div class="sidebar-item" id="si-payouts" onclick="showAdmin('payouts')">
       <span class="sidebar-icon">&#128176;</span> Payouts
     </div>
+    <div class="sidebar-item" onclick="doSignOut()" style="margin-top:auto;color:var(--red);border-top:1px solid var(--border);padding-top:12px;margin-top:20px;">
+      <span class="sidebar-icon">&#128682;</span> Sign out
+    </div>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -429,6 +432,27 @@ function slErr(code) {
 </div>
 
 <script>
+
+function doSignOut(){
+  // Try slSignOut if already loaded
+  if(typeof window.slSignOut === 'function'){
+    window.slSignOut();
+    return;
+  }
+  // Fall back: import Firebase auth and sign out directly
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
+    .then(function(m){ 
+      var auth = window._auth || m.getAuth();
+      return m.signOut(auth); 
+    })
+    .then(function(){ window.location.href = 'index.html'; })
+    .catch(function(){ 
+      // Last resort: clear storage and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = 'index.html'; 
+    });
+}
 var _authPending = null;
 
 function openAuthModal(cb, tab) {
