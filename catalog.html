@@ -719,7 +719,6 @@ function slErr(code) {
       </div>
     </div>
     <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='dashboard.html' : openAuthModal(null,'signin')">My Learning</a>
-    <a class="btn btn-ghost" href="instructor-signup.html" style="font-size:13px;font-weight:600;">Instructor Login</a>
     <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
   </div>
 </nav>
@@ -739,12 +738,36 @@ function slErr(code) {
   <div class="catalog-body">
     <div class="filter-row">
       <span class="filter-label">Filter:</span>
-      <div class="cat-pill active" onclick="filterCatalog(this,'all')">All</div>
+            <div class="cat-pill active" onclick="filterCatalog(this,'all')">All</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'ai')">AI & Machine Learning</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'cybersecurity')">Cybersecurity</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'cloud')">Cloud Computing</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'software')">Software Development</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'data')">Data Science & Analytics</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'blockchain')">Blockchain & Web3</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'prompt')">Prompt Engineering</div>
       <div class="cat-pill" onclick="filterCatalog(this,'affiliate')">Affiliate Marketing</div>
-      <div class="cat-pill" onclick="filterCatalog(this,'content')">Content & Monetisation</div>
       <div class="cat-pill" onclick="filterCatalog(this,'digital')">Digital Products</div>
-      <div class="cat-pill" onclick="filterCatalog(this,'ai')">AI Skills</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'ecommerce')">E-Commerce</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'social')">Social Media Marketing</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'copywriting')">Copywriting</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'content')">Content & Monetisation</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'email')">Email Marketing</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'seo')">SEO & Content Strategy</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'funnel')">Funnel Building</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'video')">Video Marketing</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'finance')">Finance & Investing</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'sales')">Sales & Business Dev</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'consulting')">Coaching & Consulting</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'trading')">Trading & Crypto</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'design')">UX/UI Design</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'branding')">Branding & Strategy</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'leadership')">Leadership & Management</div>
       <div class="cat-pill" onclick="filterCatalog(this,'freelance')">Freelancing</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'speaking')">Public Speaking</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'health')">Health & Wellness</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'realestate')">Real Estate</div>
+      <div class="cat-pill" onclick="filterCatalog(this,'personal')">Personal Development</div>
       <select class="sort-select">
         <option>Most popular</option>
         <option>Newest first</option>
