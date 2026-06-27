@@ -335,7 +335,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
           <div class="settings-head" style="color:var(--red);">Danger zone</div>
           <div class="settings-body">
             <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Sign out from your account on this device.</div>
-            <button onclick="slSignOut&&slSignOut()" style="padding:10px 20px;background:transparent;border:1.5px solid var(--red);border-radius:8px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;">Sign out</button>
+            <button onclick="doSignOut()" style="padding:10px 20px;background:transparent;border:1.5px solid var(--red);border-radius:8px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;">Sign out</button>
           </div>
         </div>
 
@@ -1058,6 +1058,27 @@ function slErr(code) {
 </div>
 
 <script>
+
+function doSignOut(){
+  // Try slSignOut if already loaded
+  if(typeof window.slSignOut === 'function'){
+    window.slSignOut();
+    return;
+  }
+  // Fall back: import Firebase auth and sign out directly
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
+    .then(function(m){ 
+      var auth = window._auth || m.getAuth();
+      return m.signOut(auth); 
+    })
+    .then(function(){ window.location.href = 'index.html'; })
+    .catch(function(){ 
+      // Last resort: clear storage and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = 'index.html'; 
+    });
+}
 var _authPending = null;
 
 function openAuthModal(cb, tab) {
