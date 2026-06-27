@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Become an Instructor — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -60,7 +65,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;min-height:100vh;displa
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
@@ -113,13 +118,13 @@ body{background:var(--bg);font-family:'Inter',sans-serif;min-height:100vh;displa
         <div class="success-icon">&#127881;</div>
         <div class="success-title">Account created!</div>
         <div class="success-sub">Welcome to SkillsLibry. Your instructor account is ready. Start building your first course.</div>
-        <a class="go-btn" href="instructor.html">Go to Instructor Portal &#8594;</a>
+        <a class="go-btn" href="/instructor">Go to Instructor Portal &#8594;</a>
       </div>
 
       <!-- Form state -->
       <div id="form-state">
-        <div class="form-title">Create instructor account</div>
-        <div class="form-sub">Already have an account? <a onclick="showSignIn()" style="color:var(--teal-dark);font-weight:600;cursor:pointer;">Sign in instead</a></div>
+        <div class="form-title">Apply to teach on SkillsLibry</div>
+        <div class="form-sub">Create your account first — then complete your instructor application.<br/><br/>Already have an account? <a onclick="showSignIn()" style="color:var(--teal-dark);font-weight:600;cursor:pointer;">Sign in</a></div>
 
         <!-- Tabs: Sign up / Sign in -->
         <div class="tabs">
@@ -146,7 +151,7 @@ body{background:var(--bg);font-family:'Inter',sans-serif;min-height:100vh;displa
             <input id="su-confirm" type="password" placeholder="Repeat password"/>
           </div>
           <div id="su-error" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;"></div>
-          <button class="submit-btn" id="su-btn" onclick="doSignUp()">Create instructor account</button>
+          <button class="submit-btn" id="su-btn" onclick="doSignUp()">Create account → Apply</button>
 
           <div class="divider"><span>or</span></div>
           <button class="google-btn" onclick="doGoogleSignUp()">
@@ -279,7 +284,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -355,13 +360,8 @@ function setErr(id, msg){
 }
 
 function showSuccess(){
-  var params = new URLSearchParams(window.location.search);
-  if(params.get('next') === 'instructor'){
-    window.location.href = 'instructor.html';
-    return;
-  }
-  document.getElementById('form-state').style.display  = 'none';
-  document.getElementById('success-state').style.display = 'block';
+  // After creating account, go to application page
+  window.location.href = '/instructor?apply=1';
 }
 
 async function doSignUp(){
@@ -382,12 +382,12 @@ async function doSignUp(){
   var ready = await waitForAuth(8000);
   if(!ready){
     setErr('su-error','Connection timeout. Please refresh and try again.');
-    if(btn){ btn.disabled = false; btn.textContent = 'Create instructor account'; }
+    if(btn){ btn.disabled = false; btn.textContent = 'Create account → Apply'; }
     return;
   }
 
-  var result = await window.slSignUp(name.trim(), email.trim(), pass, 'instructor');
-  if(btn){ btn.disabled = false; btn.textContent = 'Create instructor account'; }
+  var result = await window.slSignUp(name.trim(), email.trim(), pass, 'pending_instructor');
+  if(btn){ btn.disabled = false; btn.textContent = 'Create account → Apply'; }
 
   if(!result.ok){
     setErr('su-error', result.error || 'Signup failed. Please try again.');
@@ -428,7 +428,7 @@ async function doSignIn(){
     return;
   }
 
-  window.location.href = 'instructor.html';
+  window.location.href = '/instructor';
 }
 
 async function doGoogleSignUp(){
@@ -443,7 +443,7 @@ async function doGoogleSignUp(){
     try {
       var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
       await fb.setDoc(fb.doc(window._db,'users',window._user.uid),
-        { role:'instructor', updatedAt:fb.serverTimestamp() }, {merge:true});
+        { role:'pending_instructor', updatedAt:fb.serverTimestamp() }, {merge:true});
       window._userRole = 'instructor';
     } catch(e){}
   }
@@ -453,7 +453,7 @@ async function doGoogleSignUp(){
 // Auto-redirect if already signed in as instructor
 document.addEventListener('authReady', function(e){
   if(e.detail.user && (window._userRole === 'instructor' || window._userRole === 'admin')){
-    window.location.href = 'instructor.html';
+    window.location.href = '/instructor';
   }
 });
 
