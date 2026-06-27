@@ -2,14 +2,14 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/catalog",           "destination": "/catalog.html" },
-    { "source": "/course",            "destination": "/course.html" },
-    { "source": "/dashboard",         "destination": "/dashboard.html" },
-    { "source": "/player",            "destination": "/player.html" },
-    { "source": "/instructor",        "destination": "/instructor.html" },
-    { "source": "/instructor/signup", "destination": "/instructor-signup.html" },
-    { "source": "/admin",             "destination": "/admin.html" },
-    { "source": "/community",         "destination": "/community.html" }
+    { "source": "/catalog",    "destination": "/catalog.html" },
+    { "source": "/course",     "destination": "/course.html" },
+    { "source": "/dashboard",  "destination": "/dashboard.html" },
+    { "source": "/player",     "destination": "/player.html" },
+    { "source": "/instructor", "destination": "/instructor.html" },
+    { "source": "/join",       "destination": "/instructor-signup.html" },
+    { "source": "/admin",      "destination": "/admin.html" },
+    { "source": "/community",  "destination": "/community.html" }
   ],
   "headers": [
     {
