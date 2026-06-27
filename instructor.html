@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Instructor Portal — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -1316,8 +1321,9 @@ function showView(v) {
   var nav  = document.getElementById('nav-'+v);
   if(view) view.classList.add('active');
   if(nav)  nav.classList.add('active');
+  if(v === 'courses')   loadMyCourses();
   if(v === 'community') loadInstructorCommunities();
-  if(v === 'profile') loadProfile();
+  if(v === 'profile')   loadProfile();
 }
 
 /* ══════════════════════════════════════════
@@ -2436,6 +2442,91 @@ function startCommunityNotifListener(){
   });
 }
 
+
+async function loadMyCourses(){
+  var el = document.getElementById('courses-list'); if(!el) return;
+  if(!window._user || !window._db){ el.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3);">Not connected.</div>'; return; }
+
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);"><div class="loading-spin" style="margin:0 auto 12px;"></div>Loading courses...</div>';
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'courses'),
+      fb.where('instructorId','==',window._user.uid)
+    ));
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    if(!courses.length){
+      el.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);">'
+        +'<div style="font-size:40px;margin-bottom:12px;">&#127891;</div>'
+        +'<div style="font-weight:600;margin-bottom:8px;">No courses yet</div>'
+        +'<div style="font-size:13px;margin-bottom:20px;">Create your first course to start earning.</div>'
+        +"<button class=\"btn btn-teal\" onclick=\"showView('builder'); startNewCourse()\">+ Create first course</button>"
+        +'</div>';
+      return;
+    }
+
+    var statusColors = { approved:'#22c55e', pending_review:'#f59e0b', rejected:'#ef4444', draft:'#8b8fa8' };
+    var statusLabels = { approved:'Live', pending_review:'Pending review', rejected:'Rejected', draft:'Draft' };
+
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">'
+      + courses.map(function(c){
+          var st     = c.status || 'draft';
+          var color  = statusColors[st] || '#8b8fa8';
+          var label  = statusLabels[st] || st;
+          return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);">'
+            +'<div style="flex:1;min-width:0;">'
+              +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">'+(c.title||'Untitled')+'</div>'
+              +'<div style="font-size:12px;color:var(--text3);">'+(c.category||'')+(c.category?' &middot; ':'')+(c.totalStudents||0)+' students &middot; &#8358;'+(c.priceNGN||0).toLocaleString()+'</div>'
+            +'</div>'
+            +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+color+'20;color:'+color+';flex-shrink:0;">'+label+'</span>'
+            +'<div style="display:flex;gap:8px;flex-shrink:0;">'
+              +(st==='approved'?'<a href="course.html?id='+c.id+'" target="_blank" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border-radius:6px;text-decoration:none;">View live</a>':'')
+              +'<button data-id="'+c.id+'" onclick="editCourse(this.dataset.id)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);background:var(--bg2);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;">Edit</button>'
+              +'<button data-id="'+c.id+'" data-title="'+(c.title||'this course')+'" onclick="deleteCourse(this.dataset.id, this.dataset.title)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.2);border-radius:6px;cursor:pointer;">Delete</button>'
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>';
+  } catch(e){
+    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+async function deleteCourse(id, title){
+  if(!confirm('Delete "'+title+'"? This cannot be undone. Students who enrolled will lose access.')) return;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.deleteDoc(fb.doc(window._db,'courses',id));
+    showToast('❌','Course deleted.');
+    loadMyCourses();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+function editCourse(id){
+  // Load course into builder for editing
+  showView('builder');
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+    fb.getDoc(fb.doc(window._db,'courses',id)).then(function(snap){
+      if(!snap.exists()) return;
+      var c = snap.data();
+      _course = Object.assign(_course, c, { id: id });
+      // Populate wizard fields
+      var set = function(elId,v){ var el=document.getElementById(elId); if(el) el.value=v||''; };
+      set('ci-title',    c.title);
+      set('ci-subtitle', c.subtitle);
+      set('ci-cat',      c.category);
+      set('ci-level',    c.level);
+      set('ci-lang',     c.language);
+      set('ci-duration', c.duration);
+      set('ci-desc',     c.description);
+      set('ci-price',    c.priceNGN);
+      showToast('✏️','Course loaded for editing. Make changes and resubmit.');
+    });
+  });
+}
+
 /* ══════════════════════════════════════════
    INIT
 ══════════════════════════════════════════ */
@@ -2919,6 +3010,9 @@ document.addEventListener('authReady', function(e){
 
   // Load profile photo + name immediately
   loadProfile();
+
+  // Load my courses
+  loadMyCourses();
 
   // Start real-time community notification listener
   startCommunityNotifListener();
