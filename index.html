@@ -628,7 +628,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -667,12 +667,12 @@ function slErr(code) {
 </head>
 <body>
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="catalog.html">Courses</a>
+    <a class="nav-link" href="/catalog">Courses</a>
     <a class="nav-link" href="#">Community</a>
     <a class="nav-link" href="#">Blog</a>
   </div>
@@ -725,8 +725,8 @@ function slErr(code) {
         </div>
       </div>
     </div>
-    <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='dashboard.html' : openAuthModal(null,'signin')">My Learning</a>
-    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+    <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='/dashboard' : openAuthModal(null,'signin')">My Learning</a>
+    <a class="btn btn-teal" href="/catalog">Browse Courses</a>
   </div>
 </nav>
 
@@ -752,7 +752,7 @@ function slErr(code) {
   <div class="hero-below">
     <p class="hero-sub">In a world rapidly evolving, mastering the right digital skill isn't just an option — it's a necessity. SkillsLibry doesn't just teach you. We guide you all the way to income.</p>
     <div class="hero-btns">
-      <a class="btn btn-teal btn-lg" href="catalog.html">Browse all courses</a>
+      <a class="btn btn-teal btn-lg" href="/catalog">Browse all courses</a>
       <a class="btn btn-outline btn-lg" href="#why">Why digital skills?</a>
     </div>
   </div>
@@ -922,7 +922,7 @@ function slErr(code) {
       <h2>Don't let another opportunity slip through your fingers</h2>
       <p>Join thousands of motivated learners who are changing their lives with SkillsLibry. Your future starts with one skill.</p>
       <div class="cta-btns">
-        <a class="btn btn-teal btn-lg" href="catalog.html">Browse all courses</a>
+        <a class="btn btn-teal btn-lg" href="/catalog">Browse all courses</a>
       </div>
     </div>
   </div>
@@ -940,16 +940,16 @@ function slErr(code) {
     </div>
     <div class="footer-col">
       <h4>Learn</h4>
-      <a href="catalog.html">All Courses</a>
-      <a href="catalog.html">Affiliate Marketing</a>
-      <a href="catalog.html">Digital Products</a>
-      <a href="catalog.html">AI Skills</a>
-      <a href="catalog.html">Freelancing</a>
+      <a href="/catalog">All Courses</a>
+      <a href="/catalog">Affiliate Marketing</a>
+      <a href="/catalog">Digital Products</a>
+      <a href="/catalog">AI Skills</a>
+      <a href="/catalog">Freelancing</a>
     </div>
     <div class="footer-col">
       <h4>Platform</h4>
-      <a href="instructor-signup.html">Become an Instructor</a
-      <a href="dashboard.html">Affiliate Programme</a>
+      <a href="/instructor/signup">Become an Instructor</a
+      <a href="/dashboard">Affiliate Programme</a>
       <a href="#">SkillsLibry Pro</a>
       <a href="#">Certificates</a>
     </div>
@@ -977,13 +977,13 @@ function slErr(code) {
 
 /* NAVIGATION */
 function goTo(page){
-  var r={home:"index.html",catalog:"catalog.html",course:"course.html",
-    dashboard:"dashboard.html",player:"player.html",
+  var r={home:"index.html",catalog:"/catalog",course:"course.html",
+    dashboard:"/dashboard",player:"player.html",
     instructor:"instructor.html",admin:"admin.html"};
   if(r[page]) window.location.href=r[page];
 }
 function showPage(p){ goTo(p); }
-function showCourseDetail(id){ window.location.href="course.html?id="+id; }
+function showCourseDetail(id){ window.location.href="/course?id="+id; }
 
 /* DATA */
 const COURSES = [];
@@ -1080,7 +1080,7 @@ function courseCard(c){
     +'<div class="course-footer">'
     +'<div><span class="course-price" data-ngn="'+(c.priceNGN||0)+'">'+pr+'</span>'
     +'<span class="course-price-old">'+c.priceOld+'</span></div>'
-    +'<a class="enroll-mini" href="course.html?id='+c.id+'" onclick="event.stopPropagation()">Learn More</a>'
+    +'<a class="enroll-mini" href="/course?id='+c.id+'" onclick="event.stopPropagation()">Learn More</a>'
     +'</div></div></div>';
 }
 function testimonialCard(t){
@@ -1982,7 +1982,7 @@ document.addEventListener('authReady', function(e){
   var userName      = document.getElementById('nav-user-name');
 
   if(user){
-    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(myLearningBtn) myLearningBtn.href = '/dashboard';
     if(signInBtn)     signInBtn.style.display = 'none';
     if(userMenu)      userMenu.style.display  = 'flex';
     if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
@@ -2029,7 +2029,7 @@ document.addEventListener('authReady', function(e){
           +'<div class="course-title">'+(c.title||'Course')+'</div>'
           +'<div class="course-footer">'
             +'<div><span class="course-price" data-ngn="'+(c.priceNGN||0)+'">'+sym+' '+price.toLocaleString()+'</span></div>'
-            +'<a class="enroll-mini" href="course.html?id='+c.id+'">Learn more</a>'
+            +'<a class="enroll-mini" href="/course?id='+c.id+'">Learn more</a>'
           +'</div>'
         +'</div>'
       +'</div>';
@@ -2037,7 +2037,7 @@ document.addEventListener('authReady', function(e){
   } catch(e){ console.warn('Homepage courses:', e.message); }
 })();
 </script>
-<script>function goCourse(id){window.location.href="course.html?id="+id;}</script>
+<script>function goCourse(id){window.location.href="/course?id="+id;}</script>
 </body> on every page -->
 
 
