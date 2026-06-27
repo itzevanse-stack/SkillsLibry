@@ -533,13 +533,13 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-tag">Instructor Portal</div>
   <div class="nav-right">
-    <a class="btn btn-ghost btn-sm" href="index.html">View site</a>
+    <a class="btn btn-ghost btn-sm" href="/">View site</a>
     <button class="btn btn-teal btn-sm" onclick="showView('builder'); startNewCourse();">+ New course</button>
   </div>
 </nav>
@@ -1252,7 +1252,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -1303,12 +1303,12 @@ function doSignOut(){
       var auth = window._auth || m.getAuth();
       return m.signOut(auth); 
     })
-    .then(function(){ window.location.href = 'index.html'; })
+    .then(function(){ window.location.href = '/'; })
     .catch(function(){ 
       // Last resort: clear storage and redirect
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = 'index.html'; 
+      window.location.href = '/'; 
     });
 }
 /* ══════════════════════════════════════════
@@ -2482,7 +2482,7 @@ async function loadMyCourses(){
             +'</div>'
             +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+color+'20;color:'+color+';flex-shrink:0;">'+label+'</span>'
             +'<div style="display:flex;gap:8px;flex-shrink:0;">'
-              +(st==='approved'?'<a href="course.html?id='+c.id+'" target="_blank" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border-radius:6px;text-decoration:none;">View live</a>':'')
+              +(st==='approved'?'<a href="/course?id='+c.id+'" target="_blank" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border-radius:6px;text-decoration:none;">View live</a>':'')
               +'<button data-id="'+c.id+'" onclick="editCourse(this.dataset.id)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);background:var(--bg2);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;">Edit</button>'
               +'<button data-id="'+c.id+'" data-title="'+(c.title||'this course')+'" onclick="deleteCourse(this.dataset.id, this.dataset.title)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.2);border-radius:6px;cursor:pointer;">Delete</button>'
             +'</div>'
@@ -2997,7 +2997,7 @@ async function deleteTestimonial(id){
 /* ── AUTH GUARD + STATS ── */
 document.addEventListener('authReady', function(e){
   if(!e.detail.user){
-    window.location.href = 'instructor-signup.html?next=instructor';
+    window.location.href = '/join?next=instructor';
     return;
   }
 
@@ -3045,7 +3045,7 @@ document.addEventListener('authReady', function(e){
             return '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);">'
               +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(c.title||'Untitled')+'</div>'
               +'<div style="font-size:12px;color:var(--text3);">'+(statusLabel[c.status]||c.status||'Draft')+' &middot; '+(c.totalStudents||0)+' students</div></div>'
-              +(c.status==='approved'?'<a href="course.html?id='+c.id+'" target="_blank" style="font-size:12px;color:var(--teal-dark);font-weight:600;">View live</a>':'')
+              +(c.status==='approved'?'<a href="/course?id='+c.id+'" target="_blank" style="font-size:12px;color:var(--teal-dark);font-weight:600;">View live</a>':'')
             +'</div>';
           }).join('');
         }
