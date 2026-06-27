@@ -315,6 +315,156 @@ function slErr(code) {
   return m[code] || ('Error: ' + code + ' — please try again.');
 }
 </script>
+<script>
+/* ══ INSTRUCTOR SIGNUP ══ */
+
+async function waitForAuth(maxMs){
+  return new Promise(function(resolve){
+    var waited = 0;
+    var check = setInterval(function(){
+      waited += 100;
+      if(typeof window.slSignUp === 'function' && typeof window.slSignIn === 'function'){
+        clearInterval(check); resolve(true);
+      } else if(waited >= maxMs){
+        clearInterval(check); resolve(false);
+      }
+    }, 100);
+  });
+}
+
+function switchTab(tab){
+  var suForm = document.getElementById('signup-form');
+  var siForm = document.getElementById('signin-form');
+  var suTab  = document.getElementById('tab-signup');
+  var siTab  = document.getElementById('tab-signin');
+  if(!suForm||!siForm) return;
+  if(tab === 'signup'){
+    suForm.style.display = 'block'; siForm.style.display = 'none';
+    suTab.style.background = 'var(--teal)'; suTab.style.color = '#0d0d1a';
+    siTab.style.background = '#fff';        siTab.style.color = 'var(--text2)';
+  } else {
+    siForm.style.display = 'block'; suForm.style.display = 'none';
+    siTab.style.background = 'var(--teal)'; siTab.style.color = '#0d0d1a';
+    suTab.style.background = '#fff';        suTab.style.color = 'var(--text2)';
+  }
+}
+
+function setErr(id, msg){
+  var el = document.getElementById(id);
+  if(el){ el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
+}
+
+function showSuccess(){
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('next') === 'instructor'){
+    window.location.href = 'instructor.html';
+    return;
+  }
+  document.getElementById('form-state').style.display  = 'none';
+  document.getElementById('success-state').style.display = 'block';
+}
+
+async function doSignUp(){
+  setErr('su-error','');
+  var name  = (document.getElementById('su-name')||{}).value||'';
+  var email = (document.getElementById('su-email')||{}).value||'';
+  var pass  = (document.getElementById('su-password')||{}).value||'';
+  var conf  = (document.getElementById('su-confirm')||{}).value||'';
+
+  if(!name.trim()){ setErr('su-error','Please enter your full name.'); return; }
+  if(!email.trim()){ setErr('su-error','Please enter your email address.'); return; }
+  if(pass.length < 8){ setErr('su-error','Password must be at least 8 characters.'); return; }
+  if(pass !== conf){ setErr('su-error','Passwords do not match.'); return; }
+
+  var btn = document.getElementById('su-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Creating account...'; }
+
+  var ready = await waitForAuth(8000);
+  if(!ready){
+    setErr('su-error','Connection timeout. Please refresh and try again.');
+    if(btn){ btn.disabled = false; btn.textContent = 'Create instructor account'; }
+    return;
+  }
+
+  var result = await window.slSignUp(name.trim(), email.trim(), pass, 'instructor');
+  if(btn){ btn.disabled = false; btn.textContent = 'Create instructor account'; }
+
+  if(!result.ok){
+    setErr('su-error', result.error || 'Signup failed. Please try again.');
+    return;
+  }
+  showSuccess();
+}
+
+async function doSignIn(){
+  setErr('si-error','');
+  var email = (document.getElementById('si-email')||{}).value||'';
+  var pass  = (document.getElementById('si-password')||{}).value||'';
+
+  if(!email){ setErr('si-error','Enter your email address.'); return; }
+  if(!pass){  setErr('si-error','Enter your password.'); return; }
+
+  var btn = document.getElementById('si-btn');
+  if(btn){ btn.disabled = true; btn.textContent = 'Signing in...'; }
+
+  var ready = await waitForAuth(8000);
+  if(!ready){
+    setErr('si-error','Connection timeout. Refresh and try again.');
+    if(btn){ btn.disabled = false; btn.textContent = 'Sign in to instructor portal'; }
+    return;
+  }
+
+  var result = await window.slSignIn(email.trim(), pass);
+  if(btn){ btn.disabled = false; btn.textContent = 'Sign in to instructor portal'; }
+
+  if(!result.ok){
+    setErr('si-error', result.error || 'Sign in failed. Check your email and password.');
+    return;
+  }
+
+  if(window._userRole && window._userRole !== 'instructor' && window._userRole !== 'admin'){
+    setErr('si-error','This is a student account. Please create an instructor account or contact support.');
+    if(window.slSignOut) window.slSignOut();
+    return;
+  }
+
+  window.location.href = 'instructor.html';
+}
+
+async function doGoogleSignUp(){
+  var ready = await waitForAuth(8000);
+  if(!ready){ alert('Connection error. Please refresh.'); return; }
+  if(!window.slGoogleSignIn){ alert('Google sign-in unavailable.'); return; }
+
+  var result = await window.slGoogleSignIn();
+  if(!result.ok){ alert(result.error || 'Google sign-in failed.'); return; }
+
+  if(window._db && window._user){
+    try {
+      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),
+        { role:'instructor', updatedAt:fb.serverTimestamp() }, {merge:true});
+      window._userRole = 'instructor';
+    } catch(e){}
+  }
+  showSuccess();
+}
+
+// Auto-redirect if already signed in as instructor
+document.addEventListener('authReady', function(e){
+  if(e.detail.user && (window._userRole === 'instructor' || window._userRole === 'admin')){
+    window.location.href = 'instructor.html';
+  }
+});
+
+// Enter key support
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  var suForm = document.getElementById('signup-form');
+  if(suForm && suForm.style.display !== 'none') doSignUp();
+  else doSignIn();
+});
+</script>
 
 </body>
 </html>
