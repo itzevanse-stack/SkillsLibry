@@ -1764,10 +1764,17 @@ function proceedToCheckout(){
 
 
 function playHeroVideo(wrap) {
-  var placeholder = document.getElementById('hero-promo-placeholder');
   var video = document.getElementById('hero-promo-video');
+  var srcEl = video ? video.querySelector('source') : null;
+  var hasSrc = srcEl && srcEl.getAttribute('src');
+  if(!hasSrc){
+    if(typeof showToast === 'function') showToast('&#127909;','No preview video available for this course yet.');
+    return;
+  }
+  var placeholder = document.getElementById('hero-promo-placeholder');
   if(placeholder) placeholder.style.display = 'none';
-  if(video){ video.style.display = 'block'; video.play().catch(function(){}); }
+  video.style.display = 'block';
+  video.play().catch(function(){});
 }
 
 function playPromoVideo() {
