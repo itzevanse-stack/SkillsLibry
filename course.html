@@ -500,34 +500,19 @@ a{text-decoration:none;color:inherit}
     <!-- TAB: DESCRIPTION -->
     <div id="tab-desc" class="tab-pane active">
 
-      <div class="desc-section">
+      <div class="desc-section" id="learns-section" style="display:none;">
         <div class="desc-section-title">&#9989; What you will learn</div>
-        <div class="learn-grid">
-          
-          
-          
-          
-          
-          
-        </div>
+        <div class="learn-grid" id="cd-learns"></div>
       </div>
 
-      <div class="desc-section">
+      <div class="desc-section" id="desc-section-wrap" style="display:none;">
         <div class="desc-section-title">&#128196; Course description</div>
-        <div class="desc-body">
-          
-          
-          
-        </div>
+        <div class="desc-body" id="cd-description" style="white-space:pre-line;"></div>
       </div>
 
-      <div class="desc-section">
+      <div class="desc-section" id="req-section" style="display:none;">
         <div class="desc-section-title">&#128221; Requirements</div>
-        <div>
-          <div class="req-item">&#9679;&nbsp; A smartphone or laptop with internet access</div>
-          <div class="req-item">&#9679;&nbsp; A Flutterwave or Paystack account (free to create)</div>
-          <div class="req-item">&#9679;&nbsp; No prior marketing experience needed — we start from zero</div>
-        </div>
+        <div id="cd-requirements"></div>
       </div>
 
       <div class="desc-section">
@@ -537,13 +522,12 @@ a{text-decoration:none;color:inherit}
           <div>
             <div class="inst-card-name" id="inst-name"></div>
             <div class="inst-card-title" id="inst-headline" style="display:none;"></div>
-            <div class="inst-card-title">Affiliate Marketer &amp; Digital Entrepreneur</div>
             <div class="inst-card-stats">
               <div class="inst-stat" style="display:none;" id="inst-stats-row"><strong id="inst-students">0</strong> students</div>
               <div class="inst-stat" style="display:none;"><strong id="inst-rating">—</strong> &#9733; rating</div>
-              <div class="inst-stat"><strong>1</strong> course</div>
+
             </div>
-            <div class="inst-card-bio">Chidi has been generating consistent affiliate income in Nigeria for 5+ years, with monthly earnings exceeding &#x20a6;1.2M. He teaches the exact systems he uses — no theory, no recycled content from YouTube.</div>
+            <div class="inst-card-bio" id="inst-bio" style="display:none;"></div>
           </div>
         </div>
       </div>
@@ -1179,7 +1163,7 @@ function showToast(icon,msg){
 
         // Bio
         var bioEl = document.getElementById('inst-bio');
-        if(bioEl && inst.bio) bioEl.textContent = inst.bio;
+        if(bioEl && inst.bio){ bioEl.textContent = inst.bio; bioEl.style.display = 'block'; }
 
         // Real student count
         if(courseData.totalStudents > 0){
@@ -1196,7 +1180,28 @@ function showToast(icon,msg){
   var descEl = document.getElementById('cd-description');
   if(descEl && courseData.description){
     descEl.textContent = courseData.description;
-    descEl.style.display = 'block';
+    var dw = document.getElementById('desc-section-wrap');
+    if(dw) dw.style.display = 'block';
+  }
+
+  // What you will learn (real data only)
+  var learnsEl = document.getElementById('cd-learns');
+  if(learnsEl && Array.isArray(courseData.learns) && courseData.learns.length){
+    learnsEl.innerHTML = courseData.learns.map(function(l){
+      return '<div class="learn-item">&#10003;&nbsp; '+String(l).replace(/</g,'&lt;')+'</div>';
+    }).join('');
+    var ls = document.getElementById('learns-section');
+    if(ls) ls.style.display = 'block';
+  }
+
+  // Requirements (real data only)
+  var reqEl = document.getElementById('cd-requirements');
+  if(reqEl && Array.isArray(courseData.requirements) && courseData.requirements.length){
+    reqEl.innerHTML = courseData.requirements.map(function(r){
+      return '<div class="req-item">&#9679;&nbsp; '+String(r).replace(/</g,'&lt;')+'</div>';
+    }).join('');
+    var rs = document.getElementById('req-section');
+    if(rs) rs.style.display = 'block';
   }
 
   // Duration & modules from real course data
