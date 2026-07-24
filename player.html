@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Course Player — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -518,7 +523,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -559,7 +564,7 @@ function slErr(code) {
 
 <!-- ══ TOP NAV ══ -->
 <nav class="top-nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
@@ -571,8 +576,8 @@ function slErr(code) {
       </div>
       <span class="nav-progress-pct" id="nav-progress-pct">0%</span>
     </div>
-    <a class="btn btn-ghost-dark" href="dashboard.html">&#8592; My Learning</a>
-    <a class="btn btn-ghost-dark" id="community-link" href="community.html?course=1" style="background:rgba(78,204,163,.1);border-color:rgba(78,204,163,.3);color:var(--teal);">&#128101; Community</a>
+    <a class="btn btn-ghost-dark" href="/dashboard">&#8592; My Learning</a>
+    <a class="btn btn-ghost-dark" id="community-link" href="/community?course=1" style="background:rgba(78,204,163,.1);border-color:rgba(78,204,163,.3);color:var(--teal);">&#128101; Community</a>
   </div>
 </nav>
 
@@ -904,7 +909,7 @@ function showAccessRevoked(){
     +'<div style="font-size:56px;margin-bottom:20px;">&#128274;</div>'
     +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:12px;">Access suspended</div>'
     +'<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:28px;">Your subscription payment failed twice. Your access has been suspended. Renew your subscription to continue learning.</div>'
-    +'<a href="course.html" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Renew access</a>'
+    +'<a href="/catalog" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Renew access</a>'
     +'</div></div>';
 }
 
@@ -914,7 +919,7 @@ function showAccessDenied(){
     +'<div style="font-size:56px;margin-bottom:20px;">&#128683;</div>'
     +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:12px;">Access denied</div>'
     +'<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:28px;">You are not enrolled in this course. Purchase the course to get access.</div>'
-    +'<a href="course.html" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Enroll now</a>'
+    +'<a href="/catalog" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Enroll now</a>'
     +'</div></div>';
 }
 
