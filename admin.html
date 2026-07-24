@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Admin — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -110,16 +115,16 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
 <!-- NAV -->
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="catalog.html">Courses</a>
-    <a class="nav-link" href="community.html">Community</a>
+    <a class="nav-link" href="/catalog">Courses</a>
+    <a class="nav-link" href="/community">Community</a>
   </div>
   <div class="nav-right">
-    <a class="btn btn-ghost" href="index.html">View site</a>
+    <a class="btn btn-ghost" href="/">View site</a>
   </div>
 </nav>
 
@@ -302,7 +307,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -445,12 +450,12 @@ function doSignOut(){
       var auth = window._auth || m.getAuth();
       return m.signOut(auth); 
     })
-    .then(function(){ window.location.href = 'index.html'; })
+    .then(function(){ window.location.href = '/'; })
     .catch(function(){ 
       // Last resort: clear storage and redirect
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = 'index.html'; 
+      window.location.href = '/'; 
     });
 }
 var _authPending = null;
