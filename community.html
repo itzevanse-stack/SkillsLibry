@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Community — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -323,7 +328,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
 
 <!-- ── NAV ── -->
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
@@ -332,7 +337,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
     <div class="nav-community-tag">&#128101; Private Community</div>
   </div>
   <div class="nav-right">
-    <a class="btn btn-ghost" href="player.html" id="back-to-course">&#9654; Continue learning</a>
+    <a class="btn btn-ghost" href="/player" id="back-to-course">&#9654; Continue learning</a>
   </div>
 </nav>
 
@@ -590,7 +595,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -870,7 +875,7 @@ function switchTab(tab){
   if(ct) ct.innerHTML   = _courseName;
 
   var bl = document.getElementById('back-to-course');
-  if(bl) bl.href = 'player.html?course=' + _courseId;
+  if(bl) bl.href = '/player?course=' + _courseId;
 
   loadCommunityData();
 
@@ -1319,7 +1324,7 @@ document.addEventListener('authReady', function(e){
   var userName      = document.getElementById('nav-user-name');
 
   if(user){
-    if(myLearningBtn) myLearningBtn.href = 'dashboard.html';
+    if(myLearningBtn) myLearningBtn.href = '/dashboard';
     if(signInBtn)     signInBtn.style.display = 'none';
     if(userMenu)      userMenu.style.display  = 'flex';
     if(userName)      userName.textContent = window._userName || user.email.split('@')[0];
