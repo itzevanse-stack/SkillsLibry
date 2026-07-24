@@ -4,6 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>My Learning — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
@@ -113,13 +118,13 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
 <!-- NAV -->
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-links">
-    <a class="nav-link" href="catalog.html">Courses</a>
-    <a class="nav-link" href="community.html">Community</a>
+    <a class="nav-link" href="/catalog">Courses</a>
+    <a class="nav-link" href="/community">Community</a>
   </div>
   <div class="nav-right">
     <!-- Notification Bell -->
@@ -130,7 +135,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <!-- Avatar -->
     <div class="avatar-wrap student-avatar-wrap" id="nav-avatar" style="width:36px;height:36px;font-size:14px;cursor:pointer;" onclick="switchDash(document.getElementById('si-settings'),'dash-settings')" title="Profile settings">?</div>
     <input type="file" id="nav-avatar-input" accept="image/*" style="display:none;" onchange="uploadStudentAvatar(this)"/>
-    <a class="btn btn-teal" href="catalog.html">Browse Courses</a>
+    <a class="btn btn-teal" href="/catalog">Browse Courses</a>
   </div>
 </nav>
 
@@ -353,7 +358,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
   <div class="hero-inner">
     <div class="course-hero-left">
       <div class="breadcrumb">
-        <a href="catalog.html">Courses</a>
+        <a href="/catalog">Courses</a>
         <span class="breadcrumb-sep">/</span>
         <span id="cd-category">Affiliate Marketing</span>
       </div>
@@ -619,7 +624,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -661,7 +666,7 @@ function slErr(code) {
   <div class="hero-inner">
     <div class="course-hero-left">
       <div class="breadcrumb">
-        <a href="catalog.html">Courses</a>
+        <a href="/catalog">Courses</a>
         <span class="breadcrumb-sep">/</span>
         <span id="cd-category">Affiliate Marketing</span>
       </div>
@@ -927,7 +932,7 @@ window.slGoogleSignIn = async function() {
 
 window.slSignOut = async function() {
   await signOut(auth);
-  window.location.href = 'index.html';
+  window.location.href = '/';
 };
 
 window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
@@ -1071,12 +1076,12 @@ function doSignOut(){
       var auth = window._auth || m.getAuth();
       return m.signOut(auth); 
     })
-    .then(function(){ window.location.href = 'index.html'; })
+    .then(function(){ window.location.href = '/'; })
     .catch(function(){ 
       // Last resort: clear storage and redirect
       localStorage.clear();
       sessionStorage.clear();
-      window.location.href = 'index.html'; 
+      window.location.href = '/'; 
     });
 }
 var _authPending = null;
@@ -1265,7 +1270,7 @@ async function loadEnrolledCourses(gridId){
       grid.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);grid-column:1/-1;">'
         +'<div style="font-size:40px;margin-bottom:12px;">&#127891;</div>'
         +'<div style="font-weight:600;margin-bottom:6px;">No courses yet</div>'
-        +'<a href="catalog.html" style="display:inline-block;margin-top:10px;padding:10px 24px;background:var(--teal);color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Browse courses</a>'
+        +'<a href="/catalog" style="display:inline-block;margin-top:10px;padding:10px 24px;background:var(--teal);color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Browse courses</a>'
         +'</div>';
       return;
     }
@@ -1277,7 +1282,7 @@ async function loadEnrolledCourses(gridId){
       var statusColor = en.subscriptionStatus==='payment_failed'?'#f59e0b':'#22c55e';
       var statusLabel = en.subscriptionStatus==='payment_failed'?'&#9888;&#65039; Payment failed':'&#9989; Active';
       var next = en.nextBillingDate ? new Date(en.nextBillingDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
-      return '<div class="my-course-card" onclick="window.location.href=\'player.html?course='+en.courseId+'\'">'
+      return '<div class="my-course-card" onclick="window.location.href=\'/player?course='+en.courseId+'\'">'
         +'<div class="my-course-thumb">&#127891;<div class="progress-bar-wrap"><div class="progress-bar" style="width:'+pct+'%"></div></div></div>'
         +'<div class="my-course-body">'
           +'<div class="my-course-title">'+(course.title||'Course')+'</div>'
@@ -1319,7 +1324,7 @@ async function loadMyCommunities(){
         +'<div style="font-size:48px;margin-bottom:12px;">&#128101;</div>'
         +'<div style="font-weight:600;margin-bottom:6px;">No communities yet</div>'
         +'<div style="font-size:13px;">Enroll in a course to join its private community.</div>'
-        +'<a href="catalog.html" style="display:inline-block;margin-top:16px;padding:10px 24px;background:var(--teal);color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Browse courses</a>'
+        +'<a href="/catalog" style="display:inline-block;margin-top:16px;padding:10px 24px;background:var(--teal);color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Browse courses</a>'
         +'</div>';
       return;
     }
@@ -1409,7 +1414,7 @@ async function loadMyCommunities(){
 
 function openCommunity(courseId, courseName){
   localStorage.setItem('comm_last_'+courseId, new Date().toISOString());
-  window.location.href = 'community.html?course='+courseId+'&name='+encodeURIComponent(courseName||'');
+  window.location.href = '/community?course='+courseId+'&name='+encodeURIComponent(courseName||'');
 }
 
 function updateNotifBadge(){
@@ -1523,7 +1528,7 @@ async function loadSettingsSubscriptions(){
     var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     var snap=await fb.getDocs(fb.query(fb.collection(window._db,'enrollments'),fb.where('studentEmail','==',window._user.email)));
     var list=snap.docs.map(function(d){return d.data();});
-    if(!list.length){ el.innerHTML='<div style="font-size:13px;color:var(--text3);">No active subscriptions. <a href="catalog.html" style="color:var(--teal-dark);">Browse courses</a></div>'; return; }
+    if(!list.length){ el.innerHTML='<div style="font-size:13px;color:var(--text3);">No active subscriptions. <a href="/catalog" style="color:var(--teal-dark);">Browse courses</a></div>'; return; }
     el.innerHTML=list.map(function(en){
       var s=en.subscriptionStatus||'active';
       var c=s==='active'?'#22c55e':s==='payment_failed'?'#f59e0b':'#ef4444';
