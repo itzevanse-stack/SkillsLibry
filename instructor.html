@@ -565,6 +565,10 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('builder'); startNewCourse();" id="nav-builder">
         <div class="si-icon">&#43;</div> Create Course
       </div>
+      <div class="sidebar-item" onclick="showView('community')" id="nav-community" style="position:relative;">
+        <div class="si-icon">&#128101;</div> Community
+        <span id="comm-notif-badge" style="display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;"></span>
+      </div>
     </div>
 
     <div class="sidebar-section">
@@ -1010,19 +1014,73 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div style="color:var(--text3);text-align:center;padding:32px;">No payout history yet.</div>
     </div>
 
+
+    <!-- COMMUNITY VIEW -->
+    <div class="page-view" id="view-community">
+      <div class="sec-header"><div><div class="sec-title">Community</div><div class="sec-sub">Manage your private student communities. One is auto-created per course when students enroll.</div></div></div>
+      <div id="inst-comm-notifications" style="display:none;background:#fff;border:1.5px solid var(--teal);border-radius:12px;overflow:hidden;margin-bottom:20px;">
+        <div style="padding:14px 20px;border-bottom:1px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;background:var(--teal-dim);">
+          <span>&#128276; New student activity</span>
+          <button onclick="markInstNotifsRead()" style="font-size:12px;color:var(--teal-dark);background:none;border:none;cursor:pointer;font-weight:600;">Mark all read</button>
+        </div>
+        <div id="inst-notif-list"></div>
+      </div>
+      <div id="inst-community-list"><div style="text-align:center;padding:48px;color:var(--text3);">Loading communities...</div></div>
+      <div id="inst-community-detail" style="display:none;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+          <button onclick="backToCommunityList()" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;">&#8592; Back</button>
+          <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;" id="comm-detail-title">Community</div>
+          <span style="font-size:12px;padding:3px 10px;background:var(--teal-dim);color:var(--teal-dark);border-radius:100px;font-weight:700;" id="comm-detail-count">0 members</span>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;">
+          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;">&#128162; Post Announcement</div>
+          <input id="ann-title-input" type="text" placeholder="Announcement title..." style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;margin-bottom:10px;"/>
+          <textarea id="ann-body-input" placeholder="Message to all students..." style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.65;"></textarea>
+          <button onclick="postAnnouncement()" style="margin-top:10px;padding:10px 24px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Post to all students</button>
+        </div>
+        <div id="comm-posts-list" style="display:flex;flex-direction:column;gap:12px;"></div>
+      </div>
+    </div>
+
     <!-- PROFILE -->
     <div class="page-view" id="view-profile">
       <div class="sec-header"><div class="sec-title">Profile</div></div>
-      <div style="max-width:600px;">
-        <div class="frow-1" style="background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;box-shadow:var(--sh);">
-          <div class="fg"><label>Display name</label><input class="fi" id="pf-name" type="text" placeholder="Your name"/></div>
-          <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience and expertise..." style="min-height:100px;"></textarea></div>
-          <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
-          <div class="fg"><label>Bank account for payouts</label><input class="fi" id="pf-bank" type="text" placeholder="Bank name · Account number"/></div>
-          <button class="btn btn-teal" onclick="saveProfile()">Save profile</button>
+      <div style="max-width:600px;display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);">
+          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:18px;">Profile photo</div>
+          <div style="display:flex;align-items:center;gap:20px;">
+            <div style="position:relative;flex-shrink:0;">
+              <div id="pf-avatar-wrap" style="width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:28px;font-weight:700;color:#fff;overflow:hidden;border:3px solid var(--border);"><span id="pf-avatar-initials">?</span></div>
+              <input type="file" id="pf-photo-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(this)"/>
+            </div>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;" id="pf-name-display">Instructor</div>
+              <div style="font-size:12px;color:var(--text3);margin-bottom:10px;">JPG or PNG - Max 5MB</div>
+              <label for="pf-photo-input" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);border-radius:6px;padding:7px 14px;cursor:pointer;">Upload photo</label>
+            </div>
+          </div>
         </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);">
+          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:18px;">Public information</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="fg"><label>Display name *</label><input class="fi" id="pf-name" type="text" placeholder="Your full name"/></div>
+            <div class="fg"><label>Headline</label><input class="fi" id="pf-headline" type="text" placeholder="e.g. Digital Marketing Expert"/></div>
+            <div class="fg"><label>Bio</label><textarea class="fi" id="pf-bio" placeholder="Tell students about your experience..." style="min-height:120px;resize:vertical;"></textarea></div>
+            <div class="fg"><label>Website / LinkedIn</label><input class="fi" id="pf-url" type="url" placeholder="https://..."/></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);">
+          <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;">Payout details</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:18px;">Earnings are sent here.</div>
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="fg"><label>Bank name</label><input class="fi" id="pf-bank-name" type="text" placeholder="e.g. GTBank, Chase..."/></div>
+            <div class="fg"><label>Account number</label><input class="fi" id="pf-account-number" type="text" maxlength="20"/></div>
+            <div class="fg"><label>Account name</label><input class="fi" id="pf-account-name" type="text" placeholder="Name on account"/></div>
+          </div>
+        </div>
+        <button class="btn btn-teal" style="width:100%;padding:13px;font-size:15px;" onclick="saveProfile()">Save profile</button>
       </div>
-    </div>
+    </div></div>
 
   </main>
 </div>
@@ -1184,6 +1242,9 @@ function showView(v) {
   var nav  = document.getElementById('nav-'+v);
   if(view) view.classList.add('active');
   if(nav)  nav.classList.add('active');
+  if(v === 'courses'   && typeof loadMyCourses === 'function') loadMyCourses();
+  if(v === 'community' && typeof loadInstructorCommunities === 'function') loadInstructorCommunities();
+  if(v === 'profile'   && typeof loadProfile === 'function') loadProfile();
 }
 
 /* ══════════════════════════════════════════
@@ -1703,6 +1764,35 @@ async function submitCourse() {
   if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
 
   try {
+    // Upload promo video to Bunny if one was selected
+    if(_course.promoVideo && !_course.promoVideoId){
+      if(btn) btn.textContent = 'Uploading promo video...';
+      try {
+        var pres = await fetch('/api/bunny-upload', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ title: (_course.title||'Course')+' - Promo', courseId: 'promo' })
+        });
+        var pdata = await pres.json();
+        if(pdata.videoId){
+          await new Promise(function(resolve,reject){
+            var pxhr = new XMLHttpRequest();
+            pxhr.open('PUT', pdata.uploadUrl, true);
+            pxhr.setRequestHeader('AccessKey','6c4e5625-43cc-40d1-837892724178-134a-459b');
+            pxhr.upload.onprogress = function(ev){
+              if(ev.lengthComputable && btn) btn.textContent = 'Promo video... '+Math.round(ev.loaded/ev.total*100)+'%';
+            };
+            pxhr.onload  = function(){ pxhr.status<300 ? resolve() : reject(new Error('Promo upload failed')); };
+            pxhr.onerror = function(){ reject(new Error('Network error during promo upload')); };
+            pxhr.send(_course.promoVideo);
+          });
+          _course.promoVideoId = pdata.videoId;
+        }
+      } catch(pe){
+        showToast('&#9888;','Promo upload failed - submitting course without preview video.');
+      }
+      if(btn) btn.textContent = 'Submitting...';
+    }
+
     var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); },0);
 
     // Build payload
@@ -1724,6 +1814,7 @@ async function submitCourse() {
           })
         };
       }),
+      promoVideoId: _course.promoVideoId || null,
       priceNGN:     _course.priceNGN,
       priceOriginal:_course.priceOriginal,
       priceType:    _course.priceType,
@@ -1764,7 +1855,7 @@ async function saveDraft() {
   showToast('&#128190;','Draft saved locally.');
 }
 
-function saveProfile() { showToast('✓','Profile saved.'); }
+
 function openTestiForm() { showToast('&#128247;','Testimonial form coming soon.'); }
 
 /* ══════════════════════════════════════════
@@ -2282,6 +2373,334 @@ async function submitInstructorApplication(){
     if(errEl){ errEl.textContent='Error: '+e.message; errEl.style.display='block'; }
     if(btn){ btn.disabled=false; btn.textContent='Submit application'; }
   }
+}
+
+
+
+/* ══ PROFILE SYSTEM ══ */
+async function handleProfilePhoto(input){
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ showToast('&#10060;','Max 5MB for profile photo.'); return; }
+  var reader = new FileReader();
+  reader.onload = async function(e){
+    var dataUrl = e.target.result;
+    var wrap = document.getElementById('pf-avatar-wrap');
+    if(wrap) wrap.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    var sidebarAv = document.getElementById('sp-avatar');
+    if(sidebarAv) sidebarAv.innerHTML = '<img src="'+dataUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    if(window._db && window._user){
+      try {
+        var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await fb.setDoc(fb.doc(window._db,'users',window._user.uid),
+          { photoURL: dataUrl, updatedAt: fb.serverTimestamp() }, { merge: true });
+        localStorage.setItem('sl_inst_photo', dataUrl);
+        showToast('&#10003;','Profile photo updated!');
+      } catch(err){ showToast('&#10060;','Upload failed: '+err.message); }
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function saveProfile(){
+  var name    = (document.getElementById('pf-name')||{}).value||'';
+  var headline= (document.getElementById('pf-headline')||{}).value||'';
+  var bio     = (document.getElementById('pf-bio')||{}).value||'';
+  var url     = (document.getElementById('pf-url')||{}).value||'';
+  var bankName= (document.getElementById('pf-bank-name')||{}).value||'';
+  var bankAcc = (document.getElementById('pf-account-number')||{}).value||'';
+  var bankAccName = (document.getElementById('pf-account-name')||{}).value||'';
+
+  if(!name.trim()){ showToast('&#9888;','Enter your display name.'); return; }
+
+  try {
+    if(window._db && window._user){
+      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),{
+        name:name, headline:headline, bio:bio, website:url,
+        bankName:bankName, accountNumber:bankAcc, accountName:bankAccName,
+        updatedAt: fb.serverTimestamp()
+      },{ merge:true });
+    }
+    window._userName = name;
+    var nd = document.getElementById('pf-name-display'); if(nd) nd.textContent = name;
+    var sp = document.getElementById('sp-name'); if(sp) sp.textContent = name;
+    showToast('&#10003;','Profile saved!');
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
+async function loadProfile(){
+  if(!window._user || !window._db) return;
+  var cached = localStorage.getItem('sl_inst_photo');
+  if(cached){
+    var wrap = document.getElementById('pf-avatar-wrap');
+    if(wrap) wrap.innerHTML = '<img src="'+cached+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    var sav = document.getElementById('sp-avatar');
+    if(sav) sav.innerHTML = '<img src="'+cached+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  }
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDoc(fb.doc(window._db,'users',window._user.uid));
+    if(!snap.exists()) return;
+    var d = snap.data();
+    var sv = function(id,v){ var el=document.getElementById(id); if(el) el.value = v||''; };
+    sv('pf-name',d.name); sv('pf-headline',d.headline); sv('pf-bio',d.bio); sv('pf-url',d.website);
+    sv('pf-bank-name',d.bankName); sv('pf-account-number',d.accountNumber); sv('pf-account-name',d.accountName);
+    if(d.name){
+      var nd=document.getElementById('pf-name-display'); if(nd) nd.textContent=d.name;
+      var sp=document.getElementById('sp-name'); if(sp) sp.textContent=d.name;
+      var initials=d.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var ie=document.getElementById('pf-avatar-initials'); if(ie&&!cached) ie.textContent=initials;
+    }
+    if(d.photoURL && d.photoURL !== cached){
+      localStorage.setItem('sl_inst_photo', d.photoURL);
+      var w2=document.getElementById('pf-avatar-wrap');
+      if(w2) w2.innerHTML='<img src="'+d.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+      var s2=document.getElementById('sp-avatar');
+      if(s2) s2.innerHTML='<img src="'+d.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+    }
+  } catch(e){}
+}
+
+/* ══ MY COURSES ══ */
+async function loadMyCourses(){
+  var el = document.getElementById('courses-list'); if(!el) return;
+  if(!window._user || !window._db) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">Loading courses...</div>';
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(fb.collection(window._db,'courses'), fb.where('instructorId','==',window._user.uid)));
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    // Update sidebar stats
+    var sc = document.getElementById('sp-courses'); if(sc) sc.textContent = courses.length;
+    var totalStudents = courses.reduce(function(a,c){return a+(c.totalStudents||0);},0);
+    var ss = document.getElementById('sp-students'); if(ss) ss.textContent = totalStudents;
+
+    if(!courses.length){
+      el.innerHTML = '<div style="text-align:center;padding:48px;color:var(--text3);">'
+        +'<div style="font-size:40px;margin-bottom:12px;">&#127891;</div>'
+        +'<div style="font-weight:600;margin-bottom:8px;">No courses yet</div>'
+        +'<div style="font-size:13px;margin-bottom:20px;">Create your first course to start earning.</div>'
+        +"<button class=\"btn btn-teal\" onclick=\"showView('builder'); startNewCourse()\">+ Create first course</button>"
+        +'</div>';
+      return;
+    }
+    var stC = { approved:'#22c55e', pending_review:'#f59e0b', rejected:'#ef4444', draft:'#8b8fa8' };
+    var stL = { approved:'Live', pending_review:'Pending review', rejected:'Rejected', draft:'Draft' };
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">'
+      + courses.map(function(c){
+          var st = c.status||'draft', color = stC[st]||'#8b8fa8', label = stL[st]||st;
+          return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);flex-wrap:wrap;">'
+            +'<div style="flex:1;min-width:200px;">'
+              +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">'+(c.title||'Untitled')+'</div>'
+              +'<div style="font-size:12px;color:var(--text3);">'+(c.category||'')+(c.category?' - ':'')+(c.totalStudents||0)+' students - N'+(c.priceNGN||0).toLocaleString()+'</div>'
+            +'</div>'
+            +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+color+'20;color:'+color+';">'+label+'</span>'
+            +'<div style="display:flex;gap:8px;">'
+              +(st==='approved'?'<a href="/course?id='+c.id+'" target="_blank" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border-radius:6px;text-decoration:none;">View live</a>':'')
+              +'<button data-id="'+c.id+'" data-title="'+(c.title||'this course')+'" onclick="deleteCourse(this.dataset.id, this.dataset.title)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.2);border-radius:6px;cursor:pointer;">Delete</button>'
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>';
+  } catch(e){
+    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+async function deleteCourse(id, title){
+  if(!confirm('Delete "'+title+'"? This cannot be undone.')) return;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.deleteDoc(fb.doc(window._db,'courses',id));
+    showToast('&#10003;','Course deleted.');
+    loadMyCourses();
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
+/* ══ COMMUNITY SYSTEM ══ */
+var _activeCourseId = null;
+var _commUnread = 0;
+
+async function loadInstructorCommunities(){
+  var el = document.getElementById('inst-community-list'); if(!el) return;
+  if(!window._user || !window._db) return;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var coursesSnap = await fb.getDocs(fb.query(fb.collection(window._db,'courses'), fb.where('instructorId','==',window._user.uid)));
+    var courses = coursesSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    if(!courses.length){
+      el.innerHTML = '<div style="text-align:center;padding:48px 20px;color:var(--text3);">'
+        +'<div style="font-size:48px;margin-bottom:16px;">&#128101;</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:10px;">No communities yet</div>'
+        +'<div style="font-size:13px;line-height:1.8;max-width:400px;margin:0 auto 20px;">Communities are created automatically. Once you create a course and a student enrolls, their private community appears here.</div>'
+        +"<button class=\"btn btn-teal\" onclick=\"showView('builder'); startNewCourse()\">+ Create your first course</button>"
+        +'</div>';
+      return;
+    }
+
+    var communities = await Promise.all(courses.map(async function(c){
+      var membersSnap = await fb.getDocs(fb.collection(window._db,'community_'+c.id+'_members')).catch(function(){ return {size:0,docs:[]}; });
+      return { courseId:c.id, courseTitle:c.title||'Untitled', status:c.status||'draft', members:membersSnap.size||0 };
+    }));
+
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">'
+      + communities.map(function(c){
+          return '<div data-id="'+c.courseId+'" data-title="'+c.courseTitle+'" onclick="handleCommCardClick(this)" style="background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh);cursor:pointer;">'
+            +'<div style="background:linear-gradient(135deg,#0d0d1a,#1a1a2e);padding:20px;">'
+              +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:#fff;line-height:1.4;margin-bottom:4px;">'+c.courseTitle+'</div>'
+              +'<div style="font-size:12px;color:rgba(255,255,255,.4);">Private community</div>'
+            +'</div>'
+            +'<div style="padding:16px;">'
+              +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+                +'<div style="font-size:13px;color:var(--text2);">&#128101; <strong>'+c.members+'</strong> member'+(c.members!==1?'s':'')+'</div>'
+                +'<span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:100px;background:'+(c.status==='approved'?'rgba(34,197,94,.1)':'rgba(245,158,11,.1)')+';color:'+(c.status==='approved'?'#166534':'#92400e')+'">'+(c.status==='approved'?'Live':'Pending')+'</span>'
+              +'</div>'
+              +'<button style="width:100%;padding:10px;background:var(--bg2);border:none;border-radius:8px;font-size:13px;font-weight:700;color:var(--text2);cursor:pointer;">Open community</button>'
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>';
+  } catch(e){
+    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+function handleCommCardClick(el){
+  openCommunityDetail(el.dataset.id, el.dataset.title);
+}
+
+async function openCommunityDetail(courseId, courseTitle){
+  _activeCourseId = courseId;
+  localStorage.setItem('inst_comm_check_'+courseId, new Date().toISOString());
+  document.getElementById('inst-community-list').style.display = 'none';
+  document.getElementById('inst-community-detail').style.display = 'block';
+  document.getElementById('comm-detail-title').textContent = courseTitle;
+  loadCommunityPosts(courseId);
+}
+
+function backToCommunityList(){
+  document.getElementById('inst-community-detail').style.display = 'none';
+  document.getElementById('inst-community-list').style.display = 'block';
+  _activeCourseId = null;
+  loadInstructorCommunities();
+}
+
+async function loadCommunityPosts(courseId){
+  var el = document.getElementById('comm-posts-list'); if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">Loading posts...</div>';
+  if(!window._db) return;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(fb.collection(window._db,'community_'+courseId+'_posts'), fb.orderBy('createdAt','desc'), fb.limit(30)));
+    var membersSnap = await fb.getDocs(fb.collection(window._db,'community_'+courseId+'_members')).catch(function(){return{size:0};});
+    var cd = document.getElementById('comm-detail-count');
+    if(cd) cd.textContent = (membersSnap.size||0)+' member'+(membersSnap.size!==1?'s':'');
+
+    if(!snap.docs.length){
+      el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">No posts yet. Students will post here after enrolling.</div>';
+      return;
+    }
+    el.innerHTML = snap.docs.map(function(d){
+      var p = Object.assign({id:d.id},d.data());
+      var time = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}) : '';
+      return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--sh);">'
+        +'<div style="display:flex;align-items:flex-start;gap:12px;">'
+          +'<div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;">'+(p.initials||'S')+'</div>'
+          +'<div style="flex:1;min-width:0;">'
+            +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;">'
+              +'<span style="font-size:13px;font-weight:700;">'+(p.author||'Student')+'</span>'
+              +(p.role==='instructor'?'<span style="font-size:11px;padding:2px 8px;background:var(--teal-dim);color:var(--teal-dark);border-radius:100px;font-weight:700;">Instructor</span>':'')
+              +'<span style="font-size:11px;color:var(--text3);margin-left:auto;">'+time+'</span>'
+            +'</div>'
+            +'<div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;">'+(p.text||'')+'</div>'
+            +'<button data-pid="'+p.id+'" onclick="showReplyBox(this.dataset.pid)" style="font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:none;border-radius:6px;padding:6px 14px;cursor:pointer;">Reply</button>'
+            +'<div id="reply-box-'+p.id+'" style="display:none;margin-top:12px;">'
+              +'<textarea id="reply-text-'+p.id+'" placeholder="Write your reply..." style="width:100%;padding:10px 12px;border:1.5px solid var(--teal);border-radius:8px;font-size:13px;font-family:Inter,sans-serif;outline:none;min-height:70px;resize:vertical;"></textarea>'
+              +'<div style="display:flex;gap:8px;margin-top:8px;">'
+                +'<button data-cid="'+courseId+'" data-pid="'+p.id+'" onclick="handleSubmitReply(this)" style="padding:8px 18px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Post reply</button>'
+                +'<button data-pid="'+p.id+'" onclick="hideReplyBox(this.dataset.pid)" style="padding:8px 14px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text3);cursor:pointer;">Cancel</button>'
+              +'</div>'
+            +'</div>'
+          +'</div>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } catch(e){
+    el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+function showReplyBox(pid){ var b=document.getElementById('reply-box-'+pid); if(b){b.style.display='block';} }
+function hideReplyBox(pid){ var b=document.getElementById('reply-box-'+pid); if(b){b.style.display='none';} }
+function handleSubmitReply(btn){ submitReply(btn.dataset.cid, btn.dataset.pid); }
+
+async function submitReply(courseId, postId){
+  var ta = document.getElementById('reply-text-'+postId);
+  var text = ta ? ta.value.trim() : '';
+  if(!text || !window._db || !window._user) return;
+  var initials = (window._userName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.addDoc(fb.collection(window._db,'community_'+courseId+'_posts'), {
+      author: window._userName||'Instructor', initials:initials, uid:window._user.uid,
+      role:'instructor', replyTo:postId, text:text, createdAt: fb.serverTimestamp(),
+    });
+    showToast('&#10003;','Reply posted!');
+    loadCommunityPosts(courseId);
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
+async function postAnnouncement(){
+  var titleEl = document.getElementById('ann-title-input');
+  var bodyEl  = document.getElementById('ann-body-input');
+  var title = titleEl?titleEl.value.trim():'';
+  var body  = bodyEl?bodyEl.value.trim():'';
+  if(!title||!body){ showToast('&#9888;','Enter title and message.'); return; }
+  if(!_activeCourseId||!window._db||!window._user) return;
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.addDoc(fb.collection(window._db,'community_'+_activeCourseId+'_ann'), {
+      title:title, text:body, author:window._userName||'Instructor', uid:window._user.uid,
+      pinned:false, createdAt:fb.serverTimestamp(),
+    });
+    titleEl.value=''; bodyEl.value='';
+    showToast('&#10003;','Announcement posted to all students!');
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
+function markInstNotifsRead(){
+  var b = document.getElementById('inst-comm-notifications');
+  if(b) b.style.display = 'none';
+  _commUnread = 0;
+  var badge = document.getElementById('comm-notif-badge');
+  if(badge) badge.style.display = 'none';
+}
+
+function startCommunityNotifListener(){
+  if(!window._user || !window._db) return;
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+    fb.getDocs(fb.query(fb.collection(window._db,'courses'), fb.where('instructorId','==',window._user.uid))).then(function(snap){
+      snap.docs.forEach(function(d){
+        var courseId = d.id;
+        var lastCheck = localStorage.getItem('inst_comm_check_'+courseId) || new Date(Date.now()-86400000).toISOString();
+        fb.onSnapshot(
+          fb.query(fb.collection(window._db,'community_'+courseId+'_posts'), fb.where('role','==','student'), fb.orderBy('createdAt','desc'), fb.limit(1)),
+          function(snap2){
+            if(!snap2.docs.length) return;
+            var latest = snap2.docs[0].data();
+            var pt = latest.createdAt && latest.createdAt.toDate ? latest.createdAt.toDate().toISOString() : new Date().toISOString();
+            if(pt > lastCheck){
+              _commUnread++;
+              var badge = document.getElementById('comm-notif-badge');
+              if(badge){ badge.style.display='inline-block'; badge.textContent=_commUnread>9?'9+':String(_commUnread); }
+              showToast('&#128172;', (latest.author||'A student')+' posted in your community');
+            }
+          }, function(){});
+      });
+    });
+  });
 }
 
 </script>
