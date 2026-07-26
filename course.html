@@ -1767,7 +1767,7 @@ function applyPromoThumbnail(promoId, promoUrl){
     fetch('https://vimeo.com/api/oembed.json?url='+encodeURIComponent('https://vimeo.com/'+vm[1]))
       .then(function(r){ return r.json(); })
       .then(function(d){ if(d && d.thumbnail_url) setBg(d.thumbnail_url); })
-      .catch(function(){});
+      .catch(function(e){ console.warn('Vimeo thumbnail fetch failed:', e.message); });
     return;
   }
 
@@ -1784,13 +1784,10 @@ function applyPromoThumbnail(promoId, promoUrl){
     if(m){ wsId = m[1]; break; }
   }
   if(wsId){
-    fetch('https://fast.wistia.com/embed/medias/'+wsId+'.json')
+    fetch('https://fast.wistia.com/oembed?url='+encodeURIComponent('https://home.wistia.com/medias/'+wsId)+'&format=json')
       .then(function(r){ return r.json(); })
-      .then(function(d){
-        var thumb = d && d.media && d.media.thumbnail && d.media.thumbnail.url;
-        if(thumb) setBg(thumb);
-      })
-      .catch(function(){});
+      .then(function(d){ if(d && d.thumbnail_url) setBg(d.thumbnail_url); })
+      .catch(function(e){ console.warn('Wistia thumbnail fetch failed:', e.message); });
   }
 }
 
