@@ -823,6 +823,18 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
               </div>
               <div class="upload-progress" id="promo-progress"><div class="upload-progress-bar" id="promo-bar"></div></div>
               <div class="upload-progress-label" id="promo-label"></div>
+
+              <div style="display:flex;align-items:center;gap:12px;margin:14px 0;">
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+                <span style="font-size:12px;color:var(--text3);">or</span>
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+              </div>
+              <label style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;">Paste a video link instead</label>
+              <div style="display:flex;gap:8px;">
+                <input type="url" id="promo-url-input" placeholder="YouTube, Vimeo, or Wistia link..." style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+                <button type="button" onclick="usePromoUrl()" style="padding:10px 18px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;">Use link</button>
+              </div>
+              <div id="promo-url-status" style="font-size:12px;margin-top:6px;display:none;"></div>
             </div>
           </div>
         </div>
@@ -1264,7 +1276,7 @@ function showToast(icon, msg) {
 var _course = {
   title:'', subtitle:'', category:'', level:'', language:'english',
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
-  promoVideoId:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
+  promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
   priceNGN:0, priceOriginal:0, priceType:'paid', includes:[],
   status:'draft'
 };
@@ -1275,7 +1287,7 @@ function startNewCourse() {
   _course = {
     title:'', subtitle:'', category:'', level:'', language:'english',
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
-    promoVideoId:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
+    promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
     priceNGN:0, priceOriginal:0, priceType:'paid', includes:[], status:'draft'
   };
   _currentStep = 1;
@@ -1454,8 +1466,13 @@ function previewPromo(input) {
   var maxSize = 10 * 1024 * 1024 * 1024;
   if(file.size > maxSize){ showToast('❌','Promo video max 10GB.'); return; }
   var url = URL.createObjectURL(file);
-  _course.promoVideo   = file;
-  _course.promoVideoId = null;
+  _course.promoVideo    = file;
+  _course.promoVideoId  = null;
+  _course.promoVideoUrl = null;
+  var urlInput = document.getElementById('promo-url-input');
+  if(urlInput) urlInput.value = '';
+  var urlStatus = document.getElementById('promo-url-status');
+  if(urlStatus) urlStatus.style.display = 'none';
   var prev = document.getElementById('promo-preview');
   var prom = document.getElementById('promo-prompt');
   prev.innerHTML = '<video src="'+url+'" controls style="width:100%;max-height:200px;position:relative;z-index:2;"></video>'
@@ -1465,6 +1482,54 @@ function previewPromo(input) {
   var zone = document.getElementById('promo-zone');
   var zoneInput = zone ? zone.querySelector('input[type=file]') : null;
   if(zoneInput) zoneInput.style.display = 'none';
+}
+
+function videoUrlToEmbed(url){
+  if(!url) return null;
+  url = url.trim();
+  var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+  if(yt) return 'https://www.youtube.com/embed/'+yt[1];
+  var vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if(vm) return 'https://player.vimeo.com/video/'+vm[1];
+  var ws = url.match(/wistia\.com\/medias\/([a-zA-Z0-9]+)/);
+  if(ws) return 'https://fast.wistia.net/embed/iframe/'+ws[1];
+  var ws2 = url.match(/wi\.st\/([a-zA-Z0-9]+)/);
+  if(ws2) return 'https://fast.wistia.net/embed/iframe/'+ws2[1];
+  return url; // already an embeddable URL or direct link
+}
+
+function usePromoUrl(){
+  var input  = document.getElementById('promo-url-input');
+  var status = document.getElementById('promo-url-status');
+  var raw    = input ? input.value.trim() : '';
+
+  if(!raw){
+    if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='Paste a video link first.'; }
+    return;
+  }
+  var embed = videoUrlToEmbed(raw);
+  if(!embed){
+    if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='Could not recognize that link.'; }
+    return;
+  }
+
+  _course.promoVideoUrl = raw;
+  _course.promoVideo    = null;
+  _course.promoVideoId  = null;
+
+  var prev = document.getElementById('promo-preview');
+  var prom = document.getElementById('promo-prompt');
+  if(prev){
+    prev.innerHTML = '<iframe src="'+embed+'" style="width:100%;height:200px;border:none;border-radius:8px;" allowfullscreen></iframe>'
+      +'<div class="upload-preview-label">&#127909; Promo (linked)</div>';
+    prev.style.display = 'block';
+  }
+  if(prom) prom.style.display = 'none';
+  var zone = document.getElementById('promo-zone');
+  var zoneInput = zone ? zone.querySelector('input[type=file]') : null;
+  if(zoneInput) zoneInput.style.display = 'none';
+
+  if(status){ status.style.display='block'; status.style.color='var(--teal-dark)'; status.textContent='\u2713 Link attached \u2014 no upload needed.'; }
 }
 
 function handleDrop(event, type) {
@@ -1846,6 +1911,7 @@ async function persistCourse(targetStatus, btn) {
       }),
       thumbnailUrl: _course.thumbnailUrl || null,
       promoVideoId: _course.promoVideoId || null,
+      promoVideoUrl: _course.promoVideoUrl || null,
       priceNGN:     _course.priceNGN,
       priceOriginal:_course.priceOriginal,
       priceType:    _course.priceType,
@@ -2581,7 +2647,7 @@ async function editCourse(courseId){
       level: c.level||'', language: c.language||'english', duration: c.duration||'',
       description: c.description||'', thumbnail: c.thumbnailUrl||c.thumbnail||null,
       thumbnailUrl: c.thumbnailUrl||null,
-      promoVideo: null, promoVideoId: c.promoVideoId||null,
+      promoVideo: null, promoVideoId: c.promoVideoId||null, promoVideoUrl: c.promoVideoUrl||null,
       _origPromoVideoId: c.promoVideoId||null,
       learns: c.learns||[], requirements: c.requirements||[],
       modules: (c.modules||[]).map(function(m){
@@ -2632,7 +2698,18 @@ async function editCourse(courseId){
       if(tp){ tp.innerHTML = '<img src="'+c.thumbnailUrl+'" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;"/>'; tp.style.display='block'; }
       if(tpr) tpr.style.display = 'none';
     }
-    if(c.promoVideoId){
+    if(c.promoVideoUrl){
+      var ppu = document.getElementById('promo-preview');
+      var ppru = document.getElementById('promo-prompt');
+      var urlInput = document.getElementById('promo-url-input');
+      if(urlInput) urlInput.value = c.promoVideoUrl;
+      var embed = (typeof videoUrlToEmbed === 'function') ? videoUrlToEmbed(c.promoVideoUrl) : c.promoVideoUrl;
+      if(ppu){ ppu.innerHTML = '<iframe src="'+embed+'" style="width:100%;height:200px;border:none;border-radius:8px;" allowfullscreen></iframe><div class="upload-preview-label">&#127909; Promo (linked)</div>'; ppu.style.display='block'; }
+      if(ppru) ppru.style.display = 'none';
+      var pzone = document.getElementById('promo-zone');
+      var pzoneInput = pzone ? pzone.querySelector('input[type=file]') : null;
+      if(pzoneInput) pzoneInput.style.display = 'none';
+    } else if(c.promoVideoId){
       var pp = document.getElementById('promo-preview');
       var ppr = document.getElementById('promo-prompt');
       if(pp){ pp.innerHTML = '<div style="padding:12px;background:var(--bg2);border-radius:8px;font-size:13px;color:var(--text2);">&#9989; Promo video already uploaded</div>'; pp.style.display='block'; }
