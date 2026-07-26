@@ -519,25 +519,40 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 }
 @media(max-width:768px){
   .shell{grid-template-columns:1fr;}
-  .sidebar{display:none;}
+  .sidebar{
+    position:fixed;left:0;top:64px;height:calc(100vh - 64px);width:min(80vw,260px);
+    transform:translateX(-100%);transition:transform .3s ease;z-index:150;
+    box-shadow:8px 0 32px rgba(13,13,26,.15);display:block;
+  }
+  .sidebar.mobile-open{transform:translateX(0);}
+  .sidebar-toggle-btn{display:flex !important;}
+  .nav-tag{display:none;}
   .frow,.frow-3{grid-template-columns:1fr;}
   .price-cards{grid-template-columns:1fr;}
+  .main{padding:16px;}
+  .m2col{grid-template-columns:1fr !important;}
 }
+.sidebar-toggle-btn{display:none;}
+.sidebar-overlay{display:none;position:fixed;inset:0;top:64px;background:rgba(13,13,26,.4);z-index:149;}
+.sidebar-overlay.open{display:block;}
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="index.html">
+  <button class="btn btn-ghost btn-sm sidebar-toggle-btn" onclick="toggleSidebar()" style="align-items:center;justify-content:center;width:36px;height:36px;padding:0;" aria-label="Menu">&#9776;</button>
+  <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
   <div class="nav-tag">Instructor Portal</div>
   <div class="nav-right">
-    <a class="btn btn-ghost btn-sm" href="index.html">View site</a>
+    <a class="btn btn-ghost btn-sm" href="/">View site</a>
     <button class="btn btn-teal btn-sm" onclick="showView('builder'); startNewCourse();">+ New course</button>
   </div>
 </nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <div class="shell">
 
@@ -894,7 +909,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
             <div class="frow-1">
               <div class="fg">
                 <label>What's included in this course</label>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;" id="includes-list">
+                <div class="m2col" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;" id="includes-list">
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
                     <input type="checkbox" id="inc-cert" checked/> Verified certificate on completion
                   </label>
@@ -1022,7 +1037,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
             <button type="button" id="tt-video" onclick="setTestiType('video')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;">Video</button>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+          <div class="m2col" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
             <div><label style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;">Student name *</label><input id="ti-name" type="text" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;"/></div>
             <div><label style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;">Location</label><input id="ti-location" type="text" placeholder="e.g. London, UK" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;"/></div>
           </div>
@@ -1318,6 +1333,17 @@ function doSignOut(){
 /* ══════════════════════════════════════════
    NAVIGATION
 ══════════════════════════════════════════ */
+function toggleSidebar(){
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var btn = document.querySelector('.sidebar-toggle-btn');
+  if(!sidebar || !overlay) return;
+  var isOpen = sidebar.classList.contains('mobile-open');
+  sidebar.classList.toggle('mobile-open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
 function showView(v) {
   document.querySelectorAll('.page-view').forEach(function(el){ el.classList.remove('active'); });
   document.querySelectorAll('.sidebar-item').forEach(function(el){ el.classList.remove('active'); });
@@ -1329,6 +1355,10 @@ function showView(v) {
   if(v === 'community' && typeof loadInstructorCommunities === 'function') loadInstructorCommunities();
   if(v === 'profile'   && typeof loadProfile === 'function') loadProfile();
   if(v === 'testimonials' && typeof loadInstructorTestimonials === 'function') loadInstructorTestimonials();
+
+  // Auto-close mobile sidebar drawer after navigating
+  var sidebar = document.querySelector('.sidebar');
+  if(sidebar && sidebar.classList.contains('mobile-open')) toggleSidebar();
 }
 
 /* ══════════════════════════════════════════
@@ -2543,7 +2573,7 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
       <div style="display:flex;flex-direction:column;gap:16px;">
         <div style="background:#fff;border:1.5px solid #e4e6f0;border-radius:14px;padding:24px;">
           <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:18px;">About you</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="m2col" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
             <div><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name *</label><input id="ap-name" type="text" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/></div>
             <div><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Country *</label><input id="ap-country" type="text" placeholder="e.g. Nigeria, UK, USA" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/></div>
           </div>
