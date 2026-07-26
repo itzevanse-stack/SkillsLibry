@@ -146,6 +146,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <div class="sidebar-item" id="si-instructors" onclick="showAdmin('instructors')">
       <span class="sidebar-icon">&#127891;</span> Instructors
     </div>
+    <div class="sidebar-item" id="si-testimonials" onclick="showAdmin('testimonials')">
+      <span class="sidebar-icon">&#11088;</span> Testimonials
+    </div>
     <div class="sidebar-item" id="si-payouts" onclick="showAdmin('payouts')">
       <span class="sidebar-icon">&#128176;</span> Payouts
     </div>
@@ -191,6 +194,14 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <!-- INSTRUCTORS -->
     <div class="admin-view" id="view-instructors">
       <div id="instructors-body"><div class="loading"><div class="loading-spin"></div></div></div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="admin-view" id="view-testimonials">
+      <div class="card">
+        <div class="card-head">Testimonials <span id="testimonials-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="testimonials-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
     </div>
 
     <!-- PAYOUTS -->
@@ -584,6 +595,7 @@ function showAdmin(view){
   if(view==='courses')     loadCourses();
   if(view==='students')    loadStudents();
   if(view==='instructors') loadInstructors();
+  if(view==='testimonials')loadTestimonialsAdmin();
   if(view==='payouts')     loadPayouts();
 }
 
@@ -731,6 +743,81 @@ async function rejectCourse(id){
     await fb.updateDoc(fb.doc(db,'courses',id),{ status:'rejected', rejectionReason:reason||'', rejectedAt:fb.serverTimestamp() });
     showToast('❌','Course rejected.');
     loadCourses(); loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+/* ══ TESTIMONIALS ══ */
+async function loadTestimonialsAdmin(){
+  var el = document.getElementById('testimonials-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  try {
+    var fb = await getFs(); var db = window._db;
+    var snap = await fb.getDocs(fb.collection(db,'testimonials'));
+    var items = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    var countEl = document.getElementById('testimonials-count');
+    if(countEl) countEl.textContent = items.length ? '('+items.length+')' : '';
+
+    if(!items.length){
+      el.innerHTML = '<div class="empty">No testimonials submitted yet.</div>';
+      return;
+    }
+
+    // Pending first, then approved, then rejected
+    var order = { pending:0, approved:1, rejected:2 };
+    items.sort(function(a,b){ return (order[a.status]||0) - (order[b.status]||0); });
+
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">'
+      + items.map(function(t){
+          var badgeColor = t.status==='approved' ? '#22c55e' : (t.status==='rejected' ? '#ef4444' : '#f59e0b');
+          var badgeLabel = t.status==='approved' ? 'Approved' : (t.status==='rejected' ? 'Rejected' : 'Pending review');
+          var mediaPreview = '';
+          if(t.type==='photo' && t.mediaUrl){
+            mediaPreview = '<img src="'+t.mediaUrl+'" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>';
+          } else if(t.type==='video'){
+            mediaPreview = '<div style="width:64px;height:64px;background:#0d0d1a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">&#127909;</div>';
+          }
+          var stars = '';
+          for(var i=1;i<=5;i++) stars += i<=(t.stars||5) ? '\u2605' : '\u2606';
+          return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;">'
+            +mediaPreview
+            +'<div style="flex:1;min-width:0;">'
+              +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">'
+                +'<span style="font-size:13px;font-weight:700;">'+(t.name||'Student')+'</span>'
+                +(t.location?'<span style="font-size:12px;color:var(--text3);">&middot; '+t.location+'</span>':'')
+                +'<span style="color:#f59e0b;font-size:13px;">'+stars+'</span>'
+              +'</div>'
+              +'<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:6px;">'+(t.text||'')+'</div>'
+              +(t.result?'<div style="font-size:12px;font-weight:600;color:var(--teal-dark);">&#128640; '+t.result+'</div>':'')
+            +'</div>'
+            +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+badgeColor+'20;color:'+badgeColor+';white-space:nowrap;">'+badgeLabel+'</span>'
+            +'<div style="display:flex;gap:8px;flex-shrink:0;">'
+              +(t.status!=='approved' ? '<button class="tbl-btn tbl-approve" onclick="approveTestimonial(\''+t.id+'\')">&#10003; Approve</button>' : '<button class="tbl-btn tbl-secondary" onclick="rejectTestimonial(\''+t.id+'\')">Unpublish</button>')
+              +(t.status!=='rejected' && t.status!=='approved' ? '<button class="tbl-btn tbl-reject" onclick="rejectTestimonial(\''+t.id+'\')">Reject</button>' : '')
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>';
+  } catch(e){
+    el.innerHTML = '<div class="empty">Error: '+e.message+'</div>';
+  }
+}
+
+async function approveTestimonial(id){
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'testimonials',id),{ status:'approved', approvedAt:fb.serverTimestamp() });
+    showToast('✓','Testimonial approved and live!');
+    loadTestimonialsAdmin();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function rejectTestimonial(id){
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'testimonials',id),{ status:'rejected', rejectedAt:fb.serverTimestamp() });
+    showToast('❌','Testimonial rejected.');
+    loadTestimonialsAdmin();
   } catch(e){ showToast('❌','Error: '+e.message); }
 }
 
