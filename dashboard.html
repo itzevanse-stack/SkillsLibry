@@ -51,6 +51,32 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 .sidebar-item.active{background:var(--teal-dim);color:var(--teal-dark);font-weight:600;border-right-color:var(--teal);}
 .sidebar-icon{font-size:16px;width:22px;text-align:center;}
 
+/* MOBILE SIDEBAR TOGGLE */
+.nav-hamburger{
+  display:none;width:36px;height:36px;border:none;background:none;cursor:pointer;
+  flex-direction:column;justify-content:center;align-items:center;gap:5px;
+  padding:0;z-index:151;
+}
+.nav-hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .25s;}
+.sidebar-overlay{display:none;position:fixed;inset:0;top:64px;background:rgba(13,13,26,.4);z-index:149;}
+@media(max-width:900px){
+  .nav-hamburger{display:flex;}
+  .nav-links{display:none;}
+  .sidebar{
+    position:fixed;left:0;top:64px;height:calc(100vh - 64px);width:250px;
+    transform:translateX(-100%);transition:transform .3s ease;z-index:150;
+    box-shadow:8px 0 32px rgba(13,13,26,.15);
+  }
+  .sidebar.mobile-open{transform:translateX(0);}
+  .sidebar-overlay.open{display:block;}
+  .dash-main{padding:18px;}
+  .stat-cards-3{grid-template-columns:1fr 1fr !important;}
+  .field-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .stat-cards-3{grid-template-columns:1fr !important;}
+}
+
 /* MAIN */
 .dash-main{flex:1;padding:28px;min-width:0;}
 .dash-view{display:none;}
@@ -122,6 +148,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <div class="nav-logo-mark">S</div>
     <span class="nav-logo-text">Skills<span>Libry</span></span>
   </a>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
     <a class="nav-link" href="/catalog">Courses</a>
     <a class="nav-link" href="/community">Community</a>
@@ -139,6 +168,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
   </div>
 </nav>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="dash-wrap">
 
   <!-- SIDEBAR -->
@@ -174,7 +204,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
         <div class="dash-title" id="dash-greeting">Welcome back!</div>
         <div class="dash-sub" id="dash-greeting-sub">Here's what's happening today.</div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div class="stat-cards-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
         <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--sh);">
           <div style="font-size:28px;font-weight:800;font-family:'Poppins',sans-serif;color:var(--text);" id="ov-courses">0</div>
           <div style="font-size:12px;color:var(--text3);margin-top:4px;">Enrolled courses</div>
@@ -254,7 +284,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
           <span class="ref-url" id="aff-link">Loading...</span>
           <button class="copy-btn" onclick="copyAffLink()">Copy</button>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;">
+        <div class="stat-cards-3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;">
           <div style="background:var(--bg2);border-radius:10px;padding:16px;text-align:center;">
             <div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;color:var(--text);" id="aff-clicks">0</div>
             <div style="font-size:12px;color:var(--text3);margin-top:4px;">Total clicks</div>
@@ -353,183 +383,6 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 <!-- TOAST -->
 <div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
 
-<!-- ══ HERO BAND ══ -->
-<div class="course-hero">
-  <div class="hero-inner">
-    <div class="course-hero-left">
-      <div class="breadcrumb">
-        <a href="/catalog">Courses</a>
-        <span class="breadcrumb-sep">/</span>
-        <span id="cd-category">Affiliate Marketing</span>
-      </div>
-
-      <h1 class="course-hero-title" id="cd-title">
-        </h1>
-
-      <!-- Promo video — sits directly below headline -->
-      <div style="
-        margin:24px 0 28px;
-        border-radius:14px;overflow:hidden;
-        box-shadow:0 20px 60px rgba(0,0,0,.5);
-        border:1.5px solid rgba(255,255,255,.1);
-        position:relative;background:#000;
-        aspect-ratio:16/9;
-        cursor:pointer;
-      " id="hero-promo-wrap" onclick="playHeroVideo(this)">
-        <!-- Placeholder / play button -->
-        <div id="hero-promo-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);">
-          <div id="hero-play-btn" style="width:72px;height:72px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 18px rgba(78,204,163,.12),0 0 0 36px rgba(78,204,163,.05);margin-bottom:16px;transition:transform .2s;">
-            <div style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:22px solid #0d0d1a;margin-left:5px;"></div>
-          </div>
-          <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">Watch course preview</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.45);">See exactly what you get before enrolling</div>
-        </div>
-        <video id="hero-promo-video" style="display:none;width:100%;height:100%;object-fit:cover;" controls preload="none">
-          <source src="" type="video/mp4"/>
-        </video>
-      </div>
-
-      <div class="hero-badges" style="margin:-8px 0 20px;">
-        <span class="badge badge-updated" id="cd-updated" style="display:none;"></span>
-        <span class="badge badge-students" id="cd-students" style="display:none;"></span>
-      </div>
-
-      <p class="course-hero-sub" id="cd-description" style="display:none;"></p>
-
-      <div class="course-hero-meta" id="cd-meta" style="display:none;">
-        <div class="meta-item" id="cd-duration-item" style="display:none;">&#128336; <strong id="cd-duration"></strong></div>
-        <div class="meta-item" id="cd-modules-item" style="display:none;">&#127891; <strong id="cd-modules"></strong></div>
-      </div>
-
-      <div class="hero-instructor">
-        <div class="hero-inst-avatar" id="cd-avatar" id="cd-avatar"></div>
-        <span>Created by&nbsp;</span>
-        <span class="hero-inst-name" id="cd-instructor" id="cd-instructor"></span>
-      </div>
-    </div>
-
-    <!-- Purchase card sits in hero on desktop -->
-    <div style="padding-top:64px;">
-      <div class="purchase-card">
-        <div class="pc-body">
-          <div class="pc-price-row">
-            <div class="pc-price" id="cd-price" data-ngn="35000">&#x20a6;35,000</div>
-            <div class="pc-price-old" id="cd-price-old">&#x20a6;60,000</div>
-            <div class="pc-discount">42% off</div>
-          </div>
-          <div class="pc-timer">&#9203; Offer ends in 2 days</div>
-
-          <div class="pc-includes">
-            <div class="pc-includes-title">This course includes</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>6+ hours of HD video content</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Downloadable resources &amp; templates</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Private student community access</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Verified certificate on completion</div>
-            
-            <div class="include-item"><div class="include-check">&#10003;</div>Income activation plan included</div>
-          </div>
-
-          <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
-            Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
-          </button>
-          <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ HERO TO CONTENT TRANSITION ══ -->
-<div style="height:40px;background:linear-gradient(to bottom,#0d0d1a,var(--bg2));"></div>
-
-<!-- ══ MAIN CONTENT ══ -->
-<div class="course-content">
-  <div class="course-main">
-
-    <!-- Tabs -->
-    <div class="tabs-bar">
-      <button class="tab-btn active" onclick="switchTab(this,'tab-desc')">Description</button>
-      <button class="tab-btn" onclick="switchTab(this,'tab-testi')">Testimonials</button>
-      <button class="tab-btn" onclick="switchTab(this,'tab-modules')">Modules</button>
-    </div>
-
-    <!-- TAB: DESCRIPTION -->
-    <div id="tab-desc" class="tab-pane active">
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#9989; What you will learn</div>
-        <div class="learn-grid">
-          
-          
-          
-          <div class="learn-item"><div class="learn-check">&#10003;</div>Scale your first &#x20a6;50k month to &#x20a6;500k/month systematically</div>
-          
-          
-        </div>
-      </div>
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#128196; Course description</div>
-        <div class="desc-body">
-          
-          
-          <p>By the end of this course, you'll have a live funnel, a working traffic strategy, and a clear path from your first sale to &#x20a6;500k/month.</p>
-        </div>
-      </div>
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#128221; Requirements</div>
-        <div>
-          <div class="req-item">&#9679;&nbsp; A smartphone or laptop with internet access</div>
-          <div class="req-item">&#9679;&nbsp; A Flutterwave or Paystack account (free to create)</div>
-          <div class="req-item">&#9679;&nbsp; No prior marketing experience needed — we start from zero</div>
-        </div>
-      </div>
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#128100; About the instructor</div>
-        <div class="inst-card">
-          <div class="inst-card-avatar" id="inst-avatar" id="cd-avatar"></div>
-          <div>
-            <div class="inst-card-name" id="inst-name"></div>
-            <div class="inst-card-title" id="inst-headline" style="display:none;"></div>
-            <div class="inst-card-title">Affiliate Marketer &amp; Digital Entrepreneur</div>
-            <div class="inst-card-stats">
-              <div class="inst-stat" style="display:none;" id="inst-stats-row"><strong id="inst-students">0</strong> students</div>
-              <div class="inst-stat" style="display:none;"><strong id="inst-rating">—</strong> &#9733; rating</div>
-              <div class="inst-stat"><strong>1</strong> course</div>
-            </div>
-            <div class="inst-card-bio">Chidi has been generating consistent affiliate income in Nigeria for 5+ years, with monthly earnings exceeding &#x20a6;1.2M. He teaches the exact systems he uses — no theory, no recycled content from YouTube.</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- TAB: TESTIMONIALS -->
-    <div id="tab-testi" class="tab-pane">
-      <div class="testi-grid" id="course-testimonials-grid"></div>
-    </div>
-
-    <!-- TAB: MODULES -->
-    <div id="tab-modules" class="tab-pane">
-      <div class="modules-header">
-        <div class="modules-summary">6 modules &middot; 28 lessons &middot; 6h 20min total</div>
-      </div>
-      <div id="module-list"></div>
-    </div>
-
-  </div>
-  <div class="course-sidebar-spacer"></div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon"></span>
-  <span id="toast-msg"></span>
-</div>
-
-
 <!-- ══ FIREBASE + AUTH ══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -661,313 +514,6 @@ function slErr(code) {
 }
 </script>
 
-<!-- ══ HERO BAND ══ -->
-<div class="course-hero">
-  <div class="hero-inner">
-    <div class="course-hero-left">
-      <div class="breadcrumb">
-        <a href="/catalog">Courses</a>
-        <span class="breadcrumb-sep">/</span>
-        <span id="cd-category">Affiliate Marketing</span>
-      </div>
-
-      <h1 class="course-hero-title" id="cd-title">
-        </h1>
-
-      <!-- Promo video — sits directly below headline -->
-      <div style="
-        margin:24px 0 28px;
-        border-radius:14px;overflow:hidden;
-        box-shadow:0 20px 60px rgba(0,0,0,.5);
-        border:1.5px solid rgba(255,255,255,.1);
-        position:relative;background:#000;
-        aspect-ratio:16/9;
-        cursor:pointer;
-      " id="hero-promo-wrap" onclick="playHeroVideo(this)">
-        <!-- Placeholder / play button -->
-        <div id="hero-promo-placeholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);">
-          <div id="hero-play-btn" style="width:72px;height:72px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 18px rgba(78,204,163,.12),0 0 0 36px rgba(78,204,163,.05);margin-bottom:16px;transition:transform .2s;">
-            <div style="width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:22px solid #0d0d1a;margin-left:5px;"></div>
-          </div>
-          <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;">Watch course preview</div>
-          <div style="font-size:12px;color:rgba(255,255,255,.45);">See exactly what you get before enrolling</div>
-        </div>
-        <video id="hero-promo-video" style="display:none;width:100%;height:100%;object-fit:cover;" controls preload="none">
-          <source src="" type="video/mp4"/>
-        </video>
-      </div>
-
-      <div class="hero-badges" style="margin:-8px 0 20px;">
-        <span class="badge badge-updated" id="cd-updated" style="display:none;"></span>
-        <span class="badge badge-students" id="cd-students" style="display:none;"></span>
-      </div>
-
-      <p class="course-hero-sub" id="cd-description" style="display:none;"></p>
-
-      <div class="course-hero-meta" id="cd-meta" style="display:none;">
-        <div class="meta-item" id="cd-duration-item" style="display:none;">&#128336; <strong id="cd-duration"></strong></div>
-        <div class="meta-item" id="cd-modules-item" style="display:none;">&#127891; <strong id="cd-modules"></strong></div>
-      </div>
-
-      <div class="hero-instructor">
-        <div class="hero-inst-avatar" id="cd-avatar" id="cd-avatar"></div>
-        <span>Created by&nbsp;</span>
-        <span class="hero-inst-name" id="cd-instructor" id="cd-instructor"></span>
-      </div>
-    </div>
-
-    <!-- Purchase card sits in hero on desktop -->
-    <div style="padding-top:64px;">
-      <div class="purchase-card">
-        <div class="pc-body">
-          <div class="pc-price-row">
-            <div class="pc-price" id="cd-price" data-ngn="35000">&#x20a6;35,000</div>
-            <div class="pc-price-old" id="cd-price-old">&#x20a6;60,000</div>
-            <div class="pc-discount">42% off</div>
-          </div>
-          <div class="pc-timer">&#9203; Offer ends in 2 days</div>
-
-          <div class="pc-includes">
-            <div class="pc-includes-title">This course includes</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>6+ hours of HD video content</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Downloadable resources &amp; templates</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Private student community access</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Verified certificate on completion</div>
-            
-            <div class="include-item"><div class="include-check">&#10003;</div>Income activation plan included</div>
-          </div>
-
-          <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
-            Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
-          </button>
-          <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ HERO TO CONTENT TRANSITION ══ -->
-<div style="height:40px;background:linear-gradient(to bottom,#0d0d1a,var(--bg2));"></div>
-
-<!-- ══ MAIN CONTENT ══ -->
-<div class="course-content">
-  <div class="course-main">
-
-    <!-- Tabs -->
-    <div class="tabs-bar">
-      <button class="tab-btn active" onclick="switchTab(this,'tab-desc')">Description</button>
-      <button class="tab-btn" onclick="switchTab(this,'tab-testi')">Testimonials</button>
-      <button class="tab-btn" onclick="switchTab(this,'tab-modules')">Modules</button>
-    </div>
-
-    <!-- TAB: DESCRIPTION -->
-    <div id="tab-desc" class="tab-pane active">
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#9989; What you will learn</div>
-        <div class="learn-grid">
-          
-          
-          
-          <div class="learn-item"><div class="learn-check">&#10003;</div>Scale your first &#x20a6;50k month to &#x20a6;500k/month systematically</div>
-          
-          
-        </div>
-      </div>
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#128196; Course description</div>
-        <div class="desc-body">
-          
-          
-          <p>By the end of this course, you'll have a live funnel, a working traffic strategy, and a clear path from your first sale to &#x20a6;500k/month.</p>
-        </div>
-      </div>
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#128221; Requirements</div>
-        <div>
-          <div class="req-item">&#9679;&nbsp; A smartphone or laptop with internet access</div>
-          <div class="req-item">&#9679;&nbsp; A Flutterwave or Paystack account (free to create)</div>
-          <div class="req-item">&#9679;&nbsp; No prior marketing experience needed — we start from zero</div>
-        </div>
-      </div>
-
-      <div class="desc-section">
-        <div class="desc-section-title">&#128100; About the instructor</div>
-        <div class="inst-card">
-          <div class="inst-card-avatar" id="inst-avatar" id="cd-avatar"></div>
-          <div>
-            <div class="inst-card-name" id="inst-name"></div>
-            <div class="inst-card-title" id="inst-headline" style="display:none;"></div>
-            <div class="inst-card-title">Affiliate Marketer &amp; Digital Entrepreneur</div>
-            <div class="inst-card-stats">
-              <div class="inst-stat" style="display:none;" id="inst-stats-row"><strong id="inst-students">0</strong> students</div>
-              <div class="inst-stat" style="display:none;"><strong id="inst-rating">—</strong> &#9733; rating</div>
-              <div class="inst-stat"><strong>1</strong> course</div>
-            </div>
-            <div class="inst-card-bio">Chidi has been generating consistent affiliate income in Nigeria for 5+ years, with monthly earnings exceeding &#x20a6;1.2M. He teaches the exact systems he uses — no theory, no recycled content from YouTube.</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- TAB: TESTIMONIALS -->
-    <div id="tab-testi" class="tab-pane">
-      <div class="testi-grid" id="course-testimonials-grid"></div>
-    </div>
-
-    <!-- TAB: MODULES -->
-    <div id="tab-modules" class="tab-pane">
-      <div class="modules-header">
-        <div class="modules-summary">6 modules &middot; 28 lessons &middot; 6h 20min total</div>
-      </div>
-      <div id="module-list"></div>
-    </div>
-
-  </div>
-  <div class="course-sidebar-spacer"></div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <span class="toast-icon" id="toast-icon"></span>
-  <span id="toast-msg"></span>
-</div>
-
-
-<!-- ══ FIREBASE + AUTH ══ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-         signOut, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const app  = initializeApp({
-  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
-  authDomain:        "skillslibry.firebaseapp.com",
-  projectId:         "skillslibry",
-  storageBucket:     "skillslibry.firebasestorage.app",
-  messagingSenderId: "363745273879",
-  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
-});
-const auth = getAuth(app);
-const db   = getFirestore(app);
-
-window._auth = auth;
-window._db   = db;
-
-onAuthStateChanged(auth, async (user) => {
-  window._user = user || null;
-  if (user) {
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    window._userName = snap.exists() ? snap.data().name : user.email;
-  } else {
-    window._userRole = null;
-    window._userName = null;
-  }
-  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
-});
-
-window.slSignUp = async function(name, email, password, role) {
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await setDoc(doc(db, 'users', cred.user.uid), {
-      name, email,
-      role: role || 'student',
-      createdAt: serverTimestamp(),
-      enrolledCourses: [],
-      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
-    });
-    window._userRole = role || 'student';
-    window._userName = name;
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slSignIn = async function(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slGoogleSignIn = async function() {
-  try {
-    const { GoogleAuthProvider, signInWithPopup } =
-      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-    const provider = new GoogleAuthProvider();
-    const cred = await signInWithPopup(auth, provider);
-    // Create user doc if new
-    const { doc, getDoc, setDoc, serverTimestamp } =
-      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    const snap = await getDoc(doc(db, 'users', cred.user.uid));
-    if (!snap.exists()) {
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        name: cred.user.displayName || '',
-        email: cred.user.email,
-        role: 'student',
-        createdAt: serverTimestamp(),
-        enrolledCourses: [],
-        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
-      });
-    }
-    window._userName = cred.user.displayName || cred.user.email;
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    return { ok: true };
-  } catch(e) {
-    if(e.code === 'auth/popup-closed-by-user') return { ok: false, error: null };
-    return { ok: false, error: slErr(e.code) };
-  }
-};
-
-window.slSignOut = async function() {
-  await signOut(auth);
-  window.location.href = '/';
-};
-
-window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
-  if (!window._user) return { ok: false, error: 'Not logged in' };
-  const id = courseId + '_' + window._user.uid;
-  await setDoc(doc(db, 'enrollments', id), {
-    studentId: window._user.uid,
-    courseId, instructorId,
-    paidAmount: amount, currency, transactionId,
-    platformCut: amount * 0.40,
-    instructorCut: amount * 0.60,
-    affiliateCode: affiliateCode || null,
-    progress: { completedLessons: [], percentComplete: 0 },
-    enrolledAt: serverTimestamp(),
-  });
-  return { ok: true };
-};
-
-function slErr(code) {
-  const m = {
-    'auth/email-already-in-use':   'An account with this email already exists.',
-    'auth/invalid-email':          'Please enter a valid email address.',
-    'auth/weak-password':          'Password must be at least 6 characters.',
-    'auth/user-not-found':         'No account found with this email.',
-    'auth/wrong-password':         'Incorrect password. Please try again.',
-    'auth/invalid-credential':     'Incorrect email or password.',
-    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
-    'auth/network-request-failed': 'Network error. Check your connection.',
-    'auth/operation-not-allowed':  'Email sign-up is not enabled. Please contact support.',
-    'auth/internal-error':         'Server error. Please try again.',
-    'auth/admin-restricted-operation': 'Sign-up is currently restricted.',
-  };
-  return m[code] || ('Error: ' + code + ' — please try again.');
-}
-</script>
 
 <!-- ══ AUTH MODAL ══ -->
 <div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
@@ -1192,6 +738,18 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
    DASHBOARD CORE
 ══════════════════════════════════════════ */
 
+function toggleSidebar(){
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  var btn = document.getElementById('nav-hamburger');
+  if(!sidebar || !overlay) return;
+  var isOpen = sidebar.classList.contains('mobile-open');
+  sidebar.classList.toggle('mobile-open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  if(btn) btn.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
 function switchDash(el, view){
   document.querySelectorAll('.sidebar-item').forEach(function(i){ i.classList.remove('active'); });
   document.querySelectorAll('.dash-view').forEach(function(v){ v.classList.remove('active'); });
@@ -1202,6 +760,9 @@ function switchDash(el, view){
   if(view==='dash-courses')      loadEnrolledCourses('enrolled-courses-grid');
   if(view==='dash-affiliate')    loadAffiliateData();
   if(view==='dash-settings')     loadSettings();
+  // Auto-close mobile sidebar after picking a tab
+  var sidebar = document.querySelector('.sidebar');
+  if(sidebar && sidebar.classList.contains('mobile-open')) toggleSidebar();
 }
 
 function showToast(icon, msg){
