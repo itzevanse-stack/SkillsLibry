@@ -363,6 +363,20 @@ a{text-decoration:none;color:inherit}
 </head>
 <body>
 
+<!-- ══ PAGE LOADING OVERLAY — hides placeholder content until real data arrives ══ -->
+<div id="page-loading-overlay" style="position:fixed;inset:0;z-index:9999;background:#f8f9fc;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#4ecca3,#6c63ff);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:26px;color:#fff;animation:sl-pulse 1.4s ease-in-out infinite;">S</div>
+  <div style="font-size:13px;color:#8b8fa8;font-family:'Inter',sans-serif;">Loading course...</div>
+  <style>@keyframes sl-pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(.88);opacity:.7;}}</style>
+</div>
+<script>
+  // Safety net: never let the overlay trap a user if something unexpected happens
+  setTimeout(function(){
+    var el = document.getElementById('page-loading-overlay');
+    if(el) el.style.display = 'none';
+  }, 8000);
+</script>
+
 <nav class="nav">
   <a class="nav-logo" href="/">
     <div class="nav-logo-mark">S</div>
@@ -1342,6 +1356,11 @@ function showToast(icon,msg){
 
   // Auto-detect currency
   updateCurrencyBtn();
+
+  // Real data is now in place — reveal the page
+  var loadingOverlay = document.getElementById('page-loading-overlay');
+  if(loadingOverlay) loadingOverlay.style.display = 'none';
+
   if(!localStorage.getItem('sl_currency_manual')){
     fetch('https://ipapi.co/json/').then(function(r){return r.json();}).then(function(d){
       var det = COUNTRY_CURRENCY[d.country_code]||'USD';
