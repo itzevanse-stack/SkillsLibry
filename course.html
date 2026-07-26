@@ -1272,8 +1272,10 @@ function showToast(icon,msg){
   if(heroWrap){
     if(promoUrl){
       heroWrap.dataset.promoUrl = promoUrl;
+      applyPromoThumbnail(null, promoUrl);
     } else if(promoId){
       heroWrap.dataset.promoId = promoId;
+      applyPromoThumbnail(promoId, null);
     } else {
       // No preview uploaded - be upfront instead of showing a fake "watch preview" invite
       var phTitle = heroWrap.querySelector('#hero-promo-placeholder > div:nth-child(2)');
@@ -1740,18 +1742,86 @@ function proceedToCheckout(){
 /* ── LOAD COURSE FROM URL ── */
 
 
-function videoUrlToEmbed(url){
-  if(!url) return null;
-  url = url.trim();
-  var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+function applyPromoThumbnail(promoId, promoUrl){
+  var placeholder = document.getElementById('hero-promo-placeholder');
+  if(!placeholder) return;
+
+  function setBg(url){
+    placeholder.style.backgroundImage = 'linear-gradient(rgba(13,13,26,.35),rgba(13,13,26,.55)), url(\''+url+'\')';
+    placeholder.style.backgroundSize = 'cover';
+    placeholder.style.backgroundPosition = 'center';
+  }
+
+  // Bunny Stream auto-generates a thumbnail for every uploaded video
+  if(promoId){
+    setBg('https://vz-4ec805fa-2e2.b-cdn.net/'+promoId+'/thumbnail.jpg');
+    return;
+  }
+  if(!promoUrl) return;
+
+  var yt = promoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+  if(yt){ setBg('https://img.youtube.com/vi/'+yt[1]+'/hqdefault.jpg'); return; }
+
+  var vm = promoUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if(vm){
+    fetch('https://vimeo.com/api/oembed.json?url='+encodeURIComponent('https://vimeo.com/'+vm[1]))
+      .then(function(r){ return r.json(); })
+      .then(function(d){ if(d && d.thumbnail_url) setBg(d.thumbnail_url); })
+      .catch(function(){});
+    return;
+  }
+
+  var wistiaPatterns = [
+    /fast\.wistia\.(?:net|com)\/embed\/(?:iframe|medias)\/([a-zA-Z0-9]+)/,
+    /wistia\.com\/medias\/([a-zA-Z0-9]+)/,
+    /wi\.st\/([a-zA-Z0-9]+)/,
+    /wvideo=([a-zA-Z0-9]+)/,
+    /wistia_async_([a-zA-Z0-9]+)/
+  ];
+  var wsId = null;
+  for(var i=0;i<wistiaPatterns.length;i++){
+    var m = promoUrl.match(wistiaPatterns[i]);
+    if(m){ wsId = m[1]; break; }
+  }
+  if(wsId){
+    fetch('https://fast.wistia.com/embed/medias/'+wsId+'.json')
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        var thumb = d && d.media && d.media.thumbnail && d.media.thumbnail.url;
+        if(thumb) setBg(thumb);
+      })
+      .catch(function(){});
+  }
+}
+
+function videoUrlToEmbed(raw){
+  if(!raw) return null;
+  var text = raw.trim();
+
+  var srcMatch = text.match(/src=["']([^"']+)["']/i);
+  var candidate = srcMatch ? srcMatch[1] : text;
+
+  var wistiaPatterns = [
+    /fast\.wistia\.(?:net|com)\/embed\/(?:iframe|medias)\/([a-zA-Z0-9]+)/,
+    /wistia\.com\/medias\/([a-zA-Z0-9]+)/,
+    /wi\.st\/([a-zA-Z0-9]+)/,
+    /wvideo=([a-zA-Z0-9]+)/,
+    /wistia_async_([a-zA-Z0-9]+)/
+  ];
+  for(var i=0;i<wistiaPatterns.length;i++){
+    var wm = text.match(wistiaPatterns[i]) || candidate.match(wistiaPatterns[i]);
+    if(wm) return 'https://fast.wistia.net/embed/iframe/'+wm[1]+'?autoPlay=true';
+  }
+
+  var yt = candidate.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/)
+        || text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
   if(yt) return 'https://www.youtube.com/embed/'+yt[1]+'?autoplay=1';
-  var vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+
+  var vm = candidate.match(/vimeo\.com\/(?:video\/)?(\d+)/) || text.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if(vm) return 'https://player.vimeo.com/video/'+vm[1]+'?autoplay=1';
-  var ws = url.match(/wistia\.com\/medias\/([a-zA-Z0-9]+)/);
-  if(ws) return 'https://fast.wistia.net/embed/iframe/'+ws[1]+'?autoPlay=true';
-  var ws2 = url.match(/wi\.st\/([a-zA-Z0-9]+)/);
-  if(ws2) return 'https://fast.wistia.net/embed/iframe/'+ws2[1]+'?autoPlay=true';
-  return url;
+
+  if(/^https?:\/\//i.test(candidate)) return candidate;
+  return null;
 }
 
 function playHeroVideo(wrap) {
