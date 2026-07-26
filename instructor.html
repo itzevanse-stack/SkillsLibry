@@ -1781,14 +1781,17 @@ function buildReview() {
 /* ══════════════════════════════════════════
    SUBMIT
 ══════════════════════════════════════════ */
-async function submitCourse() {
-  if(!window._user){ openAuthModal(submitCourse, 'signin'); return; }
+async function persistCourse(targetStatus, btn) {
+  if(!window._user){
+    openAuthModal(function(){ persistCourse(targetStatus, btn); }, 'signin');
+    return false;
+  }
 
-  var btn = document.getElementById('btn-submit');
-  if(btn){ btn.disabled=true; btn.textContent='Submitting...'; }
+  var origText = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = targetStatus === 'draft' ? 'Saving draft...' : 'Submitting...'; }
 
   try {
-    // Upload promo video to Bunny if one was selected
+    // Upload promo video to Bunny if one was selected and not already uploaded
     if(_course.promoVideo && !_course.promoVideoId){
       if(btn) btn.textContent = 'Uploading promo video...';
       try {
@@ -1815,9 +1818,9 @@ async function submitCourse() {
       } catch(pe){
         // Preserve whatever video was already attached instead of wiping it with null
         _course.promoVideoId = _course._origPromoVideoId || null;
-        showToast('&#9888;','Promo video upload failed: '+pe.message+'. Submitting course '+(_course.promoVideoId?'with your previous preview video kept.':'without a preview video.'));
+        showToast('&#9888;','Promo video upload failed: '+pe.message+'. '+(targetStatus==='draft'?'Saving draft ':'Submitting ')+(_course.promoVideoId?'with your previous preview video kept.':'without a preview video.'));
       }
-      if(btn) btn.textContent = 'Submitting...';
+      if(btn) btn.textContent = targetStatus === 'draft' ? 'Saving draft...' : 'Submitting...';
     }
 
     var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); },0);
@@ -1850,46 +1853,58 @@ async function submitCourse() {
       totalModules: _course.modules.length,
       instructorId:  window._user.uid,
       instructorName: window._userName || '',
-      status:       'pending_review',
+      status:        targetStatus,
       totalStudents: 0,
       totalRevenue:  0,
       rating: 0,
     };
 
     // Save to Firestore
-    var { getFirestore, collection, addDoc, doc, updateDoc, serverTimestamp } =
+    var { collection, addDoc, doc, updateDoc, serverTimestamp } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     var db = window._db;
 
     if(_course.id){
-      // Editing an existing course - update it, send back for re-review
       await updateDoc(doc(db, 'courses', _course.id), Object.assign({}, courseData, {
-        status: 'pending_review',
         updatedAt: serverTimestamp(),
       }));
     } else {
-      await addDoc(collection(db, 'courses'), Object.assign({}, courseData, {
+      var ref = await addDoc(collection(db, 'courses'), Object.assign({}, courseData, {
         createdAt:   serverTimestamp(),
         submittedAt: serverTimestamp(),
       }));
+      _course.id = ref.id; // remember so the next save updates this doc instead of duplicating
     }
 
-    // Show success
+    return true;
+
+  } catch(err) {
+    console.error(err);
+    showToast('&#10060;', targetStatus === 'draft' ? 'Failed to save draft. Please try again.' : 'Failed to submit. Please try again.');
+    return false;
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = origText; }
+  }
+}
+
+async function submitCourse() {
+  var btn = document.getElementById('btn-submit');
+  var ok = await persistCourse('pending_review', btn);
+  if(ok){
     document.querySelectorAll('.wizard-step').forEach(function(el){ el.classList.remove('active'); });
     document.getElementById('step-success').classList.add('active');
     document.getElementById('wizard-footer').style.display = 'none';
     document.getElementById('wizard-progress').style.display = 'none';
-    showToast('🎉','Course submitted for review!');
-
-  } catch(err) {
-    console.error(err);
-    showToast('❌','Failed to submit. Please try again.');
-    if(btn){ btn.disabled=false; btn.textContent='Submit for review ✓'; }
+    showToast('&#127881;','Course submitted for review!');
   }
 }
 
 async function saveDraft() {
-  showToast('&#128190;','Draft saved locally.');
+  var btn = document.querySelector('button[onclick="saveDraft()"]');
+  var ok = await persistCourse('draft', btn);
+  if(ok){
+    showToast('&#128190;','Draft saved — your thumbnail and video are safely stored.');
+  }
 }
 
 
