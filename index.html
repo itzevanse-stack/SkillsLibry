@@ -54,6 +54,33 @@ a{text-decoration:none;color:inherit}
   transition:box-shadow .3s;
 }
 .nav.scrolled{box-shadow:0 4px 24px rgba(13,13,26,.07);}
+.nav-hamburger{
+  display:none;width:36px;height:36px;border:none;background:none;cursor:pointer;
+  flex-direction:column;justify-content:center;align-items:center;gap:5px;
+  margin-left:auto;padding:0;z-index:101;
+}
+.nav-hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .25s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-nav-menu{
+  position:fixed;top:66px;right:0;width:min(80vw,320px);height:calc(100vh - 66px);
+  background:#fff;z-index:101;transform:translateX(100%);transition:transform .3s ease;
+  box-shadow:-8px 0 32px rgba(13,13,26,.12);padding:20px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:2px;
+}
+.mobile-nav-menu.open{transform:translateX(0);}
+.mobile-nav-link{
+  padding:14px 12px;font-size:15px;font-weight:600;color:var(--text);text-decoration:none;
+  border-radius:8px;
+}
+.mobile-nav-link:active{background:var(--bg2);}
+.mobile-nav-divider{height:1px;background:var(--border);margin:8px 0;}
+.mobile-nav-cta{background:var(--teal);color:#0d0d1a;text-align:center;margin-top:8px;}
+.mobile-nav-overlay{
+  display:none;position:fixed;inset:0;top:66px;background:rgba(13,13,26,.4);z-index:100;
+}
+.mobile-nav-overlay.open{display:block;}
 .nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
 .nav-logo-mark{
   width:36px;height:36px;border-radius:9px;
@@ -515,9 +542,12 @@ a{text-decoration:none;color:inherit}
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
-  .nav{padding:0 20px;}
+  .nav{padding:0 16px;}
   .nav-links{display:none;}
+  .nav-right{display:none;}
+  .nav-hamburger{display:flex;}
   .hero-content{padding:48px 16px 0;}
+  .hero-content h1{font-size:32px;line-height:1.25;}
   .hero-video{width:100%;}
   .stats-inner{grid-template-columns:repeat(2,1fr);}
   .stat{border-right:none;border-bottom:1px solid var(--border);}
@@ -528,6 +558,16 @@ a{text-decoration:none;color:inherit}
   .footer-grid{grid-template-columns:1fr 1fr;}
   .cta-card{padding:40px 24px;}
   .sec{padding:60px 16px;}
+  .course-grid,.instructor-grid,.testimonial-grid{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .hero-content h1{font-size:26px;}
+  .footer-grid{grid-template-columns:1fr;gap:32px;}
+  .stats-inner{grid-template-columns:1fr;}
+  .stat{border-right:none !important;border-bottom:1px solid var(--border);}
+  .stat:last-child{border-bottom:none;}
+  .btn-lg{width:100%;text-align:center;}
+  .hero-btns{flex-direction:column;width:100%;}
 }
 </style>
 
@@ -676,6 +716,9 @@ function slErr(code) {
     <a class="nav-link" href="#">Community</a>
     <a class="nav-link" href="#">Blog</a>
   </div>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-right">
     <!-- Currency switcher -->
     <div class="currency-switcher" id="currency-switcher">
@@ -729,6 +772,17 @@ function slErr(code) {
     <a class="btn btn-teal" href="/catalog">Browse Courses</a>
   </div>
 </nav>
+
+<!-- ══ MOBILE NAV MENU ══ -->
+<div id="mobile-nav-menu" class="mobile-nav-menu">
+  <a class="mobile-nav-link" href="/catalog">Courses</a>
+  <a class="mobile-nav-link" href="#">Community</a>
+  <a class="mobile-nav-link" href="#">Blog</a>
+  <div class="mobile-nav-divider"></div>
+  <a class="mobile-nav-link" href="#" onclick="window._user ? window.location.href='/dashboard' : openAuthModal(null,'signin')">My Learning</a>
+  <a class="mobile-nav-link mobile-nav-cta" href="/catalog">Browse Courses</a>
+</div>
+<div id="mobile-nav-overlay" class="mobile-nav-overlay" onclick="toggleMobileNav()"></div>
 
 <!-- ══ HERO ══ -->
 <section class="hero">
@@ -1052,6 +1106,18 @@ function updateAllPrices(){
     var v=parseInt(el.dataset.ngn); if(v) el.textContent=convertPrice(v);
   });
 }
+function toggleMobileNav(){
+  var menu = document.getElementById('mobile-nav-menu');
+  var overlay = document.getElementById('mobile-nav-overlay');
+  var btn = document.getElementById('nav-hamburger');
+  if(!menu || !overlay || !btn) return;
+  var isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
 function toggleCurrencyDropdown(){
   var dd=document.getElementById("currency-dropdown");
   var btn=document.getElementById("currency-btn");
