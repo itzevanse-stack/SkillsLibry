@@ -1278,12 +1278,24 @@ function showToast(icon,msg){
 
     if(embedSrc){
       var placeholder = document.getElementById('hero-promo-placeholder');
-      if(placeholder) placeholder.style.display = 'none';
+      if(placeholder){
+        placeholder.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;">'
+          +'<div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#4ecca3,#6c63ff);display:flex;align-items:center;justify-content:center;font-family:\'Poppins\',sans-serif;font-weight:800;font-size:24px;color:#fff;animation:sl-pulse 1.4s ease-in-out infinite;">S</div>'
+          +'<div style="font-size:13px;color:rgba(255,255,255,.6);font-family:\'Inter\',sans-serif;">Loading preview...</div>'
+          +'</div>'
+          +'<style>@keyframes sl-pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(.88);opacity:.7;}}</style>';
+        placeholder.style.zIndex = '1';
+      }
       var iframe = document.createElement('iframe');
       iframe.src = embedSrc;
       iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;';
       iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
       iframe.allowFullscreen = true;
+      iframe.onload = function(){
+        if(placeholder) placeholder.style.display = 'none';
+      };
+      // Safety net in case onload never fires for this provider
+      setTimeout(function(){ if(placeholder) placeholder.style.display = 'none'; }, 6000);
       heroWrap.appendChild(iframe);
       heroWrap.style.cursor = 'default';
       heroWrap.onclick = null;
