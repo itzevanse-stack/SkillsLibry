@@ -229,9 +229,13 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
     <!-- PAYOUTS -->
     <div class="admin-view" id="view-payouts">
-      <div class="card">
+      <div class="card" style="margin-bottom:20px;">
         <div class="card-head">Instructor Payouts</div>
         <div id="payouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Affiliate Payouts</div>
+        <div id="affiliate-payouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
       </div>
     </div>
 
@@ -629,7 +633,7 @@ function showAdmin(view){
   if(view==='students')    loadStudents();
   if(view==='instructors') loadInstructors();
   if(view==='testimonials')loadTestimonialsAdmin();
-  if(view==='payouts')     loadPayouts();
+  if(view==='payouts')      { loadPayouts(); loadAffiliatePayouts(); }
 
   // Auto-close mobile sidebar drawer after navigating
   var sidebar = document.querySelector('.sidebar');
@@ -998,6 +1002,79 @@ async function loadPayouts(){
 }
 
 function processPayout(){ showToast('&#128176;','Payout processing...'); }
+
+async function loadAffiliatePayouts(){
+  var el = document.getElementById('affiliate-payouts-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+
+    // Fetch all earnings, filter paid ones client-side (avoids Firestore's
+    // != operator silently excluding older docs that have no status field yet)
+    var earnSnap = await fb.getDocs(fb.collection(db,'affiliateEarnings'));
+
+    var byCode = {};
+    earnSnap.docs.forEach(function(d){
+      var data = d.data();
+      if(data.status === 'paid') return;
+      var code = data.affiliateCode;
+      if(!byCode[code]) byCode[code] = { total:0, currency:data.currency||'NGN', docIds:[] };
+      byCode[code].total += (data.commission||0);
+      byCode[code].docIds.push(d.id);
+    });
+
+    var codes = Object.keys(byCode);
+    if(!codes.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#128176;</div>No pending affiliate payouts.</div>';
+      return;
+    }
+
+    // Look up each affiliate's name/email/bank details via refCode
+    var rows = await Promise.all(codes.map(async function(code){
+      var userSnap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('refCode','==',code)));
+      var user = userSnap.docs.length ? userSnap.docs[0].data() : null;
+      return {
+        code: code,
+        total: byCode[code].total,
+        currency: byCode[code].currency,
+        docIds: byCode[code].docIds,
+        name: user ? (user.name||'Unknown') : 'Unknown',
+        email: user ? (user.email||'—') : '—',
+        bankName: user ? (user.bankName||'') : '',
+        accountNumber: user ? (user.accountNumber||'') : '',
+        accountName: user ? (user.accountName||'') : '',
+      };
+    }));
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Affiliate</th><th>Bank details</th><th>Pending Amount</th><th>Action</th></tr></thead><tbody>'
+      + rows.map(function(r){
+          var bankInfo = r.bankName
+            ? r.bankName+'<br/><span style="font-size:12px;color:var(--text3);">'+r.accountNumber+' &middot; '+r.accountName+'</span>'
+            : '<span style="color:var(--text3);font-style:italic;">No bank details yet</span>';
+          return '<tr>'
+            +'<td><div style="font-weight:600;">'+r.name+'</div><div style="font-size:12px;color:var(--text3);">'+r.email+'</div></td>'
+            +'<td>'+bankInfo+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(r.currency==='NGN'?'&#8358;':r.currency+' ')+r.total.toLocaleString()+'</td>'
+            +'<td><button class="tbl-btn tbl-approve" data-ids="'+r.docIds.join(',')+'" onclick="markAffiliatePaid(this)" '+(r.bankName?'':'disabled title="No bank details on file"')+'>Mark as paid</button></td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function markAffiliatePaid(btn){
+  if(!confirm('Mark this affiliate\'s pending commission as paid? This should only be done after the bank transfer is actually sent.')) return;
+  var ids = btn.dataset.ids.split(',').filter(Boolean);
+  try {
+    var fb = await getFs(); var db = window._db;
+    await Promise.all(ids.map(function(id){
+      return fb.updateDoc(fb.doc(db,'affiliateEarnings',id),{ status:'paid', paidAt:fb.serverTimestamp() });
+    }));
+    showToast('✓','Marked as paid.');
+    loadAffiliatePayouts();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
 function doApproveInst(btn){ approveInstructor(btn.dataset.id, btn.dataset.email); }
 function doApprove(btn){ approveCourse(btn.dataset.id); }
 function doReject(btn){ rejectCourse(btn.dataset.id); }
