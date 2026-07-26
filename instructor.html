@@ -829,9 +829,9 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
                 <span style="font-size:12px;color:var(--text3);">or</span>
                 <div style="flex:1;height:1px;background:var(--border);"></div>
               </div>
-              <label style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;">Paste a video link instead</label>
-              <div style="display:flex;gap:8px;">
-                <input type="url" id="promo-url-input" placeholder="YouTube, Vimeo, or Wistia link..." style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"/>
+              <label style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;">Paste a video link OR embed code</label>
+              <div style="display:flex;gap:8px;align-items:flex-start;">
+                <textarea id="promo-url-input" rows="2" placeholder="Paste a YouTube/Vimeo/Wistia link, or paste the whole embed code — we'll pull the video out automatically." style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;resize:vertical;line-height:1.5;" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--border)'"></textarea>
                 <button type="button" onclick="usePromoUrl()" style="padding:10px 18px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;">Use link</button>
               </div>
               <div id="promo-url-status" style="font-size:12px;margin-top:6px;display:none;"></div>
@@ -1484,18 +1484,40 @@ function previewPromo(input) {
   if(zoneInput) zoneInput.style.display = 'none';
 }
 
-function videoUrlToEmbed(url){
-  if(!url) return null;
-  url = url.trim();
-  var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+function videoUrlToEmbed(raw){
+  if(!raw) return null;
+  var text = raw.trim();
+
+  // If a full <iframe>/<script> embed snippet was pasted, pull the src out first
+  var srcMatch = text.match(/src=["']([^"']+)["']/i);
+  var candidate = srcMatch ? srcMatch[1] : text;
+
+  // Wistia — covers medias/ links, wi.st short links, direct embed URLs,
+  // and older embed codes that reference wvideo=ID or wistia_async_ID
+  var wistiaPatterns = [
+    /fast\.wistia\.(?:net|com)\/embed\/(?:iframe|medias)\/([a-zA-Z0-9]+)/,
+    /wistia\.com\/medias\/([a-zA-Z0-9]+)/,
+    /wi\.st\/([a-zA-Z0-9]+)/,
+    /wvideo=([a-zA-Z0-9]+)/,
+    /wistia_async_([a-zA-Z0-9]+)/
+  ];
+  for(var i=0;i<wistiaPatterns.length;i++){
+    var wm = text.match(wistiaPatterns[i]) || candidate.match(wistiaPatterns[i]);
+    if(wm) return 'https://fast.wistia.net/embed/iframe/'+wm[1];
+  }
+
+  // YouTube
+  var yt = candidate.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/)
+        || text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
   if(yt) return 'https://www.youtube.com/embed/'+yt[1];
-  var vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+
+  // Vimeo
+  var vm = candidate.match(/vimeo\.com\/(?:video\/)?(\d+)/) || text.match(/vimeo\.com\/(?:video\/)?(\d+)/);
   if(vm) return 'https://player.vimeo.com/video/'+vm[1];
-  var ws = url.match(/wistia\.com\/medias\/([a-zA-Z0-9]+)/);
-  if(ws) return 'https://fast.wistia.net/embed/iframe/'+ws[1];
-  var ws2 = url.match(/wi\.st\/([a-zA-Z0-9]+)/);
-  if(ws2) return 'https://fast.wistia.net/embed/iframe/'+ws2[1];
-  return url; // already an embeddable URL or direct link
+
+  // Fall back to the extracted src/URL if it's a usable link
+  if(/^https?:\/\//i.test(candidate)) return candidate;
+  return null;
 }
 
 function usePromoUrl(){
