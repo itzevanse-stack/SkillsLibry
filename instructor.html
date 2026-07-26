@@ -1263,7 +1263,7 @@ function showToast(icon, msg) {
 ══════════════════════════════════════════ */
 var _course = {
   title:'', subtitle:'', category:'', level:'', language:'english',
-  duration:'', description:'', thumbnail:null, promoVideo:null,
+  duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
   promoVideoId:null, learns:[], requirements:[], modules:[],
   priceNGN:0, priceOriginal:0, priceType:'paid', includes:[],
   status:'draft'
@@ -1274,7 +1274,7 @@ var _totalSteps  = 5;
 function startNewCourse() {
   _course = {
     title:'', subtitle:'', category:'', level:'', language:'english',
-    duration:'', description:'', thumbnail:null, promoVideo:null,
+    duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
     promoVideoId:null, learns:[], requirements:[], modules:[],
     priceNGN:0, priceOriginal:0, priceType:'paid', includes:[], status:'draft'
   };
@@ -1422,12 +1422,30 @@ function collectListItems(listId) {
 function previewThumb(input) {
   if(!input.files||!input.files[0]) return;
   var file = input.files[0];
-  var url  = URL.createObjectURL(file);
-  _course.thumbnail = file;
-  var prev = document.getElementById('thumb-preview');
-  var prom = document.getElementById('thumb-prompt');
-  prev.innerHTML = '<img src="'+url+'"/><div class="upload-preview-label">&#128444; Thumbnail</div><div class="upload-change" onclick="this.closest(\'.upload-zone\').querySelector(\'input\').click()">Change image</div>';
-  prev.style.display = 'block'; prom.style.display = 'none';
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var img = new Image();
+    img.onload = function(){
+      var maxW = 800;
+      var scale = Math.min(1, maxW / img.width);
+      var canvas = document.createElement('canvas');
+      canvas.width  = Math.round(img.width  * scale);
+      canvas.height = Math.round(img.height * scale);
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+
+      _course.thumbnail    = file;
+      _course.thumbnailUrl = dataUrl;
+
+      var prev = document.getElementById('thumb-preview');
+      var prom = document.getElementById('thumb-prompt');
+      prev.innerHTML = '<img src="'+dataUrl+'" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;"/><div class="upload-preview-label">&#128444; Thumbnail</div><div class="upload-change" onclick="this.closest(\'.upload-zone\').querySelector(\'input\').click()">Change image</div>';
+      prev.style.display = 'block'; prom.style.display = 'none';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function previewPromo(input) {
@@ -1436,7 +1454,8 @@ function previewPromo(input) {
   var maxSize = 10 * 1024 * 1024 * 1024;
   if(file.size > maxSize){ showToast('❌','Promo video max 10GB.'); return; }
   var url = URL.createObjectURL(file);
-  _course.promoVideo = file;
+  _course.promoVideo   = file;
+  _course.promoVideoId = null;
   var prev = document.getElementById('promo-preview');
   var prom = document.getElementById('promo-prompt');
   prev.innerHTML = '<video src="'+url+'" controls style="width:100%;max-height:200px;position:relative;z-index:2;"></video>'
@@ -1647,7 +1666,7 @@ async function uploadLessonVideo(file, mIdx, lIdx) {
       body: JSON.stringify({ title: title, courseId: 'draft' })
     });
     var data = await res.json();
-    if(!data.videoId) throw new Error('Failed to create video slot');
+    if(!data.videoId) throw new Error(data.error || 'Failed to create video slot');
 
     if(progWrap) progWrap.style.display = 'block';
     if(progLabel) progLabel.style.display = 'block';
@@ -1819,6 +1838,7 @@ async function submitCourse() {
           })
         };
       }),
+      thumbnailUrl: _course.thumbnailUrl || null,
       promoVideoId: _course.promoVideoId || null,
       priceNGN:     _course.priceNGN,
       priceOriginal:_course.priceOriginal,
