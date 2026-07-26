@@ -1746,10 +1746,19 @@ function applyPromoThumbnail(promoId, promoUrl){
   var placeholder = document.getElementById('hero-promo-placeholder');
   if(!placeholder) return;
 
+  // Only touch the placeholder's background once we've confirmed the image
+  // actually loads — otherwise leave the original gradient untouched.
   function setBg(url){
-    placeholder.style.backgroundImage = 'linear-gradient(rgba(13,13,26,.35),rgba(13,13,26,.55)), url(\''+url+'\')';
-    placeholder.style.backgroundSize = 'cover';
-    placeholder.style.backgroundPosition = 'center';
+    var test = new Image();
+    test.onload = function(){
+      placeholder.style.backgroundImage = 'linear-gradient(rgba(13,13,26,.35),rgba(13,13,26,.55)), url(\''+url+'\')';
+      placeholder.style.backgroundSize = 'cover';
+      placeholder.style.backgroundPosition = 'center';
+    };
+    test.onerror = function(){
+      console.warn('Promo thumbnail failed to load, keeping default placeholder:', url);
+    };
+    test.src = url;
   }
 
   // Bunny Stream auto-generates a thumbnail for every uploaded video
@@ -1784,10 +1793,8 @@ function applyPromoThumbnail(promoId, promoUrl){
     if(m){ wsId = m[1]; break; }
   }
   if(wsId){
-    fetch('https://fast.wistia.com/oembed?url='+encodeURIComponent('https://home.wistia.com/medias/'+wsId)+'&format=json')
-      .then(function(r){ return r.json(); })
-      .then(function(d){ if(d && d.thumbnail_url) setBg(d.thumbnail_url); })
-      .catch(function(e){ console.warn('Wistia thumbnail fetch failed:', e.message); });
+    // Direct, public thumbnail URL — no fetch, no subdomain guessing, no CORS dependency
+    setBg('https://fast.wistia.com/embed/medias/'+wsId+'/swatch');
   }
 }
 
