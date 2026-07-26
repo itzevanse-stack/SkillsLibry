@@ -1265,17 +1265,28 @@ function showToast(icon,msg){
     if(heroImg){ heroImg.src = thumb; heroImg.style.display = 'block'; }
   }
 
-  // Apply promo video (Bunny Stream OR pasted link) — single correct handler
+  // Apply promo video (Bunny Stream OR pasted link) — load the real player
+  // immediately, since YouTube/Vimeo/Wistia/Bunny all show their own native
+  // thumbnail + play button inside the iframe itself. No custom guessing needed.
   var promoId   = courseData.promoVideoId  || null;
   var promoUrl  = courseData.promoVideoUrl || null;
   var heroWrap  = document.getElementById('hero-promo-wrap');
   if(heroWrap){
-    if(promoUrl){
-      heroWrap.dataset.promoUrl = promoUrl;
-      applyPromoThumbnail(null, promoUrl);
-    } else if(promoId){
-      heroWrap.dataset.promoId = promoId;
-      applyPromoThumbnail(promoId, null);
+    var embedSrc = promoUrl
+      ? videoUrlToEmbed(promoUrl)
+      : (promoId ? 'https://iframe.mediadelivery.net/embed/690865/'+promoId+'?autoplay=false&preload=true' : null);
+
+    if(embedSrc){
+      var placeholder = document.getElementById('hero-promo-placeholder');
+      if(placeholder) placeholder.style.display = 'none';
+      var iframe = document.createElement('iframe');
+      iframe.src = embedSrc;
+      iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;';
+      iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
+      iframe.allowFullscreen = true;
+      heroWrap.appendChild(iframe);
+      heroWrap.style.cursor = 'default';
+      heroWrap.onclick = null;
     } else {
       // No preview uploaded - be upfront instead of showing a fake "watch preview" invite
       var phTitle = heroWrap.querySelector('#hero-promo-placeholder > div:nth-child(2)');
@@ -1741,62 +1752,6 @@ function proceedToCheckout(){
 
 /* ── LOAD COURSE FROM URL ── */
 
-
-function applyPromoThumbnail(promoId, promoUrl){
-  var placeholder = document.getElementById('hero-promo-placeholder');
-  if(!placeholder) return;
-
-  // Only touch the placeholder's background once we've confirmed the image
-  // actually loads — otherwise leave the original gradient untouched.
-  function setBg(url){
-    var test = new Image();
-    test.onload = function(){
-      placeholder.style.backgroundImage = 'linear-gradient(rgba(13,13,26,.35),rgba(13,13,26,.55)), url(\''+url+'\')';
-      placeholder.style.backgroundSize = 'cover';
-      placeholder.style.backgroundPosition = 'center';
-    };
-    test.onerror = function(){
-      console.warn('Promo thumbnail failed to load, keeping default placeholder:', url);
-    };
-    test.src = url;
-  }
-
-  // Bunny Stream auto-generates a thumbnail for every uploaded video
-  if(promoId){
-    setBg('https://vz-4ec805fa-2e2.b-cdn.net/'+promoId+'/thumbnail.jpg');
-    return;
-  }
-  if(!promoUrl) return;
-
-  var yt = promoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
-  if(yt){ setBg('https://img.youtube.com/vi/'+yt[1]+'/hqdefault.jpg'); return; }
-
-  var vm = promoUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if(vm){
-    fetch('https://vimeo.com/api/oembed.json?url='+encodeURIComponent('https://vimeo.com/'+vm[1]))
-      .then(function(r){ return r.json(); })
-      .then(function(d){ if(d && d.thumbnail_url) setBg(d.thumbnail_url); })
-      .catch(function(e){ console.warn('Vimeo thumbnail fetch failed:', e.message); });
-    return;
-  }
-
-  var wistiaPatterns = [
-    /fast\.wistia\.(?:net|com)\/embed\/(?:iframe|medias)\/([a-zA-Z0-9]+)/,
-    /wistia\.com\/medias\/([a-zA-Z0-9]+)/,
-    /wi\.st\/([a-zA-Z0-9]+)/,
-    /wvideo=([a-zA-Z0-9]+)/,
-    /wistia_async_([a-zA-Z0-9]+)/
-  ];
-  var wsId = null;
-  for(var i=0;i<wistiaPatterns.length;i++){
-    var m = promoUrl.match(wistiaPatterns[i]);
-    if(m){ wsId = m[1]; break; }
-  }
-  if(wsId){
-    // Direct, public thumbnail URL — no fetch, no subdomain guessing, no CORS dependency
-    setBg('https://fast.wistia.com/embed/medias/'+wsId+'/swatch');
-  }
-}
 
 function videoUrlToEmbed(raw){
   if(!raw) return null;
