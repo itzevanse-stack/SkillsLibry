@@ -1246,29 +1246,7 @@ function showToast(icon,msg){
     if(tEl) tEl.style.backgroundImage = 'url('+thumb+')';
   }
 
-  // Apply promo video (Bunny Stream)
-  var promoId = courseData.promoVideoId || courseData.promoVideo || '';
-  var promoUrl = courseData.promoVideoUrl || '';
-  if(promoId || promoUrl){
-    var heroWrap = document.querySelector('.hero-video-wrap,.hero-thumb');
-    var existVid = document.getElementById('hero-promo-video');
-    if(heroWrap && (promoId || promoUrl)){
-      var iframe = document.createElement('iframe');
-      iframe.src = promoId
-        ? 'https://iframe.mediadelivery.net/embed/690865/'+promoId+'?autoplay=false&preload=true'
-        : promoUrl;
-      iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;border-radius:8px;';
-      iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
-      iframe.allowFullscreen = true;
-      heroWrap.style.position = 'relative';
-      heroWrap.style.paddingTop = '56.25%';
-      heroWrap.style.height = '0';
-      if(existVid) existVid.style.display = 'none';
-      var playBtn = document.getElementById('play-preview-btn');
-      if(playBtn) playBtn.style.display = 'none';
-      heroWrap.appendChild(iframe);
-    }
-  }
+  // Apply promo video (Bunny Stream) - see consolidated handler below
 
   // Update page title
   if(courseData.title) document.title = courseData.title + ' — SkillsLibry';
@@ -1287,31 +1265,22 @@ function showToast(icon,msg){
     if(heroImg){ heroImg.src = thumb; heroImg.style.display = 'block'; }
   }
 
-  // Apply promo video
-  var promoUrl = courseData.promoVideoUrl || courseData.promoVideo || courseData.sampleVideo || '';
-  if(promoUrl){
-    var vid = document.getElementById('hero-promo-video');
-    var playBtn = document.getElementById('play-preview-btn');
-    if(vid){
-      // Check if it's a Bunny Stream video ID or full URL
-      if(promoUrl.startsWith('http')){
-        vid.querySelector('source').src = promoUrl;
-        vid.load();
-      } else {
-        // Bunny Stream embed
-        var iframe = document.createElement('iframe');
-        iframe.src = 'https://iframe.mediadelivery.net/embed/690865/'+promoUrl+'?autoplay=false&loop=false&muted=false&preload=true';
-        iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;';
-        iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
-        iframe.allowFullscreen = true;
-        var heroVid = document.querySelector('.hero-video-wrap') || vid.parentElement;
-        if(heroVid){
-          heroVid.style.position = 'relative';
-          vid.style.display = 'none';
-          if(playBtn) playBtn.style.display = 'none';
-          heroVid.appendChild(iframe);
-        }
-      }
+  // Apply promo video (Bunny Stream) — single correct handler
+  var promoId  = courseData.promoVideoId || null;
+  var heroWrap = document.getElementById('hero-promo-wrap');
+  if(heroWrap){
+    if(promoId){
+      heroWrap.dataset.promoId = promoId;
+    } else {
+      // No preview uploaded - be upfront instead of showing a fake "watch preview" invite
+      var phTitle = heroWrap.querySelector('#hero-promo-placeholder > div:nth-child(2)');
+      var phSub   = heroWrap.querySelector('#hero-promo-placeholder > div:nth-child(3)');
+      var phBtn   = document.getElementById('hero-play-btn');
+      if(phTitle) phTitle.textContent = 'No preview video yet';
+      if(phSub)   phSub.textContent   = 'The instructor hasn\'t added a course preview.';
+      if(phBtn)   phBtn.style.opacity = '0.35';
+      heroWrap.style.cursor = 'default';
+      heroWrap.onclick = null;
     }
   }
 
@@ -1769,17 +1738,24 @@ function proceedToCheckout(){
 
 
 function playHeroVideo(wrap) {
-  var video = document.getElementById('hero-promo-video');
-  var srcEl = video ? video.querySelector('source') : null;
-  var hasSrc = srcEl && srcEl.getAttribute('src');
-  if(!hasSrc){
+  var promoId = wrap && wrap.dataset ? wrap.dataset.promoId : null;
+  if(!promoId){
     if(typeof showToast === 'function') showToast('&#127909;','No preview video available for this course yet.');
     return;
   }
   var placeholder = document.getElementById('hero-promo-placeholder');
   if(placeholder) placeholder.style.display = 'none';
-  video.style.display = 'block';
-  video.play().catch(function(){});
+
+  if(!wrap.querySelector('iframe')){
+    var iframe = document.createElement('iframe');
+    iframe.src = 'https://iframe.mediadelivery.net/embed/690865/'+promoId+'?autoplay=true&preload=true';
+    iframe.style.cssText = 'width:100%;height:100%;position:absolute;inset:0;border:none;';
+    iframe.allow = 'accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture;';
+    iframe.allowFullscreen = true;
+    wrap.appendChild(iframe);
+  }
+  var legacyVideo = document.getElementById('hero-promo-video');
+  if(legacyVideo) legacyVideo.style.display = 'none';
 }
 
 function playPromoVideo() {
