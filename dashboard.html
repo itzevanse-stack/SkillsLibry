@@ -299,6 +299,19 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
           </div>
         </div>
       </div>
+
+      <!-- Bank details for payout -->
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);max-width:560px;margin-top:16px;">
+        <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;">Payout bank details</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:18px;">Your commission earnings are sent here.</div>
+        <div class="field-grid" style="margin-bottom:14px;">
+          <div class="field"><label>Bank name</label><input id="aff-bank-name" type="text" placeholder="e.g. GTBank, Chase, Barclays..."/></div>
+          <div class="field"><label>Account number</label><input id="aff-account-number" type="text" maxlength="20" placeholder="Account number"/></div>
+        </div>
+        <div class="field" style="margin-bottom:16px;"><label>Account name</label><input id="aff-account-name" type="text" placeholder="Name on account"/></div>
+        <button onclick="saveAffiliateBank()" style="padding:10px 24px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Save bank details</button>
+        <div id="aff-bank-status" style="font-size:12px;color:var(--teal-dark);margin-top:10px;display:none;">&#10003; Bank details saved</div>
+      </div>
     </div>
 
     <!-- SETTINGS -->
@@ -1000,21 +1013,64 @@ function markAllRead(){
 /* ══ AFFILIATE ══ */
 async function loadAffiliateData(){
   if(!window._user) return;
+  var refCode = window._user.uid.slice(0,8).toUpperCase();
   var affLink = document.getElementById('aff-link');
-  if(affLink) affLink.textContent = 'https://skillslibry.com/?ref='+window._user.uid.slice(0,8).toUpperCase();
+  if(affLink) affLink.textContent = 'https://skillslibry.com/?ref='+refCode;
   if(!window._db) return;
   try {
     var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+    // Keep refCode in sync on the user doc so admin can look up who owns this code
+    await fb.setDoc(fb.doc(window._db,'users',window._user.uid),{ refCode:refCode },{ merge:true }).catch(function(){});
+
     var snap = await fb.getDocs(fb.query(
       fb.collection(window._db,'affiliateEarnings'),
-      fb.where('affiliateCode','==',window._user.uid.slice(0,8).toUpperCase())
+      fb.where('affiliateCode','==',refCode)
     ));
     var total = snap.docs.reduce(function(a,d){ return a+(d.data().commission||0); },0);
     var el = document.getElementById('aff-conversions');
     if(el) el.textContent = snap.docs.length;
     var el2 = document.getElementById('aff-earned');
     if(el2) el2.textContent = '\u20a6'+total.toLocaleString();
+
+    // Load saved bank details
+    var userSnap = await fb.getDoc(fb.doc(window._db,'users',window._user.uid));
+    if(userSnap.exists()){
+      var d = userSnap.data();
+      var bn = document.getElementById('aff-bank-name');     if(bn) bn.value = d.bankName||'';
+      var ac = document.getElementById('aff-account-number');if(ac) ac.value = d.accountNumber||'';
+      var an = document.getElementById('aff-account-name');  if(an) an.value = d.accountName||'';
+    }
   } catch(e){}
+}
+
+async function saveAffiliateBank(){
+  if(!window._user){ showToast('&#9888;&#65039;','Please sign in.'); return; }
+  var bankName      = (document.getElementById('aff-bank-name')||{}).value||'';
+  var accountNumber = (document.getElementById('aff-account-number')||{}).value||'';
+  var accountName   = (document.getElementById('aff-account-name')||{}).value||'';
+
+  if(!bankName.trim() || !accountNumber.trim() || !accountName.trim()){
+    showToast('&#9888;&#65039;','Please fill in all bank details.');
+    return;
+  }
+
+  try {
+    if(window._db){
+      var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      await fb.setDoc(fb.doc(window._db,'users',window._user.uid),{
+        bankName: bankName.trim(),
+        accountNumber: accountNumber.trim(),
+        accountName: accountName.trim(),
+        updatedAt: fb.serverTimestamp(),
+      },{ merge:true });
+    }
+    showToast('&#10003;','Bank details saved!');
+    var status = document.getElementById('aff-bank-status');
+    if(status){ status.style.display='block'; setTimeout(function(){ status.style.display='none'; },3000); }
+  } catch(e){
+    showToast('&#10007;','Error: '+e.message);
+  }
 }
 
 function copyAffLink(){
