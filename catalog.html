@@ -1439,9 +1439,12 @@ document.addEventListener('authReady', function(e){
     grid.innerHTML = courses.map(function(c){
       var price    = Math.round((c.priceNGN||0) * rate);
       var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var thumbInner = c.thumbnailUrl
+        ? '<img src="'+c.thumbnailUrl+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"/>'
+        : '&#127891;';
       return '<div class="course-card" onclick="goCourse(this.dataset.id)" data-id="'+c.id+'">'
-        +'<div class="course-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1a2e);display:flex;align-items:center;justify-content:center;font-size:40px;">&#127891;'
-          +'<div class="course-thumb-cat">'+( c.category||'Course')+'</div>'
+        +'<div class="course-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a1a2e);display:flex;align-items:center;justify-content:center;font-size:40px;position:relative;overflow:hidden;">'+thumbInner
+          +'<div class="course-thumb-cat" style="position:relative;z-index:1;">'+( c.category||'Course')+'</div>'
         +'</div>'
         +'<div class="course-body">'
           +'<div class="course-instructor">'
