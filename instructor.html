@@ -838,7 +838,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
         <!-- ── STEP 3: UPLOAD VIDEOS ── -->
         <div class="wizard-step" id="step-3">
           <div class="step-title">Upload your lesson videos</div>
-          <div class="step-sub">Upload a video for each lesson. Max 5GB per video. Bunny.net streams them securely to your students.</div>
+          <div class="step-sub">Upload a video for each lesson. Max 10GB per video. Bunny.net streams them securely to your students.</div>
           <div class="video-lessons-list" id="video-lessons-list">
             <div style="text-align:center;padding:40px;color:var(--text3);">
               <div style="font-size:36px;margin-bottom:10px;">&#127916;</div>
@@ -1432,8 +1432,8 @@ function previewThumb(input) {
 function previewPromo(input) {
   if(!input.files||!input.files[0]) return;
   var file = input.files[0];
-  var maxSize = 500 * 1024 * 1024;
-  if(file.size > maxSize){ showToast('❌','Promo video max 500MB.'); return; }
+  var maxSize = 10 * 1024 * 1024 * 1024;
+  if(file.size > maxSize){ showToast('❌','Promo video max 10GB.'); return; }
   var url = URL.createObjectURL(file);
   _course.promoVideo = file;
   var prev = document.getElementById('promo-preview');
@@ -1589,7 +1589,7 @@ function buildVideoUploadList() {
         +'<div id="vpr-'+item.mIdx+'-'+item.lIdx+'">'
         +'<div class="uz-icon">&#127916;</div>'
         +'<div class="uz-title">Click to upload or drag & drop</div>'
-        +'<div class="uz-sub">MP4, MOV, WEBM · Max 5GB</div>'
+        +'<div class="uz-sub">MP4, MOV, WEBM · Max 10GB</div>'
         +'</div>'
         +'<input type="file" accept="video/*" onchange="handleVideoFileSelect(this,'+item.mIdx+','+item.lIdx+')" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>'
         +'</div>'
@@ -1609,8 +1609,8 @@ function buildVideoUploadList() {
 function handleVideoFileSelect(input, mIdx, lIdx) {
   if(!input.files||!input.files[0]) return;
   var file = input.files[0];
-  var maxSize = 5 * 1024 * 1024 * 1024;
-  if(file.size > maxSize){ showToast('❌','Max 5GB per video.'); return; }
+  var maxSize = 10 * 1024 * 1024 * 1024;
+  if(file.size > maxSize){ showToast('❌','Max 10GB per video.'); return; }
   uploadLessonVideo(file, mIdx, lIdx);
 }
 
@@ -1829,13 +1829,22 @@ async function submitCourse() {
     };
 
     // Save to Firestore
-    var { getFirestore, collection, addDoc, serverTimestamp } =
+    var { getFirestore, collection, addDoc, doc, updateDoc, serverTimestamp } =
       await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     var db = window._db;
-    await addDoc(collection(db, 'courses'), Object.assign({}, courseData, {
-      createdAt:   serverTimestamp(),
-      submittedAt: serverTimestamp(),
-    }));
+
+    if(_course.id){
+      // Editing an existing course - update it, send back for re-review
+      await updateDoc(doc(db, 'courses', _course.id), Object.assign({}, courseData, {
+        status: 'pending_review',
+        updatedAt: serverTimestamp(),
+      }));
+    } else {
+      await addDoc(collection(db, 'courses'), Object.assign({}, courseData, {
+        createdAt:   serverTimestamp(),
+        submittedAt: serverTimestamp(),
+      }));
+    }
 
     // Show success
     document.querySelectorAll('.wizard-step').forEach(function(el){ el.classList.remove('active'); });
@@ -2498,6 +2507,7 @@ async function loadMyCourses(){
             +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+color+'20;color:'+color+';">'+label+'</span>'
             +'<div style="display:flex;gap:8px;">'
               +(st==='approved'?'<a href="/course?id='+c.id+'" target="_blank" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border-radius:6px;text-decoration:none;">View live</a>':'')
+              +'<button data-id="'+c.id+'" onclick="editCourse(this.dataset.id)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--text2);background:var(--bg2);border:1.5px solid var(--border);border-radius:6px;cursor:pointer;">Edit</button>'
               +'<button data-id="'+c.id+'" data-title="'+(c.title||'this course')+'" onclick="deleteCourse(this.dataset.id, this.dataset.title)" style="padding:7px 14px;font-size:12px;font-weight:600;color:var(--red);background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.2);border-radius:6px;cursor:pointer;">Delete</button>'
             +'</div>'
           +'</div>';
@@ -2505,6 +2515,92 @@ async function loadMyCourses(){
       +'</div>';
   } catch(e){
     el.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+
+async function editCourse(courseId){
+  if(!window._db) return;
+  showView('builder');
+  var wrap = document.getElementById('modules-builder');
+  if(wrap) wrap.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text3);">Loading course...</div>';
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDoc(fb.doc(window._db,'courses',courseId));
+    if(!snap.exists()){ showToast('&#10060;','Course not found.'); return; }
+    var c = snap.data();
+
+    // Load into _course state
+    _course = {
+      id: courseId,
+      title: c.title||'', subtitle: c.subtitle||'', category: c.category||'',
+      level: c.level||'', language: c.language||'english', duration: c.duration||'',
+      description: c.description||'', thumbnail: c.thumbnailUrl||c.thumbnail||null,
+      thumbnailUrl: c.thumbnailUrl||null,
+      promoVideo: null, promoVideoId: c.promoVideoId||null,
+      learns: c.learns||[], requirements: c.requirements||[],
+      modules: (c.modules||[]).map(function(m){
+        return { title: m.title||'', lessons: (m.lessons||[]).map(function(l){
+          return { title: l.title||'', type: l.type||'video', free: !!l.free, videoId: l.videoId||null, videoUrl: l.videoUrl||null };
+        })};
+      }),
+      priceNGN: c.priceNGN||0, priceOriginal: c.priceOriginal||0,
+      priceType: c.priceType||'paid', includes: c.includes||[], status: c.status||'draft'
+    };
+    _currentStep = 1;
+
+    // Populate step 1 fields
+    var sv = function(id,v){ var el=document.getElementById(id); if(el) el.value=v||''; };
+    sv('ci-title', c.title); sv('ci-subtitle', c.subtitle); sv('ci-cat', c.category);
+    sv('ci-level', c.level); sv('ci-lang', c.language||'english'); sv('ci-duration', c.duration);
+
+    // Populate step 2 fields
+    sv('ci-desc', c.description);
+    var learnList = document.getElementById('learn-list');
+    if(learnList){
+      learnList.innerHTML = '';
+      (c.learns||[]).forEach(function(txt){
+        addLearningPoint();
+        var last = learnList.lastElementChild;
+        var inp = last ? last.querySelector('input') : null;
+        if(inp) inp.value = txt;
+      });
+    }
+    var reqList = document.getElementById('req-list');
+    if(reqList){
+      reqList.innerHTML = '';
+      (c.requirements||[]).forEach(function(txt){
+        addRequirement();
+        var last = reqList.lastElementChild;
+        var inp = last ? last.querySelector('input') : null;
+        if(inp) inp.value = txt;
+      });
+    }
+
+    // Populate step 3 - modules/lessons
+    if(typeof renderModules === 'function') renderModules();
+
+    // Populate step 4 - thumbnail preview
+    if(c.thumbnailUrl){
+      var tp = document.getElementById('thumb-preview');
+      var tpr = document.getElementById('thumb-prompt');
+      if(tp){ tp.innerHTML = '<img src="'+c.thumbnailUrl+'" style="width:100%;border-radius:8px;max-height:160px;object-fit:cover;"/>'; tp.style.display='block'; }
+      if(tpr) tpr.style.display = 'none';
+    }
+    if(c.promoVideoId){
+      var pp = document.getElementById('promo-preview');
+      var ppr = document.getElementById('promo-prompt');
+      if(pp){ pp.innerHTML = '<div style="padding:12px;background:var(--bg2);border-radius:8px;font-size:13px;color:var(--text2);">&#9989; Promo video already uploaded</div>'; pp.style.display='block'; }
+      if(ppr) ppr.style.display = 'none';
+    }
+
+    // Populate step 5 - pricing
+    sv('pr-ngn', c.priceNGN); sv('pr-original', c.priceOriginal);
+
+    showToast('&#9997;️','Course loaded. Make your changes and resubmit.');
+  } catch(e){
+    showToast('&#10060;','Error loading course: '+e.message);
   }
 }
 
