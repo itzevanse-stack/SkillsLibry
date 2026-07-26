@@ -39,6 +39,28 @@ a{text-decoration:none;color:inherit}
   background:rgba(255,255,255,.96);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
 }
+.nav-hamburger{
+  display:none;width:36px;height:36px;border:none;background:none;cursor:pointer;
+  flex-direction:column;justify-content:center;align-items:center;gap:5px;
+  margin-left:auto;padding:0;z-index:101;
+}
+.nav-hamburger span{width:22px;height:2px;background:var(--text);border-radius:2px;transition:all .25s;}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-nav-menu{
+  position:fixed;top:64px;right:0;width:min(80vw,320px);height:calc(100vh - 64px);
+  background:#fff;z-index:101;transform:translateX(100%);transition:transform .3s ease;
+  box-shadow:-8px 0 32px rgba(13,13,26,.12);padding:20px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:2px;
+}
+.mobile-nav-menu.open{transform:translateX(0);}
+.mobile-nav-link{padding:14px 12px;font-size:15px;font-weight:600;color:var(--text);text-decoration:none;border-radius:8px;}
+.mobile-nav-link:active{background:var(--bg2);}
+.mobile-nav-divider{height:1px;background:var(--border);margin:8px 0;}
+.mobile-nav-cta{background:var(--teal);color:#0d0d1a;text-align:center;margin-top:8px;}
+.mobile-nav-overlay{display:none;position:fixed;inset:0;top:64px;background:rgba(13,13,26,.4);z-index:100;}
+.mobile-nav-overlay.open{display:block;}
 .nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
 .nav-logo-mark{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#fff;}
 .nav-logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:18px;color:var(--text);}
@@ -359,6 +381,12 @@ a{text-decoration:none;color:inherit}
   .purchase-card{position:static;}
   .learn-grid,.testi-grid{grid-template-columns:1fr;}
 }
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .nav-right{display:none;}
+  .nav-hamburger{display:flex;}
+  .nav{padding:0 16px;}
+}
 </style>
 </head>
 <body>
@@ -387,6 +415,9 @@ a{text-decoration:none;color:inherit}
     <a class="nav-link" href="#">Community</a>
     <a class="nav-link" href="#">Blog</a>
   </div>
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-right">
     <div class="currency-switcher" id="currency-switcher">
       <button class="currency-btn" id="currency-btn" onclick="toggleCurrencyDropdown()">USD &#9660;</button>
@@ -411,6 +442,17 @@ a{text-decoration:none;color:inherit}
     <a class="btn btn-teal" href="/catalog">Browse Courses</a>
   </div>
 </nav>
+
+<!-- ══ MOBILE NAV MENU ══ -->
+<div id="mobile-nav-menu" class="mobile-nav-menu">
+  <a class="mobile-nav-link" href="/catalog">Courses</a>
+  <a class="mobile-nav-link" href="#">Community</a>
+  <a class="mobile-nav-link" href="#">Blog</a>
+  <div class="mobile-nav-divider"></div>
+  <a class="mobile-nav-link" href="#" onclick="window._user?window.location.href='/dashboard':openAuthModal(null,'si')">My Learning</a>
+  <a class="mobile-nav-link mobile-nav-cta" href="/catalog">Browse Courses</a>
+</div>
+<div id="mobile-nav-overlay" class="mobile-nav-overlay" onclick="toggleMobileNav()"></div>
 
 <!-- ══ HERO BAND ══ -->
 <div class="course-hero">
@@ -491,6 +533,9 @@ a{text-decoration:none;color:inherit}
             Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
           </button>
           <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
+          <button onclick="copyCourseLink(this)" style="width:100%;margin-top:14px;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span>&#128279;</span> Copy course link
+          </button>
         </div>
       </div>
     </div>
@@ -1021,6 +1066,25 @@ function closeModal(){
 })();
 
 /* ── TOAST ── */
+function copyCourseLink(btn){
+  var url = window.location.href;
+  var done = function(){
+    if(btn){
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<span>&#10003;</span> Link copied!';
+      setTimeout(function(){ btn.innerHTML = orig; }, 2000);
+    }
+    if(typeof showToast === 'function') showToast('&#128279;','Course link copied — ready to share!');
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(function(){
+      window.prompt('Copy this link:', url);
+    });
+  } else {
+    window.prompt('Copy this link:', url);
+  }
+}
+
 function showToast(icon,msg){
   var t=document.getElementById('toast'); if(!t) return;
   var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
@@ -1440,6 +1504,18 @@ function updateAllPrices(){
   document.querySelectorAll('[data-ngn]').forEach(function(el){
     el.textContent = convertPrice(parseInt(el.dataset.ngn));
   });
+}
+
+function toggleMobileNav(){
+  var menu = document.getElementById('mobile-nav-menu');
+  var overlay = document.getElementById('mobile-nav-overlay');
+  var btn = document.getElementById('nav-hamburger');
+  if(!menu || !overlay || !btn) return;
+  var isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
 function toggleCurrencyDropdown(){
