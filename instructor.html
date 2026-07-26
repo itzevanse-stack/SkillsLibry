@@ -1264,7 +1264,7 @@ function showToast(icon, msg) {
 var _course = {
   title:'', subtitle:'', category:'', level:'', language:'english',
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
-  promoVideoId:null, learns:[], requirements:[], modules:[],
+  promoVideoId:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
   priceNGN:0, priceOriginal:0, priceType:'paid', includes:[],
   status:'draft'
 };
@@ -1275,7 +1275,7 @@ function startNewCourse() {
   _course = {
     title:'', subtitle:'', category:'', level:'', language:'english',
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
-    promoVideoId:null, learns:[], requirements:[], modules:[],
+    promoVideoId:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
     priceNGN:0, priceOriginal:0, priceType:'paid', includes:[], status:'draft'
   };
   _currentStep = 1;
@@ -1797,22 +1797,25 @@ async function submitCourse() {
           body: JSON.stringify({ title: (_course.title||'Course')+' - Promo', courseId: 'promo' })
         });
         var pdata = await pres.json();
-        if(pdata.videoId){
-          await new Promise(function(resolve,reject){
-            var pxhr = new XMLHttpRequest();
-            pxhr.open('PUT', pdata.uploadUrl, true);
-            pxhr.setRequestHeader('AccessKey','6c4e5625-43cc-40d1-837892724178-134a-459b');
-            pxhr.upload.onprogress = function(ev){
-              if(ev.lengthComputable && btn) btn.textContent = 'Promo video... '+Math.round(ev.loaded/ev.total*100)+'%';
-            };
-            pxhr.onload  = function(){ pxhr.status<300 ? resolve() : reject(new Error('Promo upload failed')); };
-            pxhr.onerror = function(){ reject(new Error('Network error during promo upload')); };
-            pxhr.send(_course.promoVideo);
-          });
-          _course.promoVideoId = pdata.videoId;
+        if(!pres.ok || !pdata.videoId){
+          throw new Error(pdata.error || 'Bunny rejected the promo video upload (no video ID returned).');
         }
+        await new Promise(function(resolve,reject){
+          var pxhr = new XMLHttpRequest();
+          pxhr.open('PUT', pdata.uploadUrl, true);
+          pxhr.setRequestHeader('AccessKey','6c4e5625-43cc-40d1-837892724178-134a-459b');
+          pxhr.upload.onprogress = function(ev){
+            if(ev.lengthComputable && btn) btn.textContent = 'Promo video... '+Math.round(ev.loaded/ev.total*100)+'%';
+          };
+          pxhr.onload  = function(){ pxhr.status<300 ? resolve() : reject(new Error('Promo upload failed')); };
+          pxhr.onerror = function(){ reject(new Error('Network error during promo upload')); };
+          pxhr.send(_course.promoVideo);
+        });
+        _course.promoVideoId = pdata.videoId;
       } catch(pe){
-        showToast('&#9888;','Promo upload failed - submitting course without preview video.');
+        // Preserve whatever video was already attached instead of wiping it with null
+        _course.promoVideoId = _course._origPromoVideoId || null;
+        showToast('&#9888;','Promo video upload failed: '+pe.message+'. Submitting course '+(_course.promoVideoId?'with your previous preview video kept.':'without a preview video.'));
       }
       if(btn) btn.textContent = 'Submitting...';
     }
@@ -2564,6 +2567,7 @@ async function editCourse(courseId){
       description: c.description||'', thumbnail: c.thumbnailUrl||c.thumbnail||null,
       thumbnailUrl: c.thumbnailUrl||null,
       promoVideo: null, promoVideoId: c.promoVideoId||null,
+      _origPromoVideoId: c.promoVideoId||null,
       learns: c.learns||[], requirements: c.requirements||[],
       modules: (c.modules||[]).map(function(m){
         return { title: m.title||'', lessons: (m.lessons||[]).map(function(l){
