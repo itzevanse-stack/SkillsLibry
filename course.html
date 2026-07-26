@@ -1466,46 +1466,6 @@ var COUNTRY_CURRENCY = {
 
 var _activeCurrency = localStorage.getItem('sl_currency') || 'NGN';
 
-function convertPrice(ngnAmount){
-  var c = CURRENCIES[_activeCurrency];
-  if(!c) return '₦' + ngnAmount.toLocaleString();
-  if(_activeCurrency === 'NGN') return '₦' + ngnAmount.toLocaleString();
-  var converted = (ngnAmount * c.rate);
-  // Round nicely
-  if(converted >= 100) converted = Math.round(converted);
-  else if(converted >= 10) converted = Math.round(converted * 10) / 10;
-  else converted = Math.round(converted * 100) / 100;
-  return c.symbol + converted.toLocaleString();
-}
-
-function setCurrency(code){
-  _activeCurrency = code;
-  localStorage.setItem('sl_currency', code);
-  updateCurrencyBtn();
-  updateAllPrices();
-  closeCurrencyDropdown();
-}
-
-function updateCurrencyBtn(){
-  var c = CURRENCIES[_activeCurrency];
-  var btn = document.getElementById('currency-btn');
-  if(btn && c) btn.innerHTML =
-    '<span class="flag">'+c.flag+'</span>' +
-    '<span>'+_activeCurrency+'</span>' +
-    '<span class="chevron">▾</span>';
-  // Mark active option
-  document.querySelectorAll('.currency-option').forEach(function(el){
-    el.classList.toggle('active', el.dataset.code === _activeCurrency);
-  });
-}
-
-function updateAllPrices(){
-  // Update all elements with data-ngn attribute
-  document.querySelectorAll('[data-ngn]').forEach(function(el){
-    el.textContent = convertPrice(parseInt(el.dataset.ngn));
-  });
-}
-
 function toggleMobileNav(){
   var menu = document.getElementById('mobile-nav-menu');
   var overlay = document.getElementById('mobile-nav-overlay');
@@ -1623,8 +1583,12 @@ function updateAllPrices(){
   document.querySelectorAll('[data-ngn]').forEach(function(el){
     var v=parseInt(el.dataset.ngn); if(v) el.innerHTML=convertPrice(v);
   });
-  var ep=document.getElementById('enroll-price');
-  if(ep) ep.innerHTML=convertPrice(35000);
+  var priceEl = document.getElementById('cd-price');
+  var ep = document.getElementById('enroll-price');
+  if(ep && priceEl && priceEl.dataset.ngn){
+    var mainPriceNGN = parseInt(priceEl.dataset.ngn) || 0;
+    ep.innerHTML = convertPrice(mainPriceNGN) + ' + ' + convertPrice(PLATFORM_SUB_NGN) + '/mo';
+  }
 }
 function toggleCurrencyDropdown(){
   var dd=document.getElementById('currency-dropdown');
