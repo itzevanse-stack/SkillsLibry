@@ -217,6 +217,26 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
     <!-- STUDENTS -->
     <div class="admin-view" id="view-students">
+
+      <!-- Grant Free Access -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head">Grant Free Course Access</div>
+        <div style="padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+          <div style="flex:1;min-width:220px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;">Student email</label>
+            <input id="grant-email" type="email" placeholder="student@email.com" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box;"/>
+          </div>
+          <div style="flex:1;min-width:220px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;">Course</label>
+            <select id="grant-course" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box;">
+              <option value="">Loading courses...</option>
+            </select>
+          </div>
+          <button onclick="grantFreeAccess()" style="padding:10px 20px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;white-space:nowrap;">Grant Access</button>
+        </div>
+        <div id="grant-status" style="padding:0 16px 16px;font-size:12px;"></div>
+      </div>
+
       <div class="card">
         <div class="card-head">Students <span id="students-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
         <div id="students-body"><div class="loading"><div class="loading-spin"></div></div></div>
@@ -904,6 +924,7 @@ async function rejectTestimonial(id){
 
 /* ══ STUDENTS ══ */
 async function loadStudents(){
+  loadGrantCourseOptions();
   var el = document.getElementById('students-body'); if(!el) return;
   el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
   var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
@@ -923,6 +944,82 @@ async function loadStudents(){
         }).join('')
       + '</tbody></table>';
   } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+/* ══ GRANT FREE ACCESS ══ */
+async function loadGrantCourseOptions(){
+  var sel = document.getElementById('grant-course'); if(!sel) return;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'courses'));
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if(!courses.length){ sel.innerHTML = '<option value="">No courses found</option>'; return; }
+    sel.innerHTML = courses.map(function(c){
+      return '<option value="'+c.id+'" data-instructor="'+(c.instructorId||'')+'" data-price="'+(c.priceNGN||0)+'">'+(c.title||c.id)+'</option>';
+    }).join('');
+  } catch(e){
+    sel.innerHTML = '<option value="">Failed to load courses</option>';
+    console.error('Failed to load courses for grant tool:', e.message);
+  }
+}
+
+async function grantFreeAccess(){
+  var statusEl = document.getElementById('grant-status');
+  var setStatus = function(msg, ok){
+    if(statusEl){ statusEl.textContent = msg; statusEl.style.color = ok ? 'var(--teal-dark)' : 'var(--red, #ef4444)'; }
+  };
+
+  var email = (document.getElementById('grant-email')||{}).value||'';
+  email = email.trim().toLowerCase();
+  var courseSel = document.getElementById('grant-course');
+  var courseId = courseSel ? courseSel.value : '';
+  var courseOpt = courseSel ? courseSel.options[courseSel.selectedIndex] : null;
+  var instructorId = courseOpt ? courseOpt.dataset.instructor : '';
+
+  if(!email){ setStatus('Please enter a student email.', false); return; }
+  if(!courseId){ setStatus('Please select a course.', false); return; }
+
+  setStatus('Looking up student...', true);
+
+  var db = await waitForDb();
+  if(!db){ setStatus('Could not connect to database.', false); return; }
+
+  try {
+    var fb = await getFs();
+
+    // Find the student's account by email
+    var userSnap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('email','==',email)));
+    if(userSnap.docs.length === 0){
+      setStatus('No account found with that email. They need to sign up first.', false);
+      return;
+    }
+    var studentId = userSnap.docs[0].id;
+
+    var enrollmentId = courseId + '_' + studentId;
+    await fb.setDoc(fb.doc(db,'enrollments',enrollmentId), {
+      studentId:     studentId,
+      courseId:      courseId,
+      instructorId:  instructorId || null,
+      paidAmount:    0,
+      currency:      'NGN',
+      transactionId: 'admin-manual-grant',
+      platformCut:   0,
+      instructorCut: 0,
+      affiliateCode: null,
+      progress:      { completedLessons: [], percentComplete: 0 },
+      enrolledAt:    fb.serverTimestamp(),
+      grantedBy:     (window._user && window._user.email) || 'admin',
+    });
+
+    setStatus('✓ Access granted! '+email+' can now access this course.', true);
+    showToast('✅','Free access granted.');
+    var emailInput = document.getElementById('grant-email');
+    if(emailInput) emailInput.value = '';
+  } catch(e){
+    console.error('Grant access failed:', e);
+    setStatus('Error: '+e.message, false);
+  }
 }
 
 /* ══ INSTRUCTORS ══ */
