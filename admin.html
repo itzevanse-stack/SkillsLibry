@@ -664,33 +664,48 @@ async function getFs(){
 async function loadOverview(){
   var db = await waitForDb();
   if(!db){ document.getElementById('action-feed').innerHTML='<div class="empty">Could not connect to database.</div>'; return; }
-  try {
-    var fb = await getFs();
-    var [coursesSnap, enrollSnap, usersSnap, appsSnap] = await Promise.all([
-      fb.getDocs(fb.collection(db,'courses')),
-      fb.getDocs(fb.collection(db,'enrollments')),
-      fb.getDocs(fb.collection(db,'users')),
-      fb.getDocs(fb.collection(db,'instructorApplications')),
-    ]);
 
-    var courses     = coursesSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
-    var pending     = courses.filter(function(c){ return c.status==='pending_review'; });
-    var students    = usersSnap.docs.filter(function(d){ return d.data().role==='student'; });
-    var instructors = usersSnap.docs.filter(function(d){ return d.data().role==='instructor'; });
-    var pendingApps = appsSnap.docs.filter(function(d){ return d.data().status==='pending'; }).map(function(d){ return Object.assign({id:d.id},d.data()); });
-    var totalRev    = enrollSnap.docs.reduce(function(a,d){ return a+(d.data().paidAmount||0); },0);
+  var fb = await getFs();
+  var failures = [];
 
-    var setText = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
-    setText('ov-courses', courses.length);
-    setText('ov-students', students.length);
-    setText('ov-revenue', '₦'+totalRev.toLocaleString());
-    setText('ov-instructors', instructors.length);
-    setText('ov-apps', pendingApps.length);
-    if(pending.length) document.getElementById('ov-pending-label').textContent = pending.length+' pending review';
+  var fetchCollection = async function(name){
+    try {
+      var snap = await fb.getDocs(fb.collection(db,name));
+      return snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    } catch(e){
+      console.error('Failed to read collection "'+name+'":', e.message);
+      failures.push(name+': '+e.message);
+      return [];
+    }
+  };
 
+  var courses     = await fetchCollection('courses');
+  var enrollments = await fetchCollection('enrollments');
+  var users       = await fetchCollection('users');
+  var apps        = await fetchCollection('instructorApplications');
+
+  var pending     = courses.filter(function(c){ return c.status==='pending_review'; });
+  var students    = users.filter(function(d){ return d.role==='student'; });
+  var instructors = users.filter(function(d){ return d.role==='instructor'; });
+  var pendingApps = apps.filter(function(d){ return d.status==='pending'; });
+  var totalRev    = enrollments.reduce(function(a,d){ return a+(d.paidAmount||0); },0);
+
+  var setText = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
+  setText('ov-courses', courses.length);
+  setText('ov-students', students.length);
+  setText('ov-revenue', '₦'+totalRev.toLocaleString());
+  setText('ov-instructors', instructors.length);
+  setText('ov-apps', pendingApps.length);
+  if(pending.length) document.getElementById('ov-pending-label').textContent = pending.length+' pending review';
+
+  if(failures.length){
+    document.getElementById('action-feed').innerHTML =
+      '<div class="empty" style="text-align:left;">'
+      +'<div style="font-weight:700;margin-bottom:8px;">Permission errors on: '+failures.map(function(f){return f.split(':')[0];}).join(', ')+'</div>'
+      +'<div style="font-size:12px;color:var(--text3);">'+failures.join('<br>')+'</div>'
+      +'</div>';
+  } else {
     renderActionFeed(pending, pendingApps);
-  } catch(e){
-    document.getElementById('action-feed').innerHTML='<div class="empty">Error: '+e.message+'</div>';
   }
 }
 
