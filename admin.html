@@ -742,6 +742,22 @@ async function loadCourses(){
     document.getElementById('courses-count').textContent = courses.length+' total';
     if(!courses.length){ el.innerHTML='<div class="empty"><div class="empty-icon">&#127891;</div>No courses yet.</div>'; return; }
 
+    // Live lookup: overwrite each course's frozen instructorName snapshot
+    // with the instructor's CURRENT name from their profile doc.
+    try {
+      var instructorIds = Array.from(new Set(courses.map(function(c){return c.instructorId;}).filter(Boolean)));
+      var nameMap = {};
+      await Promise.all(instructorIds.map(async function(uid){
+        try {
+          var iSnap = await fb.getDoc(fb.doc(db,'users',uid));
+          if(iSnap.exists() && iSnap.data().name) nameMap[uid] = iSnap.data().name;
+        } catch(ie){}
+      }));
+      courses.forEach(function(c){
+        if(c.instructorId && nameMap[c.instructorId]) c.instructorName = nameMap[c.instructorId];
+      });
+    } catch(e){ console.warn('Instructor name batch lookup failed:', e.message); }
+
     el.innerHTML = '<table class="admin-table"><thead><tr><th>Course</th><th>Instructor</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
     courses.forEach(function(c){
       var st = c.status||'draft';
