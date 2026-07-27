@@ -923,16 +923,26 @@ async function loadMyCommunities(){
       )).catch(function(){ return {docs:[]}; });
       var unread = newSnap.docs.length;
 
-      // Live lookup: always show the instructor's CURRENT name.
-      var liveInstructorName = course.instructorName || 'Instructor';
+      // Live lookup: always show the instructor's CURRENT name and photo.
+      var liveInstructorName  = course.instructorName || 'Instructor';
+      var liveInstructorPhoto = '';
       if(course.instructorId){
         try {
           var iSnap = await fb.getDoc(fb.doc(db,'users',course.instructorId));
-          if(iSnap.exists() && iSnap.data().name) liveInstructorName = iSnap.data().name;
+          if(iSnap.exists()){
+            var idata = iSnap.data();
+            if(idata.name) liveInstructorName = idata.name;
+            if(idata.photoURL) liveInstructorPhoto = idata.photoURL;
+          }
         } catch(ie){}
       }
 
-      return { courseId:en.courseId, courseTitle:course.title||'Course', instructorName:liveInstructorName, unread, latestAnn };
+      return {
+        courseId:en.courseId, courseTitle:course.title||'Course',
+        courseThumbnail: course.thumbnailUrl||'',
+        instructorName:liveInstructorName, instructorPhoto:liveInstructorPhoto,
+        unread, latestAnn
+      };
     }));
 
     _unreadNotifs = communities.reduce(function(a,c){ return a+(c.unread||0); },0);
@@ -965,15 +975,21 @@ async function loadMyCommunities(){
     el.innerHTML = '<div class="comm-grid">'
       + communities.map(function(c){
           var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+          var heroStyle = c.courseThumbnail
+            ? 'background-image:linear-gradient(rgba(13,13,26,.55),rgba(13,13,26,.75)),url(\''+c.courseThumbnail+'\');background-size:cover;background-position:center;'
+            : '';
+          var avatarInner = c.instructorPhoto
+            ? '<img src="'+c.instructorPhoto+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">'
+            : initials;
           return '<div class="comm-card" onclick="openCommunity(\'' + c.courseId + '\',\'' + c.courseTitle + '\')">'
-            +'<div class="comm-card-hero">'
+            +'<div class="comm-card-hero" style="'+heroStyle+'">'
               +(c.unread>0?'<div class="unread-badge">'+c.unread+' new</div>':'')
               +'<div class="comm-card-title">'+c.courseTitle+'</div>'
               +'<div class="comm-card-sub">Private community</div>'
             +'</div>'
             +'<div class="comm-card-body">'
               +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">'
-                +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">'+initials+'</div>'
+                +'<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;">'+avatarInner+'</div>'
                 +'<div><div style="font-size:13px;font-weight:600;">'+c.instructorName+'</div><div style="font-size:11px;color:var(--text3);">Instructor</div></div>'
               +'</div>'
               +(c.latestAnn?'<div style="background:var(--bg2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px;">'
