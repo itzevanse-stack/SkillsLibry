@@ -923,7 +923,16 @@ async function loadMyCommunities(){
       )).catch(function(){ return {docs:[]}; });
       var unread = newSnap.docs.length;
 
-      return { courseId:en.courseId, courseTitle:course.title||'Course', instructorName:course.instructorName||'Instructor', unread, latestAnn };
+      // Live lookup: always show the instructor's CURRENT name.
+      var liveInstructorName = course.instructorName || 'Instructor';
+      if(course.instructorId){
+        try {
+          var iSnap = await fb.getDoc(fb.doc(db,'users',course.instructorId));
+          if(iSnap.exists() && iSnap.data().name) liveInstructorName = iSnap.data().name;
+        } catch(ie){}
+      }
+
+      return { courseId:en.courseId, courseTitle:course.title||'Course', instructorName:liveInstructorName, unread, latestAnn };
     }));
 
     _unreadNotifs = communities.reduce(function(a,c){ return a+(c.unread||0); },0);
