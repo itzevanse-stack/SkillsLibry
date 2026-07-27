@@ -1043,6 +1043,16 @@ async function loadAffiliateData(){
     var el2 = document.getElementById('aff-earned');
     if(el2) el2.textContent = '\u20a6'+total.toLocaleString();
 
+    // Real click count (previously hardcoded to 0 — no click tracking existed before)
+    try {
+      var clickSnap = await fb.getDocs(fb.query(
+        fb.collection(window._db,'affiliateClicks'),
+        fb.where('affiliateCode','==',refCode)
+      ));
+      var clicksEl = document.getElementById('aff-clicks');
+      if(clicksEl) clicksEl.textContent = clickSnap.docs.length;
+    } catch(ce){ console.warn('Affiliate click count failed:', ce.message); }
+
     // Load saved bank details
     var userSnap = await fb.getDoc(fb.doc(window._db,'users',window._user.uid));
     if(userSnap.exists()){
