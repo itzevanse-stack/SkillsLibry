@@ -1444,6 +1444,37 @@ function showToast(icon,msg){
     if(discountEl) discountEl.style.display = 'none';
   }
 
+  // Urgency countdown: only shown if the instructor set a real deadline
+  // (saleEndsAt) — never a fabricated/fake countdown.
+  var timerEl = document.getElementById('pc-timer');
+  if(timerEl && courseData.saleEndsAt){
+    var deadline = new Date(courseData.saleEndsAt).getTime();
+    if(!isNaN(deadline) && deadline > Date.now()){
+      timerEl.style.display = 'flex';
+      var renderCountdown = function(){
+        var msLeft = deadline - Date.now();
+        if(msLeft <= 0){
+          timerEl.style.display = 'none';
+          clearInterval(_pcTimerInterval);
+          return;
+        }
+        var d = Math.floor(msLeft/86400000);
+        var h = Math.floor((msLeft%86400000)/3600000);
+        var m = Math.floor((msLeft%3600000)/60000);
+        var s = Math.floor((msLeft%60000)/1000);
+        var pad2 = function(n){ return String(n).padStart(2,'0'); };
+        var parts = d>0 ? (d+'d '+pad2(h)+'h '+pad2(m)+'m') : (pad2(h)+'h '+pad2(m)+'m '+pad2(s)+'s');
+        timerEl.innerHTML = '&#9203; Discount ends in '+parts;
+      };
+      renderCountdown();
+      var _pcTimerInterval = setInterval(renderCountdown, 1000);
+    } else {
+      timerEl.style.display = 'none';
+    }
+  } else if(timerEl){
+    timerEl.style.display = 'none';
+  }
+
   var enrollPriceEl = document.getElementById('enroll-price');
   if(enrollPriceEl) enrollPriceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString()+' + '+sym+' '+(Math.round(subFee*rate)).toLocaleString()+'/mo';
 
