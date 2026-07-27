@@ -649,6 +649,45 @@ const db   = getFirestore(app);
 window._auth = auth;
 window._db   = db;
 
+/* ══ AFFILIATE REFERRAL CAPTURE ══ */
+(function captureAffiliateRef(){
+  try {
+    var ref = new URLSearchParams(window.location.search).get('ref');
+    if(!ref) return;
+    var code = ref.toUpperCase();
+    localStorage.setItem('sl_aff', JSON.stringify({ code: code, expires: Date.now() + 30*24*60*60*1000 }));
+
+    var sessionKey = 'sl_aff_click_logged_'+code;
+    if(sessionStorage.getItem(sessionKey)) return;
+    sessionStorage.setItem(sessionKey, '1');
+
+    var logClick = async function(){
+      if(!window._db) return;
+      try {
+        var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        await fb.addDoc(fb.collection(window._db,'affiliateClicks'), {
+          affiliateCode: code,
+          page: window.location.pathname,
+          createdAt: fb.serverTimestamp(),
+        });
+      } catch(e){ console.warn('Affiliate click log failed:', e.message); }
+    };
+    if(window._db){ logClick(); } else { document.addEventListener('authReady', logClick, { once:true }); }
+  } catch(e){}
+})();
+
+/* Reads the stored affiliate code, honoring its 30-day attribution window. */
+function getActiveAffiliateCode(){
+  try {
+    var raw = localStorage.getItem('sl_aff');
+    if(!raw) return null;
+    var parsed = JSON.parse(raw);
+    if(parsed && parsed.code && parsed.expires && Date.now() < parsed.expires) return parsed.code;
+    localStorage.removeItem('sl_aff'); // expired — clean up
+    return null;
+  } catch(e){ return null; }
+}
+
 onAuthStateChanged(auth, async (user) => {
   window._user = user || null;
   if (user) {
@@ -1793,7 +1832,7 @@ function proceedToCheckout(){
     meta:{
       courseId:      String(c.id),
       instructorId:  c.instructorId,
-      affiliateCode: localStorage.getItem('sl_aff') || null,
+      affiliateCode: getActiveAffiliateCode(),
       paymentType:   'enrollment',
       courseFeeNGN:  String(c.priceNGN || 50000),
       subFeeNGN:     String(PLATFORM_SUB_NGN),
@@ -1812,7 +1851,7 @@ function proceedToCheckout(){
           amount:        amount,
           currency:      _cur,
           transactionId: response.transaction_id,
-          affiliateCode: localStorage.getItem('sl_aff') || null,
+          affiliateCode: getActiveAffiliateCode(),
         });
         if(result && result.ok){
           showToast('🎉','Enrolled! Redirecting...');
