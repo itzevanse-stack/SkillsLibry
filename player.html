@@ -867,11 +867,21 @@ async function init(){
       var snap = await fb.getDoc(fb.doc(window._db,'courses',courseId));
       if(snap.exists()){
         var data = snap.data();
+
+        // Live lookup: always show the instructor's CURRENT name.
+        var liveInstructorName = data.instructorName || 'Instructor';
+        if(data.instructorId){
+          try {
+            var iSnap = await fb.getDoc(fb.doc(window._db,'users',data.instructorId));
+            if(iSnap.exists() && iSnap.data().name) liveInstructorName = iSnap.data().name;
+          } catch(ie){}
+        }
+
         _course  = {
           id:          snap.id,
           title:       data.title || 'Course',
-          instructor:  data.instructorName || 'Instructor',
-          instructorInitials: (data.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase(),
+          instructor:  liveInstructorName,
+          instructorInitials: liveInstructorName.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase(),
           instructorBio: data.bio || 'Verified SkillsLibry Instructor',
           description: data.description || '',
           learns:      data.learns || [],
