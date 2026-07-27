@@ -1795,8 +1795,9 @@ function buildVideoUploadList() {
     return;
   }
   container.innerHTML = videoLessons.map(function(item){
-    var uploadedHtml = item.les.videoId
-      ? '<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:#166534;display:flex;align-items:center;gap:10px;">&#9989; Video uploaded successfully<button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="reuploadVideo('+item.mIdx+','+item.lIdx+')">Re-upload</button></div>'
+    var hasVideo = item.les.videoId || item.les.videoUrl;
+    var uploadedHtml = hasVideo
+      ? '<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:12px 16px;font-size:13px;color:#166534;display:flex;align-items:center;gap:10px;">&#9989; Video '+(item.les.videoId?'uploaded':'linked')+' successfully<button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="reuploadVideo('+item.mIdx+','+item.lIdx+')">Re-upload / change</button></div>'
       : '<div class="upload-zone" id="vz-'+item.mIdx+'-'+item.lIdx+'" ondragover="event.preventDefault();this.classList.add(\'drag\')" ondragleave="this.classList.remove(\'drag\')" ondrop="handleVideoDrop(event,'+item.mIdx+','+item.lIdx+')">'
         +'<div id="vp-'+item.mIdx+'-'+item.lIdx+'"></div>'
         +'<div id="vpr-'+item.mIdx+'-'+item.lIdx+'">'
@@ -1807,7 +1808,17 @@ function buildVideoUploadList() {
         +'<input type="file" accept="video/*" onchange="handleVideoFileSelect(this,'+item.mIdx+','+item.lIdx+')" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;"/>'
         +'</div>'
         +'<div class="upload-progress" id="vup-'+item.mIdx+'-'+item.lIdx+'"><div class="upload-progress-bar" id="vupb-'+item.mIdx+'-'+item.lIdx+'"></div></div>'
-        +'<div class="upload-progress-label" id="vupl-'+item.mIdx+'-'+item.lIdx+'"></div>';
+        +'<div class="upload-progress-label" id="vupl-'+item.mIdx+'-'+item.lIdx+'"></div>'
+        +'<div style="display:flex;align-items:center;gap:10px;margin:12px 0;">'
+          +'<div style="flex:1;height:1px;background:var(--border);"></div>'
+          +'<span style="font-size:11px;color:var(--text3);">or</span>'
+          +'<div style="flex:1;height:1px;background:var(--border);"></div>'
+        +'</div>'
+        +'<div style="display:flex;gap:8px;">'
+          +'<textarea id="vurl-'+item.mIdx+'-'+item.lIdx+'" rows="1" placeholder="Paste a video link or embed code..." style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:\'Inter\',sans-serif;outline:none;resize:vertical;"></textarea>'
+          +'<button type="button" data-m="'+item.mIdx+'" data-l="'+item.lIdx+'" onclick="useLessonVideoUrl(this)" style="padding:9px 14px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;">Use link</button>'
+        +'</div>'
+        +'<div id="vurlstatus-'+item.mIdx+'-'+item.lIdx+'" style="font-size:11px;margin-top:6px;display:none;"></div>';
 
     return '<div class="vl-card">'
       +'<div class="vl-head">'
@@ -1817,6 +1828,38 @@ function buildVideoUploadList() {
       +'<div class="vl-body">'+uploadedHtml+'</div>'
     +'</div>';
   }).join('');
+}
+
+function reuploadVideo(mIdx, lIdx){
+  if(_course.modules[mIdx] && _course.modules[mIdx].lessons[lIdx]){
+    _course.modules[mIdx].lessons[lIdx].videoId  = null;
+    _course.modules[mIdx].lessons[lIdx].videoUrl = null;
+  }
+  buildVideoUploadList();
+}
+
+function useLessonVideoUrl(btn){
+  var mIdx = parseInt(btn.dataset.m), lIdx = parseInt(btn.dataset.l);
+  var input = document.getElementById('vurl-'+mIdx+'-'+lIdx);
+  var status = document.getElementById('vurlstatus-'+mIdx+'-'+lIdx);
+  var raw = input ? input.value.trim() : '';
+
+  if(!raw){
+    if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='Paste a video link first.'; }
+    return;
+  }
+  var embed = videoUrlToEmbed(raw);
+  if(!embed){
+    if(status){ status.style.display='block'; status.style.color='var(--red)'; status.textContent='Could not recognize that link.'; }
+    return;
+  }
+
+  if(_course.modules[mIdx] && _course.modules[mIdx].lessons[lIdx]){
+    _course.modules[mIdx].lessons[lIdx].videoUrl = raw;
+    _course.modules[mIdx].lessons[lIdx].videoId  = null;
+  }
+  showToast('&#10003;','Video link attached to this lesson!');
+  buildVideoUploadList();
 }
 
 function handleVideoFileSelect(input, mIdx, lIdx) {
