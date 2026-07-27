@@ -127,6 +127,7 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 .lesson-nav-center{text-align:center;}
 .lesson-nav-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;}
 .lesson-nav-meta{font-size:11px;color:rgba(255,255,255,.4);}
+.lesson-nav-buttons-row{display:flex;align-items:center;gap:10px;}
 .mark-complete-btn{
   display:flex;align-items:center;gap:8px;
   font-size:13px;font-weight:700;color:#0d0d1a;
@@ -437,6 +438,32 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
   .curriculum-toggle-btn{display:flex !important;}
   .nav-course-title{display:none;}
 }
+@media(max-width:600px){
+  .lesson-nav{
+    flex-wrap:wrap;
+    align-items:stretch;
+    padding:12px 16px;
+    row-gap:10px;
+  }
+  .lesson-nav-center{
+    order:-1;
+    flex-basis:100%;
+    text-align:center;
+  }
+  .lesson-nav-title{font-size:14px;white-space:normal;}
+  /* Unwrap the Mark Complete + Next group so all three buttons
+     (Previous, Mark complete, Next) share one row below the title. */
+  .lesson-nav-buttons-row{display:contents;}
+  #btn-prev-lesson{flex:1;}
+  #mark-complete-btn{flex:1.6;}
+  #btn-next-lesson{flex:1;}
+  .lesson-nav-btn, .mark-complete-btn{
+    justify-content:center;
+    padding:10px 6px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+}
 .curriculum-toggle-btn{display:none;}
 .curriculum-overlay{display:none;position:fixed;inset:0;top:56px;background:rgba(0,0,0,.5);z-index:149;}
 .curriculum-overlay.open{display:block;}
@@ -468,11 +495,13 @@ onAuthStateChanged(auth, async (user) => {
   window._user = user || null;
   if (user) {
     const snap = await getDoc(doc(db, 'users', user.uid));
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    window._userName = snap.exists() ? snap.data().name : user.email;
+    window._userRole  = snap.exists() ? snap.data().role : 'student';
+    window._userName  = snap.exists() ? snap.data().name : user.email;
+    window._userPhoto = snap.exists() ? (snap.data().photoURL || '') : '';
   } else {
     window._userRole = null;
     window._userName = null;
+    window._userPhoto = '';
   }
   document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
 });
@@ -635,7 +664,7 @@ function slErr(code) {
         <div class="lesson-nav-title" id="current-lesson-name">—</div>
         <div class="lesson-nav-meta" id="current-lesson-meta">—</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;">
+      <div class="lesson-nav-buttons-row">
         <button class="mark-complete-btn" id="mark-complete-btn" onclick="markComplete()">
           &#10003; Mark complete
         </button>
@@ -868,12 +897,19 @@ async function init(){
       if(snap.exists()){
         var data = snap.data();
 
-        // Live lookup: always show the instructor's CURRENT name.
-        var liveInstructorName = data.instructorName || 'Instructor';
+        // Live lookup: always show the instructor's CURRENT name, photo, and bio.
+        var liveInstructorName  = data.instructorName || 'Instructor';
+        var liveInstructorPhoto = '';
+        var liveInstructorBio   = 'Verified SkillsLibry Instructor';
         if(data.instructorId){
           try {
             var iSnap = await fb.getDoc(fb.doc(window._db,'users',data.instructorId));
-            if(iSnap.exists() && iSnap.data().name) liveInstructorName = iSnap.data().name;
+            if(iSnap.exists()){
+              var idata = iSnap.data();
+              if(idata.name) liveInstructorName = idata.name;
+              if(idata.photoURL) liveInstructorPhoto = idata.photoURL;
+              if(idata.bio) liveInstructorBio = idata.bio;
+            }
           } catch(ie){}
         }
 
@@ -882,7 +918,8 @@ async function init(){
           title:       data.title || 'Course',
           instructor:  liveInstructorName,
           instructorInitials: liveInstructorName.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase(),
-          instructorBio: data.bio || 'Verified SkillsLibry Instructor',
+          instructorPhoto: liveInstructorPhoto,
+          instructorBio: liveInstructorBio,
           description: data.description || '',
           learns:      data.learns || [],
           requirements:data.requirements || [],
@@ -1344,9 +1381,12 @@ function postComment(){
 
   var list = document.getElementById('comments-list');
   var initials = (window._userName||'U').split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+  var avatarHtml = window._userPhoto
+    ? '<img src="'+window._userPhoto+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">'
+    : initials;
   var newComment = document.createElement('div');
   newComment.className = 'comment';
-  newComment.innerHTML = '<div class="comment-avatar">'+initials+'</div>'
+  newComment.innerHTML = '<div class="comment-avatar">'+avatarHtml+'</div>'
     +'<div class="comment-body">'
     +'<div class="comment-meta">'
     +'<span class="comment-name">'+(window._userName||'You')+'</span>'
@@ -1400,14 +1440,24 @@ function loadCourseDetails(){
   var instAvatar = document.getElementById('inst-avatar');
   var instName   = document.getElementById('inst-name');
   var instBio    = document.getElementById('inst-bio');
-  if(instAvatar) instAvatar.textContent = _course.instructorInitials||'?';
+  if(instAvatar){
+    if(_course.instructorPhoto){
+      instAvatar.innerHTML = '<img src="'+_course.instructorPhoto+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">';
+    } else {
+      instAvatar.textContent = _course.instructorInitials||'?';
+    }
+  }
   if(instName)   instName.textContent   = _course.instructor||'Instructor';
   if(instBio)    instBio.innerHTML      = _course.instructorBio||'Verified SkillsLibry Instructor';
 
   var userAvatar = document.getElementById('user-avatar-comment');
   if(userAvatar){
-    var initials = (window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-    userAvatar.textContent = initials;
+    if(window._userPhoto){
+      userAvatar.innerHTML = '<img src="'+window._userPhoto+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">';
+    } else {
+      var initials = (window._userName||'U').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      userAvatar.textContent = initials;
+    }
   }
 }
 
