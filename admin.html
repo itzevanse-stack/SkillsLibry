@@ -154,6 +154,14 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
 <div class="admin-wrap">
 
+  <!-- ACCESS GATE — shown instead of the dashboard if the logged-in account isn't role:'admin' -->
+  <div id="admin-access-gate" style="display:none;width:100%;padding:80px 24px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">&#128274;</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;margin-bottom:10px;color:var(--text);">Admin access required</div>
+    <div id="admin-gate-detail" style="font-size:14px;color:var(--text3);max-width:520px;margin:0 auto 24px;line-height:1.6;"></div>
+    <a href="/" style="display:inline-block;padding:12px 28px;background:var(--teal);color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Back to site</a>
+  </div>
+
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-logo">SkillsLibry Admin</div>
@@ -1118,6 +1126,27 @@ document.addEventListener('authReady', function(e){
     openAuthModal(function(){ location.reload(); }, 'si');
     return;
   }
+
+  var sidebar  = document.querySelector('.sidebar');
+  var mainArea = document.querySelector('.admin-main');
+  var gate     = document.getElementById('admin-access-gate');
+  var gateDetail = document.getElementById('admin-gate-detail');
+
+  if(window._userRole !== 'admin'){
+    if(sidebar)  sidebar.style.display  = 'none';
+    if(mainArea) mainArea.style.display = 'none';
+    if(gate)     gate.style.display     = 'block';
+    if(gateDetail){
+      gateDetail.innerHTML =
+        'You\'re signed in as <strong>'+(e.detail.user.email||'unknown')+'</strong>, '
+        +'but this account\'s role is currently <strong>'+(window._userRole ? '"'+window._userRole+'"' : 'not set')+'</strong> in Firestore, not <strong>"admin"</strong>.<br><br>'
+        +'To fix: open Firebase Console → Firestore Database → <code>users</code> collection → '
+        +'find the document with ID <code>'+e.detail.user.uid+'</code> → set its <code>role</code> field '
+        +'to exactly the string <code>admin</code> (lowercase) → reload this page.';
+    }
+    return;
+  }
+
   loadOverview();
 });
 </script>
