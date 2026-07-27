@@ -1423,6 +1423,27 @@ function showToast(icon,msg){
   var priceEl = document.getElementById('cd-price');
   if(priceEl){ priceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString(); priceEl.dataset.ngn = priceNGN; }
 
+  // Discount display: show the crossed-out original price + % off badge
+  // whenever the instructor set a priceOriginal higher than the current price.
+  var priceOriginal = courseData.priceOriginal || 0;
+  var priceOldEl  = document.getElementById('cd-price-old');
+  var discountEl  = document.getElementById('pc-discount');
+  if(priceOriginal > priceNGN){
+    if(priceOldEl){
+      priceOldEl.innerHTML = sym+' '+(Math.round(priceOriginal*rate)).toLocaleString();
+      priceOldEl.dataset.ngn = priceOriginal;
+      priceOldEl.style.display = 'block';
+    }
+    if(discountEl){
+      var discountPct = Math.round((1 - (priceNGN/priceOriginal))*100);
+      discountEl.textContent = '-'+discountPct+'% OFF';
+      discountEl.style.display = 'block';
+    }
+  } else {
+    if(priceOldEl) priceOldEl.style.display = 'none';
+    if(discountEl) discountEl.style.display = 'none';
+  }
+
   var enrollPriceEl = document.getElementById('enroll-price');
   if(enrollPriceEl) enrollPriceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString()+' + '+sym+' '+(Math.round(subFee*rate)).toLocaleString()+'/mo';
 
