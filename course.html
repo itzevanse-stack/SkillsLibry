@@ -1192,6 +1192,16 @@ function showToast(icon,msg){
       var snap = await fb.getDoc(fb.doc(window._db,'courses',id));
       if(snap.exists()){
         courseData = Object.assign({id:snap.id}, snap.data());
+        // Live lookup: always show the instructor's CURRENT name, not the
+        // frozen snapshot that was saved onto the course doc at publish time.
+        if(courseData.instructorId){
+          try {
+            var instSnap = await fb.getDoc(fb.doc(window._db,'users',courseData.instructorId));
+            if(instSnap.exists() && instSnap.data().name){
+              courseData.instructorName = instSnap.data().name;
+            }
+          } catch(ie){ console.warn('Instructor name lookup failed:', ie.message); }
+        }
       }
     } catch(e){ console.warn('Course load error:', e.message); }
   }
