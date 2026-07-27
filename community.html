@@ -546,11 +546,13 @@ onAuthStateChanged(auth, async (user) => {
   window._user = user || null;
   if (user) {
     const snap = await getDoc(doc(db, 'users', user.uid));
-    window._userRole = snap.exists() ? snap.data().role : 'student';
-    window._userName = snap.exists() ? snap.data().name : user.email;
+    window._userRole  = snap.exists() ? snap.data().role : 'student';
+    window._userName  = snap.exists() ? snap.data().name : user.email;
+    window._userPhoto = snap.exists() ? (snap.data().photoURL || '') : '';
   } else {
     window._userRole = null;
     window._userName = null;
+    window._userPhoto = '';
   }
   document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
 });
@@ -929,8 +931,11 @@ document.addEventListener('authReady', async function(e){
   if(!user){ openAuthModal(null, 'si'); return; }
 
   var initials = (window._userName||'U').split(' ').map(function(n){ return n[0]; }).join('').slice(0,2).toUpperCase();
+  var composerAvatarHtml = window._userPhoto
+    ? '<img src="'+window._userPhoto+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">'
+    : initials;
   ['composer-av','ann-av'].forEach(function(id){
-    var el = document.getElementById(id); if(el) el.textContent = initials;
+    var el = document.getElementById(id); if(el) el.innerHTML = composerAvatarHtml;
   });
 
   _isInstructor = window._userRole === 'instructor' || window._userRole === 'admin';
@@ -963,6 +968,7 @@ async function autoJoinCommunity(){
         uid:      memberId,
         name:     window._userName || 'Student',
         initials: initials,
+        photoURL: window._userPhoto || '',
         role:     _isInstructor ? 'instructor' : 'student',
         joinedAt: fb.serverTimestamp(),
       };
@@ -1034,10 +1040,19 @@ function renderPosts(){
   feed.innerHTML = _posts.map(function(p){ return renderPost(p); }).join('');
 }
 
+/* Renders either a real profile photo or the initials fallback,
+   used for post authors, commenters, and the composer avatar. */
+function avatarInner(person){
+  if(person && person.photoURL){
+    return '<img src="'+person.photoURL+'" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">';
+  }
+  return (person && person.initials) || '?';
+}
+
 function renderPost(p){
   var commentsHtml = (p.comments||[]).map(function(c){
     return '<div class="comment-item">'
-      +'<div class="comment-av" style="'+(c.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+(c.initials)+'</div>'
+      +'<div class="comment-av" style="'+(c.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+avatarInner(c)+'</div>'
       +'<div class="comment-bubble">'
         +'<div class="comment-author">'+c.author+(c.role==='instructor'?'<span class="inst-badge">Instructor</span>':'')+'</div>'
         +'<div class="comment-text">'+c.text+'</div>'
@@ -1048,7 +1063,7 @@ function renderPost(p){
 
   return '<div class="post-card" id="post-'+p.id+'">'
     +'<div class="post-header">'
-      +'<div class="post-avatar" style="'+(p.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+(p.initials)+'</div>'
+      +'<div class="post-avatar" style="'+(p.role==='instructor'?'background:linear-gradient(135deg,var(--orange),var(--red));':'')+'">'+avatarInner(p)+'</div>'
       +'<div class="post-meta">'
         +'<div class="post-author">'+p.author+(p.role==='instructor'?'<span class="inst-badge">Instructor</span>':'')+'</div>'
         +'<div class="post-time">'+p.time+'</div>'
@@ -1128,6 +1143,7 @@ async function submitPost(){
   var newPost = {
     author:   window._userName||'Student',
     initials: initials,
+    photoURL: window._userPhoto||'',
     uid:      window._user ? window._user.uid : '',
     role:     _isInstructor?'instructor':'student',
     time:     'Just now',
@@ -1330,7 +1346,7 @@ function renderTopContributors(){
   if(top.length===0){ el.innerHTML='<div style="padding:14px 18px;font-size:13px;color:var(--text3);">No contributors yet.</div>'; return; }
   el.innerHTML = top.map(function(m){
     return '<div style="display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--border);">'
-      +'<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;">'+(m.initials||'?')+'</div>'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;">'+avatarInner(m)+'</div>'
       +'<div style="font-size:13px;font-weight:500;color:var(--text);">'+m.name+'</div>'
       +(m.role==='instructor'?'<span style="margin-left:auto;font-size:10px;font-weight:700;background:linear-gradient(135deg,var(--teal),var(--purple));color:#fff;border-radius:4px;padding:2px 7px;">Instructor</span>':'')
     +'</div>';
