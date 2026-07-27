@@ -905,7 +905,7 @@ async function init(){
 
         // Also check enrollment + subscription status
         if(window._user){
-          var enrollId = courseId+'_'+window._user.email.replace(/[^a-z0-9]/gi,'_');
+          var enrollId = courseId+'_'+window._user.uid;
           var enrollSnap = await fb.getDoc(fb.doc(window._db,'enrollments',enrollId));
           if(enrollSnap.exists()){
             var enrollment = enrollSnap.data();
