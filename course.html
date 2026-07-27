@@ -1972,8 +1972,35 @@ function closeEnrollModal(){
   if(m) m.remove();
 }
 
-function proceedToCheckout(){
+/* Loads the Flutterwave checkout SDK on demand if it isn't already
+   available — handles the case where the initial page-load script tag
+   was blocked (ad-blocker, network hiccup) or hasn't finished loading. */
+function loadFlutterwaveScript(){
+  return new Promise(function(resolve, reject){
+    if (typeof FlutterwaveCheckout === 'function') { resolve(); return; }
+    var existing = document.querySelector('script[src="https://checkout.flutterwave.com/v3.js"]');
+    if (existing) existing.remove();
+    var s = document.createElement('script');
+    s.src = 'https://checkout.flutterwave.com/v3.js';
+    s.onload = function(){ resolve(); };
+    s.onerror = function(){ reject(new Error('Failed to load payment script')); };
+    document.head.appendChild(s);
+  });
+}
+
+async function proceedToCheckout(){
   closeEnrollModal();
+
+  if (typeof FlutterwaveCheckout !== 'function') {
+    showToast('⏳','Loading payment system, please wait...');
+    try {
+      await loadFlutterwaveScript();
+    } catch(loadErr){
+      console.error('Flutterwave SDK failed to load:', loadErr);
+      showToast('❌','Could not load the payment system. Please check your internet connection or disable any ad-blocker/privacy extension, then try again.');
+      return;
+    }
+  }
 
   var c = _activeCourse;
   var rate = (CURRENCIES[_cur]||{}).rate||1;
@@ -1981,52 +2008,63 @@ function proceedToCheckout(){
   var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
   var total     = Math.round((courseFee + subFee) * 100)/100;
 
-  FlutterwaveCheckout({
-    public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
-    tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-    amount:     total,
-    currency:   _cur,
-    payment_options: 'card,banktransfer,ussd,mobilemoney',
-    customer:{
-      email: window._user.email,
-      name:  window._userName || window._user.email,
-    },
-    meta:{
-      courseId:      String(c.id),
-      instructorId:  c.instructorId,
-      affiliateCode: getActiveAffiliateCode(),
-      paymentType:   'enrollment',
-      courseFeeNGN:  String(c.priceNGN || 50000),
-      subFeeNGN:     String(PLATFORM_SUB_NGN),
-    },
-    customizations:{
-      title:       'SkillsLibry',
-      description: c.title.replace(/&#x[\w]+;/g,'').replace(/&\w+;/g,''),
-      logo:        'https://www.skillslibry.com/logo.png',
-    },
-    callback: async function(response){
-      if(response.status === 'successful' || response.status === 'completed'){
-        showToast('⏳','Confirming payment...');
-        var result = await window.slEnroll({
-          courseId:      String(c.id),
-          instructorId:  c.instructorId,
-          amount:        amount,
-          currency:      _cur,
-          transactionId: response.transaction_id,
-          affiliateCode: getActiveAffiliateCode(),
-        });
-        if(result && result.ok){
-          showToast('🎉','Enrolled! Redirecting...');
-          setTimeout(function(){ window.location.href='/player?course='+c.id+'&community=1'; }, 1500);
+  try {
+    FlutterwaveCheckout({
+      public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
+      tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+      amount:     total,
+      currency:   _cur,
+      payment_options: 'card,banktransfer,ussd,mobilemoney',
+      customer:{
+        email: window._user.email,
+        name:  window._userName || window._user.email,
+      },
+      meta:{
+        courseId:      String(c.id),
+        instructorId:  c.instructorId,
+        affiliateCode: getActiveAffiliateCode(),
+        paymentType:   'enrollment',
+        courseFeeNGN:  String(c.priceNGN || 50000),
+        subFeeNGN:     String(PLATFORM_SUB_NGN),
+      },
+      customizations:{
+        title:       'SkillsLibry',
+        description: c.title.replace(/&#x[\w]+;/g,'').replace(/&\w+;/g,''),
+        logo:        'https://www.skillslibry.com/logo.png',
+      },
+      callback: async function(response){
+        if(response.status === 'successful' || response.status === 'completed'){
+          showToast('⏳','Confirming payment...');
+          try {
+            var result = await window.slEnroll({
+              courseId:      String(c.id),
+              instructorId:  c.instructorId,
+              amount:        total,
+              currency:      _cur,
+              transactionId: response.transaction_id,
+              affiliateCode: getActiveAffiliateCode(),
+            });
+            if(result && result.ok){
+              showToast('🎉','Enrolled! Redirecting...');
+              setTimeout(function(){ window.location.href='/player?course='+c.id+'&community=1'; }, 1500);
+            } else {
+              console.error('slEnroll returned failure:', result);
+              showToast('⚠️','Payment received but enrollment failed to save. Please contact support with your payment reference: '+response.transaction_id);
+            }
+          } catch(enrollErr){
+            console.error('Enrollment write failed after successful payment:', enrollErr);
+            showToast('⚠️','Payment received but enrollment failed to save. Please contact support with your payment reference: '+response.transaction_id);
+          }
         } else {
-          showToast('⚠️','Payment received. Contact support if access is delayed.');
+          showToast('❌','Payment was not completed.');
         }
-      } else {
-        showToast('❌','Payment was not completed.');
-      }
-    },
-    onclose: function(){}
-  });
+      },
+      onclose: function(){}
+    });
+  } catch(checkoutErr){
+    console.error('Failed to launch Flutterwave checkout:', checkoutErr);
+    showToast('❌','Could not open the payment window. Please refresh the page and try again.');
+  }
 }
 
 /* ── RENDER TESTIMONIALS ── */
