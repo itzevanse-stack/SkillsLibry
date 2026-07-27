@@ -23,6 +23,7 @@
   --sh:0 2px 12px rgba(13,13,26,.06);--sh-md:0 8px 32px rgba(13,13,26,.1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;}
 html{scroll-behavior:smooth}
 body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
 h1,h2,h3,h4{font-family:'Poppins',sans-serif}
@@ -321,7 +322,21 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
 @keyframes tin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 @media(max-width:1024px){.shell{grid-template-columns:220px 1fr 240px;}}
-@media(max-width:860px){.shell{grid-template-columns:1fr;}.left-panel,.right-panel{position:static;}.left-panel{display:none;}}
+@media(max-width:860px){
+  .shell{grid-template-columns:1fr;}
+  .right-panel{position:static;}
+  .left-panel{
+    position:fixed;top:56px;left:0;height:calc(100vh - 56px);width:min(80vw,280px);
+    transform:translateX(-100%);transition:transform .3s ease;z-index:150;
+    box-shadow:8px 0 32px rgba(13,13,26,.15);display:block;
+  }
+  .left-panel.mobile-open{transform:translateX(0);}
+  .panel-toggle-btn{display:flex !important;}
+  .nav-center{display:none;}
+}
+.panel-toggle-btn{display:none;}
+.panel-overlay{display:none;position:fixed;inset:0;top:56px;background:rgba(13,13,26,.4);z-index:149;}
+.panel-overlay.open{display:block;}
 </style>
 </head>
 <body>
@@ -337,9 +352,12 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
     <div class="nav-community-tag">&#128101; Private Community</div>
   </div>
   <div class="nav-right">
+    <button class="btn btn-ghost panel-toggle-btn" onclick="togglePanel()" style="align-items:center;gap:6px;" aria-label="Menu">&#9776;</button>
     <a class="btn btn-ghost" href="/player" id="back-to-course">&#9654; Continue learning</a>
   </div>
 </nav>
+
+<div class="panel-overlay" id="panel-overlay" onclick="togglePanel()"></div>
 
 <!-- ── SHELL ── -->
 <div class="shell">
@@ -613,6 +631,16 @@ window.slEnroll = async function({ courseId, instructorId, amount, currency, tra
   });
   return { ok: true };
 };
+
+function togglePanel(){
+  var panel = document.querySelector('.left-panel');
+  var overlay = document.getElementById('panel-overlay');
+  if(!panel || !overlay) return;
+  var isOpen = panel.classList.contains('mobile-open');
+  panel.classList.toggle('mobile-open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
 
 function slErr(code) {
   const m = {
