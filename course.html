@@ -672,8 +672,11 @@ window._db   = db;
   } catch(e){}
 })();
 
-/* Reads the stored affiliate code, honoring its 30-day attribution window. */
-function getActiveAffiliateCode(){
+/* Reads the stored affiliate code, honoring its 30-day attribution window.
+   Explicitly attached to window since this script is type="module" —
+   module-scope declarations do NOT leak into later plain <script> tags,
+   unlike top-level vars/functions in regular scripts. */
+window.getActiveAffiliateCode = function(){
   try {
     var raw = localStorage.getItem('sl_aff');
     if(!raw) return null;
@@ -682,7 +685,7 @@ function getActiveAffiliateCode(){
     localStorage.removeItem('sl_aff'); // expired — clean up
     return null;
   } catch(e){ return null; }
-}
+};
 
 onAuthStateChanged(auth, async (user) => {
   window._user = user || null;
