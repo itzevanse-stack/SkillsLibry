@@ -1486,6 +1486,22 @@ document.addEventListener('authReady', function(e){
       return;
     }
 
+    // Live lookup: overwrite each course's frozen instructorName snapshot
+    // with the instructor's CURRENT name from their profile doc.
+    try {
+      var instructorIds = Array.from(new Set(courses.map(function(c){return c.instructorId;}).filter(Boolean)));
+      var nameMap = {};
+      await Promise.all(instructorIds.map(async function(uid){
+        try {
+          var iSnap = await fb.getDoc(fb.doc(window._db,'users',uid));
+          if(iSnap.exists() && iSnap.data().name) nameMap[uid] = iSnap.data().name;
+        } catch(ie){}
+      }));
+      courses.forEach(function(c){
+        if(c.instructorId && nameMap[c.instructorId]) c.instructorName = nameMap[c.instructorId];
+      });
+    } catch(e){ console.warn('Instructor name batch lookup failed:', e.message); }
+
     // Render real courses
     var rate = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].rate : 1;
     var sym  = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].symbol : '₦';
