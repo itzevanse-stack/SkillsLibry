@@ -191,6 +191,10 @@ a{text-decoration:none;color:inherit}
 .pc-price-old{font-size:16px;color:var(--text3);text-decoration:line-through;}
 .pc-discount{font-size:12px;font-weight:700;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);padding:3px 8px;border-radius:4px;}
 .pc-timer{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:6px;}
+.pc-countdown-boxes{display:flex;justify-content:center;gap:8px;margin-top:10px;margin-bottom:4px;}
+.cd-box{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22);border-radius:8px;padding:8px 6px;min-width:52px;}
+.cd-box span{font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;color:var(--orange);line-height:1;}
+.cd-box label{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-top:4px;}
 
 .enroll-btn{
   width:100%;padding:16px;
@@ -519,7 +523,6 @@ a{text-decoration:none;color:inherit}
             <div class="pc-price-old" id="cd-price-old" style="display:none;"></div>
             <div class="pc-discount" id="pc-discount" style="display:none;"></div>
           </div>
-          <div class="pc-timer" id="pc-timer" style="display:none;"></div>
 
           <div class="pc-includes" id="pc-includes">
             <div class="pc-includes-title">This course includes</div>
@@ -533,10 +536,16 @@ a{text-decoration:none;color:inherit}
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
             Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
           </button>
+
+          <div class="pc-timer" id="pc-timer" style="display:none;margin-top:14px;margin-bottom:0;justify-content:center;"></div>
+          <div class="pc-countdown-boxes" id="pc-countdown-boxes" style="display:none;">
+            <div class="cd-box"><span id="cd-box-days">00</span><label>Days</label></div>
+            <div class="cd-box"><span id="cd-box-hrs">00</span><label>Hrs</label></div>
+            <div class="cd-box"><span id="cd-box-mins">00</span><label>Min</label></div>
+            <div class="cd-box"><span id="cd-box-secs">00</span><label>Sec</label></div>
+          </div>
+
           <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
-          <button onclick="copyCourseLink(this)" style="width:100%;margin-top:14px;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <span>&#128279;</span> Copy course link
-          </button>
         </div>
       </div>
     </div>
@@ -1067,25 +1076,6 @@ function closeModal(){
 })();
 
 /* ── TOAST ── */
-function copyCourseLink(btn){
-  var url = window.location.href;
-  var done = function(){
-    if(btn){
-      var orig = btn.innerHTML;
-      btn.innerHTML = '<span>&#10003;</span> Link copied!';
-      setTimeout(function(){ btn.innerHTML = orig; }, 2000);
-    }
-    if(typeof showToast === 'function') showToast('&#128279;','Course link copied — ready to share!');
-  };
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(done).catch(function(){
-      window.prompt('Copy this link:', url);
-    });
-  } else {
-    window.prompt('Copy this link:', url);
-  }
-}
-
 function showToast(icon,msg){
   var t=document.getElementById('toast'); if(!t) return;
   var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
@@ -1447,14 +1437,18 @@ function showToast(icon,msg){
   // Urgency countdown: only shown if the instructor set a real deadline
   // (saleEndsAt) — never a fabricated/fake countdown.
   var timerEl = document.getElementById('pc-timer');
+  var boxesEl = document.getElementById('pc-countdown-boxes');
   if(timerEl && courseData.saleEndsAt){
     var deadline = new Date(courseData.saleEndsAt).getTime();
     if(!isNaN(deadline) && deadline > Date.now()){
       timerEl.style.display = 'flex';
+      if(boxesEl) boxesEl.style.display = 'flex';
+      var pad2 = function(n){ return String(n).padStart(2,'0'); };
       var renderCountdown = function(){
         var msLeft = deadline - Date.now();
         if(msLeft <= 0){
           timerEl.style.display = 'none';
+          if(boxesEl) boxesEl.style.display = 'none';
           clearInterval(_pcTimerInterval);
           return;
         }
@@ -1462,17 +1456,26 @@ function showToast(icon,msg){
         var h = Math.floor((msLeft%86400000)/3600000);
         var m = Math.floor((msLeft%3600000)/60000);
         var s = Math.floor((msLeft%60000)/1000);
-        var pad2 = function(n){ return String(n).padStart(2,'0'); };
         var parts = d>0 ? (d+'d '+pad2(h)+'h '+pad2(m)+'m') : (pad2(h)+'h '+pad2(m)+'m '+pad2(s)+'s');
         timerEl.innerHTML = '&#9203; Discount ends in '+parts;
+        if(boxesEl){
+          var dEl=document.getElementById('cd-box-days'), hEl=document.getElementById('cd-box-hrs'),
+              mEl=document.getElementById('cd-box-mins'), sEl=document.getElementById('cd-box-secs');
+          if(dEl) dEl.textContent = pad2(d);
+          if(hEl) hEl.textContent = pad2(h);
+          if(mEl) mEl.textContent = pad2(m);
+          if(sEl) sEl.textContent = pad2(s);
+        }
       };
       renderCountdown();
       var _pcTimerInterval = setInterval(renderCountdown, 1000);
     } else {
       timerEl.style.display = 'none';
+      if(boxesEl) boxesEl.style.display = 'none';
     }
   } else if(timerEl){
     timerEl.style.display = 'none';
+    if(boxesEl) boxesEl.style.display = 'none';
   }
 
   var enrollPriceEl = document.getElementById('enroll-price');
