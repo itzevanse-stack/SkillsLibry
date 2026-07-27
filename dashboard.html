@@ -831,7 +831,7 @@ async function loadEnrolledCourses(gridId){
     var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
     var snap = await fb.getDocs(fb.query(
       fb.collection(window._db,'enrollments'),
-      fb.where('studentEmail','==',window._user.email)
+      fb.where('studentId','==',window._user.uid)
     ));
     var enrollments = snap.docs.map(function(d){ return d.data(); })
       .filter(function(e){ return e.subscriptionStatus !== 'revoked'; });
@@ -886,7 +886,7 @@ async function loadMyCommunities(){
 
     var enrollSnap = await fb.getDocs(fb.query(
       fb.collection(db,'enrollments'),
-      fb.where('studentEmail','==',window._user.email)
+      fb.where('studentId','==',window._user.uid)
     ));
     var enrollments = enrollSnap.docs.map(function(d){ return d.data(); })
       .filter(function(e){ return e.subscriptionStatus !== 'revoked'; });
@@ -1163,7 +1163,7 @@ async function loadSettingsSubscriptions(){
   if(!window._user||!window._db) return;
   try {
     var fb=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap=await fb.getDocs(fb.query(fb.collection(window._db,'enrollments'),fb.where('studentEmail','==',window._user.email)));
+    var snap=await fb.getDocs(fb.query(fb.collection(window._db,'enrollments'),fb.where('studentId','==',window._user.uid)));
     var list=snap.docs.map(function(d){return d.data();});
     if(!list.length){ el.innerHTML='<div style="font-size:13px;color:var(--text3);">No active subscriptions. <a href="/catalog" style="color:var(--teal-dark);">Browse courses</a></div>'; return; }
     el.innerHTML=list.map(function(en){
