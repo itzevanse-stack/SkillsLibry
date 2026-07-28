@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Contract Workspace — SkillsLibry Marketplace</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--bg3:#f0f2f7;
+  --border:#e4e6f0;--text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--red:#e84545;--orange:#f59e0b;
+  --r:10px;--r-lg:16px;--sh-md:0 6px 28px rgba(13,13,26,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Poppins',sans-serif}
+a{color:inherit;text-decoration:none;}
+
+.shell{display:grid;grid-template-columns:1fr 360px;height:100vh;}
+@media(max-width:900px){ .shell{grid-template-columns:1fr;} .side-panel{display:none;} .side-panel.mobile-open{display:block;position:fixed;inset:0;z-index:200;background:#fff;} }
+
+/* MAIN (chat) */
+.main-col{display:flex;flex-direction:column;height:100vh;}
+.ws-topbar{height:60px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 20px;background:#fff;border-bottom:1px solid var(--border);}
+.ws-back{font-size:20px;color:var(--text3);cursor:pointer;}
+.ws-title{font-weight:700;font-size:15px;flex:1;}
+.ws-video-btn{padding:8px 16px;background:var(--purple);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.ws-video-btn:hover{opacity:.9;}
+.ws-panel-toggle{display:none;padding:8px;border:none;background:var(--bg2);border-radius:8px;cursor:pointer;font-size:16px;}
+@media(max-width:900px){ .ws-panel-toggle{display:block;} }
+
+.video-frame{display:none;background:#000;position:relative;}
+.video-frame.open{display:block;height:50vh;}
+.video-frame iframe{width:100%;height:100%;border:none;}
+.video-close{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-size:12px;}
+
+.chat-scroll{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;}
+.msg{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;}
+.msg.mine{align-self:flex-end;background:var(--teal);color:#0d0d1a;border-bottom-right-radius:4px;}
+.msg.theirs{align-self:flex-start;background:#fff;border:1px solid var(--border);border-bottom-left-radius:4px;}
+.msg-meta{font-size:10px;opacity:.6;margin-top:4px;}
+.msg-system{align-self:center;font-size:12px;color:var(--text3);background:var(--bg3);padding:6px 14px;border-radius:99px;}
+
+.chat-input-row{flex-shrink:0;display:flex;gap:10px;padding:16px 20px;background:#fff;border-top:1px solid var(--border);}
+.chat-input{flex:1;padding:11px 16px;border:1.5px solid var(--border);border-radius:24px;font-size:13px;outline:none;}
+.chat-input:focus{border-color:var(--teal);}
+.chat-send{width:42px;height:42px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;font-size:16px;flex-shrink:0;}
+
+/* SIDE PANEL */
+.side-panel{background:#fff;border-left:1px solid var(--border);padding:24px 20px;overflow-y:auto;}
+.sp-section{margin-bottom:26px;}
+.sp-label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+.status-pill{display:inline-block;padding:5px 12px;border-radius:99px;font-size:12px;font-weight:700;text-transform:capitalize;}
+.status-awaiting_payment{background:rgba(245,158,11,.12);color:var(--orange);}
+.status-funded,.status-in_progress{background:rgba(108,99,255,.12);color:var(--purple);}
+.status-delivered{background:rgba(78,204,163,.15);color:var(--teal-dark);}
+.status-approved{background:rgba(34,197,94,.12);color:var(--green);}
+.status-disputed{background:rgba(232,69,69,.12);color:var(--red);}
+
+.amount-box{background:var(--bg2);border-radius:12px;padding:16px;text-align:center;margin-bottom:14px;}
+.amount-num{font-family:'Poppins',sans-serif;font-size:26px;font-weight:800;}
+.amount-label{font-size:11px;color:var(--text3);margin-top:2px;}
+
+.ws-btn{width:100%;padding:12px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;}
+.ws-btn-primary{background:var(--teal);color:#0d0d1a;}
+.ws-btn-primary:hover{background:var(--teal-dark);}
+.ws-btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text);}
+.ws-btn-danger{background:transparent;color:var(--red);border:1.5px solid rgba(232,69,69,.3);}
+
+.people-row{display:flex;align-items:center;gap:10px;padding:10px 0;}
+.people-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;}
+.people-name{font-size:13px;font-weight:600;}
+.people-role{font-size:11px;color:var(--text3);}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;display:none;box-shadow:var(--sh-md);}
+.toast.show{display:block;}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="main-col">
+    <div class="ws-topbar">
+      <span class="ws-back" onclick="window.location.href='/marketplace'">&#8592;</span>
+      <div class="ws-title" id="ws-contract-title">Loading contract...</div>
+      <button class="ws-video-btn" onclick="toggleVideo()">&#128249; Video call</button>
+      <button class="ws-panel-toggle" onclick="toggleSidePanel()">&#9776;</button>
+    </div>
+
+    <div class="video-frame" id="video-frame">
+      <button class="video-close" onclick="toggleVideo()">Close call</button>
+      <iframe id="video-iframe" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
+    </div>
+
+    <div class="chat-scroll" id="chat-scroll">
+      <div class="msg-system">Loading conversation...</div>
+    </div>
+
+    <div class="chat-input-row">
+      <input class="chat-input" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMessage()"/>
+      <button class="chat-send" onclick="sendMessage()">&#10148;</button>
+    </div>
+  </div>
+
+  <div class="side-panel" id="side-panel">
+    <div class="sp-section">
+      <div class="sp-label">Status</div>
+      <span class="status-pill" id="status-pill">Loading</span>
+    </div>
+
+    <div class="sp-section">
+      <div class="amount-box">
+        <div class="amount-num" id="ws-amount">₦0</div>
+        <div class="amount-label">Contract amount</div>
+      </div>
+      <div id="action-buttons"></div>
+    </div>
+
+    <div class="sp-section">
+      <div class="sp-label">People</div>
+      <div class="people-row">
+        <div class="people-avatar" id="client-avatar">C</div>
+        <div><div class="people-name" id="client-name">—</div><div class="people-role">Client</div></div>
+      </div>
+      <div class="people-row">
+        <div class="people-avatar" id="freelancer-avatar">F</div>
+        <div><div class="people-name" id="freelancer-name">—</div><div class="people-role">Freelancer</div></div>
+      </div>
+    </div>
+
+    <div class="sp-section">
+      <div class="sp-label">How escrow works here</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.6;">
+        Funds are held by SkillsLibry once the client pays. The freelancer marks the work delivered, the client reviews and approves, then funds are released to the freelancer's payout balance.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, query, where, orderBy, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._db = db;
+window._fb = { collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, query, where, orderBy, onSnapshot, serverTimestamp };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if(user){
+    const snap = await getDoc(doc(db,'users',user.uid));
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
+});
+</script>
+
+<script>
+var _contractId = new URLSearchParams(window.location.search).get('contract');
+var _contract = null;
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+function toggleSidePanel(){
+  document.getElementById('side-panel').classList.toggle('mobile-open');
+}
+
+function toggleVideo(){
+  var frame = document.getElementById('video-frame');
+  var iframe = document.getElementById('video-iframe');
+  var isOpen = frame.classList.contains('open');
+  if(!isOpen){
+    // Room name derived from contract ID so both parties land in the same room.
+    var room = 'SkillsLibry-'+_contractId;
+    iframe.src = 'https://meet.jit.si/'+room+'#config.prejoinPageEnabled=false';
+    frame.classList.add('open');
+  } else {
+    iframe.src = '';
+    frame.classList.remove('open');
+  }
+}
+
+async function loadContract(){
+  if(!_contractId){ document.getElementById('ws-contract-title').textContent = 'No contract specified.'; return; }
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDoc(fb.doc(db,'contracts',_contractId));
+    if(!snap.exists()){
+      document.getElementById('ws-contract-title').textContent = 'Contract not found.';
+      return;
+    }
+    _contract = Object.assign({id:snap.id}, snap.data());
+    renderContract();
+    listenForMessages();
+  } catch(e){
+    document.getElementById('ws-contract-title').textContent = 'Error: '+e.message;
+  }
+}
+
+function renderContract(){
+  var c = _contract;
+  document.getElementById('ws-contract-title').textContent = c.title || 'Contract';
+  document.getElementById('ws-amount').textContent = '₦'+(c.amount||0).toLocaleString();
+
+  var pill = document.getElementById('status-pill');
+  pill.textContent = (c.status||'').replace(/_/g,' ');
+  pill.className = 'status-pill status-'+c.status;
+
+  document.getElementById('client-name').textContent = c.clientName||'Client';
+  document.getElementById('client-avatar').textContent = (c.clientName||'C').charAt(0).toUpperCase();
+  document.getElementById('freelancer-name').textContent = c.freelancerName||'Freelancer';
+  document.getElementById('freelancer-avatar').textContent = (c.freelancerName||'F').charAt(0).toUpperCase();
+
+  var isClient = window._user && c.clientId === window._user.uid;
+  var isFreelancer = window._user && c.freelancerId === window._user.uid;
+  var actions = document.getElementById('action-buttons');
+  var html = '';
+
+  if(c.status === 'awaiting_payment' && isClient){
+    html += '<button class="ws-btn ws-btn-primary" onclick="payForContract()">Fund contract — pay now</button>';
+  }
+  if((c.status === 'funded' || c.status === 'in_progress') && isFreelancer){
+    html += '<button class="ws-btn ws-btn-primary" onclick="markDelivered()">Mark as delivered</button>';
+  }
+  if(c.status === 'delivered' && isClient){
+    html += '<button class="ws-btn ws-btn-primary" onclick="approveAndRelease()">Approve & release payment</button>';
+    html += '<button class="ws-btn ws-btn-danger" onclick="disputeContract()">Raise a dispute</button>';
+  }
+  if(c.status === 'approved'){
+    html += '<div style="text-align:center;color:var(--green);font-weight:700;font-size:13px;padding:8px 0;">✓ Payment released</div>';
+  }
+  if(c.status === 'disputed'){
+    html += '<div style="text-align:center;color:var(--red);font-weight:700;font-size:13px;padding:8px 0;">⚠ Under dispute review</div>';
+  }
+  actions.innerHTML = html;
+}
+
+async function payForContract(){
+  if(typeof FlutterwaveCheckout !== 'function'){
+    showToast('Payment system still loading — try again in a moment.');
+    return;
+  }
+  var c = _contract;
+  FlutterwaveCheckout({
+    public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
+    tx_ref: 'SKLMKT-'+Date.now(),
+    amount: c.amount,
+    currency: c.currency || 'NGN',
+    payment_options: 'card,banktransfer,ussd,mobilemoney',
+    customer: { email: window._user.email, name: window._userName || window._user.email },
+    customizations: { title: 'SkillsLibry Marketplace', description: c.title },
+    callback: async function(response){
+      if(response.status === 'successful' || response.status === 'completed'){
+        try {
+          var fb = window._fb;
+          await fb.updateDoc(fb.doc(window._db,'contracts',_contractId), {
+            status: 'funded',
+            transactionId: response.transaction_id,
+            fundedAt: fb.serverTimestamp(),
+          });
+          await postSystemMessage('💰 Contract funded — work can begin.');
+          showToast('✅ Payment received — contract funded.');
+          loadContract();
+        } catch(e){ showToast('Payment succeeded but updating the contract failed: '+e.message); }
+      }
+    },
+    onclose: function(){},
+  });
+}
+
+async function markDelivered(){
+  var fb = window._fb;
+  try {
+    await fb.updateDoc(fb.doc(window._db,'contracts',_contractId), { status:'delivered', deliveredAt: fb.serverTimestamp() });
+    await postSystemMessage('📦 Work marked as delivered — awaiting client approval.');
+    showToast('Marked as delivered.');
+    loadContract();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function approveAndRelease(){
+  if(!confirm('Approve this delivery and release payment to the freelancer? This cannot be undone.')) return;
+  var fb = window._fb;
+  var c = _contract;
+  try {
+    await fb.updateDoc(fb.doc(window._db,'contracts',_contractId), { status:'approved', approvedAt: fb.serverTimestamp() });
+    // Ledger entry for admin payout — mirrors the instructor payout pattern.
+    await fb.setDoc(fb.doc(window._db,'marketplacePayouts',_contractId), {
+      freelancerId: c.freelancerId,
+      freelancerName: c.freelancerName,
+      contractId: _contractId,
+      amount: c.amount,
+      currency: c.currency || 'NGN',
+      status: 'pending',
+      createdAt: fb.serverTimestamp(),
+    });
+    await postSystemMessage('✅ Client approved delivery — payment released to freelancer payout balance.');
+    showToast('✅ Approved! Payment queued for payout.');
+    loadContract();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function disputeContract(){
+  var reason = prompt('Briefly describe the issue — our team will review:');
+  if(!reason) return;
+  var fb = window._fb;
+  try {
+    await fb.updateDoc(fb.doc(window._db,'contracts',_contractId), { status:'disputed', disputeReason: reason, disputedAt: fb.serverTimestamp() });
+    await postSystemMessage('⚠ Client raised a dispute: '+reason);
+    showToast('Dispute raised — our team will review.');
+    loadContract();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function postSystemMessage(text){
+  var fb = window._fb;
+  await fb.addDoc(fb.collection(window._db,'contract_'+_contractId+'_messages'), {
+    system: true, text: text, createdAt: fb.serverTimestamp(),
+  });
+}
+
+function listenForMessages(){
+  var fb = window._fb;
+  var q = fb.query(fb.collection(window._db,'contract_'+_contractId+'_messages'), fb.orderBy('createdAt','asc'));
+  fb.onSnapshot(q, function(snap){
+    var scroll = document.getElementById('chat-scroll');
+    var msgs = snap.docs.map(function(d){ return d.data(); });
+    if(!msgs.length){
+      scroll.innerHTML = '<div class="msg-system">This is the start of your conversation.</div>';
+      return;
+    }
+    scroll.innerHTML = msgs.map(function(m){
+      if(m.system) return '<div class="msg-system">'+m.text+'</div>';
+      var mine = window._user && m.senderId === window._user.uid;
+      return '<div class="msg '+(mine?'mine':'theirs')+'">'+m.text+'<div class="msg-meta">'+(mine?'You':(m.senderName||''))+'</div></div>';
+    }).join('');
+    scroll.scrollTop = scroll.scrollHeight;
+  }, function(err){
+    console.error('Message listener failed:', err.message);
+  });
+}
+
+async function sendMessage(){
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if(!text || !window._user) return;
+  input.value = '';
+  var fb = window._fb;
+  try {
+    await fb.addDoc(fb.collection(window._db,'contract_'+_contractId+'_messages'), {
+      senderId: window._user.uid,
+      senderName: window._userName || 'User',
+      text: text,
+      createdAt: fb.serverTimestamp(),
+    });
+  } catch(e){ showToast('Message failed to send: '+e.message); }
+}
+
+document.addEventListener('authReady', function(){
+  loadContract();
+});
+</script>
+
+</body>
+</html>

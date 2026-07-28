@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Video Call — SkillsLibry</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--purple:#6c63ff;
+  --bg:#0d0d1a;--bg2:#f8f9fc;--border:#e4e6f0;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--red:#e84545;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:#fff;font-family:'Inter',sans-serif;font-size:14px;height:100vh;overflow:hidden;}
+h1,h2{font-family:'Poppins',sans-serif}
+a{color:inherit;text-decoration:none;}
+
+.meeting-shell{display:flex;flex-direction:column;height:100vh;}
+.meeting-topbar{height:56px;flex-shrink:0;display:flex;align-items:center;gap:14px;padding:0 20px;background:#151525;border-bottom:1px solid rgba(255,255,255,.08);}
+.meeting-title{font-weight:700;font-size:14px;flex:1;}
+.meeting-status{font-size:12px;padding:5px 12px;border-radius:99px;background:rgba(78,204,163,.15);color:var(--teal);font-weight:700;}
+.leave-btn{padding:8px 18px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;}
+
+.video-area{flex:1;position:relative;background:#000;}
+.video-area iframe{width:100%;height:100%;border:none;}
+
+.pre-call{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:20px;}
+.pre-call .icon{font-size:56px;margin-bottom:20px;}
+.pre-call h2{font-size:22px;margin-bottom:10px;}
+.pre-call p{color:rgba(255,255,255,.6);margin-bottom:24px;max-width:400px;}
+.join-btn{padding:14px 32px;background:var(--teal);color:#0d0d1a;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;}
+.join-btn:hover{background:var(--teal-dark);}
+</style>
+</head>
+<body>
+
+<div class="meeting-shell">
+  <div class="meeting-topbar">
+    <a href="/marketplace" style="font-size:18px;color:rgba(255,255,255,.6);">&#8592;</a>
+    <div class="meeting-title" id="meeting-title">Loading meeting...</div>
+    <div class="meeting-status" id="meeting-status"></div>
+    <button class="leave-btn" onclick="window.location.href='/marketplace'">Leave</button>
+  </div>
+  <div class="video-area" id="video-area">
+    <div class="pre-call" id="pre-call">
+      <div class="icon">🎥</div>
+      <h2>Ready to join?</h2>
+      <p id="pre-call-detail">Loading booking details...</p>
+      <button class="join-btn" id="join-btn" onclick="joinCall()" style="display:none;">Join video call</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._db = db;
+window._fb = { doc, getDoc };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if(user){
+    const snap = await getDoc(doc(db,'users',user.uid));
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
+});
+</script>
+
+<script>
+var _bookingId = new URLSearchParams(window.location.search).get('booking');
+var _booking = null;
+
+async function loadBooking(){
+  if(!_bookingId){
+    document.getElementById('meeting-title').textContent = 'No meeting specified.';
+    return;
+  }
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDoc(fb.doc(db,'bookings',_bookingId));
+    if(!snap.exists()){
+      document.getElementById('meeting-title').textContent = 'Meeting not found.';
+      return;
+    }
+    _booking = Object.assign({id:snap.id}, snap.data());
+    var isClient = window._user && _booking.clientId === window._user.uid;
+    var other = isClient ? _booking.freelancerName : _booking.clientName;
+    var scheduled = _booking.scheduledAt && _booking.scheduledAt.toDate ? _booking.scheduledAt.toDate() : new Date(_booking.scheduledAt);
+
+    document.getElementById('meeting-title').textContent = 'Call with '+other;
+    document.getElementById('meeting-status').textContent = _booking.status || 'scheduled';
+    document.getElementById('pre-call-detail').textContent =
+      'Scheduled for '+scheduled.toLocaleString([], {weekday:'long', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})+' · '+(_booking.durationMins||30)+' minutes';
+    document.getElementById('join-btn').style.display = 'inline-block';
+  } catch(e){
+    document.getElementById('meeting-title').textContent = 'Error: '+e.message;
+  }
+}
+
+function joinCall(){
+  var videoArea = document.getElementById('video-area');
+  var room = 'SkillsLibry-Booking-'+_bookingId;
+  videoArea.innerHTML = '<iframe src="https://meet.jit.si/'+room+'#config.prejoinPageEnabled=false" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>';
+}
+
+document.addEventListener('authReady', function(){
+  loadBooking();
+});
+</script>
+
+</body>
+</html>

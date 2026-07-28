@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Admin — SkillsLibry</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--border:#e4e6f0;--bg:#fff;--bg2:#f8f9fc;--bg3:#f1f3f9;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --red:#ef4444;--green:#22c55e;--orange:#f59e0b;
+  --sh:0 2px 12px rgba(13,13,26,.06);--r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+a{text-decoration:none;}
+body{background:#f8f9fc;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);}
+h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;}
+a{text-decoration:none;color:inherit;}
+button{font-family:'Inter',sans-serif;cursor:pointer;}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;padding:0 28px;gap:20px;background:rgba(255,255,255,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer;}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;color:#fff;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:700;font-size:17px;color:var(--text);}
+.nav-logo-text span{color:var(--teal);}
+.nav-links{display:flex;align-items:center;gap:24px;margin-left:16px;}
+.nav-link{color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:color .2s;}
+.nav-link:hover{color:var(--text);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:13px;font-weight:600;border:none;border-radius:8px;cursor:pointer;transition:all .2s;padding:8px 16px;}
+.btn-teal{background:var(--teal);color:#0d0d1a;font-weight:700;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-ghost{background:transparent;color:var(--text2);border:1.5px solid var(--border);}
+
+/* LAYOUT */
+.admin-wrap{display:flex;min-height:calc(100vh - 64px);}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:#fff;border-right:1.5px solid var(--border);padding:20px 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
+.sidebar-toggle-btn{display:none;}
+.sidebar-overlay{display:none;position:fixed;inset:0;top:64px;background:rgba(13,13,26,.4);z-index:149;}
+.sidebar-overlay.open{display:block;}
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .sidebar-toggle-btn{display:flex !important;}
+  .sidebar{
+    position:fixed;left:0;top:64px;height:calc(100vh - 64px);width:min(80vw,260px);
+    transform:translateX(-100%);transition:transform .3s ease;z-index:150;
+    box-shadow:8px 0 32px rgba(13,13,26,.15);
+  }
+  .sidebar.mobile-open{transform:translateX(0);}
+  .nav{padding:0 16px;gap:12px;}
+  .admin-main{padding:16px;}
+  .card{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;}
+  .admin-table{min-width:560px;}
+}
+@media(max-width:600px){
+  .nav-right .btn{padding:8px 12px;font-size:12px;}
+}
+.sidebar-logo{padding:0 20px 16px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;}
+.sidebar-item:hover{background:var(--bg2);color:var(--text);}
+.sidebar-item.active{background:var(--teal-dim);color:var(--teal-dark);font-weight:600;border-right:3px solid var(--teal);}
+.sidebar-icon{font-size:15px;width:20px;text-align:center;}
+.sidebar-section{padding:16px 20px 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);}
+
+/* MAIN */
+.admin-main{flex:1;padding:28px;overflow-x:hidden;}
+.admin-view{display:none;}
+.admin-view.active{display:block;}
+
+/* CARDS */
+.card{background:#fff;border:1.5px solid var(--border);border-radius:14px;box-shadow:var(--sh);overflow:hidden;}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between;}
+.card-body{padding:20px;}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:20px;box-shadow:var(--sh);}
+.stat-num{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px;}
+.stat-label{font-size:12px;color:var(--text3);}
+.stat-sub{font-size:11px;color:var(--orange);margin-top:2px;}
+
+/* TABLE */
+.admin-table{width:100%;border-collapse:collapse;}
+.admin-table th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);border-bottom:2px solid var(--border);}
+.admin-table td{padding:14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);vertical-align:middle;}
+.admin-table tr:hover td{background:var(--bg2);}
+.admin-table tr:last-child td{border-bottom:none;}
+
+/* STATUS BADGE */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;}
+.badge-pending{background:rgba(245,158,11,.1);color:#92400e;}
+.badge-approved,.badge-live{background:rgba(34,197,94,.1);color:#166534;}
+.badge-rejected{background:rgba(239,68,68,.08);color:#991b1b;}
+.badge-draft{background:var(--bg3);color:var(--text3);}
+
+/* ACTION BUTTONS */
+.tbl-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .15s;}
+.tbl-approve{background:var(--teal);color:#0d0d1a;}
+.tbl-approve:hover{background:var(--teal-dark);}
+.tbl-reject{background:transparent;border:1.5px solid var(--red);color:var(--red);}
+.tbl-reject:hover{background:rgba(239,68,68,.08);}
+.tbl-secondary{background:transparent;border:1.5px solid var(--border);color:var(--text3);}
+
+/* ACTION REQUIRED CARD */
+.action-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:24px;box-shadow:var(--sh);margin-bottom:24px;}
+.action-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.action-row:last-child{border-bottom:none;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:12px 18px;font-size:13px;color:var(--text);display:none;box-shadow:0 8px 32px rgba(13,13,26,.12);max-width:300px;}
+.toast.show{display:flex;align-items:center;gap:10px;}
+
+/* LOADING */
+.loading{text-align:center;padding:48px;color:var(--text3);}
+.loading-spin{display:inline-block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:12px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px;color:var(--text3);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="btn btn-ghost btn-sm sidebar-toggle-btn" onclick="toggleSidebar()" style="align-items:center;justify-content:center;width:36px;height:36px;padding:0;" aria-label="Menu">&#9776;</button>
+  <a class="nav-logo" href="/">
+    <div class="nav-logo-mark">S</div>
+    <span class="nav-logo-text">Skills<span>Libry</span></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="/catalog">Courses</a>
+    <a class="nav-link" href="/community">Community</a>
+  </div>
+  <div class="nav-right">
+    <a class="btn btn-ghost" href="/">View site</a>
+  </div>
+</nav>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<div class="admin-wrap">
+
+  <!-- ACCESS GATE — shown instead of the dashboard if the logged-in account isn't role:'admin' -->
+  <div id="admin-access-gate" style="display:none;width:100%;padding:80px 24px;text-align:center;">
+    <div style="font-size:48px;margin-bottom:16px;">&#128274;</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;margin-bottom:10px;color:var(--text);">Admin access required</div>
+    <div id="admin-gate-detail" style="font-size:14px;color:var(--text3);max-width:520px;margin:0 auto 24px;line-height:1.6;"></div>
+    <a href="/" style="display:inline-block;padding:12px 28px;background:var(--teal);color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;font-size:14px;">Back to site</a>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">SkillsLibry Admin</div>
+    <div class="sidebar-section">Main</div>
+    <div class="sidebar-item active" id="si-overview" onclick="showAdmin('overview')">
+      <span class="sidebar-icon">&#9672;</span> Overview
+    </div>
+    <div class="sidebar-item" id="si-courses" onclick="showAdmin('courses')">
+      <span class="sidebar-icon">&#9638;</span> Courses
+    </div>
+    <div class="sidebar-item" id="si-students" onclick="showAdmin('students')">
+      <span class="sidebar-icon">&#128101;</span> Students
+    </div>
+    <div class="sidebar-item" id="si-instructors" onclick="showAdmin('instructors')">
+      <span class="sidebar-icon">&#127891;</span> Instructors
+    </div>
+    <div class="sidebar-item" id="si-testimonials" onclick="showAdmin('testimonials')">
+      <span class="sidebar-icon">&#11088;</span> Testimonials
+    </div>
+    <div class="sidebar-item" id="si-payouts" onclick="showAdmin('payouts')">
+      <span class="sidebar-icon">&#128176;</span> Payouts
+    </div>
+    <div class="sidebar-item" id="si-bizleads" onclick="showAdmin('bizleads')">
+      <span class="sidebar-icon">&#128188;</span> Business Leads
+    </div>
+    <div class="sidebar-item" id="si-mktpayouts" onclick="showAdmin('mktpayouts')">
+      <span class="sidebar-icon">&#129309;</span> Marketplace Payouts
+    </div>
+    <div class="sidebar-item" onclick="doSignOut()" style="margin-top:auto;color:var(--red);border-top:1px solid var(--border);padding-top:12px;margin-top:20px;">
+      <span class="sidebar-icon">&#128682;</span> Sign out
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="admin-main">
+
+    <!-- OVERVIEW -->
+    <div class="admin-view active" id="view-overview">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="ov-courses">—</div><div class="stat-label">Total courses</div><div class="stat-sub" id="ov-pending-label"></div></div>
+        <div class="stat-card"><div class="stat-num" id="ov-students">—</div><div class="stat-label">Total students</div></div>
+        <div class="stat-card"><div class="stat-num" id="ov-revenue" style="color:var(--teal-dark);">—</div><div class="stat-label">Total revenue</div></div>
+        <div class="stat-card"><div class="stat-num" id="ov-instructors">—</div><div class="stat-label">Instructors</div></div>
+        <div class="stat-card"><div class="stat-num" id="ov-apps" style="color:var(--orange);">—</div><div class="stat-label">Pending applications</div></div>
+      </div>
+      <div class="action-card">
+        <div style="font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;">Action Required</div>
+        <div id="action-feed"><div class="loading"><div class="loading-spin"></div><br/>Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div class="admin-view" id="view-courses">
+      <div class="card">
+        <div class="card-head">Courses <span id="courses-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="courses-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- STUDENTS -->
+    <div class="admin-view" id="view-students">
+
+      <!-- Grant Free Access -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head">Grant Free Course Access</div>
+        <div style="padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+          <div style="flex:1;min-width:220px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;">Student email</label>
+            <input id="grant-email" type="email" placeholder="student@email.com" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box;"/>
+          </div>
+          <div style="flex:1;min-width:220px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;">Course</label>
+            <select id="grant-course" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box;">
+              <option value="">Loading courses...</option>
+            </select>
+          </div>
+          <button onclick="grantFreeAccess()" style="padding:10px 20px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;white-space:nowrap;">Grant Access</button>
+        </div>
+        <div id="grant-status" style="padding:0 16px 16px;font-size:12px;"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">Students <span id="students-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="students-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- INSTRUCTORS -->
+    <div class="admin-view" id="view-instructors">
+      <div id="instructors-body"><div class="loading"><div class="loading-spin"></div></div></div>
+    </div>
+
+    <!-- TESTIMONIALS -->
+    <div class="admin-view" id="view-testimonials">
+      <div class="card">
+        <div class="card-head">Testimonials <span id="testimonials-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="testimonials-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- PAYOUTS -->
+    <div class="admin-view" id="view-payouts">
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-head">Instructor Payouts</div>
+        <div id="payouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Affiliate Payouts</div>
+        <div id="affiliate-payouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- BUSINESS LEADS -->
+    <div class="admin-view" id="view-bizleads">
+      <div class="card">
+        <div class="card-head">Business Leads <span id="bizleads-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="bizleads-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- MARKETPLACE PAYOUTS -->
+    <div class="admin-view" id="view-mktpayouts">
+      <div class="card">
+        <div class="card-head">Marketplace Payouts</div>
+        <div id="mktpayouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span id="toast-icon"></span><span id="toast-msg"></span></div>
+
+<!-- ══ FIREBASE + AUTH ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app  = initializeApp({
+  apiKey:            "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain:        "skillslibry.firebaseapp.com",
+  projectId:         "skillslibry",
+  storageBucket:     "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId:             "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+window._auth = auth;
+window._db   = db;
+
+// Expose Firestore functions so non-module scripts can use them
+import { getDocs, collection, query, where, updateDoc, addDoc, orderBy, limit }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+window._fs = { getDocs, collection, query, where, doc, setDoc, getDoc, 
+               updateDoc, addDoc, serverTimestamp, orderBy, limit };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if (user) {
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  } else {
+    window._userRole = null;
+    window._userName = null;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail: { user } }));
+});
+
+window.slSignUp = async function(name, email, password, role) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await setDoc(doc(db, 'users', cred.user.uid), {
+      name, email,
+      role: role || 'student',
+      createdAt: serverTimestamp(),
+      enrolledCourses: [],
+      affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+    });
+    window._userRole = role || 'student';
+    window._userName = name;
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignIn = async function(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    return { ok: true };
+  } catch(e) {
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slGoogleSignIn = async function() {
+  try {
+    const { GoogleAuthProvider, signInWithPopup } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    const provider = new GoogleAuthProvider();
+    const cred = await signInWithPopup(auth, provider);
+    // Create user doc if new
+    const { doc, getDoc, setDoc, serverTimestamp } =
+      await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    const snap = await getDoc(doc(db, 'users', cred.user.uid));
+    if (!snap.exists()) {
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name: cred.user.displayName || '',
+        email: cred.user.email,
+        role: 'student',
+        createdAt: serverTimestamp(),
+        enrolledCourses: [],
+        affiliateCode: 'SKL-' + cred.user.uid.slice(0,8).toUpperCase(),
+      });
+    }
+    window._userName = cred.user.displayName || cred.user.email;
+    window._userRole = snap.exists() ? snap.data().role : 'student';
+    return { ok: true };
+  } catch(e) {
+    if(e.code === 'auth/popup-closed-by-user') return { ok: false, error: null };
+    return { ok: false, error: slErr(e.code) };
+  }
+};
+
+window.slSignOut = async function() {
+  await signOut(auth);
+  window.location.href = '/';
+};
+
+window.slEnroll = async function({ courseId, instructorId, amount, currency, transactionId, affiliateCode }) {
+  if (!window._user) return { ok: false, error: 'Not logged in' };
+  const id = courseId + '_' + window._user.uid;
+  await setDoc(doc(db, 'enrollments', id), {
+    studentId: window._user.uid,
+    courseId, instructorId,
+    paidAmount: amount, currency, transactionId,
+    platformCut: amount * 0.40,
+    instructorCut: amount * 0.60,
+    affiliateCode: affiliateCode || null,
+    progress: { completedLessons: [], percentComplete: 0 },
+    enrolledAt: serverTimestamp(),
+  });
+  return { ok: true };
+};
+
+function slErr(code) {
+  const m = {
+    'auth/email-already-in-use':   'An account with this email already exists.',
+    'auth/invalid-email':          'Please enter a valid email address.',
+    'auth/weak-password':          'Password must be at least 6 characters.',
+    'auth/user-not-found':         'No account found with this email.',
+    'auth/wrong-password':         'Incorrect password. Please try again.',
+    'auth/invalid-credential':     'Incorrect email or password.',
+    'auth/too-many-requests':      'Too many attempts. Please wait a moment.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+    'auth/operation-not-allowed':  'Email sign-up is not enabled. Please contact support.',
+    'auth/internal-error':         'Server error. Please try again.',
+    'auth/admin-restricted-operation': 'Sign-up is currently restricted.',
+  };
+  return m[code] || ('Error: ' + code + ' — please try again.');
+}
+</script>
+<!-- ══ AUTH MODAL ══ -->
+<div id="auth-modal" style="display:none;position:fixed;inset:0;z-index:999;align-items:center;justify-content:center;background:rgba(13,13,26,.65);backdrop-filter:blur(8px);">
+  <div style="background:#fff;border-radius:20px;width:100%;max-width:420px;margin:16px;box-shadow:0 24px 80px rgba(13,13,26,.2);overflow:hidden;position:relative;animation:authPop .25s ease;">
+    <style>@keyframes authPop{from{opacity:0;transform:scale(.94) translateY(12px)}to{opacity:1;transform:scale(1) translateY(0)}}</style>
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1.5px solid #e4e6f0;">
+      <button id="tab-si" onclick="authTab('si')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#4ecca3;border-bottom:2.5px solid #4ecca3;margin-bottom:-1.5px;">
+        Sign In
+      </button>
+      <button id="tab-su" onclick="authTab('su')"
+        style="flex:1;padding:18px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:600;border:none;background:transparent;cursor:pointer;color:#8b8fa8;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;">
+        Create Account
+      </button>
+    </div>
+
+    <div style="padding:28px 28px 24px;">
+
+      <!-- Google -->
+      <div style="margin-bottom:18px;">
+        <button onclick="doGoogleAuth()" style="width:100%;padding:11px;background:#fff;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-weight:600;color:#4a4d6a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;font-family:'Inter',sans-serif;" onmouseover="this.style.borderColor='#4a4d6a'" onmouseout="this.style.borderColor='#e4e6f0'">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.961L3.964 6.293C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:16px;margin-bottom:0;">
+          <div style="flex:1;height:1px;background:#e4e6f0;"></div>
+          <span style="font-size:12px;color:#8b8fa8;font-weight:500;">or continue with email</span>
+          <div style="flex:1;height:1px;background:#e4e6f0;"></div>
+        </div>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="form-si">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:20px;">Welcome back. Sign in to access your courses.</p>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Email</label>
+          <input id="si-email" type="email" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Password</label>
+          <input id="si-pass" type="password" placeholder="••••••••"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
+            onkeydown="if(event.key==='Enter') doAuth('si')"/>
+        </div>
+        <div id="si-err" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+        <button onclick="doAuth('si')" id="si-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;">
+          Sign in
+        </button>
+      </div>
+
+      <!-- SIGN UP -->
+      <div id="form-su" style="display:none;">
+        <p style="font-size:13px;color:#8b8fa8;margin-bottom:20px;">Join thousands learning and earning with SkillsLibry.</p>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Full name</label>
+          <input id="su-name" type="text" placeholder="Your full name"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Email</label>
+          <input id="su-email" type="email" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"/>
+        </div>
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:5px;">Password</label>
+          <input id="su-pass" type="password" placeholder="Min 6 characters"
+            style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4ecca3'" onblur="this.style.borderColor='#e4e6f0'"
+            onkeydown="if(event.key==='Enter') doAuth('su')"/>
+        </div>
+        <div id="su-err" style="display:none;background:#fff5f5;border:1px solid #fecaca;border-radius:7px;padding:9px 13px;font-size:13px;color:#dc2626;margin-bottom:14px;"></div>
+        <button onclick="doAuth('su')" id="su-btn"
+          style="width:100%;padding:13px;background:#4ecca3;color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;">
+          Create account
+        </button>
+        <p style="font-size:11px;color:#8b8fa8;text-align:center;margin-top:12px;line-height:1.6;">By signing up you agree to our Terms &amp; Privacy Policy.</p>
+      </div>
+
+    </div>
+
+    <!-- Close button -->
+    <button onclick="closeAuthModal()"
+      style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:#f0f2f7;cursor:pointer;font-size:15px;color:#8b8fa8;line-height:1;">&#10005;</button>
+  </div>
+</div>
+
+<script>
+
+function doSignOut(){
+  // Try slSignOut if already loaded
+  if(typeof window.slSignOut === 'function'){
+    window.slSignOut();
+    return;
+  }
+  // Fall back: import Firebase auth and sign out directly
+  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
+    .then(function(m){ 
+      var auth = window._auth || m.getAuth();
+      return m.signOut(auth); 
+    })
+    .then(function(){ window.location.href = '/'; })
+    .catch(function(){ 
+      // Last resort: clear storage and redirect
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = '/'; 
+    });
+}
+var _authPending = null;
+
+function openAuthModal(cb, tab) {
+  _authPending = cb || null;
+  authTab(tab || 'si');
+  var m = document.getElementById('auth-modal');
+  if(m){ m.style.display='flex'; document.body.style.overflow='hidden'; }
+}
+function closeAuthModal() {
+  var m = document.getElementById('auth-modal');
+  if(m){ m.style.display='none'; document.body.style.overflow=''; }
+  _authPending = null;
+}
+function authTab(t) {
+  var isSi = t === 'si';
+  document.getElementById('form-si').style.display = isSi ? 'block' : 'none';
+  document.getElementById('form-su').style.display = isSi ? 'none'  : 'block';
+  var tsi = document.getElementById('tab-si');
+  var tsu = document.getElementById('tab-su');
+  if(tsi){ tsi.style.color = isSi ? '#4ecca3' : '#8b8fa8'; tsi.style.borderBottomColor = isSi ? '#4ecca3' : 'transparent'; }
+  if(tsu){ tsu.style.color = isSi ? '#8b8fa8' : '#4ecca3'; tsu.style.borderBottomColor = isSi ? 'transparent' : '#4ecca3'; }
+}
+function authErr(f, msg) {
+  var el = document.getElementById(f+'-err');
+  if(el){ el.textContent = msg; el.style.display = 'block'; }
+}
+function authClearErr() {
+  ['si-err','su-err'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.display='none'; el.textContent=''; }
+  });
+}
+function authSetLoading(f, on) {
+  var btn = document.getElementById(f+'-btn');
+  if(btn){ btn.disabled=on; btn.textContent=on?'Please wait...':(f==='si'?'Sign in':'Create account'); btn.style.opacity=on?'.7':'1'; }
+}
+
+async function doAuth(f) {
+  authClearErr();
+
+  /* Wait for Firebase to finish loading — retry up to 5s */
+  if(typeof window.slSignIn !== 'function' || typeof window.slSignUp !== 'function') {
+    authSetLoading(f, true);
+    var waited = 0;
+    var waitInterval = setInterval(function(){
+      waited += 200;
+      if(typeof window.slSignIn === 'function' && typeof window.slSignUp === 'function'){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        doAuth(f);
+      } else if(waited >= 5000){
+        clearInterval(waitInterval);
+        authSetLoading(f, false);
+        authErr(f, 'Connection timeout. Please refresh the page and try again.');
+      }
+    }, 200);
+    return;
+  }
+
+  if(f === 'si') {
+    var email = (document.getElementById('si-email')||{}).value||'';
+    var pass  = (document.getElementById('si-pass')||{}).value||'';
+    if(!email||!pass){ authErr('si','Please fill in all fields.'); return; }
+    authSetLoading('si', true);
+    var r = await window.slSignIn(email.trim(), pass);
+    authSetLoading('si', false);
+    if(!r.ok){ authErr('si', r.error); return; }
+  } else {
+    var name  = (document.getElementById('su-name')||{}).value||'';
+    var email = (document.getElementById('su-email')||{}).value||'';
+    var pass  = (document.getElementById('su-pass')||{}).value||'';
+    if(!name||!email||!pass){ authErr('su','Please fill in all fields.'); return; }
+    authSetLoading('su', true);
+    var r = await window.slSignUp(name.trim(), email.trim(), pass, 'student');
+    authSetLoading('su', false);
+    if(!r.ok){ authErr('su', r.error); return; }
+  }
+  closeAuthModal();
+  if(typeof _authPending === 'function'){ var fn=_authPending; _authPending=null; fn(); }
+  else if(typeof showToast==='function') showToast('✓','Welcome to SkillsLibry!');
+}
+
+async function doGoogleAuth() {
+  if(typeof window.slGoogleSignIn !== 'function'){
+    showToast && showToast('⏳','Connecting... please try again.');
+    return;
+  }
+  var r = await window.slGoogleSignIn();
+  if(r && r.ok){
+    closeAuthModal();
+    if(typeof _authPending === 'function'){ var fn=_authPending; _authPending=null; fn(); }
+    else if(typeof showToast==='function') showToast('✓','Welcome to SkillsLibry!');
+  } else if(r && r.error){
+    authErr('si', r.error);
+  }
+}
+
+/* Close on backdrop */
+document.getElementById('auth-modal').addEventListener('click', function(e){
+  if(e.target===this) closeAuthModal();
+});
+</script>
+
+<script>
+/* ══════════════════════════════════════════
+   ADMIN PANEL
+══════════════════════════════════════════ */
+
+function showToast(icon, msg){
+  var t=document.getElementById('toast');
+  document.getElementById('toast-icon').innerHTML=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); },3200);
+}
+
+function toggleSidebar(){
+  var sidebar = document.querySelector('.sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  if(!sidebar || !overlay) return;
+  var isOpen = sidebar.classList.contains('mobile-open');
+  sidebar.classList.toggle('mobile-open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+  document.body.style.overflow = isOpen ? '' : 'hidden';
+}
+
+function showAdmin(view){
+  document.querySelectorAll('.admin-view').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.sidebar-item').forEach(function(el){ el.classList.remove('active'); });
+  var v = document.getElementById('view-'+view);
+  var s = document.getElementById('si-'+view);
+  if(v) v.classList.add('active');
+  if(s) s.classList.add('active');
+  if(view==='courses')     loadCourses();
+  if(view==='students')    loadStudents();
+  if(view==='instructors') loadInstructors();
+  if(view==='testimonials')loadTestimonialsAdmin();
+  if(view==='payouts')      { loadPayouts(); loadAffiliatePayouts(); }
+  if(view==='bizleads')     loadBizLeads();
+  if(view==='mktpayouts')   loadMarketplacePayouts();
+
+  // Auto-close mobile sidebar drawer after navigating
+  var sidebar = document.querySelector('.sidebar');
+  if(sidebar && sidebar.classList.contains('mobile-open')) toggleSidebar();
+}
+
+/* ── WAIT FOR FIRESTORE ── */
+function waitForDb(){
+  return new Promise(function(resolve){
+    if(window._db){ resolve(window._db); return; }
+    var t = setInterval(function(){
+      if(window._db){ clearInterval(t); resolve(window._db); }
+    }, 100);
+    setTimeout(function(){ clearInterval(t); resolve(null); }, 8000);
+  });
+}
+
+/* ══ FIRESTORE HELPER — import once and cache ══ */
+var _fb = null;
+async function getFs(){
+  if(_fb) return _fb;
+  _fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  return _fb;
+}
+
+/* ══ OVERVIEW ══ */
+async function loadOverview(){
+  var db = await waitForDb();
+  if(!db){ document.getElementById('action-feed').innerHTML='<div class="empty">Could not connect to database.</div>'; return; }
+
+  var fb = await getFs();
+  var failures = [];
+
+  var fetchCollection = async function(name){
+    try {
+      var snap = await fb.getDocs(fb.collection(db,name));
+      return snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    } catch(e){
+      console.error('Failed to read collection "'+name+'":', e.message);
+      failures.push(name+': '+e.message);
+      return [];
+    }
+  };
+
+  var courses     = await fetchCollection('courses');
+  var enrollments = await fetchCollection('enrollments');
+  var users       = await fetchCollection('users');
+  var apps        = await fetchCollection('instructorApplications');
+
+  var pending     = courses.filter(function(c){ return c.status==='pending_review'; });
+  var students    = users.filter(function(d){ return d.role==='student'; });
+  var instructors = users.filter(function(d){ return d.role==='instructor'; });
+  var pendingApps = apps.filter(function(d){ return d.status==='pending'; });
+  var totalRev    = enrollments.reduce(function(a,d){ return a+(d.paidAmount||0); },0);
+
+  var setText = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
+  setText('ov-courses', courses.length);
+  setText('ov-students', students.length);
+  setText('ov-revenue', '₦'+totalRev.toLocaleString());
+  setText('ov-instructors', instructors.length);
+  setText('ov-apps', pendingApps.length);
+  if(pending.length) document.getElementById('ov-pending-label').textContent = pending.length+' pending review';
+
+  if(failures.length){
+    document.getElementById('action-feed').innerHTML =
+      '<div class="empty" style="text-align:left;">'
+      +'<div style="font-weight:700;margin-bottom:8px;">Permission errors on: '+failures.map(function(f){return f.split(':')[0];}).join(', ')+'</div>'
+      +'<div style="font-size:12px;color:var(--text3);">'+failures.join('<br>')+'</div>'
+      +'</div>';
+  } else {
+    renderActionFeed(pending, pendingApps);
+  }
+}
+
+function renderActionFeed(pendingCourses, pendingApps){
+  var el = document.getElementById('action-feed'); if(!el) return;
+  var html = '';
+
+  if(pendingApps.length){
+    html += '<div style="font-family:Poppins,sans-serif;font-size:13px;font-weight:700;margin-bottom:10px;">Pending Instructor Applications</div>';
+    pendingApps.forEach(function(a){
+      html += '<div class="action-row">'
+        +'<div><div style="font-size:13px;font-weight:600;">'+a.name+'</div><div style="font-size:12px;color:var(--text3);">'+(a.skill||'')+(a.country?' · '+a.country:'')+'</div></div>'
+        +'<div style="display:flex;gap:8px;">'
+          +'<button class="tbl-btn tbl-approve" data-id="'+a.id+'" data-email="'+a.email+'" onclick="doApproveInst(this)">Approve</button>'
+          +'<button class="tbl-btn tbl-reject" data-id="'+a.id+'" onclick="doRejectApp(this)">Reject</button>'
+        +'</div>'
+      +'</div>';
+    });
+  }
+
+  if(pendingCourses.length){
+    html += '<div style="font-family:Poppins,sans-serif;font-size:13px;font-weight:700;margin:16px 0 10px;">Pending Courses</div>';
+    pendingCourses.forEach(function(c){
+      html += '<div class="action-row">'
+        +'<div><div style="font-size:13px;font-weight:600;">'+(c.title||'Untitled')+'</div><div style="font-size:12px;color:var(--text3);">by '+(c.instructorName||'—')+' · ₦'+(c.priceNGN||0).toLocaleString()+'</div></div>'
+        +'<div style="display:flex;gap:8px;">'
+          +'<button class="tbl-btn tbl-approve" data-id="'+c.id+'" onclick="doApprove(this)">✓ Approve</button>'
+          +'<button class="tbl-btn tbl-reject" data-id="'+c.id+'" onclick="doReject(this)">Reject</button>'
+        +'</div>'
+      +'</div>';
+    });
+  }
+
+  if(!html) html = '<div class="empty"><div class="empty-icon">✅</div>All caught up. Nothing pending.</div>';
+  el.innerHTML = html;
+}
+
+
+/* ══ COURSES ══ */
+async function loadCourses(){
+  var el = document.getElementById('courses-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb();
+  if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'courses'));
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    document.getElementById('courses-count').textContent = courses.length+' total';
+    if(!courses.length){ el.innerHTML='<div class="empty"><div class="empty-icon">&#127891;</div>No courses yet.</div>'; return; }
+
+    // Live lookup: overwrite each course's frozen instructorName snapshot
+    // with the instructor's CURRENT name from their profile doc.
+    try {
+      var instructorIds = Array.from(new Set(courses.map(function(c){return c.instructorId;}).filter(Boolean)));
+      var nameMap = {};
+      await Promise.all(instructorIds.map(async function(uid){
+        try {
+          var iSnap = await fb.getDoc(fb.doc(db,'users',uid));
+          if(iSnap.exists() && iSnap.data().name) nameMap[uid] = iSnap.data().name;
+        } catch(ie){}
+      }));
+      courses.forEach(function(c){
+        if(c.instructorId && nameMap[c.instructorId]) c.instructorName = nameMap[c.instructorId];
+      });
+    } catch(e){ console.warn('Instructor name batch lookup failed:', e.message); }
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Course</th><th>Instructor</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+    courses.forEach(function(c){
+      var st = c.status||'draft';
+      var badge = '<span class="badge badge-'+st+'">'+(st==='pending_review'?'Pending review':st.charAt(0).toUpperCase()+st.slice(1))+'</span>';
+      var row = document.createElement('tr');
+      row.innerHTML = '<td><div style="font-weight:600;color:var(--text);max-width:260px;">'+(c.title||'Untitled')+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(c.category||'')+'</div></td>'
+        +'<td>'+(c.instructorName||'—')+'</td>'
+        +'<td style="font-weight:600;">₦'+(c.priceNGN||0).toLocaleString()+'</td>'
+        +'<td>'+badge+'</td>'
+        +'<td></td>';
+      var td = row.lastElementChild;
+      if(st==='pending_review'){
+        var b1=document.createElement('button'); b1.className='tbl-btn tbl-approve'; b1.style.marginRight='6px'; b1.textContent='✓ Approve'; b1.onclick=function(){approveCourse(c.id);};
+        var b2=document.createElement('button'); b2.className='tbl-btn tbl-reject'; b2.textContent='Reject'; b2.onclick=function(){rejectCourse(c.id);};
+        td.appendChild(b1); td.appendChild(b2);
+      } else if(st==='approved'){
+        var b=document.createElement('button'); b.className='tbl-btn tbl-secondary'; b.textContent='Unpublish'; b.onclick=function(){rejectCourse(c.id);}; td.appendChild(b);
+      } else {
+        var b=document.createElement('button'); b.className='tbl-btn tbl-approve'; b.textContent='✓ Approve'; b.onclick=function(){approveCourse(c.id);}; td.appendChild(b);
+      }
+      el.querySelector('tbody').appendChild(row);
+    });
+    el.innerHTML += '';
+
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function approveCourse(id){
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'courses',id),{ status:'approved', approvedAt:fb.serverTimestamp() });
+    showToast('✓','Course approved and live!');
+    loadCourses(); loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function rejectCourse(id){
+  var reason = prompt('Reason for rejection (optional):');
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'courses',id),{ status:'rejected', rejectionReason:reason||'', rejectedAt:fb.serverTimestamp() });
+    showToast('❌','Course rejected.');
+    loadCourses(); loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+/* ══ TESTIMONIALS ══ */
+async function loadTestimonialsAdmin(){
+  var el = document.getElementById('testimonials-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  try {
+    var fb = await getFs(); var db = window._db;
+    var snap = await fb.getDocs(fb.collection(db,'testimonials'));
+    var items = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+
+    var countEl = document.getElementById('testimonials-count');
+    if(countEl) countEl.textContent = items.length ? '('+items.length+')' : '';
+
+    if(!items.length){
+      el.innerHTML = '<div class="empty">No testimonials submitted yet.</div>';
+      return;
+    }
+
+    // Pending first, then approved, then rejected
+    var order = { pending:0, approved:1, rejected:2 };
+    items.sort(function(a,b){ return (order[a.status]||0) - (order[b.status]||0); });
+
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:12px;">'
+      + items.map(function(t){
+          var badgeColor = t.status==='approved' ? '#22c55e' : (t.status==='rejected' ? '#ef4444' : '#f59e0b');
+          var badgeLabel = t.status==='approved' ? 'Approved' : (t.status==='rejected' ? 'Rejected' : 'Pending review');
+          var mediaPreview = '';
+          if(t.type==='photo' && t.mediaUrl){
+            mediaPreview = '<img src="'+t.mediaUrl+'" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>';
+          } else if(t.type==='video'){
+            mediaPreview = '<div style="width:64px;height:64px;background:#0d0d1a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">&#127909;</div>';
+          }
+          var stars = '';
+          for(var i=1;i<=5;i++) stars += i<=(t.stars||5) ? '\u2605' : '\u2606';
+          return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:flex-start;">'
+            +mediaPreview
+            +'<div style="flex:1;min-width:0;">'
+              +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">'
+                +'<span style="font-size:13px;font-weight:700;">'+(t.name||'Student')+'</span>'
+                +(t.location?'<span style="font-size:12px;color:var(--text3);">&middot; '+t.location+'</span>':'')
+                +'<span style="color:#f59e0b;font-size:13px;">'+stars+'</span>'
+              +'</div>'
+              +'<div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:6px;">'+(t.text||'')+'</div>'
+              +(t.result?'<div style="font-size:12px;font-weight:600;color:var(--teal-dark);">&#128640; '+t.result+'</div>':'')
+            +'</div>'
+            +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+badgeColor+'20;color:'+badgeColor+';white-space:nowrap;">'+badgeLabel+'</span>'
+            +'<div style="display:flex;gap:8px;flex-shrink:0;">'
+              +(t.status!=='approved' ? '<button class="tbl-btn tbl-approve" onclick="approveTestimonial(\''+t.id+'\')">&#10003; Approve</button>' : '<button class="tbl-btn tbl-secondary" onclick="rejectTestimonial(\''+t.id+'\')">Unpublish</button>')
+              +(t.status!=='rejected' && t.status!=='approved' ? '<button class="tbl-btn tbl-reject" onclick="rejectTestimonial(\''+t.id+'\')">Reject</button>' : '')
+            +'</div>'
+          +'</div>';
+        }).join('')
+      +'</div>';
+  } catch(e){
+    el.innerHTML = '<div class="empty">Error: '+e.message+'</div>';
+  }
+}
+
+async function approveTestimonial(id){
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'testimonials',id),{ status:'approved', approvedAt:fb.serverTimestamp() });
+    showToast('✓','Testimonial approved and live!');
+    loadTestimonialsAdmin();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function rejectTestimonial(id){
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'testimonials',id),{ status:'rejected', rejectedAt:fb.serverTimestamp() });
+    showToast('❌','Testimonial rejected.');
+    loadTestimonialsAdmin();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+/* ══ STUDENTS ══ */
+async function loadStudents(){
+  loadGrantCourseOptions();
+  var el = document.getElementById('students-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('role','==','student')));
+    var students = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    document.getElementById('students-count').textContent = students.length+' total';
+    if(!students.length){ el.innerHTML='<div class="empty"><div class="empty-icon">&#128101;</div>No students yet.</div>'; return; }
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Joined</th></tr></thead><tbody>'
+      + students.map(function(s){
+          return '<tr>'
+            +'<td><div style="font-weight:600;color:var(--text);">'+(s.name||'—')+'</div></td>'
+            +'<td>'+(s.email||'—')+'</td>'
+            +'<td style="font-size:12px;color:var(--text3);">'+new Date().toLocaleDateString('en-GB')+'</td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+/* ══ GRANT FREE ACCESS ══ */
+async function loadGrantCourseOptions(){
+  var sel = document.getElementById('grant-course'); if(!sel) return;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'courses'));
+    var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if(!courses.length){ sel.innerHTML = '<option value="">No courses found</option>'; return; }
+    sel.innerHTML = courses.map(function(c){
+      return '<option value="'+c.id+'" data-instructor="'+(c.instructorId||'')+'" data-price="'+(c.priceNGN||0)+'">'+(c.title||c.id)+'</option>';
+    }).join('');
+  } catch(e){
+    sel.innerHTML = '<option value="">Failed to load courses</option>';
+    console.error('Failed to load courses for grant tool:', e.message);
+  }
+}
+
+async function grantFreeAccess(){
+  var statusEl = document.getElementById('grant-status');
+  var setStatus = function(msg, ok){
+    if(statusEl){ statusEl.textContent = msg; statusEl.style.color = ok ? 'var(--teal-dark)' : 'var(--red, #ef4444)'; }
+  };
+
+  var email = (document.getElementById('grant-email')||{}).value||'';
+  email = email.trim().toLowerCase();
+  var courseSel = document.getElementById('grant-course');
+  var courseId = courseSel ? courseSel.value : '';
+  var courseOpt = courseSel ? courseSel.options[courseSel.selectedIndex] : null;
+  var instructorId = courseOpt ? courseOpt.dataset.instructor : '';
+
+  if(!email){ setStatus('Please enter a student email.', false); return; }
+  if(!courseId){ setStatus('Please select a course.', false); return; }
+
+  setStatus('Looking up student...', true);
+
+  var db = await waitForDb();
+  if(!db){ setStatus('Could not connect to database.', false); return; }
+
+  try {
+    var fb = await getFs();
+
+    // Find the student's account by email
+    var userSnap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('email','==',email)));
+    if(userSnap.docs.length === 0){
+      setStatus('No account found with that email. They need to sign up first.', false);
+      return;
+    }
+    var studentId = userSnap.docs[0].id;
+
+    var enrollmentId = courseId + '_' + studentId;
+    await fb.setDoc(fb.doc(db,'enrollments',enrollmentId), {
+      studentId:     studentId,
+      courseId:      courseId,
+      instructorId:  instructorId || null,
+      paidAmount:    0,
+      currency:      'NGN',
+      transactionId: 'admin-manual-grant',
+      platformCut:   0,
+      instructorCut: 0,
+      affiliateCode: null,
+      progress:      { completedLessons: [], percentComplete: 0 },
+      enrolledAt:    fb.serverTimestamp(),
+      grantedBy:     (window._user && window._user.email) || 'admin',
+    });
+
+    setStatus('✓ Access granted! '+email+' can now access this course.', true);
+    showToast('✅','Free access granted.');
+    var emailInput = document.getElementById('grant-email');
+    if(emailInput) emailInput.value = '';
+  } catch(e){
+    console.error('Grant access failed:', e);
+    setStatus('Error: '+e.message, false);
+  }
+}
+
+/* ══ INSTRUCTORS ══ */
+async function loadInstructors(){
+  var el = document.getElementById('instructors-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var [appsSnap, usersSnap] = await Promise.all([
+      fb.getDocs(fb.collection(db,'instructorApplications')),
+      fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('role','==','instructor'))),
+    ]);
+    var apps     = appsSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    var approved = usersSnap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    var pending  = apps.filter(function(a){ return a.status==='pending'; });
+
+    el.innerHTML = '';
+
+    if(pending.length){
+      var card = document.createElement('div');
+      card.className = 'card';
+      card.style.marginBottom = '20px';
+      card.innerHTML = '<div class="card-head">Pending Applications <span style="font-size:12px;font-weight:500;color:var(--orange);">'+pending.length+' waiting</span></div>';
+      var body = document.createElement('div');
+      pending.forEach(function(a){
+        var row = document.createElement('div');
+        row.style.cssText = 'padding:20px;border-bottom:1px solid var(--border);';
+        row.innerHTML = '<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;">'+(a.name||'—')+'</div>'
+          +'<div style="font-size:12px;color:var(--text3);margin-bottom:10px;">'+(a.email||'')+(a.country?' · '+a.country:'')+'</div>'
+          +(a.skill?'<div style="font-size:13px;margin-bottom:6px;"><strong>Skill:</strong> '+a.skill+'</div>':'')
+          +(a.courseTitle?'<div style="font-size:13px;margin-bottom:6px;"><strong>Course:</strong> '+a.courseTitle+'</div>':'')
+          +(a.results?'<div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px;">'+a.results+'</div>':'');
+        var btnRow = document.createElement('div');
+        btnRow.style.cssText = 'display:flex;gap:10px;margin-top:12px;';
+        var b1 = document.createElement('button'); b1.className='tbl-btn tbl-approve'; b1.textContent='✓ Approve as Instructor'; b1.onclick=function(){approveInstructor(a.id,a.email);};
+        var b2 = document.createElement('button'); b2.className='tbl-btn tbl-reject'; b2.textContent='Reject'; b2.onclick=function(){rejectApp(a.id,'instructorApplications');};
+        btnRow.appendChild(b1); btnRow.appendChild(b2);
+        row.appendChild(btnRow);
+        body.appendChild(row);
+      });
+      card.appendChild(body);
+      el.appendChild(card);
+    }
+
+    if(approved.length){
+      var card2 = document.createElement('div');
+      card2.className = 'card';
+      card2.innerHTML = '<div class="card-head">Approved Instructors <span style="font-size:12px;font-weight:500;color:var(--text3);">'+approved.length+' active</span></div>';
+      var body2 = document.createElement('div');
+      approved.forEach(function(u){
+        var initials = (u.name||'?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:14px 20px;border-bottom:1px solid var(--border);';
+        row.innerHTML = '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;">'+initials+'</div>'
+          +'<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text);">'+(u.name||'—')+'</div><div style="font-size:12px;color:var(--text3);">'+(u.email||'')+'</div></div>'
+          +'<span class="badge badge-approved">Instructor</span>';
+        body2.appendChild(row);
+      });
+      card2.appendChild(body2);
+      el.appendChild(card2);
+    }
+
+    if(!pending.length && !approved.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#127891;</div>No instructor applications yet.</div>';
+    }
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+
+async function approveInstructor(appId, email){
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,'instructorApplications',appId),{ status:'approved', approvedAt:fb.serverTimestamp() });
+    var usersSnap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('email','==',email)));
+    if(!usersSnap.empty){
+      await fb.updateDoc(usersSnap.docs[0].ref,{ role:'instructor' });
+      showToast('✓',email+' approved as instructor!');
+    } else {
+      showToast('⚠️','Application approved. User needs to create an account first.');
+    }
+    loadInstructors(); loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function rejectApp(id, collName){
+  var reason = prompt('Reason (optional):');
+  try {
+    var fb = await getFs(); var db = window._db;
+    await fb.updateDoc(fb.doc(db,collName,id),{ status:'rejected', rejectionReason:reason||'', rejectedAt:fb.serverTimestamp() });
+    showToast('❌','Rejected.');
+    loadInstructors(); loadOverview();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+/* ══ PAYOUTS ══ */
+async function loadPayouts(){
+  var el = document.getElementById('payouts-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'instructorPayouts'));
+    var payouts = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+    if(!payouts.length){ el.innerHTML='<div class="empty"><div class="empty-icon">&#128176;</div>No payout data yet.</div>'; return; }
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Instructor ID</th><th>Pending Amount</th><th>Currency</th><th>Action</th></tr></thead><tbody>'
+      + payouts.map(function(p){
+          return '<tr>'
+            +'<td style="font-family:monospace;font-size:12px;">'+(p.id||'—')+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">₦'+(p.pendingAmount||0).toLocaleString()+'</td>'
+            +'<td>'+(p.currency||'NGN')+'</td>'
+            +'<td><button class="tbl-btn tbl-approve" onclick="processPayout()">Process payout</button></td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+function processPayout(){ showToast('&#128176;','Payout processing...'); }
+
+async function loadAffiliatePayouts(){
+  var el = document.getElementById('affiliate-payouts-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+
+    // Fetch all earnings, filter paid ones client-side (avoids Firestore's
+    // != operator silently excluding older docs that have no status field yet)
+    var earnSnap = await fb.getDocs(fb.collection(db,'affiliateEarnings'));
+
+    var byCode = {};
+    earnSnap.docs.forEach(function(d){
+      var data = d.data();
+      if(data.status === 'paid') return;
+      var code = data.affiliateCode;
+      if(!byCode[code]) byCode[code] = { total:0, currency:data.currency||'NGN', docIds:[] };
+      byCode[code].total += (data.commission||0);
+      byCode[code].docIds.push(d.id);
+    });
+
+    var codes = Object.keys(byCode);
+    if(!codes.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#128176;</div>No pending affiliate payouts.</div>';
+      return;
+    }
+
+    // Look up each affiliate's name/email/bank details via refCode
+    var rows = await Promise.all(codes.map(async function(code){
+      var userSnap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('refCode','==',code)));
+      var user = userSnap.docs.length ? userSnap.docs[0].data() : null;
+      return {
+        code: code,
+        total: byCode[code].total,
+        currency: byCode[code].currency,
+        docIds: byCode[code].docIds,
+        name: user ? (user.name||'Unknown') : 'Unknown',
+        email: user ? (user.email||'—') : '—',
+        bankName: user ? (user.bankName||'') : '',
+        accountNumber: user ? (user.accountNumber||'') : '',
+        accountName: user ? (user.accountName||'') : '',
+      };
+    }));
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Affiliate</th><th>Bank details</th><th>Pending Amount</th><th>Action</th></tr></thead><tbody>'
+      + rows.map(function(r){
+          var bankInfo = r.bankName
+            ? r.bankName+'<br/><span style="font-size:12px;color:var(--text3);">'+r.accountNumber+' &middot; '+r.accountName+'</span>'
+            : '<span style="color:var(--text3);font-style:italic;">No bank details yet</span>';
+          return '<tr>'
+            +'<td><div style="font-weight:600;">'+r.name+'</div><div style="font-size:12px;color:var(--text3);">'+r.email+'</div></td>'
+            +'<td>'+bankInfo+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(r.currency==='NGN'?'&#8358;':r.currency+' ')+r.total.toLocaleString()+'</td>'
+            +'<td><button class="tbl-btn tbl-approve" data-ids="'+r.docIds.join(',')+'" onclick="markAffiliatePaid(this)" '+(r.bankName?'':'disabled title="No bank details on file"')+'>Mark as paid</button></td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function loadBizLeads(){
+  var el = document.getElementById('bizleads-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'businessLeads'));
+    var leads = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+
+    document.getElementById('bizleads-count').textContent = leads.length+' total';
+
+    if(!leads.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#128188;</div>No business leads yet.</div>';
+      return;
+    }
+
+    // Newest first
+    leads.sort(function(a,b){
+      var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+      var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Company</th><th>Contact</th><th>Team size</th><th>Message</th><th>Status</th><th>Action</th></tr></thead><tbody>'
+      + leads.map(function(l){
+          var isNew = l.status !== 'contacted';
+          return '<tr>'
+            +'<td style="font-weight:600;">'+(l.company||'—')+'</td>'
+            +'<td><div>'+(l.name||'—')+'</div><div style="font-size:12px;color:var(--text3);">'+(l.email||'—')+'</div></td>'
+            +'<td>'+(l.teamSize||'—')+'</td>'
+            +'<td style="max-width:220px;font-size:12px;color:var(--text2);">'+(l.message||'<span style="color:var(--text3);font-style:italic;">No message</span>')+'</td>'
+            +'<td>'+(isNew?'<span style="color:var(--orange);font-weight:700;">New</span>':'<span style="color:var(--green);font-weight:700;">Contacted</span>')+'</td>'
+            +'<td>'+(isNew?'<button class="tbl-btn tbl-approve" data-id="'+l.id+'" onclick="markBizLeadContacted(this)">Mark contacted</button>':'—')+'</td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function markBizLeadContacted(btn){
+  var id = btn.dataset.id;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    await fb.setDoc(fb.doc(db,'businessLeads',id), { status:'contacted' }, { merge:true });
+    showToast('✅','Marked as contacted.');
+    loadBizLeads();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function loadMarketplacePayouts(){
+  var el = document.getElementById('mktpayouts-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'marketplacePayouts'));
+    var payouts = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); })
+      .filter(function(p){ return p.status !== 'paid'; });
+
+    if(!payouts.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#129309;</div>No pending marketplace payouts.</div>';
+      return;
+    }
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Freelancer</th><th>Contract</th><th>Amount</th><th>Action</th></tr></thead><tbody>'
+      + payouts.map(function(p){
+          return '<tr>'
+            +'<td style="font-weight:600;">'+(p.freelancerName||'—')+'</td>'
+            +'<td style="font-family:monospace;font-size:12px;">'+(p.contractId||'—')+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(p.currency==='NGN'?'&#8358;':(p.currency||'NGN')+' ')+(p.amount||0).toLocaleString()+'</td>'
+            +'<td><button class="tbl-btn tbl-approve" data-id="'+p.id+'" onclick="markMarketplacePaid(this)">Mark as paid</button></td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function markMarketplacePaid(btn){
+  if(!confirm('Confirm you have sent this payout to the freelancer? This cannot be undone.')) return;
+  var id = btn.dataset.id;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    await fb.setDoc(fb.doc(db,'marketplacePayouts',id), { status:'paid', paidAt: fb.serverTimestamp() }, { merge:true });
+    showToast('✅','Marked as paid.');
+    loadMarketplacePayouts();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+
+async function markAffiliatePaid(btn){
+  if(!confirm('Mark this affiliate\'s pending commission as paid? This should only be done after the bank transfer is actually sent.')) return;
+  var ids = btn.dataset.ids.split(',').filter(Boolean);
+  try {
+    var fb = await getFs(); var db = window._db;
+    await Promise.all(ids.map(function(id){
+      return fb.updateDoc(fb.doc(db,'affiliateEarnings',id),{ status:'paid', paidAt:fb.serverTimestamp() });
+    }));
+    showToast('✓','Marked as paid.');
+    loadAffiliatePayouts();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+function doApproveInst(btn){ approveInstructor(btn.dataset.id, btn.dataset.email); }
+function doApprove(btn){ approveCourse(btn.dataset.id); }
+function doReject(btn){ rejectCourse(btn.dataset.id); }
+function doRejectApp(btn){ rejectApp(btn.dataset.id, 'instructorApplications'); }
+
+/* ── INIT ── */
+document.addEventListener('authReady', function(e){
+  if(!e.detail.user){
+    openAuthModal(function(){ location.reload(); }, 'si');
+    return;
+  }
+
+  var sidebar  = document.querySelector('.sidebar');
+  var mainArea = document.querySelector('.admin-main');
+  var gate     = document.getElementById('admin-access-gate');
+  var gateDetail = document.getElementById('admin-gate-detail');
+
+  if(window._userRole !== 'admin'){
+    if(sidebar)  sidebar.style.display  = 'none';
+    if(mainArea) mainArea.style.display = 'none';
+    if(gate)     gate.style.display     = 'block';
+    if(gateDetail){
+      gateDetail.innerHTML =
+        'You\'re signed in as <strong>'+(e.detail.user.email||'unknown')+'</strong>, '
+        +'but this account\'s role is currently <strong>'+(window._userRole ? '"'+window._userRole+'"' : 'not set')+'</strong> in Firestore, not <strong>"admin"</strong>.<br><br>'
+        +'To fix: open Firebase Console → Firestore Database → <code>users</code> collection → '
+        +'find the document with ID <code>'+e.detail.user.uid+'</code> → set its <code>role</code> field '
+        +'to exactly the string <code>admin</code> (lowercase) → reload this page.';
+    }
+    return;
+  }
+
+  loadOverview();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkillsLibry Marketplace — Hire Talent or Get Hired</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--purple-dark:#5550d4;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--bg3:#f0f2f7;--bg4:#e8eaf0;
+  --border:#e4e6f0;--border2:#d0d3e8;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--red:#e84545;--orange:#f59e0b;
+  --r:10px;--r-sm:6px;--r-lg:16px;--r-xl:24px;
+  --sh:0 2px 12px rgba(13,13,26,.06);--sh-md:0 6px 28px rgba(13,13,26,.1);--sh-lg:0 12px 48px rgba(13,13,26,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;}
+h1,h2,h3,h4{font-family:'Poppins',sans-serif}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:4px}
+
+.nav{position:sticky;top:0;z-index:100;height:64px;display:flex;align-items:center;padding:0 32px;background:#fff;border-bottom:1px solid var(--border);gap:24px;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;color:#fff;font-size:15px;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;}
+.nav-logo-text span{color:var(--teal);}
+.nav-links{display:flex;gap:8px;flex:1;}
+.nav-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;}
+.nav-tab:hover{background:var(--bg2);color:var(--text);}
+.nav-tab.active{background:var(--teal-dim);color:var(--teal-dark);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;}
+.btn-teal{background:var(--teal);color:#0d0d1a;}
+.btn-teal:hover{background:var(--teal-dark);}
+.btn-outline{background:#fff;border:1.5px solid var(--border2);color:var(--text);}
+.btn-outline:hover{background:var(--bg2);}
+@media(max-width:900px){ .nav-links{display:none;} }
+
+.wrap{max-width:1200px;margin:0 auto;padding:32px 24px 80px;}
+.page-head{margin-bottom:24px;}
+.page-head h1{font-size:26px;font-weight:800;margin-bottom:6px;}
+.page-head p{color:var(--text2);font-size:14px;}
+
+.search-row{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+.search-input{flex:1;min-width:240px;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;outline:none;background:#fff;}
+.search-input:focus{border-color:var(--teal);}
+.cat-select{padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;background:#fff;min-width:180px;}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;}
+
+.svc-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;}
+.svc-card:hover{box-shadow:var(--sh-md);transform:translateY(-2px);}
+.svc-thumb{height:130px;background:linear-gradient(135deg,var(--purple-dim),var(--teal-dim));display:flex;align-items:center;justify-content:center;font-size:36px;}
+.svc-body{padding:16px;}
+.svc-freelancer{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.svc-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;}
+.svc-freelancer-name{font-size:12px;font-weight:600;color:var(--text2);}
+.verified-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:2px 6px;border-radius:4px;margin-left:4px;}
+.svc-title{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:10px;min-height:38px;}
+.svc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);}
+.svc-price{font-family:'Poppins',sans-serif;font-size:17px;font-weight:800;}
+.svc-rating{font-size:12px;color:var(--orange);font-weight:600;}
+
+.job-card{background:#fff;border:1px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:14px;cursor:pointer;transition:box-shadow .2s;}
+.job-card:hover{box-shadow:var(--sh-md);}
+.job-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+.job-desc{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.6;}
+.job-meta{display:flex;gap:16px;font-size:12px;color:var(--text3);flex-wrap:wrap;}
+.job-budget{font-weight:700;color:var(--teal-dark);}
+
+.empty-state{text-align:center;padding:80px 20px;color:var(--text3);}
+.empty-state .icon{font-size:44px;margin-bottom:14px;}
+
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(13,13,26,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:var(--r-lg);max-width:560px;width:100%;max-height:88vh;overflow-y:auto;padding:28px;position:relative;}
+.modal-box h2{font-size:19px;font-weight:800;margin-bottom:18px;}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.fi{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;}
+.fi:focus{border-color:var(--teal);}
+textarea.fi{resize:vertical;min-height:80px;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.modal-actions .btn{flex:1;}
+.close-x{position:absolute;top:20px;right:24px;font-size:20px;cursor:pointer;color:var(--text3);}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;display:none;box-shadow:var(--sh-lg);}
+.toast.show{display:block;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-logo-mark">S</div><span class="nav-logo-text">Skills<span>Libry</span></span></a>
+  <div class="nav-links">
+    <div class="nav-tab active" id="tab-services" onclick="switchTab('services')">Find Talent</div>
+    <div class="nav-tab" id="tab-jobs" onclick="switchTab('jobs')">Find Work</div>
+    <div class="nav-tab" id="tab-mycontracts" onclick="switchTab('mycontracts')">My Contracts</div>
+    <div class="nav-tab" id="tab-mybookings" onclick="switchTab('mybookings')">My Bookings</div>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-outline" onclick="openAvailabilityModal()">Set Availability</button>
+    <button class="btn btn-outline" onclick="openModal('job-modal')">Post a Job</button>
+    <button class="btn btn-teal" onclick="openModal('service-modal')">Offer a Service</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div id="view-services">
+    <div class="page-head">
+      <h1>Find talent</h1>
+      <p>Hire freelancers offering real services — including verified SkillsLibry graduates with a provable skill history.</p>
+    </div>
+    <div class="search-row">
+      <input class="search-input" id="svc-search" placeholder="Search services (e.g. 'digital product marketing')" oninput="renderServices()"/>
+      <select class="cat-select" id="svc-cat-filter" onchange="renderServices()">
+        <option value="">All categories</option>
+        <option value="digital">Digital Products</option>
+        <option value="marketing">Marketing</option>
+        <option value="design">Design</option>
+        <option value="writing">Writing & Content</option>
+        <option value="dev">Development</option>
+        <option value="consulting">Consulting</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div id="services-grid" class="grid"><div class="empty-state">Loading...</div></div>
+  </div>
+
+  <div id="view-jobs" style="display:none;">
+    <div class="page-head">
+      <h1>Find work</h1>
+      <p>Browse job requests from clients and send a proposal.</p>
+    </div>
+    <div id="jobs-list"><div class="empty-state">Loading...</div></div>
+  </div>
+
+  <div id="view-mycontracts" style="display:none;">
+    <div class="page-head">
+      <h1>My contracts</h1>
+      <p>Active and past engagements, as a client or as a freelancer.</p>
+    </div>
+    <div id="contracts-list"><div class="empty-state">Loading...</div></div>
+  </div>
+
+  <div id="view-mybookings" style="display:none;">
+    <div class="page-head">
+      <h1>My bookings</h1>
+      <p>Scheduled calls with clients or freelancers.</p>
+    </div>
+    <div id="bookings-list"><div class="empty-state">Loading...</div></div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="job-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('job-modal')">&times;</span>
+    <h2>Post a job</h2>
+    <form onsubmit="submitJob(event)">
+      <div class="fg"><label>Job title</label><input class="fi" id="job-title" required placeholder="e.g. Need a landing page for my digital course"/></div>
+      <div class="fg"><label>Description</label><textarea class="fi" id="job-desc" required placeholder="Describe what you need, timeline, and any specifics"></textarea></div>
+      <div class="fg"><label>Category</label>
+        <select class="fi" id="job-cat" required>
+          <option value="digital">Digital Products</option>
+          <option value="marketing">Marketing</option>
+          <option value="design">Design</option>
+          <option value="writing">Writing & Content</option>
+          <option value="dev">Development</option>
+          <option value="consulting">Consulting</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Budget (₦)</label><input class="fi" id="job-budget" type="number" required placeholder="e.g. 50000"/></div>
+      <div class="modal-actions"><button type="submit" class="btn btn-teal">Post job</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="service-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('service-modal')">&times;</span>
+    <h2>Offer a service</h2>
+    <div id="service-form-signed-out" style="display:none;text-align:center;padding:20px 0;">
+      <p style="margin-bottom:16px;color:var(--text2);">Sign in or create an account to offer a service.</p>
+      <button class="btn btn-teal" onclick="window.location.href='/dashboard'">Sign in</button>
+    </div>
+    <form id="service-form" onsubmit="submitService(event)">
+      <div class="fg"><label>Service title</label><input class="fi" id="svc-title" required placeholder="e.g. I will design a landing page for your digital course"/></div>
+      <div class="fg"><label>Description</label><textarea class="fi" id="svc-desc" required placeholder="Describe exactly what the buyer gets"></textarea></div>
+      <div class="fg"><label>Category</label>
+        <select class="fi" id="svc-cat" required>
+          <option value="digital">Digital Products</option>
+          <option value="marketing">Marketing</option>
+          <option value="design">Design</option>
+          <option value="writing">Writing & Content</option>
+          <option value="dev">Development</option>
+          <option value="consulting">Consulting</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Price (₦)</label><input class="fi" id="svc-price" type="number" required placeholder="e.g. 30000"/></div>
+      <div class="fg"><label>Delivery time (days)</label><input class="fi" id="svc-delivery" type="number" required placeholder="e.g. 5"/></div>
+      <div class="modal-actions"><button type="submit" class="btn btn-teal">Publish service</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="hire-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('hire-modal')">&times;</span>
+    <h2 id="hire-modal-title">Start this contract</h2>
+    <div id="hire-modal-body"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="availability-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('availability-modal')">&times;</span>
+    <h2>Set your weekly availability</h2>
+    <p style="font-size:12px;color:var(--text3);margin-bottom:16px;">Clients will be able to book calls with you during these hours. Times are in your local time.</p>
+    <div id="availability-days"></div>
+    <div class="fg" style="margin-top:14px;">
+      <label>Call length</label>
+      <select class="fi" id="avail-duration">
+        <option value="15">15 minutes</option>
+        <option value="30" selected>30 minutes</option>
+        <option value="60">60 minutes</option>
+      </select>
+    </div>
+    <div class="modal-actions"><button class="btn btn-teal" onclick="saveAvailability()">Save availability</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('booking-modal')">&times;</span>
+    <h2 id="booking-modal-title">Schedule a call</h2>
+    <div id="booking-modal-body">Loading availability...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, query, where, orderBy, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._auth = auth;
+window._db = db;
+window._fb = { collection, addDoc, getDoc, getDocs, doc, setDoc, query, where, orderBy, serverTimestamp };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if(user){
+    const snap = await getDoc(doc(db,'users',user.uid));
+    window._userName = snap.exists() ? snap.data().name : user.email;
+    window._userPhoto = snap.exists() ? (snap.data().photoURL||'') : '';
+    window._userVerified = snap.exists() ? (snap.data().completedCourseCount||0) > 0 : false;
+  } else {
+    window._userName = null;
+    window._userPhoto = '';
+    window._userVerified = false;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
+});
+</script>
+
+<script>
+var _servicesCache = [];
+var _jobsCache = [];
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+function openModal(id){
+  if(id==='service-modal'){
+    var signedIn = !!window._user;
+    document.getElementById('service-form-signed-out').style.display = signedIn ? 'none' : 'block';
+    document.getElementById('service-form').style.display = signedIn ? 'block' : 'none';
+  }
+  if(id==='job-modal' && !window._user){
+    showToast('Please sign in to post a job.');
+    window.location.href = '/dashboard';
+    return;
+  }
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function switchTab(tab){
+  ['services','jobs','mycontracts','mybookings'].forEach(function(t){
+    document.getElementById('view-'+t).style.display = (t===tab) ? 'block' : 'none';
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  });
+  if(tab==='jobs') loadJobs();
+  if(tab==='mycontracts') loadMyContracts();
+  if(tab==='mybookings') loadMyBookings();
+}
+
+async function loadServices(){
+  var db = window._db; var fb = window._fb;
+  var grid = document.getElementById('services-grid');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'services'), fb.where('active','==',true)));
+    _servicesCache = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    renderServices();
+  } catch(e){
+    grid.innerHTML = '<div class="empty-state">Error loading services: '+e.message+'</div>';
+  }
+}
+function renderServices(){
+  var grid = document.getElementById('services-grid');
+  var q = (document.getElementById('svc-search').value||'').toLowerCase();
+  var cat = document.getElementById('svc-cat-filter').value;
+  var filtered = _servicesCache.filter(function(s){
+    var matchesQ = !q || (s.title||'').toLowerCase().indexOf(q)>-1 || (s.description||'').toLowerCase().indexOf(q)>-1;
+    var matchesCat = !cat || s.category===cat;
+    return matchesQ && matchesCat;
+  });
+  if(!filtered.length){
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div>No services found. Be the first to <a href="#" onclick="openModal(\'service-modal\')" style="color:var(--teal-dark);font-weight:700;">offer one</a>.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(s){
+    var initials = (s.freelancerName||'F').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+    var avatarInner = s.freelancerPhoto
+      ? '<img src="'+s.freelancerPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+      : initials;
+    return '<div class="svc-card" onclick="viewService(\''+s.id+'\')">'
+      +'<div class="svc-thumb">🛠️</div>'
+      +'<div class="svc-body">'
+        +'<div class="svc-freelancer"><div class="svc-avatar">'+avatarInner+'</div><span class="svc-freelancer-name">'+(s.freelancerName||'Freelancer')+'</span>'
+          +(s.freelancerVerified?'<span class="verified-badge">✓ Verified</span>':'')
+        +'</div>'
+        +'<div class="svc-title">'+s.title+'</div>'
+        +'<div class="svc-footer"><span class="svc-price">₦'+(s.price||0).toLocaleString()+'</span>'
+          +'<span class="svc-rating">'+(s.rating?('★ '+s.rating.toFixed(1)):'New')+'</span>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function viewService(id){
+  var s = _servicesCache.find(function(x){ return x.id===id; });
+  if(!s) return;
+  document.getElementById('hire-modal-title').textContent = s.title;
+  document.getElementById('hire-modal-body').innerHTML =
+    '<p style="color:var(--text2);margin-bottom:14px;">'+s.description+'</p>'
+    +'<div style="display:flex;justify-content:space-between;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:16px;">'
+      +'<div><div style="font-size:12px;color:var(--text3);">Price</div><div style="font-size:20px;font-weight:800;">₦'+(s.price||0).toLocaleString()+'</div></div>'
+      +'<div><div style="font-size:12px;color:var(--text3);">Delivery</div><div style="font-size:20px;font-weight:800;">'+(s.deliveryDays||'—')+' days</div></div>'
+    +'</div>'
+    +'<button class="btn btn-teal" style="width:100%;" onclick="startContractFromService(\''+s.id+'\')">Hire for ₦'+(s.price||0).toLocaleString()+'</button>'
+    +'<button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="openBookingModal(\''+s.freelancerId+'\',\''+(s.freelancerName||'Freelancer').replace(/'/g,"\\'")+'\')">📅 Schedule a call first</button>';
+  openModal('hire-modal');
+}
+
+async function startContractFromService(serviceId){
+  if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
+  var s = _servicesCache.find(function(x){ return x.id===serviceId; });
+  if(!s) return;
+  if(s.freelancerId === window._user.uid){ showToast("You can't hire your own service."); return; }
+  var db = window._db; var fb = window._fb;
+  try {
+    var ref = await fb.addDoc(fb.collection(db,'contracts'), {
+      clientId: window._user.uid,
+      clientName: window._userName || 'Client',
+      freelancerId: s.freelancerId,
+      freelancerName: s.freelancerName || 'Freelancer',
+      title: s.title,
+      amount: s.price || 0,
+      currency: 'NGN',
+      status: 'awaiting_payment',
+      serviceId: s.id,
+      createdAt: fb.serverTimestamp(),
+    });
+    closeModal('hire-modal');
+    window.location.href = '/workspace?contract='+ref.id;
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function submitService(e){
+  e.preventDefault();
+  if(!window._user){ showToast('Please sign in first.'); return; }
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.addDoc(fb.collection(db,'services'), {
+      freelancerId: window._user.uid,
+      freelancerName: window._userName || 'Freelancer',
+      freelancerPhoto: window._userPhoto || '',
+      freelancerVerified: !!window._userVerified,
+      title: document.getElementById('svc-title').value.trim(),
+      description: document.getElementById('svc-desc').value.trim(),
+      category: document.getElementById('svc-cat').value,
+      price: parseFloat(document.getElementById('svc-price').value)||0,
+      deliveryDays: parseInt(document.getElementById('svc-delivery').value)||3,
+      active: true,
+      rating: 0, reviewCount: 0,
+      createdAt: fb.serverTimestamp(),
+    });
+    closeModal('service-modal');
+    showToast('✅ Service published!');
+    loadServices();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function loadJobs(){
+  var db = window._db; var fb = window._fb;
+  var list = document.getElementById('jobs-list');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'jobPosts'), fb.where('status','==','open')));
+    _jobsCache = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    if(!_jobsCache.length){
+      list.innerHTML = '<div class="empty-state"><div class="icon">💼</div>No open jobs yet. <a href="#" onclick="openModal(\'job-modal\')" style="color:var(--teal-dark);font-weight:700;">Post one</a>.</div>';
+      return;
+    }
+    list.innerHTML = _jobsCache.map(function(j){
+      return '<div class="job-card" onclick="viewJob(\''+j.id+'\')">'
+        +'<div class="job-title">'+j.title+'</div>'
+        +'<div class="job-desc">'+(j.description||'').slice(0,160)+'</div>'
+        +'<div class="job-meta"><span class="job-budget">₦'+(j.budget||0).toLocaleString()+' budget</span><span>'+(j.category||'')+'</span><span>Posted by '+(j.clientName||'Client')+'</span></div>'
+      +'</div>';
+    }).join('');
+  } catch(e){ list.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
+}
+
+function viewJob(id){
+  var j = _jobsCache.find(function(x){ return x.id===id; });
+  if(!j) return;
+  document.getElementById('hire-modal-title').textContent = j.title;
+  document.getElementById('hire-modal-body').innerHTML =
+    '<p style="color:var(--text2);margin-bottom:14px;">'+j.description+'</p>'
+    +'<div style="margin-bottom:16px;"><span class="job-budget">Budget: ₦'+(j.budget||0).toLocaleString()+'</span></div>'
+    +'<div class="fg"><label>Your proposal</label><textarea class="fi" id="proposal-msg" placeholder="Explain why you are a good fit, and your approach"></textarea></div>'
+    +'<div class="fg"><label>Your price (₦)</label><input class="fi" id="proposal-price" type="number" placeholder="'+j.budget+'"/></div>'
+    +'<button class="btn btn-teal" style="width:100%;" onclick="submitProposal(\''+j.id+'\')">Send proposal</button>';
+  openModal('hire-modal');
+}
+
+async function submitProposal(jobId){
+  if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
+  var db = window._db; var fb = window._fb;
+  var msg = document.getElementById('proposal-msg').value.trim();
+  var price = parseFloat(document.getElementById('proposal-price').value)||0;
+  if(!msg || !price){ showToast('Please fill in your proposal and price.'); return; }
+  try {
+    await fb.addDoc(fb.collection(db,'proposals'), {
+      jobId: jobId,
+      freelancerId: window._user.uid,
+      freelancerName: window._userName || 'Freelancer',
+      message: msg,
+      price: price,
+      status: 'pending',
+      createdAt: fb.serverTimestamp(),
+    });
+    closeModal('hire-modal');
+    showToast('✅ Proposal sent!');
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function submitJob(e){
+  e.preventDefault();
+  if(!window._user){ showToast('Please sign in first.'); return; }
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.addDoc(fb.collection(db,'jobPosts'), {
+      clientId: window._user.uid,
+      clientName: window._userName || 'Client',
+      title: document.getElementById('job-title').value.trim(),
+      description: document.getElementById('job-desc').value.trim(),
+      category: document.getElementById('job-cat').value,
+      budget: parseFloat(document.getElementById('job-budget').value)||0,
+      status: 'open',
+      createdAt: fb.serverTimestamp(),
+    });
+    closeModal('job-modal');
+    showToast('✅ Job posted!');
+    switchTab('jobs');
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function loadMyContracts(){
+  var list = document.getElementById('contracts-list');
+  if(!window._user){
+    list.innerHTML = '<div class="empty-state"><div class="icon">🔒</div>Please sign in to see your contracts.</div>';
+    return;
+  }
+  var db = window._db; var fb = window._fb;
+  try {
+    var asClient = await fb.getDocs(fb.query(fb.collection(db,'contracts'), fb.where('clientId','==',window._user.uid)));
+    var asFreelancer = await fb.getDocs(fb.query(fb.collection(db,'contracts'), fb.where('freelancerId','==',window._user.uid)));
+    var all = asClient.docs.concat(asFreelancer.docs).map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    if(!all.length){
+      list.innerHTML = '<div class="empty-state"><div class="icon">📁</div>No contracts yet.</div>';
+      return;
+    }
+    list.innerHTML = all.map(function(c){
+      var role = c.clientId===window._user.uid ? 'You are the client' : 'You are the freelancer';
+      var other = c.clientId===window._user.uid ? c.freelancerName : c.clientName;
+      return '<div class="job-card" onclick="window.location.href=\'/workspace?contract='+c.id+'\'">'
+        +'<div class="job-title">'+c.title+'</div>'
+        +'<div class="job-meta"><span class="job-budget">₦'+(c.amount||0).toLocaleString()+'</span><span>'+role+' &middot; with '+other+'</span><span style="text-transform:capitalize;">'+(c.status||'').replace(/_/g,' ')+'</span></div>'
+      +'</div>';
+    }).join('');
+  } catch(e){ list.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
+}
+
+/* ══ AVAILABILITY & BOOKING ══ */
+var DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+
+function openAvailabilityModal(){
+  if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
+  var wrap = document.getElementById('availability-days');
+  wrap.innerHTML = DAYS.map(function(day){
+    var label = day.charAt(0).toUpperCase()+day.slice(1);
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);">'
+      +'<input type="checkbox" id="avail-'+day+'-on" style="width:16px;height:16px;"/>'
+      +'<span style="width:90px;font-size:13px;font-weight:600;">'+label+'</span>'
+      +'<input type="time" id="avail-'+day+'-start" class="fi" style="width:110px;" value="09:00"/>'
+      +'<span style="font-size:12px;color:var(--text3);">to</span>'
+      +'<input type="time" id="avail-'+day+'-end" class="fi" style="width:110px;" value="17:00"/>'
+    +'</div>';
+  }).join('');
+  loadExistingAvailability();
+  openModal('availability-modal');
+}
+
+async function loadExistingAvailability(){
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDoc(fb.doc(db,'availability',window._user.uid));
+    if(!snap.exists()) return;
+    var data = snap.data();
+    (data.slots||[]).forEach(function(s){
+      var onEl = document.getElementById('avail-'+s.day+'-on');
+      var startEl = document.getElementById('avail-'+s.day+'-start');
+      var endEl = document.getElementById('avail-'+s.day+'-end');
+      if(onEl) onEl.checked = true;
+      if(startEl) startEl.value = s.start;
+      if(endEl) endEl.value = s.end;
+    });
+    if(data.callDurationMins) document.getElementById('avail-duration').value = String(data.callDurationMins);
+  } catch(e){}
+}
+
+async function saveAvailability(){
+  var slots = [];
+  DAYS.forEach(function(day){
+    var on = document.getElementById('avail-'+day+'-on').checked;
+    if(!on) return;
+    slots.push({
+      day: day,
+      start: document.getElementById('avail-'+day+'-start').value,
+      end: document.getElementById('avail-'+day+'-end').value,
+    });
+  });
+  var duration = parseInt(document.getElementById('avail-duration').value)||30;
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.setDoc(fb.doc(db,'availability',window._user.uid), {
+      freelancerId: window._user.uid,
+      freelancerName: window._userName || 'Freelancer',
+      slots: slots,
+      callDurationMins: duration,
+      updatedAt: fb.serverTimestamp(),
+    });
+    closeModal('availability-modal');
+    showToast('✅ Availability saved!');
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function openBookingModal(freelancerId, freelancerName){
+  if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
+  if(freelancerId === window._user.uid){ showToast("You can't book a call with yourself."); return; }
+  document.getElementById('booking-modal-title').textContent = 'Schedule a call with '+freelancerName;
+  var body = document.getElementById('booking-modal-body');
+  body.innerHTML = 'Loading availability...';
+  openModal('booking-modal');
+
+  var db = window._db; var fb = window._fb;
+  try {
+    var availSnap = await fb.getDoc(fb.doc(db,'availability',freelancerId));
+    if(!availSnap.exists() || !(availSnap.data().slots||[]).length){
+      body.innerHTML = '<div class="empty-state"><div class="icon">📅</div>'+freelancerName+' hasn\'t set their availability yet. Try messaging them directly instead.</div>';
+      return;
+    }
+    var availability = availSnap.data();
+    var bookingsSnap = await fb.getDocs(fb.query(fb.collection(db,'bookings'), fb.where('freelancerId','==',freelancerId), fb.where('status','==','scheduled')));
+    var existingBookings = bookingsSnap.docs.map(function(d){ return d.data(); });
+
+    var slots = generateSlots(availability, existingBookings, 14);
+    if(!slots.length){
+      body.innerHTML = '<div class="empty-state"><div class="icon">📅</div>No open slots in the next 2 weeks.</div>';
+      return;
+    }
+
+    // Group slots by date
+    var byDate = {};
+    slots.forEach(function(slot){
+      var key = slot.toDateString();
+      if(!byDate[key]) byDate[key] = [];
+      byDate[key].push(slot);
+    });
+
+    var html = '<div style="max-height:400px;overflow-y:auto;">';
+    Object.keys(byDate).forEach(function(dateKey){
+      html += '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:14px 0 8px;">'+dateKey+'</div>';
+      html += '<div style="display:flex;flex-wrap:wrap;gap:8px;">';
+      byDate[dateKey].forEach(function(slot){
+        var timeLabel = slot.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        html += '<button class="btn btn-outline" style="padding:8px 14px;font-size:12px;" onclick="confirmBooking(\''+freelancerId+'\',\''+freelancerName.replace(/'/g,"\\'")+'\',\''+slot.toISOString()+'\','+(availability.callDurationMins||30)+')">'+timeLabel+'</button>';
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+    body.innerHTML = html;
+  } catch(e){
+    body.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>';
+  }
+}
+
+function generateSlots(availability, existingBookings, daysAhead){
+  var slots = [];
+  var now = new Date();
+  for(var d=0; d<daysAhead; d++){
+    var day = new Date(now.getTime() + d*86400000);
+    var dayName = DAYS[(day.getDay()+6)%7]; // JS getDay(): 0=Sunday; align to our DAYS array (monday-first)
+    var dayBlocks = (availability.slots||[]).filter(function(s){ return s.day === dayName; });
+    dayBlocks.forEach(function(block){
+      var startParts = block.start.split(':').map(Number);
+      var endParts = block.end.split(':').map(Number);
+      var cursor = new Date(day.getFullYear(), day.getMonth(), day.getDate(), startParts[0], startParts[1]);
+      var blockEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), endParts[0], endParts[1]);
+      var stepMs = (availability.callDurationMins||30)*60000;
+      while(cursor.getTime()+stepMs <= blockEnd.getTime()){
+        if(cursor.getTime() > now.getTime() + 30*60000){ // at least 30 min from now
+          var conflict = existingBookings.some(function(b){
+            var bt = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate() : new Date(b.scheduledAt);
+            return Math.abs(bt.getTime() - cursor.getTime()) < stepMs;
+          });
+          if(!conflict) slots.push(new Date(cursor));
+        }
+        cursor = new Date(cursor.getTime() + stepMs);
+      }
+    });
+  }
+  return slots;
+}
+
+async function confirmBooking(freelancerId, freelancerName, isoTime, durationMins){
+  var db = window._db; var fb = window._fb;
+  try {
+    var ref = await fb.addDoc(fb.collection(db,'bookings'), {
+      freelancerId: freelancerId,
+      freelancerName: freelancerName,
+      clientId: window._user.uid,
+      clientName: window._userName || 'Client',
+      scheduledAt: new Date(isoTime),
+      durationMins: durationMins,
+      status: 'scheduled',
+      createdAt: fb.serverTimestamp(),
+    });
+    closeModal('booking-modal');
+    closeModal('hire-modal');
+    showToast('✅ Call scheduled! Check My Bookings.');
+    switchTab('mybookings');
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function loadMyBookings(){
+  var list = document.getElementById('bookings-list');
+  if(!window._user){
+    list.innerHTML = '<div class="empty-state"><div class="icon">🔒</div>Please sign in to see your bookings.</div>';
+    return;
+  }
+  var db = window._db; var fb = window._fb;
+  try {
+    var asClient = await fb.getDocs(fb.query(fb.collection(db,'bookings'), fb.where('clientId','==',window._user.uid)));
+    var asFreelancer = await fb.getDocs(fb.query(fb.collection(db,'bookings'), fb.where('freelancerId','==',window._user.uid)));
+    var all = asClient.docs.concat(asFreelancer.docs).map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    all.sort(function(a,b){
+      var ta = a.scheduledAt && a.scheduledAt.toDate ? a.scheduledAt.toDate().getTime() : new Date(a.scheduledAt).getTime();
+      var tb = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate().getTime() : new Date(b.scheduledAt).getTime();
+      return ta - tb;
+    });
+    if(!all.length){
+      list.innerHTML = '<div class="empty-state"><div class="icon">📅</div>No bookings yet.</div>';
+      return;
+    }
+    var now = new Date();
+    list.innerHTML = all.map(function(b){
+      var scheduled = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate() : new Date(b.scheduledAt);
+      var isClient = b.clientId === window._user.uid;
+      var other = isClient ? b.freelancerName : b.clientName;
+      var canJoin = b.status==='scheduled' && (scheduled.getTime() - now.getTime()) < 10*60000; // joinable 10 min before
+      var timeLabel = scheduled.toLocaleString([], {weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+      return '<div class="job-card" style="cursor:default;">'
+        +'<div class="job-title">Call with '+other+'</div>'
+        +'<div class="job-meta"><span>'+timeLabel+'</span><span>'+(b.durationMins||30)+' min</span><span style="text-transform:capitalize;">'+b.status+'</span></div>'
+        +(canJoin ? '<button class="btn btn-teal" style="margin-top:12px;" onclick="window.location.href=\'/meeting?booking='+b.id+'\'">🎥 Join video call</button>'
+                  : (b.status==='scheduled' ? '<div style="margin-top:10px;font-size:12px;color:var(--text3);">Join button appears 10 minutes before the call</div>' : ''))
+      +'</div>';
+    }).join('');
+  } catch(e){ list.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
+}
+
+document.addEventListener('authReady', function(){
+  loadServices();
+});
+</script>
+
+</body>
+</html>
