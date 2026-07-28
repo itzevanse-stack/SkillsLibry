@@ -200,6 +200,10 @@ textarea.fi{resize:vertical;min-height:80px;}
             <div><div class="ac-name" id="ac-name"></div><div class="ac-headline" id="ac-headline"></div></div>
           </div>
 
+          <div id="ac-rate-row" style="display:none;font-family:'Poppins',sans-serif;font-size:26px;font-weight:900;margin-bottom:16px;">
+            $<span id="ac-rate">—</span> <span style="font-size:12px;font-weight:600;color:var(--text3);">starting rate</span>
+          </div>
+
           <div id="profile-actions"></div>
 
           <div class="ac-guarantee">🔒 Chat and video calls happen entirely inside SkillsLibry</div>
@@ -227,7 +231,7 @@ textarea.fi{resize:vertical;min-height:80px;}
 <div class="content-wrap">
   <div class="tabs-bar">
     <button class="tab-btn active" id="tabbtn-about" onclick="switchProfileTab('about')">About</button>
-    <button class="tab-btn" id="tabbtn-services" onclick="switchProfileTab('services')">Services Offered</button>
+    <button class="tab-btn" id="tabbtn-services" onclick="switchProfileTab('services')">What They Offer</button>
     <button class="tab-btn" id="tabbtn-testimonials" onclick="switchProfileTab('testimonials')">Testimonials</button>
   </div>
 
@@ -236,7 +240,7 @@ textarea.fi{resize:vertical;min-height:80px;}
   </div>
 
   <div class="tab-pane" id="tabpane-services">
-    <div id="profile-services"><div class="empty-state">Loading...</div></div>
+    <div id="profile-offerings"><div class="empty-state">Loading...</div></div>
   </div>
 
   <div class="tab-pane" id="tabpane-testimonials">
@@ -256,6 +260,11 @@ textarea.fi{resize:vertical;min-height:80px;}
     <div class="fg"><label>Bio</label><textarea class="fi" id="edit-bio" placeholder="Tell potential clients about your experience and results"></textarea></div>
     <div class="fg"><label>Introduction video URL</label><input class="fi" id="edit-video" placeholder="YouTube, Vimeo, or Loom link"/>
       <div style="font-size:11px;color:var(--text3);margin-top:5px;">A short pitch video is the single biggest trust signal for high-value work — clients want to see and hear you before they book a $2000+ engagement.</div>
+    </div>
+    <div class="fg" id="edit-rate-field" style="display:none;">
+      <label>Starting rate (USD $)</label>
+      <input class="fi" id="edit-rate" type="number" min="1000" placeholder="e.g. 1500"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000. This is what clients pay to hire you directly.</div>
     </div>
     <button class="ac-btn-primary ac-btn" onclick="saveProfileEdits()">Save profile</button>
   </div>
@@ -371,13 +380,17 @@ async function loadProfile(){
     if(_profileData.featured){
       document.getElementById('featured-badge').style.display = 'inline-flex';
     }
+    if(_profileData.rate){
+      document.getElementById('ac-rate-row').style.display = 'block';
+      document.getElementById('ac-rate').textContent = _profileData.rate.toLocaleString();
+    }
 
     if(_profileData.promoVideoUrl){
       document.getElementById('video-container').innerHTML = toEmbedHtml(_profileData.promoVideoUrl);
     }
 
     renderActionButtons();
-    loadProfileServices();
+    loadOfferings();
     loadTestimonials();
 
     if(window._user && window._user.uid === _profileId){
@@ -396,6 +409,7 @@ var _previewMode = false;
 function renderActionButtons(){
   var actions = document.getElementById('profile-actions');
   var isOwnProfile = window._user && window._user.uid === _profileId;
+  var hasRate = !!_profileData.rate;
 
   if(isOwnProfile && !_previewMode){
     actions.innerHTML = '<button class="ac-btn ac-btn-outline" onclick="openEditModal()">Edit my profile</button>'
@@ -403,13 +417,36 @@ function renderActionButtons(){
       +'<button class="ac-btn ac-btn-outline" onclick="togglePreviewMode()" style="border-style:dashed;">👁 Preview as a visitor</button>';
   } else if(isOwnProfile && _previewMode){
     actions.innerHTML = '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:8px;border-radius:8px;margin-bottom:12px;">👁 Previewing as a visitor sees it</div>'
+      +(hasRate ? '<button class="ac-btn ac-btn-primary" disabled title="Preview only" style="opacity:.6;cursor:not-allowed;">Hire — $'+_profileData.rate.toLocaleString()+'</button>' : '')
       +'<button class="ac-btn ac-btn-primary" disabled title="Preview only — schedule/message are disabled on your own profile" style="opacity:.6;cursor:not-allowed;">📅 Schedule a call</button>'
       +'<button class="ac-btn ac-btn-outline" disabled title="Preview only — schedule/message are disabled on your own profile" style="opacity:.6;cursor:not-allowed;">💬 Message first</button>'
       +'<button class="ac-btn ac-btn-outline" onclick="togglePreviewMode()">← Back to editing</button>';
   } else {
-    actions.innerHTML = '<button class="ac-btn ac-btn-primary" onclick="openBookingModal()">📅 Schedule a call</button>'
+    actions.innerHTML = (hasRate ? '<button class="ac-btn ac-btn-primary" onclick="hireExpertDirect()">Hire — $'+_profileData.rate.toLocaleString()+'</button>' : '')
+      +'<button class="ac-btn '+(hasRate?'ac-btn-outline':'ac-btn-primary')+'" onclick="openBookingModal()">📅 Schedule a call</button>'
       +'<button class="ac-btn ac-btn-outline" onclick="toggleChatPanel()">💬 Message first</button>';
   }
+}
+
+async function hireExpertDirect(){
+  if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
+  if(window._user.uid === _profileId){ showToast("You can't hire yourself."); return; }
+  if(!confirm('Start a $'+_profileData.rate.toLocaleString()+' engagement with '+_profileData.name+'? You\'ll be taken to payment next.')) return;
+  var db = window._db; var fb = window._fb;
+  try {
+    var ref = await fb.addDoc(fb.collection(db,'contracts'), {
+      clientId: window._user.uid,
+      clientName: window._userName || 'Client',
+      freelancerId: _profileId,
+      freelancerName: _profileData.name || 'Expert',
+      title: 'Engagement with '+(_profileData.name||'Expert'),
+      amount: _profileData.rate,
+      currency: 'USD',
+      status: 'awaiting_payment',
+      createdAt: fb.serverTimestamp(),
+    });
+    window.location.href = '/workspace?contract='+ref.id;
+  } catch(e){ showToast('Error: '+e.message); }
 }
 
 function togglePreviewMode(){
@@ -425,35 +462,66 @@ function openEditModal(){
   document.getElementById('edit-headline').value = _profileData.headline || '';
   document.getElementById('edit-bio').value = _profileData.bio || '';
   document.getElementById('edit-video').value = _profileData.promoVideoUrl || '';
+  var rateField = document.getElementById('edit-rate-field');
+  if(window._expertStatus === 'approved' || _profileData.expertStatus === 'approved'){
+    rateField.style.display = 'block';
+    document.getElementById('edit-rate').value = _profileData.rate || '';
+  } else {
+    rateField.style.display = 'none';
+  }
   openModal('edit-modal');
 }
 async function saveProfileEdits(){
   var db = window._db; var fb = window._fb;
+  var payload = {
+    headline: document.getElementById('edit-headline').value.trim(),
+    bio: document.getElementById('edit-bio').value.trim(),
+    promoVideoUrl: document.getElementById('edit-video').value.trim(),
+  };
+  var rateField = document.getElementById('edit-rate-field');
+  if(rateField.style.display !== 'none'){
+    var rate = parseFloat(document.getElementById('edit-rate').value)||0;
+    if(rate < 1000){
+      showToast('Starting rate must be at least $1,000.');
+      return;
+    }
+    payload.rate = rate;
+  }
   try {
-    await fb.setDoc(fb.doc(db,'users',window._user.uid), {
-      headline: document.getElementById('edit-headline').value.trim(),
-      bio: document.getElementById('edit-bio').value.trim(),
-      promoVideoUrl: document.getElementById('edit-video').value.trim(),
-    }, { merge:true });
+    await fb.setDoc(fb.doc(db,'users',window._user.uid), payload, { merge:true });
     closeModal('edit-modal');
     showToast('✅ Profile updated!');
     loadProfile();
   } catch(e){ showToast('Error: '+e.message); }
 }
 
-async function loadProfileServices(){
+async function loadOfferings(){
   var db = window._db; var fb = window._fb;
-  var el = document.getElementById('profile-services');
+  var el = document.getElementById('profile-offerings');
   try {
-    var snap = await fb.getDocs(fb.query(fb.collection(db,'services'), fb.where('freelancerId','==',_profileId), fb.where('active','==',true)));
-    var services = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
-    if(!services.length){
-      el.innerHTML = '<div class="empty-state">No services listed yet.</div>';
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'expertApplications'), fb.where('uid','==',_profileId), fb.where('status','==','approved')));
+    var apps = snap.docs.map(function(d){ return d.data(); });
+    if(!apps.length){
+      el.innerHTML = '<div class="empty-state">No details published yet.</div>';
       return;
     }
-    el.innerHTML = services.map(function(s){
-      return '<div class="svc-mini"><span class="svc-mini-title">'+s.title+'</span><span class="svc-mini-price">$'+(s.price||0).toLocaleString()+'</span></div>';
-    }).join('');
+    // Use the most recently approved application.
+    apps.sort(function(a,b){
+      var ta = a.reviewedAt && a.reviewedAt.toMillis ? a.reviewedAt.toMillis() : 0;
+      var tb = b.reviewedAt && b.reviewedAt.toMillis ? b.reviewedAt.toMillis() : 0;
+      return tb - ta;
+    });
+    var app = apps[0];
+    el.innerHTML =
+      '<div class="desc-section" style="margin-bottom:28px;">'
+        +'<div class="section-title" style="font-family:Poppins,sans-serif;font-weight:800;font-size:15px;margin-bottom:10px;">Services</div>'
+        +'<div class="bio-text">'+(app.servicesOffered||'—')+'</div>'
+      +'</div>'
+      +'<div class="desc-section">'
+        +'<div class="section-title" style="font-family:Poppins,sans-serif;font-weight:800;font-size:15px;margin-bottom:10px;">Results & past work</div>'
+        +'<div class="bio-text">'+(app.pastResults||'—')+'</div>'
+        +(app.portfolioLink ? '<a href="'+app.portfolioLink+'" target="_blank" style="display:inline-block;margin-top:10px;font-size:13px;color:var(--teal-dark);font-weight:700;">View portfolio →</a>' : '')
+      +'</div>';
   } catch(e){ el.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
 }
 
