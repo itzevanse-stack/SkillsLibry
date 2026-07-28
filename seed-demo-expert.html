@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Seed Demo Expert — SkillsLibry (internal tool)</title>
+<style>
+:root{--teal:#4ecca3;--teal-dark:#2db88a;--text:#0d0d1a;--text2:#4a4d6a;--border:#e4e6f0;--bg2:#f8f9fc;--red:#e84545;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg2);color:var(--text);padding:40px 20px;}
+.card{max-width:560px;margin:0 auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 6px 28px rgba(13,13,26,.1);}
+h1{font-size:20px;font-weight:800;margin-bottom:10px;}
+p{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+.warn{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.2);color:var(--red);border-radius:10px;padding:14px 16px;font-size:12.5px;margin-bottom:20px;}
+.status{font-size:13px;padding:10px 0;color:var(--text2);}
+button{width:100%;padding:14px;background:var(--teal);border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;color:#0d0d1a;margin-top:6px;}
+button:hover{background:var(--teal-dark);}
+button:disabled{opacity:.5;cursor:not-allowed;}
+a.result-link{display:inline-block;margin-top:14px;color:var(--teal-dark);font-weight:700;font-size:13px;}
+.log{font-family:monospace;font-size:11px;background:var(--bg2);border-radius:8px;padding:12px;margin-top:14px;max-height:200px;overflow-y:auto;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>🌱 Seed Demo Expert Profile</h1>
+  <p>This populates realistic demo content onto <strong>whichever account you're currently logged into</strong> on this browser: a bio, an intro video, one service listing, one video testimonial, weekly availability, and expert approval — so you can see exactly how the marketplace looks end-to-end.</p>
+  <div class="warn">⚠️ This overwrites profile fields (name, headline, bio, promo video) on the account you're logged in as. Use a fresh test account, not your real instructor/admin account, unless you're okay with it being modified.</div>
+  <div id="auth-status" class="status">Checking login status...</div>
+  <button id="seed-btn" onclick="seedDemoExpert()" disabled>Seed demo content</button>
+  <div id="log" class="log" style="display:none;"></div>
+  <div id="result"></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, addDoc, collection, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._db = db;
+window._fb = { doc, setDoc, addDoc, collection, serverTimestamp };
+
+onAuthStateChanged(auth, (user) => {
+  window._user = user || null;
+  var statusEl = document.getElementById('auth-status');
+  var btn = document.getElementById('seed-btn');
+  if(user){
+    statusEl.textContent = 'Logged in as: ' + user.email + ' (uid: ' + user.uid + ')';
+    btn.disabled = false;
+  } else {
+    statusEl.textContent = '❌ Not logged in. Sign in on skillslibry.com in another tab first, then reload this page.';
+    btn.disabled = true;
+  }
+});
+</script>
+
+<script>
+function log(msg){
+  var el = document.getElementById('log');
+  el.style.display = 'block';
+  el.textContent += msg + '\n';
+}
+
+async function seedDemoExpert(){
+  var btn = document.getElementById('seed-btn');
+  btn.disabled = true;
+  btn.textContent = 'Seeding...';
+  var fb = window._fb;
+  var db = window._db;
+  var uid = window._user.uid;
+
+  try {
+    log('→ Setting profile (name, headline, bio, intro video)...');
+    await fb.setDoc(fb.doc(db,'users',uid), {
+      name: 'Amara Okafor',
+      headline: 'Digital Product Strategist — $2M+ in client sales generated',
+      bio: "I help course creators and digital entrepreneurs turn a good idea into a high-converting offer. Over the last 4 years I've built and launched 30+ digital product funnels, generating over $2M in combined client sales.\n\nMy approach is simple: real strategy, not templates. Every engagement starts with a live call so I actually understand your business before I touch anything.",
+      promoVideoUrl: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+      expertStatus: 'approved',
+      featured: true,
+    }, { merge:true });
+    log('  ✓ Profile updated.');
+
+    log('→ Creating a demo service listing...');
+    await fb.addDoc(fb.collection(db,'services'), {
+      freelancerId: uid,
+      freelancerName: 'Amara Okafor',
+      freelancerPhoto: '',
+      freelancerVerified: true,
+      title: 'I will build your complete digital product sales funnel',
+      description: 'A full strategy + build: offer positioning, landing page copy, email sequence, and launch plan tailored to your audience. Built from what has actually converted for past clients, not generic templates.',
+      category: 'digital',
+      price: 850000,
+      deliveryDays: 10,
+      active: true,
+      rating: 0,
+      reviewCount: 0,
+      createdAt: fb.serverTimestamp(),
+    });
+    log('  ✓ Service created.');
+
+    log('→ Adding a demo video testimonial...');
+    await fb.addDoc(fb.collection(db,'freelancerTestimonials'), {
+      freelancerId: uid,
+      clientName: 'Tunde, Course Creator',
+      videoUrl: 'https://www.youtube.com/watch?v=aqz-KE-bpKQ',
+      quote: 'Amara rebuilt our entire funnel in 10 days and our conversion rate more than doubled.',
+      createdAt: fb.serverTimestamp(),
+    });
+    log('  ✓ Testimonial added.');
+
+    log('→ Setting weekly availability (Mon–Fri, 9am–5pm, 30-min calls)...');
+    await fb.setDoc(fb.doc(db,'availability',uid), {
+      freelancerId: uid,
+      freelancerName: 'Amara Okafor',
+      slots: [
+        {day:'monday', start:'09:00', end:'17:00'},
+        {day:'tuesday', start:'09:00', end:'17:00'},
+        {day:'wednesday', start:'09:00', end:'17:00'},
+        {day:'thursday', start:'09:00', end:'17:00'},
+        {day:'friday', start:'09:00', end:'17:00'},
+      ],
+      callDurationMins: 30,
+      updatedAt: fb.serverTimestamp(),
+    });
+    log('  ✓ Availability set.');
+
+    log('\n✅ Done! Demo expert profile is live.');
+    document.getElementById('result').innerHTML =
+      '<a class="result-link" href="/profile?id='+uid+'" target="_blank">→ View the demo profile now</a>';
+    btn.textContent = 'Seeded ✓';
+  } catch(e){
+    log('❌ Error: ' + e.message);
+    btn.disabled = false;
+    btn.textContent = 'Retry';
+  }
+}
+</script>
+
+</body>
+</html>
