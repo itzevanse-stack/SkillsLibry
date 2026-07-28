@@ -138,7 +138,7 @@ textarea.fi{resize:vertical;min-height:80px;}
 
     <div class="page-head">
       <h1>Find talent</h1>
-      <p>Hire freelancers offering real services — including verified SkillsLibry graduates with a provable skill history.</p>
+      <p>Hire experts offering real services — including verified SkillsLibry graduates with a provable skill history.</p>
     </div>
     <div class="search-row">
       <input class="search-input" id="svc-search" placeholder="Search services (e.g. 'digital product marketing')" oninput="renderServices()"/>
@@ -159,7 +159,7 @@ textarea.fi{resize:vertical;min-height:80px;}
   <div id="view-mycontracts" style="display:none;">
     <div class="page-head">
       <h1>My contracts</h1>
-      <p>Active and past engagements, as a client or as a freelancer.</p>
+      <p>Active and past engagements, as a client or as an expert.</p>
     </div>
     <div id="contracts-list"><div class="empty-state">Loading...</div></div>
   </div>
@@ -167,7 +167,7 @@ textarea.fi{resize:vertical;min-height:80px;}
   <div id="view-mybookings" style="display:none;">
     <div class="page-head">
       <h1>My bookings</h1>
-      <p>Scheduled calls with clients or freelancers.</p>
+      <p>Scheduled calls with clients or experts.</p>
     </div>
     <div id="bookings-list"><div class="empty-state">Loading...</div></div>
   </div>
@@ -178,12 +178,45 @@ textarea.fi{resize:vertical;min-height:80px;}
 <div class="modal-overlay" id="service-modal">
   <div class="modal-box">
     <span class="close-x" onclick="closeModal('service-modal')">&times;</span>
-    <h2>Offer a service</h2>
+
     <div id="service-form-signed-out" style="display:none;text-align:center;padding:20px 0;">
-      <p style="margin-bottom:16px;color:var(--text2);">Sign in or create an account to offer a service.</p>
+      <h2>Offer a service</h2>
+      <p style="margin-bottom:16px;color:var(--text2);">Sign in or create an account to apply as an expert.</p>
       <button class="btn btn-teal" onclick="window.location.href='/dashboard'">Sign in</button>
     </div>
-    <form id="service-form" onsubmit="submitService(event)">
+
+    <!-- STATE: not yet applied -->
+    <div id="expert-apply-form" style="display:none;">
+      <h2>Apply to become an Expert</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+        This isn't a generic gig board — every expert is reviewed before they can list a service. Tell us about your real experience, results, and any certificates or proof of your skill. This is what we use to <strong>verify and showcase you to potential clients</strong>, so the more specific and provable, the stronger your profile looks to a buyer considering a $2000+ engagement.
+      </p>
+      <div class="fg"><label>What service(s) do you want to offer?</label><textarea class="fi" id="app-services" required placeholder="e.g. Digital product marketing strategy, funnel building, paid ads consulting"></textarea></div>
+      <div class="fg"><label>Certificates or qualifications</label><textarea class="fi" id="app-quals" required placeholder="Describe any certifications, courses completed, or formal training"></textarea></div>
+      <div class="fg"><label>Link to a certificate or credential (optional)</label><input class="fi" id="app-quals-link" placeholder="https://..."/></div>
+      <div class="fg"><label>Results & past work</label><textarea class="fi" id="app-results" required placeholder="Real numbers or outcomes you've achieved for yourself or clients (e.g. 'Generated ₦5M in sales for a client's digital course launch')"></textarea></div>
+      <div class="fg"><label>Portfolio or proof of work link (optional)</label><input class="fi" id="app-portfolio-link" placeholder="https://..."/></div>
+      <button class="btn btn-teal" style="width:100%;" onclick="submitExpertApplication()">Submit application</button>
+    </div>
+
+    <!-- STATE: pending review -->
+    <div id="expert-pending" style="display:none;text-align:center;padding:30px 10px;">
+      <div style="font-size:40px;margin-bottom:14px;">⏳</div>
+      <h2 style="margin-bottom:10px;">Your application is under review</h2>
+      <p style="font-size:13px;color:var(--text2);">We review every expert application to keep the marketplace high-quality. You'll be notified once it's approved — usually within 1-2 business days.</p>
+    </div>
+
+    <!-- STATE: rejected -->
+    <div id="expert-rejected" style="display:none;text-align:center;padding:30px 10px;">
+      <div style="font-size:40px;margin-bottom:14px;">✋</div>
+      <h2 style="margin-bottom:10px;">Application not approved yet</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:18px;">We couldn't approve your application with the details provided. You're welcome to update your qualifications or results and reapply.</p>
+      <button class="btn btn-outline" onclick="resetToApplyForm()">Reapply</button>
+    </div>
+
+    <!-- STATE: approved — actual service creation form -->
+    <form id="service-form" style="display:none;" onsubmit="submitService(event)">
+      <h2>Offer a service</h2>
       <div class="fg"><label>Service title</label><input class="fi" id="svc-title" required placeholder="e.g. I will design a landing page for your digital course"/></div>
       <div class="fg"><label>Description</label><textarea class="fi" id="svc-desc" required placeholder="Describe exactly what the buyer gets"></textarea></div>
       <div class="fg"><label>Category</label>
@@ -267,10 +300,12 @@ onAuthStateChanged(auth, async (user) => {
     window._userName = snap.exists() ? snap.data().name : user.email;
     window._userPhoto = snap.exists() ? (snap.data().photoURL||'') : '';
     window._userVerified = snap.exists() ? (snap.data().completedCourseCount||0) > 0 : false;
+    window._expertStatus = snap.exists() ? (snap.data().expertStatus||'none') : 'none';
   } else {
     window._userName = null;
     window._userPhoto = '';
     window._userVerified = false;
+    window._expertStatus = 'none';
   }
   document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
 });
@@ -286,13 +321,66 @@ function showToast(msg){
 }
 function openModal(id){
   if(id==='service-modal'){
-    var signedIn = !!window._user;
-    document.getElementById('service-form-signed-out').style.display = signedIn ? 'none' : 'block';
-    document.getElementById('service-form').style.display = signedIn ? 'block' : 'none';
+    var states = ['service-form-signed-out','expert-apply-form','expert-pending','expert-rejected','service-form'];
+    states.forEach(function(s){ document.getElementById(s).style.display = 'none'; });
+
+    if(!window._user){
+      document.getElementById('service-form-signed-out').style.display = 'block';
+    } else {
+      var status = window._expertStatus || 'none';
+      if(status === 'approved'){
+        document.getElementById('service-form').style.display = 'block';
+      } else if(status === 'pending'){
+        document.getElementById('expert-pending').style.display = 'block';
+      } else if(status === 'rejected'){
+        document.getElementById('expert-rejected').style.display = 'block';
+      } else {
+        document.getElementById('expert-apply-form').style.display = 'block';
+      }
+    }
   }
   document.getElementById(id).classList.add('open');
 }
 function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function resetToApplyForm(){
+  document.getElementById('expert-rejected').style.display = 'none';
+  document.getElementById('expert-apply-form').style.display = 'block';
+}
+
+async function submitExpertApplication(){
+  var services = document.getElementById('app-services').value.trim();
+  var quals = document.getElementById('app-quals').value.trim();
+  var qualsLink = document.getElementById('app-quals-link').value.trim();
+  var results = document.getElementById('app-results').value.trim();
+  var portfolioLink = document.getElementById('app-portfolio-link').value.trim();
+
+  if(!services || !quals || !results){
+    showToast('Please fill in all required fields.');
+    return;
+  }
+
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.addDoc(fb.collection(db,'expertApplications'), {
+      uid: window._user.uid,
+      name: window._userName || 'Applicant',
+      email: window._user.email,
+      servicesOffered: services,
+      qualifications: quals,
+      qualificationsLink: qualsLink,
+      pastResults: results,
+      portfolioLink: portfolioLink,
+      status: 'pending',
+      createdAt: fb.serverTimestamp(),
+    });
+    await fb.setDoc(fb.doc(db,'users',window._user.uid), { expertStatus: 'pending' }, { merge:true });
+    window._expertStatus = 'pending';
+    document.getElementById('expert-apply-form').style.display = 'none';
+    document.getElementById('expert-pending').style.display = 'block';
+    showToast('✅ Application submitted!');
+  } catch(e){ showToast('Error: '+e.message); }
+}
 
 function switchTab(tab){
   ['services','mycontracts','mybookings'].forEach(function(t){
@@ -330,7 +418,7 @@ async function loadFeaturedTalent(){
         : (f.name||'F').charAt(0).toUpperCase();
       return '<div class="featured-card">'
         +'<div class="featured-avatar">'+avatarInner+'</div>'
-        +'<div class="featured-name">'+(f.name||'Freelancer')+'</div>'
+        +'<div class="featured-name">'+(f.name||'Expert')+'</div>'
         +'<div class="featured-headline">'+(f.headline||'')+'</div>'
         +'<button class="featured-learn-btn" onclick="window.location.href=\'/profile?id='+f.id+'\'">Learn more →</button>'
       +'</div>';
@@ -361,7 +449,7 @@ function renderServices(){
     return '<div class="svc-card" onclick="viewService(\''+s.id+'\')">'
       +'<div class="svc-thumb">🛠️</div>'
       +'<div class="svc-body">'
-        +'<div class="svc-freelancer" onclick="event.stopPropagation();window.location.href=\'/profile?id='+s.freelancerId+'\'" style="cursor:pointer;"><div class="svc-avatar">'+avatarInner+'</div><span class="svc-freelancer-name">'+(s.freelancerName||'Freelancer')+'</span>'
+        +'<div class="svc-freelancer" onclick="event.stopPropagation();window.location.href=\'/profile?id='+s.freelancerId+'\'" style="cursor:pointer;"><div class="svc-avatar">'+avatarInner+'</div><span class="svc-freelancer-name">'+(s.freelancerName||'Expert')+'</span>'
           +(s.freelancerVerified?'<span class="verified-badge">✓ Verified</span>':'')
         +'</div>'
         +'<div class="svc-title">'+s.title+'</div>'
@@ -384,7 +472,7 @@ function viewService(id){
       +'<div><div style="font-size:12px;color:var(--text3);">Delivery</div><div style="font-size:20px;font-weight:800;">'+(s.deliveryDays||'—')+' days</div></div>'
     +'</div>'
     +'<button class="btn btn-teal" style="width:100%;" onclick="startContractFromService(\''+s.id+'\')">Hire for ₦'+(s.price||0).toLocaleString()+'</button>'
-    +'<button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="openBookingModal(\''+s.freelancerId+'\',\''+(s.freelancerName||'Freelancer').replace(/'/g,"\\'")+'\')">📅 Schedule a call first</button>';
+    +'<button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="openBookingModal(\''+s.freelancerId+'\',\''+(s.freelancerName||'Expert').replace(/'/g,"\\'")+'\')">📅 Schedule a call first</button>';
   openModal('hire-modal');
 }
 
@@ -399,7 +487,7 @@ async function startContractFromService(serviceId){
       clientId: window._user.uid,
       clientName: window._userName || 'Client',
       freelancerId: s.freelancerId,
-      freelancerName: s.freelancerName || 'Freelancer',
+      freelancerName: s.freelancerName || 'Expert',
       title: s.title,
       amount: s.price || 0,
       currency: 'NGN',
@@ -419,7 +507,7 @@ async function submitService(e){
   try {
     await fb.addDoc(fb.collection(db,'services'), {
       freelancerId: window._user.uid,
-      freelancerName: window._userName || 'Freelancer',
+      freelancerName: window._userName || 'Expert',
       freelancerPhoto: window._userPhoto || '',
       freelancerVerified: !!window._userVerified,
       title: document.getElementById('svc-title').value.trim(),
@@ -453,7 +541,7 @@ async function loadMyContracts(){
       return;
     }
     list.innerHTML = all.map(function(c){
-      var role = c.clientId===window._user.uid ? 'You are the client' : 'You are the freelancer';
+      var role = c.clientId===window._user.uid ? 'You are the client' : 'You are the expert';
       var other = c.clientId===window._user.uid ? c.freelancerName : c.clientName;
       return '<div class="job-card" onclick="window.location.href=\'/workspace?contract='+c.id+'\'">'
         +'<div class="job-title">'+c.title+'</div>'
@@ -517,7 +605,7 @@ async function saveAvailability(){
   try {
     await fb.setDoc(fb.doc(db,'availability',window._user.uid), {
       freelancerId: window._user.uid,
-      freelancerName: window._userName || 'Freelancer',
+      freelancerName: window._userName || 'Expert',
       slots: slots,
       callDurationMins: duration,
       updatedAt: fb.serverTimestamp(),
