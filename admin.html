@@ -188,7 +188,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
       <span class="sidebar-icon">&#128188;</span> Business Leads
     </div>
     <div class="sidebar-item" id="si-mktpayouts" onclick="showAdmin('mktpayouts')">
-      <span class="sidebar-icon">&#129309;</span> Marketplace Payouts
+      <span class="sidebar-icon">&#129309;</span> Expert Payouts
     </div>
     <div class="sidebar-item" id="si-expertapps" onclick="showAdmin('expertapps')">
       <span class="sidebar-icon">&#127891;</span> Expert Applications
@@ -254,9 +254,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
     <!-- INSTRUCTORS -->
     <div class="admin-view" id="view-instructors">
-      <!-- Feature Marketplace Talent -->
+      <!-- Feature Experts -->
       <div class="card" style="margin-bottom:16px;">
-        <div class="card-head">Feature Marketplace Talent</div>
+        <div class="card-head">Feature Experts</div>
         <div style="padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
           <div style="flex:1;min-width:220px;">
             <label style="display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;">Expert email</label>
@@ -302,7 +302,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <!-- MARKETPLACE PAYOUTS -->
     <div class="admin-view" id="view-mktpayouts">
       <div class="card">
-        <div class="card-head">Marketplace Payouts</div>
+        <div class="card-head">Expert Payouts</div>
         <div id="mktpayouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
       </div>
     </div>
@@ -1093,7 +1093,7 @@ async function toggleFeaturedTalent(makeFeatured){
     }
     var userId = userSnap.docs[0].id;
     await fb.setDoc(fb.doc(db,'users',userId), { featured: makeFeatured }, { merge:true });
-    setStatus(makeFeatured ? '✓ '+email+' is now featured on the marketplace homepage.' : '✓ '+email+' has been unfeatured.', true);
+    setStatus(makeFeatured ? '✓ '+email+' is now featured on the Experts homepage.' : '✓ '+email+' has been unfeatured.', true);
     showToast('✅', makeFeatured ? 'Talent featured.' : 'Talent unfeatured.');
     document.getElementById('feature-email').value = '';
   } catch(e){
@@ -1341,7 +1341,7 @@ async function loadMarketplacePayouts(){
       .filter(function(p){ return p.status !== 'paid'; });
 
     if(!payouts.length){
-      el.innerHTML = '<div class="empty"><div class="empty-icon">&#129309;</div>No pending marketplace payouts.</div>';
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#129309;</div>No pending expert payouts.</div>';
       return;
     }
 
@@ -1350,7 +1350,7 @@ async function loadMarketplacePayouts(){
           return '<tr>'
             +'<td style="font-weight:600;">'+(p.freelancerName||'—')+'</td>'
             +'<td style="font-family:monospace;font-size:12px;">'+(p.contractId||'—')+'</td>'
-            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(p.currency==='NGN'?'&#8358;':(p.currency||'NGN')+' ')+(p.amount||0).toLocaleString()+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(p.currency==='USD'?'$':'&#8358;')+(p.amount||0).toLocaleString()+'</td>'
             +'<td><button class="tbl-btn tbl-approve" data-id="'+p.id+'" onclick="markMarketplacePaid(this)">Mark as paid</button></td>'
             +'</tr>';
         }).join('')
