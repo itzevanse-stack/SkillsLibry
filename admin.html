@@ -184,6 +184,15 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <div class="sidebar-item" id="si-payouts" onclick="showAdmin('payouts')">
       <span class="sidebar-icon">&#128176;</span> Payouts
     </div>
+    <div class="sidebar-item" id="si-bizleads" onclick="showAdmin('bizleads')">
+      <span class="sidebar-icon">&#128188;</span> Business Leads
+    </div>
+    <div class="sidebar-item" id="si-mktpayouts" onclick="showAdmin('mktpayouts')">
+      <span class="sidebar-icon">&#129309;</span> Marketplace Payouts
+    </div>
+    <div class="sidebar-item" id="si-expertapps" onclick="showAdmin('expertapps')">
+      <span class="sidebar-icon">&#127891;</span> Expert Applications
+    </div>
     <div class="sidebar-item" onclick="doSignOut()" style="margin-top:auto;color:var(--red);border-top:1px solid var(--border);padding-top:12px;margin-top:20px;">
       <span class="sidebar-icon">&#128682;</span> Sign out
     </div>
@@ -245,6 +254,20 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 
     <!-- INSTRUCTORS -->
     <div class="admin-view" id="view-instructors">
+      <!-- Feature Marketplace Talent -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-head">Feature Marketplace Talent</div>
+        <div style="padding:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;">
+          <div style="flex:1;min-width:220px;">
+            <label style="display:block;font-size:12px;font-weight:600;color:var(--text3);margin-bottom:6px;">Expert email</label>
+            <input id="feature-email" type="email" placeholder="expert@email.com" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box;"/>
+          </div>
+          <button onclick="toggleFeaturedTalent(true)" style="padding:10px 20px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;white-space:nowrap;">Feature</button>
+          <button onclick="toggleFeaturedTalent(false)" style="padding:10px 20px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;color:var(--text);cursor:pointer;white-space:nowrap;">Unfeature</button>
+        </div>
+        <div id="feature-status" style="padding:0 16px 16px;font-size:12px;"></div>
+      </div>
+
       <div id="instructors-body"><div class="loading"><div class="loading-spin"></div></div></div>
     </div>
 
@@ -265,6 +288,30 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
       <div class="card">
         <div class="card-head">Affiliate Payouts</div>
         <div id="affiliate-payouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- BUSINESS LEADS -->
+    <div class="admin-view" id="view-bizleads">
+      <div class="card">
+        <div class="card-head">Business Leads <span id="bizleads-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="bizleads-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- MARKETPLACE PAYOUTS -->
+    <div class="admin-view" id="view-mktpayouts">
+      <div class="card">
+        <div class="card-head">Marketplace Payouts</div>
+        <div id="mktpayouts-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- EXPERT APPLICATIONS -->
+    <div class="admin-view" id="view-expertapps">
+      <div class="card">
+        <div class="card-head">Expert Applications <span id="expertapps-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div id="expertapps-body"><div class="loading"><div class="loading-spin"></div></div></div>
       </div>
     </div>
 
@@ -663,6 +710,9 @@ function showAdmin(view){
   if(view==='instructors') loadInstructors();
   if(view==='testimonials')loadTestimonialsAdmin();
   if(view==='payouts')      { loadPayouts(); loadAffiliatePayouts(); }
+  if(view==='bizleads')     loadBizLeads();
+  if(view==='mktpayouts')   loadMarketplacePayouts();
+  if(view==='expertapps')   loadExpertApplications();
 
   // Auto-close mobile sidebar drawer after navigating
   var sidebar = document.querySelector('.sidebar');
@@ -1022,6 +1072,36 @@ async function grantFreeAccess(){
   }
 }
 
+async function toggleFeaturedTalent(makeFeatured){
+  var statusEl = document.getElementById('feature-status');
+  var setStatus = function(msg, ok){
+    if(statusEl){ statusEl.textContent = msg; statusEl.style.color = ok ? 'var(--teal-dark)' : 'var(--red, #ef4444)'; }
+  };
+  var email = (document.getElementById('feature-email')||{}).value||'';
+  email = email.trim().toLowerCase();
+  if(!email){ setStatus('Please enter an email.', false); return; }
+
+  var db = await waitForDb();
+  if(!db){ setStatus('Could not connect to database.', false); return; }
+
+  try {
+    var fb = await getFs();
+    var userSnap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('email','==',email)));
+    if(userSnap.docs.length === 0){
+      setStatus('No account found with that email.', false);
+      return;
+    }
+    var userId = userSnap.docs[0].id;
+    await fb.setDoc(fb.doc(db,'users',userId), { featured: makeFeatured }, { merge:true });
+    setStatus(makeFeatured ? '✓ '+email+' is now featured on the marketplace homepage.' : '✓ '+email+' has been unfeatured.', true);
+    showToast('✅', makeFeatured ? 'Talent featured.' : 'Talent unfeatured.');
+    document.getElementById('feature-email').value = '';
+  } catch(e){
+    console.error('Toggle featured failed:', e);
+    setStatus('Error: '+e.message, false);
+  }
+}
+
 /* ══ INSTRUCTORS ══ */
 async function loadInstructors(){
   var el = document.getElementById('instructors-body'); if(!el) return;
@@ -1199,6 +1279,165 @@ async function loadAffiliatePayouts(){
       + '</tbody></table>';
   } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
 }
+
+async function loadBizLeads(){
+  var el = document.getElementById('bizleads-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'businessLeads'));
+    var leads = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+
+    document.getElementById('bizleads-count').textContent = leads.length+' total';
+
+    if(!leads.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#128188;</div>No business leads yet.</div>';
+      return;
+    }
+
+    // Newest first
+    leads.sort(function(a,b){
+      var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+      var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Company</th><th>Contact</th><th>Team size</th><th>Message</th><th>Status</th><th>Action</th></tr></thead><tbody>'
+      + leads.map(function(l){
+          var isNew = l.status !== 'contacted';
+          return '<tr>'
+            +'<td style="font-weight:600;">'+(l.company||'—')+'</td>'
+            +'<td><div>'+(l.name||'—')+'</div><div style="font-size:12px;color:var(--text3);">'+(l.email||'—')+'</div></td>'
+            +'<td>'+(l.teamSize||'—')+'</td>'
+            +'<td style="max-width:220px;font-size:12px;color:var(--text2);">'+(l.message||'<span style="color:var(--text3);font-style:italic;">No message</span>')+'</td>'
+            +'<td>'+(isNew?'<span style="color:var(--orange);font-weight:700;">New</span>':'<span style="color:var(--green);font-weight:700;">Contacted</span>')+'</td>'
+            +'<td>'+(isNew?'<button class="tbl-btn tbl-approve" data-id="'+l.id+'" onclick="markBizLeadContacted(this)">Mark contacted</button>':'—')+'</td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function markBizLeadContacted(btn){
+  var id = btn.dataset.id;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    await fb.setDoc(fb.doc(db,'businessLeads',id), { status:'contacted' }, { merge:true });
+    showToast('✅','Marked as contacted.');
+    loadBizLeads();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function loadMarketplacePayouts(){
+  var el = document.getElementById('mktpayouts-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'marketplacePayouts'));
+    var payouts = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); })
+      .filter(function(p){ return p.status !== 'paid'; });
+
+    if(!payouts.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#129309;</div>No pending marketplace payouts.</div>';
+      return;
+    }
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Expert</th><th>Contract</th><th>Amount</th><th>Action</th></tr></thead><tbody>'
+      + payouts.map(function(p){
+          return '<tr>'
+            +'<td style="font-weight:600;">'+(p.freelancerName||'—')+'</td>'
+            +'<td style="font-family:monospace;font-size:12px;">'+(p.contractId||'—')+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(p.currency==='NGN'?'&#8358;':(p.currency||'NGN')+' ')+(p.amount||0).toLocaleString()+'</td>'
+            +'<td><button class="tbl-btn tbl-approve" data-id="'+p.id+'" onclick="markMarketplacePaid(this)">Mark as paid</button></td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function markMarketplacePaid(btn){
+  if(!confirm('Confirm you have sent this payout to the expert? This cannot be undone.')) return;
+  var id = btn.dataset.id;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    await fb.setDoc(fb.doc(db,'marketplacePayouts',id), { status:'paid', paidAt: fb.serverTimestamp() }, { merge:true });
+    showToast('✅','Marked as paid.');
+    loadMarketplacePayouts();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function loadExpertApplications(){
+  var el = document.getElementById('expertapps-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'expertApplications'));
+    var apps = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); })
+      .filter(function(a){ return a.status === 'pending'; });
+
+    document.getElementById('expertapps-count').textContent = apps.length+' pending';
+
+    if(!apps.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#127891;</div>No pending expert applications.</div>';
+      return;
+    }
+
+    el.innerHTML = apps.map(function(a){
+      return '<div class="card" style="margin-bottom:14px;border:1px solid var(--border);">'
+        +'<div style="padding:18px;">'
+          +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">'
+            +'<div><div style="font-weight:700;font-size:15px;">'+(a.name||'Applicant')+'</div><div style="font-size:12px;color:var(--text3);">'+(a.email||'')+'</div></div>'
+          +'</div>'
+          +'<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Services offered</div>'
+          +'<div style="font-size:13px;margin-bottom:14px;">'+(a.servicesOffered||'—')+'</div>'
+          +'<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:4px;">Qualifications</div>'
+          +'<div style="font-size:13px;margin-bottom:6px;">'+(a.qualifications||'—')+'</div>'
+          +(a.qualificationsLink ? '<a href="'+a.qualificationsLink+'" target="_blank" style="font-size:12px;color:var(--teal-dark);">View certificate/credential →</a>' : '')
+          +'<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:14px 0 4px;">Results & past work</div>'
+          +'<div style="font-size:13px;margin-bottom:6px;">'+(a.pastResults||'—')+'</div>'
+          +(a.portfolioLink ? '<a href="'+a.portfolioLink+'" target="_blank" style="font-size:12px;color:var(--teal-dark);">View portfolio →</a>' : '')
+          +'<div style="display:flex;gap:10px;margin-top:18px;">'
+            +'<button class="tbl-btn tbl-approve" data-id="'+a.id+'" data-uid="'+a.uid+'" onclick="approveExpertApp(this)">Approve</button>'
+            +'<button class="tbl-btn" style="background:transparent;border:1.5px solid var(--red,#ef4444);color:var(--red,#ef4444);" data-id="'+a.id+'" data-uid="'+a.uid+'" onclick="rejectExpertApp(this)">Reject</button>'
+          +'</div>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } catch(e){ el.innerHTML = '<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function approveExpertApp(btn){
+  var appId = btn.dataset.id;
+  var uid = btn.dataset.uid;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    await fb.setDoc(fb.doc(db,'expertApplications',appId), { status:'approved', reviewedAt: fb.serverTimestamp() }, { merge:true });
+    await fb.setDoc(fb.doc(db,'users',uid), { expertStatus:'approved' }, { merge:true });
+    showToast('✅','Expert approved!');
+    loadExpertApplications();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
+async function rejectExpertApp(btn){
+  if(!confirm('Reject this application? They will be able to update their details and reapply.')) return;
+  var appId = btn.dataset.id;
+  var uid = btn.dataset.uid;
+  var db = await waitForDb(); if(!db) return;
+  try {
+    var fb = await getFs();
+    await fb.setDoc(fb.doc(db,'expertApplications',appId), { status:'rejected', reviewedAt: fb.serverTimestamp() }, { merge:true });
+    await fb.setDoc(fb.doc(db,'users',uid), { expertStatus:'rejected' }, { merge:true });
+    showToast('✅','Application rejected.');
+    loadExpertApplications();
+  } catch(e){ showToast('❌','Error: '+e.message); }
+}
+
 
 async function markAffiliatePaid(btn){
   if(!confirm('Mark this affiliate\'s pending commission as paid? This should only be done after the bank transfer is actually sent.')) return;
