@@ -256,6 +256,15 @@ textarea.fi{resize:vertical;min-height:80px;}
   <div class="modal-box">
     <span class="close-x" onclick="closeModal('edit-modal')">&times;</span>
     <h2>Edit your profile</h2>
+    <div class="fg" style="display:flex;align-items:center;gap:16px;">
+      <div id="edit-avatar-preview" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:22px;overflow:hidden;flex-shrink:0;"></div>
+      <div>
+        <label for="edit-photo-file" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:6px;padding:8px 16px;cursor:pointer;">📷 Upload photo</label>
+        <input type="file" id="edit-photo-file" accept="image/*" style="display:none;" onchange="previewProfilePhoto(this)"/>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px;">JPG or PNG · Max 5MB</div>
+      </div>
+    </div>
+    <div class="fg"><label>Full name</label><input class="fi" id="edit-name" placeholder="Your name"/></div>
     <div class="fg"><label>Headline</label><input class="fi" id="edit-headline" placeholder="e.g. Digital Product Strategist — $2M+ in sales generated"/></div>
     <div class="fg"><label>Bio</label><textarea class="fi" id="edit-bio" placeholder="Tell potential clients about your experience and results"></textarea></div>
     <div class="fg"><label>Introduction video URL</label><input class="fi" id="edit-video" placeholder="YouTube, Vimeo, or Loom link"/>
@@ -458,10 +467,22 @@ function toggleChatPanel(){
   document.getElementById('chat-panel').classList.toggle('open');
 }
 
+var _pendingPhotoDataUrl = null;
+
 function openEditModal(){
+  document.getElementById('edit-name').value = _profileData.name || '';
   document.getElementById('edit-headline').value = _profileData.headline || '';
   document.getElementById('edit-bio').value = _profileData.bio || '';
   document.getElementById('edit-video').value = _profileData.promoVideoUrl || '';
+  _pendingPhotoDataUrl = null;
+
+  var avatarPreview = document.getElementById('edit-avatar-preview');
+  if(_profileData.photoURL){
+    avatarPreview.innerHTML = '<img src="'+_profileData.photoURL+'" style="width:100%;height:100%;object-fit:cover;">';
+  } else {
+    avatarPreview.textContent = (_profileData.name||'E').charAt(0).toUpperCase();
+  }
+
   var rateField = document.getElementById('edit-rate-field');
   if(window._expertStatus === 'approved' || _profileData.expertStatus === 'approved'){
     rateField.style.display = 'block';
@@ -471,13 +492,31 @@ function openEditModal(){
   }
   openModal('edit-modal');
 }
+
+function previewProfilePhoto(input){
+  var file = input.files[0]; if(!file) return;
+  if(file.size > 5*1024*1024){ showToast('Photo must be under 5MB.'); return; }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    _pendingPhotoDataUrl = e.target.result;
+    document.getElementById('edit-avatar-preview').innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;">';
+  };
+  reader.readAsDataURL(file);
+}
+
 async function saveProfileEdits(){
   var db = window._db; var fb = window._fb;
+  var name = document.getElementById('edit-name').value.trim();
+  if(!name){ showToast('Please enter your name.'); return; }
   var payload = {
+    name: name,
     headline: document.getElementById('edit-headline').value.trim(),
     bio: document.getElementById('edit-bio').value.trim(),
     promoVideoUrl: document.getElementById('edit-video').value.trim(),
   };
+  if(_pendingPhotoDataUrl){
+    payload.photoURL = _pendingPhotoDataUrl;
+  }
   var rateField = document.getElementById('edit-rate-field');
   if(rateField.style.display !== 'none'){
     var rate = parseFloat(document.getElementById('edit-rate').value)||0;
