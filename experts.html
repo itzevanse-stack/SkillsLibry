@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SkillsLibry Marketplace — Hire Talent or Get Hired</title>
+<title>SkillsLibry Experts — Hire Verified High-Level Talent</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -203,7 +203,7 @@ textarea.fi{resize:vertical;min-height:80px;}
     <div id="expert-pending" style="display:none;text-align:center;padding:30px 10px;">
       <div style="font-size:40px;margin-bottom:14px;">⏳</div>
       <h2 style="margin-bottom:10px;">Your application is under review</h2>
-      <p style="font-size:13px;color:var(--text2);">We review every expert application to keep the marketplace high-quality. You'll be notified once it's approved — usually within 1-2 business days.</p>
+      <p style="font-size:13px;color:var(--text2);">We review every expert application to keep SkillsLibry Experts high-quality. You'll be notified once it's approved — usually within 1-2 business days.</p>
     </div>
 
     <!-- STATE: rejected -->
@@ -230,7 +230,9 @@ textarea.fi{resize:vertical;min-height:80px;}
           <option value="other">Other</option>
         </select>
       </div>
-      <div class="fg"><label>Price (₦)</label><input class="fi" id="svc-price" type="number" required placeholder="e.g. 30000"/></div>
+      <div class="fg"><label>Price (USD $)</label><input class="fi" id="svc-price" type="number" min="1000" required placeholder="e.g. 1500"/>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000. SkillsLibry Experts is built for high-level, high-value work — not low-ticket gigs.</div>
+      </div>
       <div class="fg"><label>Delivery time (days)</label><input class="fi" id="svc-delivery" type="number" required placeholder="e.g. 5"/></div>
       <div class="modal-actions"><button type="submit" class="btn btn-teal">Publish service</button></div>
     </form>
@@ -453,7 +455,7 @@ function renderServices(){
           +(s.freelancerVerified?'<span class="verified-badge">✓ Verified</span>':'')
         +'</div>'
         +'<div class="svc-title">'+s.title+'</div>'
-        +'<div class="svc-footer"><span class="svc-price">₦'+(s.price||0).toLocaleString()+'</span>'
+        +'<div class="svc-footer"><span class="svc-price">$'+(s.price||0).toLocaleString()+'</span>'
           +'<span class="svc-rating">'+(s.rating?('★ '+s.rating.toFixed(1)):'New')+'</span>'
         +'</div>'
       +'</div>'
@@ -468,10 +470,10 @@ function viewService(id){
   document.getElementById('hire-modal-body').innerHTML =
     '<p style="color:var(--text2);margin-bottom:14px;">'+s.description+'</p>'
     +'<div style="display:flex;justify-content:space-between;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:16px;">'
-      +'<div><div style="font-size:12px;color:var(--text3);">Price</div><div style="font-size:20px;font-weight:800;">₦'+(s.price||0).toLocaleString()+'</div></div>'
+      +'<div><div style="font-size:12px;color:var(--text3);">Price</div><div style="font-size:20px;font-weight:800;">$'+(s.price||0).toLocaleString()+'</div></div>'
       +'<div><div style="font-size:12px;color:var(--text3);">Delivery</div><div style="font-size:20px;font-weight:800;">'+(s.deliveryDays||'—')+' days</div></div>'
     +'</div>'
-    +'<button class="btn btn-teal" style="width:100%;" onclick="startContractFromService(\''+s.id+'\')">Hire for ₦'+(s.price||0).toLocaleString()+'</button>'
+    +'<button class="btn btn-teal" style="width:100%;" onclick="startContractFromService(\''+s.id+'\')">Hire for $'+(s.price||0).toLocaleString()+'</button>'
     +'<button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="openBookingModal(\''+s.freelancerId+'\',\''+(s.freelancerName||'Expert').replace(/'/g,"\\'")+'\')">📅 Schedule a call first</button>';
   openModal('hire-modal');
 }
@@ -490,7 +492,7 @@ async function startContractFromService(serviceId){
       freelancerName: s.freelancerName || 'Expert',
       title: s.title,
       amount: s.price || 0,
-      currency: 'NGN',
+      currency: s.currency || 'USD',
       status: 'awaiting_payment',
       serviceId: s.id,
       createdAt: fb.serverTimestamp(),
@@ -503,6 +505,11 @@ async function startContractFromService(serviceId){
 async function submitService(e){
   e.preventDefault();
   if(!window._user){ showToast('Please sign in first.'); return; }
+  var price = parseFloat(document.getElementById('svc-price').value)||0;
+  if(price < 1000){
+    showToast('Price must be at least $1,000. SkillsLibry Experts is reserved for high-level work.');
+    return;
+  }
   var db = window._db; var fb = window._fb;
   try {
     await fb.addDoc(fb.collection(db,'services'), {
@@ -513,7 +520,8 @@ async function submitService(e){
       title: document.getElementById('svc-title').value.trim(),
       description: document.getElementById('svc-desc').value.trim(),
       category: document.getElementById('svc-cat').value,
-      price: parseFloat(document.getElementById('svc-price').value)||0,
+      price: price,
+      currency: 'USD',
       deliveryDays: parseInt(document.getElementById('svc-delivery').value)||3,
       active: true,
       rating: 0, reviewCount: 0,
@@ -545,7 +553,7 @@ async function loadMyContracts(){
       var other = c.clientId===window._user.uid ? c.freelancerName : c.clientName;
       return '<div class="job-card" onclick="window.location.href=\'/workspace?contract='+c.id+'\'">'
         +'<div class="job-title">'+c.title+'</div>'
-        +'<div class="job-meta"><span class="job-budget">₦'+(c.amount||0).toLocaleString()+'</span><span>'+role+' &middot; with '+other+'</span><span style="text-transform:capitalize;">'+(c.status||'').replace(/_/g,' ')+'</span></div>'
+        +'<div class="job-meta"><span class="job-budget">'+(c.currency==='USD'?'$':'₦')+(c.amount||0).toLocaleString()+'</span><span>'+role+' &middot; with '+other+'</span><span style="text-transform:capitalize;">'+(c.status||'').replace(/_/g,' ')+'</span></div>'
       +'</div>';
     }).join('');
   } catch(e){ list.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
@@ -784,7 +792,7 @@ function toggleNotifDropdown(){
       var icon = isBooking ? '📅' : '💬';
       var label = isBooking ? 'wants to schedule a call' : 'sent you a message';
       var budgetLine = isBooking && n.budget ? '<div style="font-size:12px;color:var(--teal-dark);font-weight:700;margin-top:4px;">Budget: ₦'+parseFloat(n.budget).toLocaleString()+'</div>' : '';
-      return '<div onclick="openNotification(\''+n.id+'\',\''+(n.link||'/marketplace')+'\')" style="padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;'+(n.read?'':'background:var(--teal-dim);')+'">'
+      return '<div onclick="openNotification(\''+n.id+'\',\''+(n.link||'/experts')+'\')" style="padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;'+(n.read?'':'background:var(--teal-dim);')+'">'
         +'<div style="font-size:13px;"><strong>'+(n.fromName||'Someone')+'</strong> '+label+' '+icon+'</div>'
         +(n.preview?'<div style="font-size:12px;color:var(--text2);margin-top:4px;">"'+n.preview+'"</div>':'')
         +budgetLine
