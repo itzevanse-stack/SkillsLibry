@@ -2328,7 +2328,7 @@ document.addEventListener('authReady', function(e){
           +'<div class="course-title">'+(c.title||'Course')+'</div>'
           +'<div class="course-footer">'
             +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span class="course-price" data-ngn="'+(c.priceNGN||0)+'">'+sym+' '+price.toLocaleString()+'</span>'
-              +(hasDiscount ? '<span class="course-price-old">'+sym+' '+priceOriginal.toLocaleString()+'</span>' : '')
+              +(hasDiscount ? '<span class="course-price-old" data-ngn="'+(c.priceOriginal||0)+'">'+sym+' '+priceOriginal.toLocaleString()+'</span>' : '')
               +(hasDiscount ? '<span style="font-size:12px;font-weight:700;background:rgba(78,204,163,.12);color:var(--teal-dark);padding:3px 8px;border-radius:4px;">-'+discountPct+'% OFF</span>' : '')
             +'</div>'
             +'<a class="enroll-mini" href="/course?id='+c.id+'">Learn more</a>'
