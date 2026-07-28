@@ -116,6 +116,8 @@ textarea.fi{resize:vertical;min-height:80px;}
     <div class="nav-tab" id="tab-mybookings" onclick="switchTab('mybookings')">My Bookings</div>
   </div>
   <div class="nav-right">
+    <a class="btn btn-outline" href="/messages">💬 Messages</a>
+    <a class="btn btn-outline" href="/expert-dashboard">My Dashboard</a>
     <div style="position:relative;">
       <button class="btn btn-outline" id="notif-bell" onclick="toggleNotifDropdown()" style="position:relative;">🔔 <span id="notif-badge" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--red,#e84545);color:#fff;font-size:10px;font-weight:800;border-radius:50%;width:16px;height:16px;align-items:center;justify-content:center;"></span></button>
       <div id="notif-dropdown" style="display:none;position:absolute;top:44px;right:0;width:340px;max-height:420px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh-md,0 6px 28px rgba(13,13,26,.1));z-index:200;"></div>
@@ -550,10 +552,12 @@ async function loadMyContracts(){
     }
     list.innerHTML = all.map(function(c){
       var role = c.clientId===window._user.uid ? 'You are the client' : 'You are the expert';
+      var otherUid = c.clientId===window._user.uid ? c.freelancerId : c.clientId;
       var other = c.clientId===window._user.uid ? c.freelancerName : c.clientName;
       return '<div class="job-card" onclick="window.location.href=\'/workspace?contract='+c.id+'\'">'
         +'<div class="job-title">'+c.title+'</div>'
         +'<div class="job-meta"><span class="job-budget">'+(c.currency==='USD'?'$':'₦')+(c.amount||0).toLocaleString()+'</span><span>'+role+' &middot; with '+other+'</span><span style="text-transform:capitalize;">'+(c.status||'').replace(/_/g,' ')+'</span></div>'
+        +'<button class="btn btn-outline" style="margin-top:10px;padding:7px 14px;font-size:12px;" onclick="event.stopPropagation();window.location.href=\'/messages?with='+otherUid+'\'">💬 Message '+other+'</button>'
       +'</div>';
     }).join('');
   } catch(e){ list.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
@@ -746,13 +750,17 @@ async function loadMyBookings(){
       var scheduled = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate() : new Date(b.scheduledAt);
       var isClient = b.clientId === window._user.uid;
       var other = isClient ? b.freelancerName : b.clientName;
+      var otherUid = isClient ? b.freelancerId : b.clientId;
       var canJoin = b.status==='scheduled' && (scheduled.getTime() - now.getTime()) < 10*60000; // joinable 10 min before
       var timeLabel = scheduled.toLocaleString([], {weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
       return '<div class="job-card" style="cursor:default;">'
         +'<div class="job-title">Call with '+other+'</div>'
         +'<div class="job-meta"><span>'+timeLabel+'</span><span>'+(b.durationMins||30)+' min</span><span style="text-transform:capitalize;">'+b.status+'</span></div>'
-        +(canJoin ? '<button class="btn btn-teal" style="margin-top:12px;" onclick="window.location.href=\'/meeting?booking='+b.id+'\'">🎥 Join video call</button>'
-                  : (b.status==='scheduled' ? '<div style="margin-top:10px;font-size:12px;color:var(--text3);">Join button appears 10 minutes before the call</div>' : ''))
+        +'<div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">'
+          +(canJoin ? '<button class="btn btn-teal" onclick="window.location.href=\'/meeting?booking='+b.id+'\'">🎥 Join video call</button>'
+                    : (b.status==='scheduled' ? '<div style="font-size:12px;color:var(--text3);align-self:center;">Join button appears 10 minutes before the call</div>' : ''))
+          +'<button class="btn btn-outline" onclick="window.location.href=\'/messages?with='+otherUid+'\'">💬 Message '+other+'</button>'
+        +'</div>'
       +'</div>';
     }).join('');
   } catch(e){ list.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
