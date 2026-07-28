@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Expert Dashboard — SkillsLibry Experts</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--border:#e4e6f0;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--red:#e84545;--orange:#f59e0b;
+  --r:10px;--r-lg:16px;--sh-md:0 6px 28px rgba(13,13,26,.1);--sh-lg:0 12px 48px rgba(13,13,26,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;}
+h1,h2,h3{font-family:'Poppins',sans-serif}
+
+.nav{height:64px;display:flex;align-items:center;padding:0 32px;background:#fff;border-bottom:1px solid var(--border);gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;color:#fff;font-size:15px;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;}
+.nav-logo-text span{color:var(--teal);}
+.nav-right{margin-left:auto;display:flex;gap:10px;align-items:center;}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;}
+.btn-teal{background:var(--teal);color:#0d0d1a;}
+.btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--text);}
+.msg-badge{position:relative;}
+.msg-badge .dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--red);display:none;}
+
+.wrap{max-width:1100px;margin:0 auto;padding:32px 24px 80px;}
+.page-head{margin-bottom:24px;}
+.page-head h1{font-size:24px;font-weight:800;}
+
+.status-banner{padding:16px 20px;border-radius:12px;margin-bottom:24px;font-size:13px;display:flex;align-items:center;gap:12px;}
+.status-pending{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:#92600a;}
+.status-rejected{background:rgba(232,69,69,.08);border:1px solid rgba(232,69,69,.2);color:var(--red);}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+@media(max-width:700px){ .stats-row{grid-template-columns:repeat(2,1fr);} }
+.stat-card{background:#fff;border-radius:12px;padding:18px;border:1px solid var(--border);}
+.stat-num{font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;}
+.stat-label{font-size:11.5px;color:var(--text3);margin-top:2px;}
+
+.section{background:#fff;border-radius:var(--r-lg);padding:24px;margin-bottom:20px;}
+.section-title{font-size:16px;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+
+.svc-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);gap:12px;}
+.svc-row:last-child{border-bottom:none;}
+.svc-row-title{font-size:13.5px;font-weight:600;}
+.svc-row-meta{font-size:12px;color:var(--text3);margin-top:2px;}
+.svc-row-actions{display:flex;gap:8px;flex-shrink:0;}
+.svc-row-actions button{padding:7px 12px;font-size:12px;border-radius:6px;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-weight:600;}
+.svc-row-actions button:hover{background:var(--bg2);}
+.svc-row-actions .danger{color:var(--red);border-color:rgba(232,69,69,.3);}
+.svc-paused{opacity:.55;}
+
+.action-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--border);gap:12px;}
+.action-row:last-child{border-bottom:none;}
+.action-title{font-size:13.5px;font-weight:600;}
+.action-meta{font-size:12px;color:var(--text3);margin-top:2px;}
+.status-pill{display:inline-block;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;text-transform:capitalize;}
+.pill-funded{background:rgba(108,99,255,.12);color:var(--purple);}
+.pill-delivered{background:rgba(78,204,163,.15);color:var(--teal-dark);}
+.pill-awaiting{background:rgba(245,158,11,.12);color:var(--orange);}
+
+.empty-mini{text-align:center;padding:30px 10px;color:var(--text3);font-size:13px;}
+
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(13,13,26,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:var(--r-lg);max-width:480px;width:100%;padding:28px;position:relative;}
+.close-x{position:absolute;top:18px;right:22px;font-size:20px;cursor:pointer;color:var(--text3);}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.fi{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;}
+textarea.fi{resize:vertical;min-height:80px;}
+
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;display:none;box-shadow:var(--sh-lg);}
+.toast.show{display:block;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-logo-mark">S</div><span class="nav-logo-text">Skills<span>Libry</span></span></a>
+  <div class="nav-right">
+    <a class="btn btn-outline msg-badge" href="/messages" id="msg-link">💬 Messages<span class="dot" id="msg-dot"></span></a>
+    <a class="btn btn-outline" href="/experts">Browse Experts</a>
+    <a class="btn btn-teal" id="view-profile-link" href="/profile">My Public Profile</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="page-head"><h1>Expert Dashboard</h1></div>
+
+  <div id="status-banner-area"></div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="stat-earned">$0</div><div class="stat-label">Total earned (approved)</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-pending">$0</div><div class="stat-label">Pending payout</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-services">0</div><div class="stat-label">Active services</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-bookings">0</div><div class="stat-label">Upcoming calls</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">My Services <button class="btn btn-teal" style="padding:8px 16px;font-size:12px;" onclick="openServiceModal()">+ Add service</button></div>
+    <div id="my-services-list"><div class="empty-mini">Loading...</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Action Needed</div>
+    <div id="action-needed-list"><div class="empty-mini">Loading...</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Upcoming Calls</div>
+    <div id="upcoming-bookings-list"><div class="empty-mini">Loading...</div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="service-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('service-modal')">&times;</span>
+    <h2 style="margin-bottom:16px;" id="service-modal-title">Add a service</h2>
+    <form id="service-form" onsubmit="submitService(event)">
+      <input type="hidden" id="svc-edit-id" value=""/>
+      <div class="fg"><label>Service title</label><input class="fi" id="svc-title" required placeholder="e.g. I will build your complete digital product sales funnel"/></div>
+      <div class="fg"><label>Description</label><textarea class="fi" id="svc-desc" required placeholder="Describe exactly what the buyer gets"></textarea></div>
+      <div class="fg"><label>Category</label>
+        <select class="fi" id="svc-cat" required>
+          <option value="digital">Digital Products</option>
+          <option value="marketing">Marketing</option>
+          <option value="design">Design</option>
+          <option value="writing">Writing & Content</option>
+          <option value="dev">Development</option>
+          <option value="consulting">Consulting</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="fg"><label>Price (USD $)</label><input class="fi" id="svc-price" type="number" min="1000" required placeholder="e.g. 1500"/>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000.</div>
+      </div>
+      <div class="fg"><label>Delivery time (days)</label><input class="fi" id="svc-delivery" type="number" required placeholder="e.g. 10"/></div>
+      <button type="submit" class="btn btn-teal" style="width:100%;">Save service</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, deleteDoc, query, where, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._db = db;
+window._fb = { collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, deleteDoc, query, where, serverTimestamp };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if(!user){ window.location.href='/dashboard'; return; }
+  const snap = await getDoc(doc(db,'users',user.uid));
+  window._userName = snap.exists() ? snap.data().name : user.email;
+  window._expertStatus = snap.exists() ? (snap.data().expertStatus||'none') : 'none';
+  document.getElementById('view-profile-link').href = '/profile?id='+user.uid;
+  document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
+});
+</script>
+
+<script>
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+async function loadDashboard(){
+  var status = window._expertStatus;
+  var banner = document.getElementById('status-banner-area');
+  if(status === 'pending'){
+    banner.innerHTML = '<div class="status-banner status-pending">⏳ Your expert application is still under review. You can browse this dashboard, but you can\'t publish services until you\'re approved.</div>';
+  } else if(status === 'rejected'){
+    banner.innerHTML = '<div class="status-banner status-rejected">✋ Your application wasn\'t approved yet. Visit <a href="/experts" style="text-decoration:underline;">Experts</a> and reapply with updated details.</div>';
+  } else if(status === 'none'){
+    banner.innerHTML = '<div class="status-banner status-pending">You haven\'t applied to become an expert yet. Visit <a href="/experts" style="text-decoration:underline;">Experts</a> to apply.</div>';
+  }
+
+  loadMyServices();
+  loadActionNeeded();
+  loadUpcomingBookings();
+  loadEarnings();
+  loadUnreadBadge();
+}
+
+/* ══ MY SERVICES ══ */
+var _myServicesCache = [];
+async function loadMyServices(){
+  var db = window._db; var fb = window._fb;
+  var el = document.getElementById('my-services-list');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'services'), fb.where('freelancerId','==',window._user.uid)));
+    _myServicesCache = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    document.getElementById('stat-services').textContent = _myServicesCache.filter(function(s){ return s.active; }).length;
+
+    if(!_myServicesCache.length){
+      el.innerHTML = '<div class="empty-mini">No services yet. Click "+ Add service" above.</div>';
+      return;
+    }
+    el.innerHTML = _myServicesCache.map(function(s){
+      return '<div class="svc-row '+(s.active?'':'svc-paused')+'">'
+        +'<div><div class="svc-row-title">'+s.title+'</div><div class="svc-row-meta">$'+(s.price||0).toLocaleString()+' · '+(s.deliveryDays||'—')+' days'+(s.active?'':' · Paused')+'</div></div>'
+        +'<div class="svc-row-actions">'
+          +'<button onclick="editService(\''+s.id+'\')">Edit</button>'
+          +'<button onclick="toggleServiceActive(\''+s.id+'\','+(!s.active)+')">'+(s.active?'Pause':'Resume')+'</button>'
+          +'<button class="danger" onclick="deleteService(\''+s.id+'\')">Delete</button>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } catch(e){ el.innerHTML = '<div class="empty-mini">Error: '+e.message+'</div>'; }
+}
+
+function openServiceModal(){
+  document.getElementById('service-modal-title').textContent = 'Add a service';
+  document.getElementById('svc-edit-id').value = '';
+  document.getElementById('svc-title').value = '';
+  document.getElementById('svc-desc').value = '';
+  document.getElementById('svc-cat').value = 'digital';
+  document.getElementById('svc-price').value = '';
+  document.getElementById('svc-delivery').value = '';
+  openModal('service-modal');
+}
+
+function editService(id){
+  var s = _myServicesCache.find(function(x){ return x.id===id; });
+  if(!s) return;
+  document.getElementById('service-modal-title').textContent = 'Edit service';
+  document.getElementById('svc-edit-id').value = id;
+  document.getElementById('svc-title').value = s.title||'';
+  document.getElementById('svc-desc').value = s.description||'';
+  document.getElementById('svc-cat').value = s.category||'digital';
+  document.getElementById('svc-price').value = s.price||'';
+  document.getElementById('svc-delivery').value = s.deliveryDays||'';
+  openModal('service-modal');
+}
+
+async function submitService(e){
+  e.preventDefault();
+  var price = parseFloat(document.getElementById('svc-price').value)||0;
+  if(price < 1000){
+    showToast('Price must be at least $1,000.');
+    return;
+  }
+  var editId = document.getElementById('svc-edit-id').value;
+  var db = window._db; var fb = window._fb;
+  var payload = {
+    title: document.getElementById('svc-title').value.trim(),
+    description: document.getElementById('svc-desc').value.trim(),
+    category: document.getElementById('svc-cat').value,
+    price: price,
+    currency: 'USD',
+    deliveryDays: parseInt(document.getElementById('svc-delivery').value)||3,
+  };
+  try {
+    if(editId){
+      await fb.updateDoc(fb.doc(db,'services',editId), payload);
+      showToast('✅ Service updated!');
+    } else {
+      await fb.addDoc(fb.collection(db,'services'), Object.assign({
+        freelancerId: window._user.uid,
+        freelancerName: window._userName || 'Expert',
+        active: true,
+        rating: 0, reviewCount: 0,
+        createdAt: fb.serverTimestamp(),
+      }, payload));
+      showToast('✅ Service published!');
+    }
+    closeModal('service-modal');
+    loadMyServices();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function toggleServiceActive(id, makeActive){
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.updateDoc(fb.doc(db,'services',id), { active: makeActive });
+    showToast(makeActive ? '✅ Service resumed.' : '⏸ Service paused.');
+    loadMyServices();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function deleteService(id){
+  if(!confirm('Delete this service permanently? This cannot be undone.')) return;
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.deleteDoc(fb.doc(db,'services',id));
+    showToast('🗑 Service deleted.');
+    loadMyServices();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+/* ══ ACTION NEEDED ══ */
+async function loadActionNeeded(){
+  var db = window._db; var fb = window._fb;
+  var el = document.getElementById('action-needed-list');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'contracts'), fb.where('freelancerId','==',window._user.uid)));
+    var contracts = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); })
+      .filter(function(c){ return ['funded','in_progress','delivered','awaiting_payment'].indexOf(c.status) > -1; });
+
+    if(!contracts.length){
+      el.innerHTML = '<div class="empty-mini">Nothing needs your attention right now.</div>';
+      return;
+    }
+    el.innerHTML = contracts.map(function(c){
+      var pillClass = c.status==='delivered' ? 'pill-delivered' : (c.status==='awaiting_payment' ? 'pill-awaiting' : 'pill-funded');
+      var actionText = c.status==='delivered' ? 'Waiting on client to approve'
+        : c.status==='awaiting_payment' ? 'Waiting on client to pay'
+        : 'You need to deliver this';
+      return '<div class="action-row">'
+        +'<div><div class="action-title">'+c.title+'</div><div class="action-meta">With '+(c.clientName||'Client')+' · '+actionText+'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:10px;">'
+          +'<span class="status-pill '+pillClass+'">'+(c.status||'').replace(/_/g,' ')+'</span>'
+          +'<a href="/workspace?contract='+c.id+'" class="btn btn-outline" style="padding:7px 14px;font-size:12px;">Open</a>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+  } catch(e){ el.innerHTML = '<div class="empty-mini">Error: '+e.message+'</div>'; }
+}
+
+/* ══ UPCOMING BOOKINGS ══ */
+async function loadUpcomingBookings(){
+  var db = window._db; var fb = window._fb;
+  var el = document.getElementById('upcoming-bookings-list');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'bookings'), fb.where('freelancerId','==',window._user.uid), fb.where('status','==','scheduled')));
+    var bookings = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    var now = new Date();
+    bookings = bookings.filter(function(b){
+      var t = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate() : new Date(b.scheduledAt);
+      return t.getTime() > now.getTime() - 3600000; // keep recent/future
+    });
+    bookings.sort(function(a,b){
+      var ta = a.scheduledAt && a.scheduledAt.toDate ? a.scheduledAt.toDate().getTime() : new Date(a.scheduledAt).getTime();
+      var tb = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate().getTime() : new Date(b.scheduledAt).getTime();
+      return ta - tb;
+    });
+
+    document.getElementById('stat-bookings').textContent = bookings.length;
+
+    if(!bookings.length){
+      el.innerHTML = '<div class="empty-mini">No upcoming calls scheduled.</div>';
+      return;
+    }
+    el.innerHTML = bookings.map(function(b){
+      var scheduled = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate() : new Date(b.scheduledAt);
+      var canJoin = (scheduled.getTime() - now.getTime()) < 10*60000;
+      var timeLabel = scheduled.toLocaleString([], {weekday:'short', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+      return '<div class="action-row">'
+        +'<div><div class="action-title">Call with '+(b.clientName||'Client')+'</div><div class="action-meta">'+timeLabel+' · '+(b.durationMins||30)+' min'+(b.projectBrief?' · "'+b.projectBrief.slice(0,80)+'"':'')+'</div></div>'
+        +(canJoin ? '<a href="/meeting?booking='+b.id+'" class="btn btn-teal" style="padding:7px 14px;font-size:12px;">Join call</a>' : '<span style="font-size:11.5px;color:var(--text3);">Not yet</span>')
+      +'</div>';
+    }).join('');
+  } catch(e){ el.innerHTML = '<div class="empty-mini">Error: '+e.message+'</div>'; }
+}
+
+/* ══ EARNINGS ══ */
+async function loadEarnings(){
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'marketplacePayouts'), fb.where('freelancerId','==',window._user.uid)));
+    var payouts = snap.docs.map(function(d){ return d.data(); });
+    var paid = payouts.filter(function(p){ return p.status==='paid'; }).reduce(function(a,p){ return a+(p.amount||0); },0);
+    var pending = payouts.filter(function(p){ return p.status!=='paid'; }).reduce(function(a,p){ return a+(p.amount||0); },0);
+    document.getElementById('stat-earned').textContent = '$'+paid.toLocaleString();
+    document.getElementById('stat-pending').textContent = '$'+pending.toLocaleString();
+  } catch(e){ console.error('Failed to load earnings:', e.message); }
+}
+
+/* ══ UNREAD MESSAGES BADGE ══ */
+async function loadUnreadBadge(){
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'conversations'), fb.where('participantIds','array-contains',window._user.uid)));
+    var hasUnread = snap.docs.some(function(d){ return d.data()['unread_'+window._user.uid] === true; });
+    document.getElementById('msg-dot').style.display = hasUnread ? 'block' : 'none';
+  } catch(e){}
+}
+
+document.addEventListener('authReady', function(){
+  loadDashboard();
+});
+</script>
+
+</body>
+</html>

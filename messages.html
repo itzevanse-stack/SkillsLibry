@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Messages — SkillsLibry Experts</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--bg:#fff;--bg2:#f8f9fc;
+  --border:#e4e6f0;--text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;--red:#e84545;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+body{background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;height:100vh;overflow:hidden;}
+h1,h2{font-family:'Poppins',sans-serif}
+
+.nav{height:60px;flex-shrink:0;display:flex;align-items:center;padding:0 24px;background:#fff;border-bottom:1px solid var(--border);gap:14px;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;color:#fff;font-size:14px;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;}
+.nav-logo-text span{color:var(--teal);}
+.nav-back{margin-left:auto;font-size:13px;font-weight:600;color:var(--text2);}
+
+.shell{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 60px);}
+@media(max-width:760px){ .shell{grid-template-columns:1fr;} .thread-col.hidden-mobile{display:none;} .list-col.hidden-mobile{display:none;} }
+
+.list-col{background:#fff;border-right:1px solid var(--border);overflow-y:auto;}
+.list-head{padding:18px 20px;font-weight:800;font-size:15px;border-bottom:1px solid var(--border);}
+.convo-item{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s;}
+.convo-item:hover{background:var(--bg2);}
+.convo-item.active{background:var(--teal-dim);}
+.convo-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:14px;flex-shrink:0;}
+.convo-info{flex:1;min-width:0;}
+.convo-name-row{display:flex;justify-content:space-between;align-items:center;}
+.convo-name{font-weight:700;font-size:13.5px;}
+.convo-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+.convo-preview{font-size:12.5px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.empty-list{text-align:center;padding:60px 20px;color:var(--text3);font-size:13px;}
+
+.thread-col{display:flex;flex-direction:column;height:100%;}
+.thread-head{padding:16px 24px;background:#fff;border-bottom:1px solid var(--border);font-weight:700;font-size:14.5px;flex-shrink:0;}
+.thread-scroll{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:12px;}
+.msg{max-width:60%;padding:10px 15px;border-radius:14px;font-size:13.5px;line-height:1.5;}
+.msg.mine{align-self:flex-end;background:var(--teal);color:#0d0d1a;}
+.msg.theirs{align-self:flex-start;background:#fff;border:1px solid var(--border);}
+@media(max-width:760px){ .msg{max-width:80%;} }
+.thread-input-row{display:flex;gap:10px;padding:16px 24px;background:#fff;border-top:1px solid var(--border);flex-shrink:0;}
+.thread-input{flex:1;padding:12px 16px;border:1.5px solid var(--border);border-radius:24px;font-size:13.5px;outline:none;}
+.thread-input:focus{border-color:var(--teal);}
+.thread-send{width:44px;height:44px;border-radius:50%;background:var(--teal);border:none;cursor:pointer;font-size:16px;flex-shrink:0;}
+.thread-empty{display:flex;align-items:center;justify-content:center;height:100%;color:var(--text3);font-size:13px;flex-direction:column;gap:10px;}
+.thread-empty .icon{font-size:40px;}
+
+.back-to-list{display:none;font-size:13px;font-weight:700;color:var(--teal-dark);cursor:pointer;margin-right:12px;}
+@media(max-width:760px){ .back-to-list{display:inline-block;} }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-logo-mark">S</div><span class="nav-logo-text">Skills<span>Libry</span></span></a>
+  <a class="nav-back" href="/experts">← Back to Experts</a>
+</nav>
+
+<div class="shell">
+  <div class="list-col" id="list-col">
+    <div class="list-head">Messages</div>
+    <div id="convo-list"><div class="empty-list">Loading...</div></div>
+  </div>
+
+  <div class="thread-col" id="thread-col">
+    <div class="thread-empty" id="thread-empty">
+      <div class="icon">💬</div>
+      <div>Select a conversation to view messages</div>
+    </div>
+    <div id="thread-active" style="display:none;flex-direction:column;height:100%;">
+      <div class="thread-head"><span class="back-to-list" onclick="showListMobile()">← Back</span><span id="thread-name">—</span></div>
+      <div class="thread-scroll" id="thread-scroll"></div>
+      <div class="thread-input-row">
+        <input class="thread-input" id="thread-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendReply()"/>
+        <button class="thread-send" onclick="sendReply()">➤</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, query, where, orderBy, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._db = db;
+window._fb = { collection, addDoc, getDoc, getDocs, doc, setDoc, query, where, orderBy, onSnapshot, serverTimestamp };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if(user){
+    const snap = await getDoc(doc(db,'users',user.uid));
+    window._userName = snap.exists() ? snap.data().name : user.email;
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
+});
+</script>
+
+<script>
+var _activeConvoId = null;
+var _activeOtherUid = null;
+var _msgUnsub = null;
+
+function threadId(uidA, uidB){ return [uidA, uidB].sort().join('_'); }
+
+async function loadConversations(){
+  var db = window._db; var fb = window._fb;
+  var el = document.getElementById('convo-list');
+  if(!window._user){
+    el.innerHTML = '<div class="empty-list">Please sign in to see your messages.</div>';
+    return;
+  }
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'conversations'), fb.where('participantIds','array-contains',window._user.uid)));
+    var convos = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    convos.sort(function(a,b){
+      var ta = a.lastMessageAt && a.lastMessageAt.toMillis ? a.lastMessageAt.toMillis() : 0;
+      var tb = b.lastMessageAt && b.lastMessageAt.toMillis ? b.lastMessageAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+    var withUid = new URLSearchParams(window.location.search).get('with');
+
+    if(!convos.length){
+      if(withUid){
+        // Starting a brand new conversation with no prior history yet.
+        openThread(threadId(window._user.uid, withUid), withUid, 'New conversation');
+        el.innerHTML = '<div class="empty-list">No conversations yet — send your first message.</div>';
+        return;
+      }
+      el.innerHTML = '<div class="empty-list">No conversations yet.</div>';
+      return;
+    }
+
+    el.innerHTML = convos.map(function(c){
+      var otherUid = c.participantIds.find(function(id){ return id !== window._user.uid; });
+      var otherName = c['name_'+otherUid] || 'User';
+      var isUnread = c['unread_'+window._user.uid] === true;
+      var initials = otherName.charAt(0).toUpperCase();
+      return '<div class="convo-item" data-convo="'+c.id+'" data-other="'+otherUid+'" data-name="'+otherName+'" onclick="selectConversation(this)">'
+        +'<div class="convo-avatar">'+initials+'</div>'
+        +'<div class="convo-info">'
+          +'<div class="convo-name-row"><span class="convo-name">'+otherName+'</span>'+(isUnread?'<span class="convo-dot"></span>':'')+'</div>'
+          +'<div class="convo-preview">'+(c.lastMessage||'')+'</div>'
+        +'</div>'
+      +'</div>';
+    }).join('');
+
+    // Auto-open a specific conversation if linked via ?with=uid
+    if(withUid){
+      var target = convos.find(function(c){ return c.participantIds.indexOf(withUid) > -1; });
+      if(target){
+        var otherName = target['name_'+withUid] || 'User';
+        openThread(target.id, withUid, otherName);
+      }
+    }
+  } catch(e){ el.innerHTML = '<div class="empty-list">Error: '+e.message+'</div>'; }
+}
+
+function selectConversation(el){
+  document.querySelectorAll('.convo-item').forEach(function(c){ c.classList.remove('active'); });
+  el.classList.add('active');
+  openThread(el.dataset.convo, el.dataset.other, el.dataset.name);
+  showThreadMobile();
+}
+
+async function openThread(convoId, otherUid, otherName){
+  _activeConvoId = convoId;
+  _activeOtherUid = otherUid;
+  document.getElementById('thread-empty').style.display = 'none';
+  document.getElementById('thread-active').style.display = 'flex';
+  document.getElementById('thread-name').textContent = otherName;
+
+  // Mark read for me
+  var db = window._db; var fb = window._fb;
+  try {
+    var unreadUpdate = {};
+    unreadUpdate['unread_'+window._user.uid] = false;
+    await fb.setDoc(fb.doc(db,'conversations',convoId), unreadUpdate, { merge:true });
+  } catch(e){}
+
+  if(_msgUnsub) _msgUnsub();
+  var q = fb.query(fb.collection(db,'directMessages_'+convoId), fb.orderBy('createdAt','asc'));
+  _msgUnsub = fb.onSnapshot(q, function(snap){
+    var scroll = document.getElementById('thread-scroll');
+    var msgs = snap.docs.map(function(d){ return d.data(); });
+    if(!msgs.length){
+      scroll.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;">Say hello to start the conversation.</div>';
+      return;
+    }
+    scroll.innerHTML = msgs.map(function(m){
+      var mine = m.senderId === window._user.uid;
+      return '<div class="msg '+(mine?'mine':'theirs')+'">'+m.text+'</div>';
+    }).join('');
+    scroll.scrollTop = scroll.scrollHeight;
+  }, function(err){ console.error('Thread listener failed:', err.message); });
+}
+
+async function sendReply(){
+  var input = document.getElementById('thread-input');
+  var text = input.value.trim();
+  if(!text || !_activeConvoId || !window._user) return;
+  input.value = '';
+  var db = window._db; var fb = window._fb;
+  var myUid = window._user.uid;
+
+  try {
+    await fb.addDoc(fb.collection(db,'directMessages_'+_activeConvoId), {
+      senderId: myUid,
+      senderName: window._userName || 'User',
+      text: text,
+      createdAt: fb.serverTimestamp(),
+    });
+
+    var unreadUpdate = {};
+    unreadUpdate['unread_'+_activeOtherUid] = true;
+    unreadUpdate['unread_'+myUid] = false;
+    var namesUpdate = {};
+    namesUpdate['name_'+myUid] = window._userName || 'User';
+
+    await fb.setDoc(fb.doc(db,'conversations',_activeConvoId), Object.assign({
+      participantIds: [myUid, _activeOtherUid],
+      lastMessage: text.slice(0,120),
+      lastMessageAt: fb.serverTimestamp(),
+      lastSenderId: myUid,
+    }, unreadUpdate, namesUpdate), { merge:true });
+  } catch(e){ console.error('Reply failed:', e.message); }
+}
+
+function showThreadMobile(){
+  document.getElementById('list-col').classList.add('hidden-mobile');
+  document.getElementById('thread-col').classList.remove('hidden-mobile');
+}
+function showListMobile(){
+  document.getElementById('list-col').classList.remove('hidden-mobile');
+  document.getElementById('thread-col').classList.add('hidden-mobile');
+}
+
+document.addEventListener('authReady', function(){
+  loadConversations();
+});
+</script>
+
+</body>
+</html>
