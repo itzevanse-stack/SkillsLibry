@@ -90,6 +90,7 @@ textarea.fi{resize:vertical;min-height:80px;}
 <nav class="nav">
   <a class="nav-logo" href="/"><div class="nav-logo-mark">S</div><span class="nav-logo-text">Skills<span>Libry</span></span></a>
   <div class="nav-right">
+    <a class="btn btn-outline" href="/dashboard?view=settings">⚙️ Account Settings</a>
     <a class="btn btn-outline msg-badge" href="/messages" id="msg-link">💬 Messages<span class="dot" id="msg-dot"></span></a>
     <a class="btn btn-outline" href="/experts">Browse Experts</a>
     <a class="btn btn-teal" id="view-profile-link" href="/profile">My Public Profile</a>
@@ -104,13 +105,13 @@ textarea.fi{resize:vertical;min-height:80px;}
   <div class="stats-row">
     <div class="stat-card"><div class="stat-num" id="stat-earned">$0</div><div class="stat-label">Total earned (approved)</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-pending">$0</div><div class="stat-label">Pending payout</div></div>
-    <div class="stat-card"><div class="stat-num" id="stat-services">0</div><div class="stat-label">Active services</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-rate">$0</div><div class="stat-label">My rate</div></div>
     <div class="stat-card"><div class="stat-num" id="stat-bookings">0</div><div class="stat-label">Upcoming calls</div></div>
   </div>
 
   <div class="section">
-    <div class="section-title">My Services <button class="btn btn-teal" style="padding:8px 16px;font-size:12px;" onclick="openServiceModal()">+ Add service</button></div>
-    <div id="my-services-list"><div class="empty-mini">Loading...</div></div>
+    <div class="section-title">My Rate & Offering <button class="btn btn-teal" style="padding:8px 16px;font-size:12px;" onclick="openRateModal()">Edit</button></div>
+    <div id="my-offering-display"><div class="empty-mini">Loading...</div></div>
   </div>
 
   <div class="section">
@@ -127,27 +128,13 @@ textarea.fi{resize:vertical;min-height:80px;}
 <div class="modal-overlay" id="service-modal">
   <div class="modal-box">
     <span class="close-x" onclick="closeModal('service-modal')">&times;</span>
-    <h2 style="margin-bottom:16px;" id="service-modal-title">Add a service</h2>
-    <form id="service-form" onsubmit="submitService(event)">
-      <input type="hidden" id="svc-edit-id" value=""/>
-      <div class="fg"><label>Service title</label><input class="fi" id="svc-title" required placeholder="e.g. I will build your complete digital product sales funnel"/></div>
-      <div class="fg"><label>Description</label><textarea class="fi" id="svc-desc" required placeholder="Describe exactly what the buyer gets"></textarea></div>
-      <div class="fg"><label>Category</label>
-        <select class="fi" id="svc-cat" required>
-          <option value="digital">Digital Products</option>
-          <option value="marketing">Marketing</option>
-          <option value="design">Design</option>
-          <option value="writing">Writing & Content</option>
-          <option value="dev">Development</option>
-          <option value="consulting">Consulting</option>
-          <option value="other">Other</option>
-        </select>
+    <h2 style="margin-bottom:16px;">Edit your rate & offering</h2>
+    <form id="rate-form" onsubmit="submitRate(event)">
+      <div class="fg"><label>Your rate (USD $)</label><input class="fi" id="edit-rate-input" type="number" min="1000" required placeholder="e.g. 1500"/>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000. This is what clients pay to hire you directly.</div>
       </div>
-      <div class="fg"><label>Price (USD $)</label><input class="fi" id="svc-price" type="number" min="1000" required placeholder="e.g. 1500"/>
-        <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000.</div>
-      </div>
-      <div class="fg"><label>Delivery time (days)</label><input class="fi" id="svc-delivery" type="number" required placeholder="e.g. 10"/></div>
-      <button type="submit" class="btn btn-teal" style="width:100%;">Save service</button>
+      <div class="fg"><label>What do you help clients with?</label><textarea class="fi" id="edit-offering-input" required placeholder="Describe what you help clients with"></textarea></div>
+      <button type="submit" class="btn btn-teal" style="width:100%;">Save</button>
     </form>
   </div>
 </div>
@@ -197,123 +184,66 @@ async function loadDashboard(){
   var status = window._expertStatus;
   var banner = document.getElementById('status-banner-area');
   if(status === 'pending'){
-    banner.innerHTML = '<div class="status-banner status-pending">⏳ Your expert application is still under review. You can browse this dashboard, but you can\'t publish services until you\'re approved.</div>';
+    banner.innerHTML = '<div class="status-banner status-pending">⏳ Your expert application is still under review. You can browse this dashboard, but clients can\'t hire you until you\'re approved.</div>';
   } else if(status === 'rejected'){
     banner.innerHTML = '<div class="status-banner status-rejected">✋ Your application wasn\'t approved yet. Visit <a href="/experts" style="text-decoration:underline;">Experts</a> and reapply with updated details.</div>';
   } else if(status === 'none'){
     banner.innerHTML = '<div class="status-banner status-pending">You haven\'t applied to become an expert yet. Visit <a href="/experts" style="text-decoration:underline;">Experts</a> to apply.</div>';
   }
 
-  loadMyServices();
+  loadMyOffering();
   loadActionNeeded();
   loadUpcomingBookings();
   loadEarnings();
   loadUnreadBadge();
 }
 
-/* ══ MY SERVICES ══ */
-var _myServicesCache = [];
-async function loadMyServices(){
+/* ══ MY RATE & OFFERING ══ */
+async function loadMyOffering(){
   var db = window._db; var fb = window._fb;
-  var el = document.getElementById('my-services-list');
+  var el = document.getElementById('my-offering-display');
   try {
-    var snap = await fb.getDocs(fb.query(fb.collection(db,'services'), fb.where('freelancerId','==',window._user.uid)));
-    _myServicesCache = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
-    document.getElementById('stat-services').textContent = _myServicesCache.filter(function(s){ return s.active; }).length;
+    var snap = await fb.getDoc(fb.doc(db,'users',window._user.uid));
+    var data = snap.exists() ? snap.data() : {};
+    var rate = data.rate || 0;
+    document.getElementById('stat-rate').textContent = '$'+rate.toLocaleString();
 
-    if(!_myServicesCache.length){
-      el.innerHTML = '<div class="empty-mini">No services yet. Click "+ Add service" above.</div>';
+    if(!rate){
+      el.innerHTML = '<div class="empty-mini">No rate set yet. Click "Edit" above to set it.</div>';
       return;
     }
-    el.innerHTML = _myServicesCache.map(function(s){
-      return '<div class="svc-row '+(s.active?'':'svc-paused')+'">'
-        +'<div><div class="svc-row-title">'+s.title+'</div><div class="svc-row-meta">$'+(s.price||0).toLocaleString()+' · '+(s.deliveryDays||'—')+' days'+(s.active?'':' · Paused')+'</div></div>'
-        +'<div class="svc-row-actions">'
-          +'<button onclick="editService(\''+s.id+'\')">Edit</button>'
-          +'<button onclick="toggleServiceActive(\''+s.id+'\','+(!s.active)+')">'+(s.active?'Pause':'Resume')+'</button>'
-          +'<button class="danger" onclick="deleteService(\''+s.id+'\')">Delete</button>'
-        +'</div>'
-      +'</div>';
-    }).join('');
+    el.innerHTML = '<div class="svc-row"><div><div class="svc-row-title">$'+rate.toLocaleString()+' — Full engagement rate</div>'
+      +'<div class="svc-row-meta">'+(data.servicesOffered||'No description yet.')+'</div></div></div>';
   } catch(e){ el.innerHTML = '<div class="empty-mini">Error: '+e.message+'</div>'; }
 }
 
-function openServiceModal(){
-  document.getElementById('service-modal-title').textContent = 'Add a service';
-  document.getElementById('svc-edit-id').value = '';
-  document.getElementById('svc-title').value = '';
-  document.getElementById('svc-desc').value = '';
-  document.getElementById('svc-cat').value = 'digital';
-  document.getElementById('svc-price').value = '';
-  document.getElementById('svc-delivery').value = '';
+async function openRateModal(){
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDoc(fb.doc(db,'users',window._user.uid));
+    var data = snap.exists() ? snap.data() : {};
+    document.getElementById('edit-rate-input').value = data.rate || '';
+    document.getElementById('edit-offering-input').value = data.servicesOffered || '';
+  } catch(e){}
   openModal('service-modal');
 }
 
-function editService(id){
-  var s = _myServicesCache.find(function(x){ return x.id===id; });
-  if(!s) return;
-  document.getElementById('service-modal-title').textContent = 'Edit service';
-  document.getElementById('svc-edit-id').value = id;
-  document.getElementById('svc-title').value = s.title||'';
-  document.getElementById('svc-desc').value = s.description||'';
-  document.getElementById('svc-cat').value = s.category||'digital';
-  document.getElementById('svc-price').value = s.price||'';
-  document.getElementById('svc-delivery').value = s.deliveryDays||'';
-  openModal('service-modal');
-}
-
-async function submitService(e){
+async function submitRate(e){
   e.preventDefault();
-  var price = parseFloat(document.getElementById('svc-price').value)||0;
-  if(price < 1000){
-    showToast('Price must be at least $1,000.');
+  var rate = parseFloat(document.getElementById('edit-rate-input').value)||0;
+  if(rate < 1000){
+    showToast('Rate must be at least $1,000.');
     return;
   }
-  var editId = document.getElementById('svc-edit-id').value;
   var db = window._db; var fb = window._fb;
-  var payload = {
-    title: document.getElementById('svc-title').value.trim(),
-    description: document.getElementById('svc-desc').value.trim(),
-    category: document.getElementById('svc-cat').value,
-    price: price,
-    currency: 'USD',
-    deliveryDays: parseInt(document.getElementById('svc-delivery').value)||3,
-  };
   try {
-    if(editId){
-      await fb.updateDoc(fb.doc(db,'services',editId), payload);
-      showToast('✅ Service updated!');
-    } else {
-      await fb.addDoc(fb.collection(db,'services'), Object.assign({
-        freelancerId: window._user.uid,
-        freelancerName: window._userName || 'Expert',
-        active: true,
-        rating: 0, reviewCount: 0,
-        createdAt: fb.serverTimestamp(),
-      }, payload));
-      showToast('✅ Service published!');
-    }
+    await fb.setDoc(fb.doc(db,'users',window._user.uid), {
+      rate: rate,
+      servicesOffered: document.getElementById('edit-offering-input').value.trim(),
+    }, { merge:true });
+    showToast('✅ Saved!');
     closeModal('service-modal');
-    loadMyServices();
-  } catch(e){ showToast('Error: '+e.message); }
-}
-
-async function toggleServiceActive(id, makeActive){
-  var db = window._db; var fb = window._fb;
-  try {
-    await fb.updateDoc(fb.doc(db,'services',id), { active: makeActive });
-    showToast(makeActive ? '✅ Service resumed.' : '⏸ Service paused.');
-    loadMyServices();
-  } catch(e){ showToast('Error: '+e.message); }
-}
-
-async function deleteService(id){
-  if(!confirm('Delete this service permanently? This cannot be undone.')) return;
-  var db = window._db; var fb = window._fb;
-  try {
-    await fb.deleteDoc(fb.doc(db,'services',id));
-    showToast('🗑 Service deleted.');
-    loadMyServices();
+    loadMyOffering();
   } catch(e){ showToast('Error: '+e.message); }
 }
 
