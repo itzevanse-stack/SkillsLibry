@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Contract Workspace — SkillsLibry Marketplace</title>
+<title>Contract Workspace — SkillsLibry Experts</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
@@ -88,7 +88,7 @@ a{color:inherit;text-decoration:none;}
 <div class="shell">
   <div class="main-col">
     <div class="ws-topbar">
-      <span class="ws-back" onclick="window.location.href='/marketplace'">&#8592;</span>
+      <span class="ws-back" onclick="window.location.href='/experts'">&#8592;</span>
       <div class="ws-title" id="ws-contract-title">Loading contract...</div>
       <button class="ws-video-btn" onclick="toggleVideo()">&#128249; Video call</button>
       <button class="ws-panel-toggle" onclick="toggleSidePanel()">&#9776;</button>
@@ -117,7 +117,7 @@ a{color:inherit;text-decoration:none;}
 
     <div class="sp-section">
       <div class="amount-box">
-        <div class="amount-num" id="ws-amount">₦0</div>
+        <div class="amount-num" id="ws-amount">$0</div>
         <div class="amount-label">Contract amount</div>
       </div>
       <div id="action-buttons"></div>
@@ -224,7 +224,7 @@ async function loadContract(){
 function renderContract(){
   var c = _contract;
   document.getElementById('ws-contract-title').textContent = c.title || 'Contract';
-  document.getElementById('ws-amount').textContent = '₦'+(c.amount||0).toLocaleString();
+  document.getElementById('ws-amount').textContent = (c.currency==='USD'?'$':'₦')+(c.amount||0).toLocaleString();
 
   var pill = document.getElementById('status-pill');
   pill.textContent = (c.status||'').replace(/_/g,' ');
@@ -269,10 +269,10 @@ async function payForContract(){
     public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
     tx_ref: 'SKLMKT-'+Date.now(),
     amount: c.amount,
-    currency: c.currency || 'NGN',
+    currency: c.currency || 'USD',
     payment_options: 'card,banktransfer,ussd,mobilemoney',
     customer: { email: window._user.email, name: window._userName || window._user.email },
-    customizations: { title: 'SkillsLibry Marketplace', description: c.title },
+    customizations: { title: 'SkillsLibry Experts', description: c.title },
     callback: async function(response){
       if(response.status === 'successful' || response.status === 'completed'){
         try {
@@ -314,7 +314,7 @@ async function approveAndRelease(){
       freelancerName: c.freelancerName,
       contractId: _contractId,
       amount: c.amount,
-      currency: c.currency || 'NGN',
+      currency: c.currency || 'USD',
       status: 'pending',
       createdAt: fb.serverTimestamp(),
     });
