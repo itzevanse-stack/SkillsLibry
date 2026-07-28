@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Expert Profile — SkillsLibry Marketplace</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;--purple-dark:#5550d4;--purple-dim:rgba(108,99,255,.08);
+  --bg:#fff;--bg2:#f8f9fc;--bg3:#f0f2f7;
+  --border:#e4e6f0;--text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --green:#22c55e;--red:#e84545;--orange:#f59e0b;
+  --r:10px;--r-sm:6px;--r-lg:16px;--r-xl:22px;
+  --sh-md:0 6px 28px rgba(13,13,26,.1);--sh-lg:0 12px 48px rgba(13,13,26,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;}
+h1,h2,h3{font-family:'Poppins',sans-serif}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--bg4,#e8eaf0);border-radius:4px}
+
+/* ── TOP NAV ── */
+.nav{height:64px;display:flex;align-items:center;padding:0 32px;background:#fff;border-bottom:1px solid var(--border);gap:16px;position:relative;z-index:10;}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:800;color:#fff;font-size:15px;}
+.nav-logo-text{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;}
+.nav-logo-text span{color:var(--teal);}
+.nav-back{margin-left:auto;font-size:13px;font-weight:600;color:var(--text2);}
+
+/* ── HERO BAND ── */
+.hero{
+  background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
+  padding:44px 0 64px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 80% at 10% 50%,rgba(78,204,163,.08) 0%,transparent 60%),
+             radial-gradient(ellipse 40% 60% at 90% 20%,rgba(108,99,255,.08) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-inner{
+  max-width:1160px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr 400px;gap:40px;
+  align-items:start;position:relative;z-index:1;
+}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:20px;}
+.breadcrumb a{color:var(--teal);}
+.breadcrumb-sep{color:rgba(255,255,255,.2);}
+.hero-title{font-size:clamp(24px,3vw,40px);font-weight:800;color:#fff;line-height:1.15;letter-spacing:-.02em;margin-bottom:10px;min-height:1.15em;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:28px;max-width:560px;min-height:1.6em;}
+
+.video-wrap{
+  margin:0 0 28px;border-radius:14px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);border:1.5px solid rgba(255,255,255,.1);
+  position:relative;background:#000;aspect-ratio:16/9;
+}
+.video-wrap iframe,.video-wrap video{position:absolute;inset:0;width:100%;height:100%;border:none;}
+.no-video-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);text-align:center;padding:20px;
+}
+.no-video-placeholder .icon{font-size:40px;margin-bottom:12px;opacity:.6;}
+.no-video-placeholder .txt{color:rgba(255,255,255,.5);font-size:13px;}
+
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;min-height:26px;}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:100px;font-size:11px;font-weight:700;}
+.badge-verified{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.25);}
+.badge-featured{background:var(--orange);color:#fff;}
+
+.hero-meta-row{display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,.5);}
+.hero-avatar-sm{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;color:#fff;overflow:hidden;flex-shrink:0;}
+
+/* ── STICKY ACTION CARD ── */
+.action-card{
+  background:#fff;border-radius:var(--r-xl);box-shadow:0 8px 40px rgba(13,13,26,.15);
+  overflow:hidden;position:sticky;top:80px;border:1.5px solid var(--border);
+  margin-top:36px;
+}
+.ac-body{padding:28px;}
+.ac-avatar-row{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
+.ac-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;overflow:hidden;flex-shrink:0;}
+.ac-name{font-size:16px;font-weight:800;min-height:1.2em;}
+.ac-headline{font-size:12px;color:var(--text3);margin-top:3px;line-height:1.5;}
+
+.ac-btn{width:100%;padding:15px;font-family:'Poppins',sans-serif;font-size:15px;font-weight:800;border:none;border-radius:var(--r);cursor:pointer;transition:all .25s;display:block;text-align:center;margin-bottom:10px;box-sizing:border-box;}
+.ac-btn-primary{background:linear-gradient(135deg,var(--teal) 0%,#38b2ac 100%);color:#0d0d1a;box-shadow:0 4px 20px rgba(78,204,163,.3);}
+.ac-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(78,204,163,.45);}
+.ac-btn-outline{width:100%;padding:15px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;border:1.5px solid var(--border);background:#fff;color:var(--text);border-radius:var(--r);cursor:pointer;margin-bottom:10px;box-sizing:border-box;}
+.ac-btn-outline:hover{background:var(--bg2);}
+
+.ac-guarantee{text-align:center;font-size:12px;color:var(--text3);margin:18px 0;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ac-includes{border-top:1.5px solid var(--border);padding-top:20px;}
+.ac-includes-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:14px;}
+.include-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);margin-bottom:12px;}
+.include-item:last-child{margin-bottom:0;}
+.include-check{width:18px;height:18px;border-radius:50%;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--teal-dark);font-weight:700;flex-shrink:0;}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr;}
+  .action-card{position:static;margin-top:32px;}
+}
+
+/* ── MAIN CONTENT / TABS ── */
+.content-wrap{max-width:1160px;margin:0 auto;padding:40px 32px 80px;}
+.tabs-bar{display:flex;border-bottom:2px solid var(--border);margin-bottom:32px;background:var(--bg2);border-radius:10px 10px 0 0;}
+.tab-btn{padding:16px 24px;font-size:14px;font-weight:600;color:var(--text3);background:transparent;border:none;cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .2s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal);}
+.tab-pane{display:none;animation:fadeIn .2s ease;}
+.tab-pane.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+.bio-text{color:var(--text2);font-size:15px;line-height:1.8;white-space:pre-line;}
+
+.svc-mini{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--border);}
+.svc-mini:last-child{border-bottom:none;}
+.svc-mini-title{font-size:14px;font-weight:600;}
+.svc-mini-price{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:var(--teal-dark);}
+
+.testi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;}
+.testi-card{border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.testi-video-wrap{position:relative;padding-top:56.25%;background:#000;}
+.testi-video-wrap iframe,.testi-video-wrap video{position:absolute;inset:0;width:100%;height:100%;border:none;}
+.testi-body{padding:14px 16px;}
+.testi-client{font-size:13px;font-weight:700;margin-bottom:4px;}
+.testi-quote{font-size:12px;color:var(--text2);line-height:1.5;}
+
+/* ── CHAT (inline within action card, toggled) ── */
+.chat-panel{display:none;flex-direction:column;height:380px;border-top:1px solid var(--border);}
+.chat-panel.open{display:flex;}
+.chat-scroll{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg2);}
+.msg{max-width:80%;padding:9px 13px;border-radius:12px;font-size:13px;}
+.msg.mine{align-self:flex-end;background:var(--teal);color:#0d0d1a;}
+.msg.theirs{align-self:flex-start;background:#fff;border:1px solid var(--border);}
+.chat-input-row{display:flex;gap:8px;padding:12px;background:#fff;border-top:1px solid var(--border);}
+.chat-input{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:20px;font-size:13px;outline:none;}
+.chat-send{padding:9px 16px;background:var(--teal);border:none;border-radius:20px;font-weight:700;cursor:pointer;font-size:13px;}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(13,13,26,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:#fff;border-radius:var(--r-lg);max-width:520px;width:100%;max-height:88vh;overflow-y:auto;padding:28px;position:relative;}
+.modal-box h2{font-size:18px;font-weight:800;margin-bottom:16px;}
+.close-x{position:absolute;top:18px;right:22px;font-size:20px;cursor:pointer;color:var(--text3);}
+.fg{margin-bottom:14px;}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;}
+.fi{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;}
+.fi:focus{border-color:var(--teal);}
+textarea.fi{resize:vertical;min-height:80px;}
+
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:14px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;display:none;box-shadow:var(--sh-lg);}
+.toast.show{display:block;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="/"><div class="nav-logo-mark">S</div><span class="nav-logo-text">Skills<span>Libry</span></span></a>
+  <a class="nav-back" href="/marketplace">← Back to marketplace</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="breadcrumb"><a href="/marketplace">Marketplace</a><span class="breadcrumb-sep">/</span><span>Expert</span></div>
+
+      <h1 class="hero-title" id="profile-name">Loading...</h1>
+      <p class="hero-sub" id="profile-headline"></p>
+
+      <div class="video-wrap" id="video-container">
+        <div class="no-video-placeholder"><div class="icon">🎥</div><div class="txt">No introduction video yet.</div></div>
+      </div>
+
+      <div class="hero-badges">
+        <span class="badge badge-verified" id="verified-badge" style="display:none;">✓ Verified SkillsLibry Graduate</span>
+        <span class="badge badge-featured" id="featured-badge" style="display:none;">⭐ Featured Talent</span>
+      </div>
+
+      <div class="hero-meta-row">
+        <div class="hero-avatar-sm" id="profile-avatar"></div>
+        <span>On SkillsLibry Marketplace</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="action-card">
+        <div class="ac-body">
+          <div class="ac-avatar-row">
+            <div class="ac-avatar" id="ac-avatar"></div>
+            <div><div class="ac-name" id="ac-name"></div><div class="ac-headline" id="ac-headline"></div></div>
+          </div>
+
+          <div id="profile-actions"></div>
+
+          <div class="ac-guarantee">🔒 Chat and video calls happen entirely inside SkillsLibry</div>
+
+          <div class="ac-includes">
+            <div class="ac-includes-title">Why work with them</div>
+            <div class="include-item"><div class="include-check">✓</div>Message before you commit</div>
+            <div class="include-item"><div class="include-check">✓</div>Schedule a call, no external app needed</div>
+            <div class="include-item"><div class="include-check">✓</div>Real video testimonials from past clients</div>
+          </div>
+        </div>
+
+        <div class="chat-panel" id="chat-panel">
+          <div class="chat-scroll" id="chat-scroll"><div class="empty-state">Loading...</div></div>
+          <div class="chat-input-row">
+            <input class="chat-input" id="chat-input" placeholder="Ask a question..." onkeydown="if(event.key==='Enter')sendDirectMessage()"/>
+            <button class="chat-send" onclick="sendDirectMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+  <div class="tabs-bar">
+    <button class="tab-btn active" id="tabbtn-about" onclick="switchProfileTab('about')">About</button>
+    <button class="tab-btn" id="tabbtn-services" onclick="switchProfileTab('services')">Services Offered</button>
+    <button class="tab-btn" id="tabbtn-testimonials" onclick="switchProfileTab('testimonials')">Testimonials</button>
+  </div>
+
+  <div class="tab-pane active" id="tabpane-about">
+    <div class="bio-text" id="profile-bio">This expert hasn't added a bio yet.</div>
+  </div>
+
+  <div class="tab-pane" id="tabpane-services">
+    <div id="profile-services"><div class="empty-state">Loading...</div></div>
+  </div>
+
+  <div class="tab-pane" id="tabpane-testimonials">
+    <div class="testi-header">
+      <span></span>
+      <button class="ac-btn-outline" id="add-testimonial-btn" style="display:none;width:auto;margin:0;padding:9px 16px;font-size:12px;" onclick="openTestimonialModal()">+ Add testimonial</button>
+    </div>
+    <div id="testimonials-grid"><div class="empty-state">Loading...</div></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('edit-modal')">&times;</span>
+    <h2>Edit your profile</h2>
+    <div class="fg"><label>Headline</label><input class="fi" id="edit-headline" placeholder="e.g. Digital Product Strategist — $2M+ in sales generated"/></div>
+    <div class="fg"><label>Bio</label><textarea class="fi" id="edit-bio" placeholder="Tell potential clients about your experience and results"></textarea></div>
+    <div class="fg"><label>Introduction video URL</label><input class="fi" id="edit-video" placeholder="YouTube, Vimeo, or Loom link"/>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;">A short pitch video is the single biggest trust signal for high-value work — clients want to see and hear you before they book a $2000+ engagement.</div>
+    </div>
+    <button class="ac-btn-primary ac-btn" onclick="saveProfileEdits()">Save profile</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="booking-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('booking-modal')">&times;</span>
+    <h2 id="booking-title">Schedule a call</h2>
+    <div id="booking-step-brief">
+      <div class="fg"><label>What do you need help with?</label><textarea class="fi" id="brief-text" required placeholder="Briefly describe your project or goal"></textarea></div>
+      <div class="fg"><label>Your budget (₦)</label><input class="fi" id="brief-budget" type="number" required placeholder="e.g. 800000"/></div>
+      <button class="ac-btn-primary ac-btn" onclick="proceedToSlots()">Continue to pick a time</button>
+    </div>
+    <div id="booking-step-slots" style="display:none;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="testimonial-modal">
+  <div class="modal-box">
+    <span class="close-x" onclick="closeModal('testimonial-modal')">&times;</span>
+    <h2>Add a video testimonial</h2>
+    <div class="fg"><label>Client name</label><input class="fi" id="testi-client" required placeholder="e.g. Sarah from Acme Inc."/></div>
+    <div class="fg"><label>Video URL</label><input class="fi" id="testi-video" required placeholder="YouTube, Vimeo, or Loom link"/></div>
+    <div class="fg"><label>Quote (optional)</label><textarea class="fi" id="testi-quote" placeholder="A short highlight from what they said"></textarea></div>
+    <button class="ac-btn-primary ac-btn" onclick="submitTestimonial()">Publish testimonial</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, query, where, orderBy, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+  storageBucket: "skillslibry.firebasestorage.app",
+  messagingSenderId: "363745273879",
+  appId: "1:363745273879:web:8a9c4795e37ef5eed15452"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+window._db = db;
+window._fb = { collection, addDoc, getDoc, getDocs, doc, setDoc, query, where, orderBy, onSnapshot, serverTimestamp };
+
+onAuthStateChanged(auth, async (user) => {
+  window._user = user || null;
+  if(user){
+    const snap = await getDoc(doc(db,'users',user.uid));
+    window._userName = snap.exists() ? snap.data().name : user.email;
+    window._userPhoto = snap.exists() ? (snap.data().photoURL||'') : '';
+  }
+  document.dispatchEvent(new CustomEvent('authReady', { detail:{ user } }));
+});
+</script>
+
+<script>
+var _profileId = new URLSearchParams(window.location.search).get('id');
+var _profileData = null;
+
+function showToast(msg){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+function switchProfileTab(tab){
+  ['about','services','testimonials'].forEach(function(t){
+    document.getElementById('tabpane-'+t).classList.toggle('active', t===tab);
+    document.getElementById('tabbtn-'+t).classList.toggle('active', t===tab);
+  });
+}
+
+function toEmbedHtml(url){
+  var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if(yt) return '<iframe src="https://www.youtube.com/embed/'+yt[1]+'" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+  var vimeo = url.match(/vimeo\.com\/(\d+)/);
+  if(vimeo) return '<iframe src="https://player.vimeo.com/video/'+vimeo[1]+'" allowfullscreen allow="autoplay"></iframe>';
+  var loom = url.match(/loom\.com\/share\/([\w-]+)/);
+  if(loom) return '<iframe src="https://www.loom.com/embed/'+loom[1]+'" allowfullscreen allow="autoplay"></iframe>';
+  if(/\.mp4($|\?)/.test(url)) return '<video src="'+url+'" controls></video>';
+  return '<iframe src="'+url+'" allowfullscreen></iframe>';
+}
+
+async function loadProfile(){
+  if(!_profileId){ document.getElementById('profile-name').textContent = 'No profile specified.'; return; }
+  var db = window._db; var fb = window._fb;
+  try {
+    var snap = await fb.getDoc(fb.doc(db,'users',_profileId));
+    if(!snap.exists()){ document.getElementById('profile-name').textContent = 'Profile not found.'; return; }
+    _profileData = snap.data();
+
+    document.getElementById('profile-name').textContent = _profileData.name || 'Expert';
+    document.getElementById('profile-headline').textContent = _profileData.headline || '';
+    document.getElementById('profile-bio').textContent = _profileData.bio || "This expert hasn't added a bio yet.";
+    document.getElementById('ac-name').textContent = _profileData.name || 'Expert';
+    document.getElementById('ac-headline').textContent = _profileData.headline || '';
+
+    var avatarHtml = _profileData.photoURL ? '<img src="'+_profileData.photoURL+'" style="width:100%;height:100%;object-fit:cover;">' : (_profileData.name||'F').charAt(0).toUpperCase();
+    document.getElementById('profile-avatar').innerHTML = avatarHtml;
+    document.getElementById('ac-avatar').innerHTML = avatarHtml;
+
+    if((_profileData.completedCourseCount||0) > 0){
+      document.getElementById('verified-badge').style.display = 'inline-flex';
+    }
+    if(_profileData.featured){
+      document.getElementById('featured-badge').style.display = 'inline-flex';
+    }
+
+    if(_profileData.promoVideoUrl){
+      document.getElementById('video-container').innerHTML = toEmbedHtml(_profileData.promoVideoUrl);
+    }
+
+    renderActionButtons();
+    loadProfileServices();
+    loadTestimonials();
+
+    if(window._user && window._user.uid === _profileId){
+      document.getElementById('add-testimonial-btn').style.display = 'inline-block';
+    }
+    if(window._user && window._user.uid !== _profileId){
+      listenForDirectMessages();
+    }
+  } catch(e){
+    document.getElementById('profile-name').textContent = 'Error: '+e.message;
+  }
+}
+
+var _previewMode = false;
+
+function renderActionButtons(){
+  var actions = document.getElementById('profile-actions');
+  var isOwnProfile = window._user && window._user.uid === _profileId;
+
+  if(isOwnProfile && !_previewMode){
+    actions.innerHTML = '<button class="ac-btn ac-btn-outline" onclick="openEditModal()">Edit my profile</button>'
+      +'<a class="ac-btn ac-btn-outline" href="/marketplace" style="display:block;text-decoration:none;box-sizing:border-box;">Manage my services</a>'
+      +'<button class="ac-btn ac-btn-outline" onclick="togglePreviewMode()" style="border-style:dashed;">👁 Preview as a visitor</button>';
+  } else if(isOwnProfile && _previewMode){
+    actions.innerHTML = '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:8px;border-radius:8px;margin-bottom:12px;">👁 Previewing as a visitor sees it</div>'
+      +'<button class="ac-btn ac-btn-primary" disabled title="Preview only — schedule/message are disabled on your own profile" style="opacity:.6;cursor:not-allowed;">📅 Schedule a call</button>'
+      +'<button class="ac-btn ac-btn-outline" disabled title="Preview only — schedule/message are disabled on your own profile" style="opacity:.6;cursor:not-allowed;">💬 Message first</button>'
+      +'<button class="ac-btn ac-btn-outline" onclick="togglePreviewMode()">← Back to editing</button>';
+  } else {
+    actions.innerHTML = '<button class="ac-btn ac-btn-primary" onclick="openBookingModal()">📅 Schedule a call</button>'
+      +'<button class="ac-btn ac-btn-outline" onclick="toggleChatPanel()">💬 Message first</button>';
+  }
+}
+
+function togglePreviewMode(){
+  _previewMode = !_previewMode;
+  renderActionButtons();
+}
+
+function toggleChatPanel(){
+  document.getElementById('chat-panel').classList.toggle('open');
+}
+
+function openEditModal(){
+  document.getElementById('edit-headline').value = _profileData.headline || '';
+  document.getElementById('edit-bio').value = _profileData.bio || '';
+  document.getElementById('edit-video').value = _profileData.promoVideoUrl || '';
+  openModal('edit-modal');
+}
+async function saveProfileEdits(){
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.setDoc(fb.doc(db,'users',window._user.uid), {
+      headline: document.getElementById('edit-headline').value.trim(),
+      bio: document.getElementById('edit-bio').value.trim(),
+      promoVideoUrl: document.getElementById('edit-video').value.trim(),
+    }, { merge:true });
+    closeModal('edit-modal');
+    showToast('✅ Profile updated!');
+    loadProfile();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+async function loadProfileServices(){
+  var db = window._db; var fb = window._fb;
+  var el = document.getElementById('profile-services');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'services'), fb.where('freelancerId','==',_profileId), fb.where('active','==',true)));
+    var services = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    if(!services.length){
+      el.innerHTML = '<div class="empty-state">No services listed yet.</div>';
+      return;
+    }
+    el.innerHTML = services.map(function(s){
+      return '<div class="svc-mini"><span class="svc-mini-title">'+s.title+'</span><span class="svc-mini-price">₦'+(s.price||0).toLocaleString()+'</span></div>';
+    }).join('');
+  } catch(e){ el.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
+}
+
+async function loadTestimonials(){
+  var db = window._db; var fb = window._fb;
+  var el = document.getElementById('testimonials-grid');
+  try {
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'freelancerTestimonials'), fb.where('freelancerId','==',_profileId)));
+    var testimonials = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    if(!testimonials.length){
+      el.innerHTML = '<div class="empty-state">No video testimonials yet.</div>';
+      return;
+    }
+    el.innerHTML = '<div class="testi-grid">' + testimonials.map(function(t){
+      return '<div class="testi-card">'
+        +'<div class="testi-video-wrap">'+toEmbedHtml(t.videoUrl)+'</div>'
+        +'<div class="testi-body">'
+          +'<div class="testi-client">'+(t.clientName||'Client')+'</div>'
+          +(t.quote ? '<div class="testi-quote">"'+t.quote+'"</div>' : '')
+        +'</div>'
+      +'</div>';
+    }).join('') + '</div>';
+  } catch(e){ el.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
+}
+
+function openTestimonialModal(){
+  document.getElementById('testi-client').value = '';
+  document.getElementById('testi-video').value = '';
+  document.getElementById('testi-quote').value = '';
+  openModal('testimonial-modal');
+}
+async function submitTestimonial(){
+  var clientName = document.getElementById('testi-client').value.trim();
+  var videoUrl = document.getElementById('testi-video').value.trim();
+  var quote = document.getElementById('testi-quote').value.trim();
+  if(!clientName || !videoUrl){ showToast('Please fill in the client name and video URL.'); return; }
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.addDoc(fb.collection(db,'freelancerTestimonials'), {
+      freelancerId: window._user.uid,
+      clientName: clientName,
+      videoUrl: videoUrl,
+      quote: quote,
+      createdAt: fb.serverTimestamp(),
+    });
+    closeModal('testimonial-modal');
+    showToast('✅ Testimonial published!');
+    loadTestimonials();
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+function threadId(uidA, uidB){ return [uidA, uidB].sort().join('_'); }
+function listenForDirectMessages(){
+  var db = window._db; var fb = window._fb;
+  var tid = threadId(window._user.uid, _profileId);
+  var q = fb.query(fb.collection(db,'directMessages_'+tid), fb.orderBy('createdAt','asc'));
+  fb.onSnapshot(q, function(snap){
+    var scroll = document.getElementById('chat-scroll');
+    var msgs = snap.docs.map(function(d){ return d.data(); });
+    if(!msgs.length){
+      scroll.innerHTML = '<div class="empty-state">Say hello — ask about their experience or approach before scheduling.</div>';
+      return;
+    }
+    scroll.innerHTML = msgs.map(function(m){
+      var mine = m.senderId === window._user.uid;
+      return '<div class="msg '+(mine?'mine':'theirs')+'">'+m.text+'</div>';
+    }).join('');
+    scroll.scrollTop = scroll.scrollHeight;
+  }, function(err){ console.error('Direct message listener failed:', err.message); });
+}
+
+async function sendDirectMessage(){
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if(!text || !window._user){ if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; } return; }
+  input.value = '';
+  var db = window._db; var fb = window._fb;
+  var tid = threadId(window._user.uid, _profileId);
+  try {
+    var existing = await fb.getDocs(fb.collection(db,'directMessages_'+tid));
+    var isFirstMessage = existing.docs.length === 0;
+
+    await fb.addDoc(fb.collection(db,'directMessages_'+tid), {
+      senderId: window._user.uid,
+      senderName: window._userName || 'User',
+      text: text,
+      createdAt: fb.serverTimestamp(),
+    });
+
+    if(isFirstMessage){
+      await notifyUser(_profileId, {
+        type: 'message',
+        fromId: window._user.uid,
+        fromName: window._userName || 'Someone',
+        preview: text.slice(0,120),
+        link: '/profile?id='+window._user.uid,
+      });
+    }
+  } catch(e){ showToast('Message failed: '+e.message); }
+}
+
+async function notifyUser(recipientId, payload){
+  var db = window._db; var fb = window._fb;
+  try {
+    await fb.addDoc(fb.collection(db,'notifications'), Object.assign({
+      recipientId: recipientId, read: false, createdAt: fb.serverTimestamp(),
+    }, payload));
+  } catch(e){ console.error('Notification failed to send:', e.message); }
+}
+
+function openBookingModal(){
+  if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
+  document.getElementById('booking-title').textContent = 'Schedule a call with '+(_profileData.name||'this expert');
+  document.getElementById('booking-step-brief').style.display = 'block';
+  document.getElementById('booking-step-slots').style.display = 'none';
+  document.getElementById('brief-text').value = '';
+  document.getElementById('brief-budget').value = '';
+  openModal('booking-modal');
+}
+
+var DAYS = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+
+async function proceedToSlots(){
+  var brief = document.getElementById('brief-text').value.trim();
+  var budget = document.getElementById('brief-budget').value.trim();
+  if(!brief || !budget){ showToast('Please fill in both fields.'); return; }
+
+  var db = window._db; var fb = window._fb;
+  var slotsEl = document.getElementById('booking-step-slots');
+  document.getElementById('booking-step-brief').style.display = 'none';
+  slotsEl.style.display = 'block';
+  slotsEl.innerHTML = 'Loading availability...';
+
+  try {
+    var availSnap = await fb.getDoc(fb.doc(db,'availability',_profileId));
+    if(!availSnap.exists() || !(availSnap.data().slots||[]).length){
+      slotsEl.innerHTML = '<div class="empty-state">This expert has not set their availability yet. Try messaging them instead.</div>';
+      return;
+    }
+    var availability = availSnap.data();
+    var bookingsSnap = await fb.getDocs(fb.query(fb.collection(db,'bookings'), fb.where('freelancerId','==',_profileId), fb.where('status','==','scheduled')));
+    var existingBookings = bookingsSnap.docs.map(function(d){ return d.data(); });
+    var slots = generateSlots(availability, existingBookings, 14);
+
+    if(!slots.length){
+      slotsEl.innerHTML = '<div class="empty-state">No open slots in the next 2 weeks.</div>';
+      return;
+    }
+    var byDate = {};
+    slots.forEach(function(slot){
+      var key = slot.toDateString();
+      if(!byDate[key]) byDate[key] = [];
+      byDate[key].push(slot);
+    });
+    var html = '<div style="max-height:340px;overflow-y:auto;">';
+    Object.keys(byDate).forEach(function(dateKey){
+      html += '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:12px 0 8px;">'+dateKey+'</div><div style="display:flex;flex-wrap:wrap;gap:8px;">';
+      byDate[dateKey].forEach(function(slot){
+        var timeLabel = slot.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        html += '<button class="ac-btn-outline" style="width:auto;margin:0;padding:8px 14px;font-size:12px;" onclick="confirmBooking(\''+slot.toISOString()+'\','+(availability.callDurationMins||30)+')">'+timeLabel+'</button>';
+      });
+      html += '</div>';
+    });
+    html += '</div>';
+    slotsEl.innerHTML = html;
+  } catch(e){ slotsEl.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
+}
+
+function generateSlots(availability, existingBookings, daysAhead){
+  var slots = [];
+  var now = new Date();
+  for(var d=0; d<daysAhead; d++){
+    var day = new Date(now.getTime() + d*86400000);
+    var dayName = DAYS[(day.getDay()+6)%7];
+    var dayBlocks = (availability.slots||[]).filter(function(s){ return s.day === dayName; });
+    dayBlocks.forEach(function(block){
+      var sp = block.start.split(':').map(Number), ep = block.end.split(':').map(Number);
+      var cursor = new Date(day.getFullYear(),day.getMonth(),day.getDate(),sp[0],sp[1]);
+      var blockEnd = new Date(day.getFullYear(),day.getMonth(),day.getDate(),ep[0],ep[1]);
+      var stepMs = (availability.callDurationMins||30)*60000;
+      while(cursor.getTime()+stepMs <= blockEnd.getTime()){
+        if(cursor.getTime() > now.getTime() + 30*60000){
+          var conflict = existingBookings.some(function(b){
+            var bt = b.scheduledAt && b.scheduledAt.toDate ? b.scheduledAt.toDate() : new Date(b.scheduledAt);
+            return Math.abs(bt.getTime() - cursor.getTime()) < stepMs;
+          });
+          if(!conflict) slots.push(new Date(cursor));
+        }
+        cursor = new Date(cursor.getTime() + stepMs);
+      }
+    });
+  }
+  return slots;
+}
+
+async function confirmBooking(isoTime, durationMins){
+  var db = window._db; var fb = window._fb;
+  var brief = document.getElementById('brief-text').value.trim();
+  var budget = document.getElementById('brief-budget').value.trim();
+  try {
+    var ref = await fb.addDoc(fb.collection(db,'bookings'), {
+      freelancerId: _profileId,
+      freelancerName: _profileData.name || 'Expert',
+      clientId: window._user.uid,
+      clientName: window._userName || 'Client',
+      scheduledAt: new Date(isoTime),
+      durationMins: durationMins,
+      status: 'scheduled',
+      projectBrief: brief,
+      budget: budget,
+      createdAt: fb.serverTimestamp(),
+    });
+    await notifyUser(_profileId, {
+      type: 'booking',
+      fromId: window._user.uid,
+      fromName: window._userName || 'Someone',
+      preview: brief.slice(0,120),
+      budget: budget,
+      bookingId: ref.id,
+      link: '/marketplace',
+    });
+    closeModal('booking-modal');
+    showToast("✅ Call scheduled! They've been notified with your project details.");
+  } catch(e){ showToast('Error: '+e.message); }
+}
+
+document.addEventListener('authReady', function(){
+  loadProfile();
+});
+</script>
+
+</body>
+</html>
