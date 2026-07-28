@@ -123,7 +123,7 @@ textarea.fi{resize:vertical;min-height:80px;}
       <div id="notif-dropdown" style="display:none;position:absolute;top:44px;right:0;width:340px;max-height:420px;overflow-y:auto;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh-md,0 6px 28px rgba(13,13,26,.1));z-index:200;"></div>
     </div>
     <button class="btn btn-outline" onclick="openAvailabilityModal()">Set Availability</button>
-    <button class="btn btn-teal" onclick="openModal('service-modal')">Offer a Service</button>
+    <button class="btn btn-teal" onclick="openModal('service-modal')">Become an Expert</button>
   </div>
 </nav>
 
@@ -140,20 +140,10 @@ textarea.fi{resize:vertical;min-height:80px;}
 
     <div class="page-head">
       <h1>Find talent</h1>
-      <p>Hire experts offering real services — including verified SkillsLibry graduates with a provable skill history.</p>
+      <p>Hire verified experts directly — real experience, real results, no gig-listing menus.</p>
     </div>
     <div class="search-row">
-      <input class="search-input" id="svc-search" placeholder="Search services (e.g. 'digital product marketing')" oninput="renderServices()"/>
-      <select class="cat-select" id="svc-cat-filter" onchange="renderServices()">
-        <option value="">All categories</option>
-        <option value="digital">Digital Products</option>
-        <option value="marketing">Marketing</option>
-        <option value="design">Design</option>
-        <option value="writing">Writing & Content</option>
-        <option value="dev">Development</option>
-        <option value="consulting">Consulting</option>
-        <option value="other">Other</option>
-      </select>
+      <input class="search-input" id="svc-search" placeholder="Search experts (e.g. 'digital product marketing')" oninput="renderServices()"/>
     </div>
     <div id="services-grid" class="grid"><div class="empty-state">Loading...</div></div>
   </div>
@@ -191,13 +181,16 @@ textarea.fi{resize:vertical;min-height:80px;}
     <div id="expert-apply-form" style="display:none;">
       <h2>Apply to become an Expert</h2>
       <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
-        This isn't a generic gig board — every expert is reviewed before they can list a service. Tell us about your real experience, results, and any certificates or proof of your skill. This is what we use to <strong>verify and showcase you to potential clients</strong>, so the more specific and provable, the stronger your profile looks to a buyer considering a $2000+ engagement.
+        Every expert is reviewed before appearing on SkillsLibry Experts. Tell us about your real experience, results, and any certificates or proof of your skill — this is what we use to <strong>verify and showcase you to potential clients</strong>. Once approved, clients hire you directly at your rate — no gig listings to manage.
       </p>
-      <div class="fg"><label>What service(s) do you want to offer?</label><textarea class="fi" id="app-services" required placeholder="e.g. Digital product marketing strategy, funnel building, paid ads consulting"></textarea></div>
+      <div class="fg"><label>What do you help clients with?</label><textarea class="fi" id="app-services" required placeholder="e.g. Digital product marketing strategy, funnel building, paid ads consulting"></textarea></div>
       <div class="fg"><label>Certificates or qualifications</label><textarea class="fi" id="app-quals" required placeholder="Describe any certifications, courses completed, or formal training"></textarea></div>
       <div class="fg"><label>Link to a certificate or credential (optional)</label><input class="fi" id="app-quals-link" placeholder="https://..."/></div>
       <div class="fg"><label>Results & past work</label><textarea class="fi" id="app-results" required placeholder="Real numbers or outcomes you've achieved for yourself or clients (e.g. 'Generated ₦5M in sales for a client's digital course launch')"></textarea></div>
       <div class="fg"><label>Portfolio or proof of work link (optional)</label><input class="fi" id="app-portfolio-link" placeholder="https://..."/></div>
+      <div class="fg"><label>Your rate (USD $)</label><input class="fi" id="app-rate" type="number" min="1000" required placeholder="e.g. 1500"/>
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000. This is what clients pay to hire you — you can update it later.</div>
+      </div>
       <button class="btn btn-teal" style="width:100%;" onclick="submitExpertApplication()">Submit application</button>
     </div>
 
@@ -217,27 +210,12 @@ textarea.fi{resize:vertical;min-height:80px;}
     </div>
 
     <!-- STATE: approved — actual service creation form -->
-    <form id="service-form" style="display:none;" onsubmit="submitService(event)">
-      <h2>Offer a service</h2>
-      <div class="fg"><label>Service title</label><input class="fi" id="svc-title" required placeholder="e.g. I will design a landing page for your digital course"/></div>
-      <div class="fg"><label>Description</label><textarea class="fi" id="svc-desc" required placeholder="Describe exactly what the buyer gets"></textarea></div>
-      <div class="fg"><label>Category</label>
-        <select class="fi" id="svc-cat" required>
-          <option value="digital">Digital Products</option>
-          <option value="marketing">Marketing</option>
-          <option value="design">Design</option>
-          <option value="writing">Writing & Content</option>
-          <option value="dev">Development</option>
-          <option value="consulting">Consulting</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div class="fg"><label>Price (USD $)</label><input class="fi" id="svc-price" type="number" min="1000" required placeholder="e.g. 1500"/>
-        <div style="font-size:11px;color:var(--text3);margin-top:5px;">Minimum $1,000. SkillsLibry Experts is built for high-level, high-value work — not low-ticket gigs.</div>
-      </div>
-      <div class="fg"><label>Delivery time (days)</label><input class="fi" id="svc-delivery" type="number" required placeholder="e.g. 5"/></div>
-      <div class="modal-actions"><button type="submit" class="btn btn-teal">Publish service</button></div>
-    </form>
+    <div id="service-form" style="display:none;text-align:center;padding:30px 10px;">
+      <div style="font-size:40px;margin-bottom:14px;">✅</div>
+      <h2 style="margin-bottom:10px;">You're an approved Expert</h2>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:18px;">Clients hire you directly from your profile at your set rate. Manage your rate, offering, and upcoming calls from your dashboard.</p>
+      <a class="btn btn-teal" href="/expert-dashboard" style="display:inline-block;">Go to my Expert Dashboard</a>
+    </div>
   </div>
 </div>
 
@@ -358,9 +336,14 @@ async function submitExpertApplication(){
   var qualsLink = document.getElementById('app-quals-link').value.trim();
   var results = document.getElementById('app-results').value.trim();
   var portfolioLink = document.getElementById('app-portfolio-link').value.trim();
+  var rate = parseFloat(document.getElementById('app-rate').value)||0;
 
-  if(!services || !quals || !results){
+  if(!services || !quals || !results || !rate){
     showToast('Please fill in all required fields.');
+    return;
+  }
+  if(rate < 1000){
+    showToast('Your rate must be at least $1,000.');
     return;
   }
 
@@ -375,6 +358,7 @@ async function submitExpertApplication(){
       qualificationsLink: qualsLink,
       pastResults: results,
       portfolioLink: portfolioLink,
+      proposedRate: rate,
       status: 'pending',
       createdAt: fb.serverTimestamp(),
     });
@@ -399,11 +383,11 @@ async function loadServices(){
   var db = window._db; var fb = window._fb;
   var grid = document.getElementById('services-grid');
   try {
-    var snap = await fb.getDocs(fb.query(fb.collection(db,'services'), fb.where('active','==',true)));
+    var snap = await fb.getDocs(fb.query(fb.collection(db,'users'), fb.where('expertStatus','==','approved')));
     _servicesCache = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
     renderServices();
   } catch(e){
-    grid.innerHTML = '<div class="empty-state">Error loading services: '+e.message+'</div>';
+    grid.innerHTML = '<div class="empty-state">Error loading experts: '+e.message+'</div>';
   }
 }
 
@@ -435,29 +419,27 @@ async function loadFeaturedTalent(){
 function renderServices(){
   var grid = document.getElementById('services-grid');
   var q = (document.getElementById('svc-search').value||'').toLowerCase();
-  var cat = document.getElementById('svc-cat-filter').value;
   var filtered = _servicesCache.filter(function(s){
-    var matchesQ = !q || (s.title||'').toLowerCase().indexOf(q)>-1 || (s.description||'').toLowerCase().indexOf(q)>-1;
-    var matchesCat = !cat || s.category===cat;
-    return matchesQ && matchesCat;
+    var matchesQ = !q || (s.name||'').toLowerCase().indexOf(q)>-1 || (s.headline||'').toLowerCase().indexOf(q)>-1 || (s.servicesOffered||'').toLowerCase().indexOf(q)>-1;
+    return matchesQ;
   });
   if(!filtered.length){
-    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div>No services found. Be the first to <a href="#" onclick="openModal(\'service-modal\')" style="color:var(--teal-dark);font-weight:700;">offer one</a>.</div>';
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div>No experts found. Be the first to <a href="#" onclick="openModal(\'service-modal\')" style="color:var(--teal-dark);font-weight:700;">apply</a>.</div>';
     return;
   }
   grid.innerHTML = filtered.map(function(s){
-    var initials = (s.freelancerName||'F').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-    var avatarInner = s.freelancerPhoto
-      ? '<img src="'+s.freelancerPhoto+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+    var initials = (s.name||'E').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+    var avatarInner = s.photoURL
+      ? '<img src="'+s.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
       : initials;
     return '<div class="svc-card" onclick="viewService(\''+s.id+'\')">'
       +'<div class="svc-thumb">🛠️</div>'
       +'<div class="svc-body">'
-        +'<div class="svc-freelancer" onclick="event.stopPropagation();window.location.href=\'/profile?id='+s.freelancerId+'\'" style="cursor:pointer;"><div class="svc-avatar">'+avatarInner+'</div><span class="svc-freelancer-name">'+(s.freelancerName||'Expert')+'</span>'
-          +(s.freelancerVerified?'<span class="verified-badge">✓ Verified</span>':'')
+        +'<div class="svc-freelancer" onclick="event.stopPropagation();window.location.href=\'/profile?id='+s.id+'\'" style="cursor:pointer;"><div class="svc-avatar">'+avatarInner+'</div><span class="svc-freelancer-name">'+(s.name||'Expert')+'</span>'
+          +'<span class="verified-badge">✓ Verified</span>'
         +'</div>'
-        +'<div class="svc-title">'+s.title+'</div>'
-        +'<div class="svc-footer"><span class="svc-price">$'+(s.price||0).toLocaleString()+'</span>'
+        +'<div class="svc-title">'+(s.headline||'Expert on SkillsLibry')+'</div>'
+        +'<div class="svc-footer"><span class="svc-price">$'+(s.rate||0).toLocaleString()+'</span>'
           +'<span class="svc-rating">'+(s.rating?('★ '+s.rating.toFixed(1)):'New')+'</span>'
         +'</div>'
       +'</div>'
@@ -468,35 +450,34 @@ function renderServices(){
 function viewService(id){
   var s = _servicesCache.find(function(x){ return x.id===id; });
   if(!s) return;
-  document.getElementById('hire-modal-title').textContent = s.title;
+  document.getElementById('hire-modal-title').textContent = s.name || 'Expert';
   document.getElementById('hire-modal-body').innerHTML =
-    '<p style="color:var(--text2);margin-bottom:14px;">'+s.description+'</p>'
+    '<p style="color:var(--text2);margin-bottom:14px;">'+(s.servicesOffered||s.bio||'')+'</p>'
     +'<div style="display:flex;justify-content:space-between;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:16px;">'
-      +'<div><div style="font-size:12px;color:var(--text3);">Price</div><div style="font-size:20px;font-weight:800;">$'+(s.price||0).toLocaleString()+'</div></div>'
-      +'<div><div style="font-size:12px;color:var(--text3);">Delivery</div><div style="font-size:20px;font-weight:800;">'+(s.deliveryDays||'—')+' days</div></div>'
+      +'<div><div style="font-size:12px;color:var(--text3);">Rate</div><div style="font-size:20px;font-weight:800;">$'+(s.rate||0).toLocaleString()+'</div></div>'
+      +'<div><a href="/profile?id='+s.id+'" style="font-size:12px;color:var(--teal-dark);font-weight:700;">View full profile →</a></div>'
     +'</div>'
-    +'<button class="btn btn-teal" style="width:100%;" onclick="startContractFromService(\''+s.id+'\')">Hire for $'+(s.price||0).toLocaleString()+'</button>'
-    +'<button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="openBookingModal(\''+s.freelancerId+'\',\''+(s.freelancerName||'Expert').replace(/'/g,"\\'")+'\')">📅 Schedule a call first</button>';
+    +'<button class="btn btn-teal" style="width:100%;" onclick="startContractFromService(\''+s.id+'\')">Hire for $'+(s.rate||0).toLocaleString()+'</button>'
+    +'<button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="openBookingModal(\''+s.id+'\',\''+(s.name||'Expert').replace(/'/g,"\\'")+'\')">📅 Schedule a call first</button>';
   openModal('hire-modal');
 }
 
-async function startContractFromService(serviceId){
+async function startContractFromService(expertId){
   if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; return; }
-  var s = _servicesCache.find(function(x){ return x.id===serviceId; });
+  var s = _servicesCache.find(function(x){ return x.id===expertId; });
   if(!s) return;
-  if(s.freelancerId === window._user.uid){ showToast("You can't hire your own service."); return; }
+  if(s.id === window._user.uid){ showToast("You can't hire yourself."); return; }
   var db = window._db; var fb = window._fb;
   try {
     var ref = await fb.addDoc(fb.collection(db,'contracts'), {
       clientId: window._user.uid,
       clientName: window._userName || 'Client',
-      freelancerId: s.freelancerId,
-      freelancerName: s.freelancerName || 'Expert',
-      title: s.title,
-      amount: s.price || 0,
-      currency: s.currency || 'USD',
+      freelancerId: s.id,
+      freelancerName: s.name || 'Expert',
+      title: 'Engagement with '+(s.name||'Expert'),
+      amount: s.rate || 0,
+      currency: 'USD',
       status: 'awaiting_payment',
-      serviceId: s.id,
       createdAt: fb.serverTimestamp(),
     });
     closeModal('hire-modal');
