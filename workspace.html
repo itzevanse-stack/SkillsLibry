@@ -131,14 +131,14 @@ a{color:inherit;text-decoration:none;}
       </div>
       <div class="people-row">
         <div class="people-avatar" id="freelancer-avatar">F</div>
-        <div><div class="people-name" id="freelancer-name">—</div><div class="people-role">Freelancer</div></div>
+        <div><div class="people-name" id="freelancer-name">—</div><div class="people-role">Expert</div></div>
       </div>
     </div>
 
     <div class="sp-section">
       <div class="sp-label">How escrow works here</div>
       <div style="font-size:12px;color:var(--text3);line-height:1.6;">
-        Funds are held by SkillsLibry once the client pays. The freelancer marks the work delivered, the client reviews and approves, then funds are released to the freelancer's payout balance.
+        Funds are held by SkillsLibry once the client pays. The expert marks the work delivered, the client reviews and approves, then funds are released to the expert's payout balance.
       </div>
     </div>
   </div>
@@ -232,7 +232,7 @@ function renderContract(){
 
   document.getElementById('client-name').textContent = c.clientName||'Client';
   document.getElementById('client-avatar').textContent = (c.clientName||'C').charAt(0).toUpperCase();
-  document.getElementById('freelancer-name').textContent = c.freelancerName||'Freelancer';
+  document.getElementById('freelancer-name').textContent = c.freelancerName||'Expert';
   document.getElementById('freelancer-avatar').textContent = (c.freelancerName||'F').charAt(0).toUpperCase();
 
   var isClient = window._user && c.clientId === window._user.uid;
@@ -303,7 +303,7 @@ async function markDelivered(){
 }
 
 async function approveAndRelease(){
-  if(!confirm('Approve this delivery and release payment to the freelancer? This cannot be undone.')) return;
+  if(!confirm('Approve this delivery and release payment to the expert? This cannot be undone.')) return;
   var fb = window._fb;
   var c = _contract;
   try {
@@ -318,7 +318,7 @@ async function approveAndRelease(){
       status: 'pending',
       createdAt: fb.serverTimestamp(),
     });
-    await postSystemMessage('✅ Client approved delivery — payment released to freelancer payout balance.');
+    await postSystemMessage('✅ Client approved delivery — payment released to expert payout balance.');
     showToast('✅ Approved! Payment queued for payout.');
     loadContract();
   } catch(e){ showToast('Error: '+e.message); }
