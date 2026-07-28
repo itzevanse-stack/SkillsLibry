@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Expert Profile — SkillsLibry Marketplace</title>
+<title>Expert Profile — SkillsLibry Experts</title>
 <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -166,13 +166,13 @@ textarea.fi{resize:vertical;min-height:80px;}
 
 <nav class="nav">
   <a class="nav-logo" href="/"><div class="nav-logo-mark">S</div><span class="nav-logo-text">Skills<span>Libry</span></span></a>
-  <a class="nav-back" href="/marketplace">← Back to marketplace</a>
+  <a class="nav-back" href="/experts">← Back to Experts</a>
 </nav>
 
 <div class="hero">
   <div class="hero-inner">
     <div>
-      <div class="breadcrumb"><a href="/marketplace">Marketplace</a><span class="breadcrumb-sep">/</span><span>Expert</span></div>
+      <div class="breadcrumb"><a href="/experts">Experts</a><span class="breadcrumb-sep">/</span><span>Profile</span></div>
 
       <h1 class="hero-title" id="profile-name">Loading...</h1>
       <p class="hero-sub" id="profile-headline"></p>
@@ -188,7 +188,7 @@ textarea.fi{resize:vertical;min-height:80px;}
 
       <div class="hero-meta-row">
         <div class="hero-avatar-sm" id="profile-avatar"></div>
-        <span>On SkillsLibry Marketplace</span>
+        <span>On SkillsLibry Experts</span>
       </div>
     </div>
 
@@ -399,7 +399,7 @@ function renderActionButtons(){
 
   if(isOwnProfile && !_previewMode){
     actions.innerHTML = '<button class="ac-btn ac-btn-outline" onclick="openEditModal()">Edit my profile</button>'
-      +'<a class="ac-btn ac-btn-outline" href="/marketplace" style="display:block;text-decoration:none;box-sizing:border-box;">Manage my services</a>'
+      +'<a class="ac-btn ac-btn-outline" href="/experts" style="display:block;text-decoration:none;box-sizing:border-box;">Manage my services</a>'
       +'<button class="ac-btn ac-btn-outline" onclick="togglePreviewMode()" style="border-style:dashed;">👁 Preview as a visitor</button>';
   } else if(isOwnProfile && _previewMode){
     actions.innerHTML = '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:8px;border-radius:8px;margin-bottom:12px;">👁 Previewing as a visitor sees it</div>'
@@ -452,7 +452,7 @@ async function loadProfileServices(){
       return;
     }
     el.innerHTML = services.map(function(s){
-      return '<div class="svc-mini"><span class="svc-mini-title">'+s.title+'</span><span class="svc-mini-price">₦'+(s.price||0).toLocaleString()+'</span></div>';
+      return '<div class="svc-mini"><span class="svc-mini-title">'+s.title+'</span><span class="svc-mini-price">$'+(s.price||0).toLocaleString()+'</span></div>';
     }).join('');
   } catch(e){ el.innerHTML = '<div class="empty-state">Error: '+e.message+'</div>'; }
 }
@@ -673,7 +673,7 @@ async function confirmBooking(isoTime, durationMins){
       preview: brief.slice(0,120),
       budget: budget,
       bookingId: ref.id,
-      link: '/marketplace',
+      link: '/experts',
     });
     closeModal('booking-modal');
     showToast("✅ Call scheduled! They've been notified with your project details.");
