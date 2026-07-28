@@ -399,7 +399,7 @@ function renderActionButtons(){
 
   if(isOwnProfile && !_previewMode){
     actions.innerHTML = '<button class="ac-btn ac-btn-outline" onclick="openEditModal()">Edit my profile</button>'
-      +'<a class="ac-btn ac-btn-outline" href="/experts" style="display:block;text-decoration:none;box-sizing:border-box;">Manage my services</a>'
+      +'<a class="ac-btn ac-btn-outline" href="/expert-dashboard" style="display:block;text-decoration:none;box-sizing:border-box;">Go to my Expert Dashboard</a>'
       +'<button class="ac-btn ac-btn-outline" onclick="togglePreviewMode()" style="border-style:dashed;">👁 Preview as a visitor</button>';
   } else if(isOwnProfile && _previewMode){
     actions.innerHTML = '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--teal-dark);background:var(--teal-dim);padding:8px;border-radius:8px;margin-bottom:12px;">👁 Previewing as a visitor sees it</div>'
@@ -506,9 +506,17 @@ async function submitTestimonial(){
 }
 
 function threadId(uidA, uidB){ return [uidA, uidB].sort().join('_'); }
-function listenForDirectMessages(){
+async function listenForDirectMessages(){
   var db = window._db; var fb = window._fb;
   var tid = threadId(window._user.uid, _profileId);
+
+  // Mark read for me as soon as I open this chat.
+  try {
+    var unreadUpdate = {};
+    unreadUpdate['unread_'+window._user.uid] = false;
+    await fb.setDoc(fb.doc(db,'conversations',tid), unreadUpdate, { merge:true });
+  } catch(e){}
+
   var q = fb.query(fb.collection(db,'directMessages_'+tid), fb.orderBy('createdAt','asc'));
   fb.onSnapshot(q, function(snap){
     var scroll = document.getElementById('chat-scroll');
@@ -531,25 +539,43 @@ async function sendDirectMessage(){
   if(!text || !window._user){ if(!window._user){ showToast('Please sign in first.'); window.location.href='/dashboard'; } return; }
   input.value = '';
   var db = window._db; var fb = window._fb;
-  var tid = threadId(window._user.uid, _profileId);
+  var myUid = window._user.uid;
+  var tid = threadId(myUid, _profileId);
   try {
     var existing = await fb.getDocs(fb.collection(db,'directMessages_'+tid));
     var isFirstMessage = existing.docs.length === 0;
 
     await fb.addDoc(fb.collection(db,'directMessages_'+tid), {
-      senderId: window._user.uid,
+      senderId: myUid,
       senderName: window._userName || 'User',
       text: text,
       createdAt: fb.serverTimestamp(),
     });
 
+    // Maintain a queryable conversation index (participantIds is an array
+    // field, so an inbox can query "conversations where I'm a participant" —
+    // Firestore has no way to list dynamically-named directMessages_* collections directly).
+    var unreadUpdate = {};
+    unreadUpdate['unread_'+_profileId] = true;
+    unreadUpdate['unread_'+myUid] = false;
+    var namesUpdate = {};
+    namesUpdate['name_'+myUid] = window._userName || 'User';
+    namesUpdate['name_'+_profileId] = _profileData.name || 'Expert';
+
+    await fb.setDoc(fb.doc(db,'conversations',tid), Object.assign({
+      participantIds: [myUid, _profileId],
+      lastMessage: text.slice(0,120),
+      lastMessageAt: fb.serverTimestamp(),
+      lastSenderId: myUid,
+    }, unreadUpdate, namesUpdate), { merge:true });
+
     if(isFirstMessage){
       await notifyUser(_profileId, {
         type: 'message',
-        fromId: window._user.uid,
+        fromId: myUid,
         fromName: window._userName || 'Someone',
         preview: text.slice(0,120),
-        link: '/profile?id='+window._user.uid,
+        link: '/messages?with='+myUid,
       });
     }
   } catch(e){ showToast('Message failed: '+e.message); }
