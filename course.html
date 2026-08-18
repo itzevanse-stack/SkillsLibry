@@ -86,9 +86,6 @@ a{text-decoration:none;color:inherit}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .currency-dropdown-header{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
 .currency-option{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);}
-.currency-search-input{width:calc(100% - 24px);margin:8px 12px;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;}
-.currency-search-input:focus{border-color:var(--teal);}
-.currency-options-list{max-height:280px;overflow-y:auto;}
 .currency-option:last-child{border-bottom:none;}
 .currency-option:hover,.currency-option.active{background:var(--teal-dim);color:var(--teal-dark);}
 .currency-option .c-flag{font-size:18px;width:24px;text-align:center;}
@@ -112,7 +109,7 @@ a{text-decoration:none;color:inherit}
 .hero-inner{
   max-width:1160px;margin:0 auto;
   padding:0 32px 0;
-  display:grid;grid-template-columns:1fr 400px;gap:40px;
+  display:grid;grid-template-columns:1fr 360px;gap:48px;
   align-items:start;position:relative;z-index:1;
 }
 .breadcrumb{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.4);margin-bottom:20px;}
@@ -188,16 +185,12 @@ a{text-decoration:none;color:inherit}
 .pc-play-icon{width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:16px solid var(--teal-dark);margin-left:4px;}
 .pc-preview-label{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:600;color:rgba(255,255,255,.8);z-index:1;white-space:nowrap;}
 
-.pc-body{padding:28px;}
-.pc-price-row{display:flex;align-items:baseline;flex-wrap:wrap;row-gap:8px;column-gap:12px;margin-bottom:8px;}
-.pc-price{font-family:'Poppins',sans-serif;font-size:36px;font-weight:900;color:var(--text);line-height:1;white-space:nowrap;}
-.pc-price-old{font-size:16px;color:var(--text3);text-decoration:line-through;white-space:nowrap;}
-.pc-discount{font-size:12px;font-weight:700;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);padding:4px 10px;border-radius:4px;white-space:nowrap;}
+.pc-body{padding:24px;}
+.pc-price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:4px;}
+.pc-price{font-family:'Poppins',sans-serif;font-size:36px;font-weight:900;color:var(--text);line-height:1;}
+.pc-price-old{font-size:16px;color:var(--text3);text-decoration:line-through;}
+.pc-discount{font-size:12px;font-weight:700;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);padding:3px 8px;border-radius:4px;}
 .pc-timer{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:6px;}
-.pc-countdown-boxes{display:flex;justify-content:center;gap:8px;margin-top:10px;margin-bottom:4px;}
-.cd-box{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.22);border-radius:8px;padding:8px 6px;min-width:52px;}
-.cd-box span{font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;color:var(--orange);line-height:1;}
-.cd-box label{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin-top:4px;}
 
 .enroll-btn{
   width:100%;padding:16px;
@@ -429,10 +422,17 @@ a{text-decoration:none;color:inherit}
   <div class="nav-right">
     <div class="currency-switcher" id="currency-switcher">
       <button class="currency-btn" id="currency-btn" onclick="toggleCurrencyDropdown()">USD &#9660;</button>
-            <div class="currency-dropdown" id="currency-dropdown">
+      <div class="currency-dropdown" id="currency-dropdown">
         <div class="currency-dropdown-header">Select your currency</div>
-        <input type="text" id="currency-search" class="currency-search-input" placeholder="Search currency..." oninput="renderCurrencyOptions(this.value)" onclick="event.stopPropagation()"/>
-        <div id="currency-options-list" class="currency-options-list"></div>
+        <div class="currency-option" data-code="NGN" onclick="setCurrency('NGN');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127475;&#127468;</span><span class="c-name">Nigerian Naira</span><span class="c-symbol">&#x20a6;</span></div>
+        <div class="currency-option" data-code="USD" onclick="setCurrency('USD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127482;&#127480;</span><span class="c-name">US Dollar</span><span class="c-symbol">$</span></div>
+        <div class="currency-option" data-code="GBP" onclick="setCurrency('GBP');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127468;&#127463;</span><span class="c-name">British Pound</span><span class="c-symbol">&#163;</span></div>
+        <div class="currency-option" data-code="EUR" onclick="setCurrency('EUR');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127466;&#127482;</span><span class="c-name">Euro</span><span class="c-symbol">&#8364;</span></div>
+        <div class="currency-option" data-code="GHS" onclick="setCurrency('GHS');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127468;&#127469;</span><span class="c-name">Ghanaian Cedi</span><span class="c-symbol">GH&#8373;</span></div>
+        <div class="currency-option" data-code="KES" onclick="setCurrency('KES');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127472;&#127466;</span><span class="c-name">Kenyan Shilling</span><span class="c-symbol">KSh</span></div>
+        <div class="currency-option" data-code="ZAR" onclick="setCurrency('ZAR');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127487;&#127462;</span><span class="c-name">South African Rand</span><span class="c-symbol">R</span></div>
+        <div class="currency-option" data-code="AED" onclick="setCurrency('AED');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127462;&#127466;</span><span class="c-name">UAE Dirham</span><span class="c-symbol">AED</span></div>
+        <div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127464;&#127462;</span><span class="c-name">Canadian Dollar</span><span class="c-symbol">CA$</span></div>
       </div>
     </div>
     <a class="btn btn-ghost" href="#" id="nav-my-learning" onclick="window._user?window.location.href='/dashboard':openAuthModal(null,'si')">My Learning</a>
@@ -496,6 +496,7 @@ a{text-decoration:none;color:inherit}
         <span class="badge badge-students" id="cd-students" style="display:none;"></span>
       </div>
 
+      <p class="course-hero-sub" id="cd-description" style="display:none;"></p>
 
       <div class="course-hero-meta" id="cd-meta" style="display:none;">
         <div class="meta-item" id="cd-duration-item" style="display:none;">&#128336; <strong id="cd-duration"></strong></div>
@@ -518,6 +519,7 @@ a{text-decoration:none;color:inherit}
             <div class="pc-price-old" id="cd-price-old" style="display:none;"></div>
             <div class="pc-discount" id="pc-discount" style="display:none;"></div>
           </div>
+          <div class="pc-timer" id="pc-timer" style="display:none;"></div>
 
           <div class="pc-includes" id="pc-includes">
             <div class="pc-includes-title">This course includes</div>
@@ -531,16 +533,10 @@ a{text-decoration:none;color:inherit}
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
             Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
           </button>
-
-          <div class="pc-timer" id="pc-timer" style="display:none;margin-top:14px;margin-bottom:0;justify-content:center;"></div>
-          <div class="pc-countdown-boxes" id="pc-countdown-boxes" style="display:none;">
-            <div class="cd-box"><span id="cd-box-days">00</span><label>Days</label></div>
-            <div class="cd-box"><span id="cd-box-hrs">00</span><label>Hrs</label></div>
-            <div class="cd-box"><span id="cd-box-mins">00</span><label>Min</label></div>
-            <div class="cd-box"><span id="cd-box-secs">00</span><label>Sec</label></div>
-          </div>
-
           <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
+          <button onclick="copyCourseLink(this)" style="width:100%;margin-top:14px;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span>&#128279;</span> Copy course link
+          </button>
         </div>
       </div>
     </div>
@@ -564,14 +560,14 @@ a{text-decoration:none;color:inherit}
     <!-- TAB: DESCRIPTION -->
     <div id="tab-desc" class="tab-pane active">
 
-      <div class="desc-section" id="desc-section-wrap" style="display:none;">
-        <div class="desc-section-title">&#128196; Course description</div>
-        <div class="desc-body" id="cd-description" style="white-space:pre-line;"></div>
-      </div>
-
       <div class="desc-section" id="learns-section" style="display:none;">
         <div class="desc-section-title">&#9989; What you will learn</div>
         <div class="learn-grid" id="cd-learns"></div>
+      </div>
+
+      <div class="desc-section" id="desc-section-wrap" style="display:none;">
+        <div class="desc-section-title">&#128196; Course description</div>
+        <div class="desc-body" id="cd-description" style="white-space:pre-line;"></div>
       </div>
 
       <div class="desc-section" id="req-section" style="display:none;">
@@ -644,48 +640,6 @@ const db   = getFirestore(app);
 
 window._auth = auth;
 window._db   = db;
-
-/* ══ AFFILIATE REFERRAL CAPTURE ══ */
-(function captureAffiliateRef(){
-  try {
-    var ref = new URLSearchParams(window.location.search).get('ref');
-    if(!ref) return;
-    var code = ref.toUpperCase();
-    localStorage.setItem('sl_aff', JSON.stringify({ code: code, expires: Date.now() + 30*24*60*60*1000 }));
-
-    var sessionKey = 'sl_aff_click_logged_'+code;
-    if(sessionStorage.getItem(sessionKey)) return;
-    sessionStorage.setItem(sessionKey, '1');
-
-    var logClick = async function(){
-      if(!window._db) return;
-      try {
-        var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-        await fb.addDoc(fb.collection(window._db,'affiliateClicks'), {
-          affiliateCode: code,
-          page: window.location.pathname,
-          createdAt: fb.serverTimestamp(),
-        });
-      } catch(e){ console.warn('Affiliate click log failed:', e.message); }
-    };
-    if(window._db){ logClick(); } else { document.addEventListener('authReady', logClick, { once:true }); }
-  } catch(e){}
-})();
-
-/* Reads the stored affiliate code, honoring its 30-day attribution window.
-   Explicitly attached to window since this script is type="module" —
-   module-scope declarations do NOT leak into later plain <script> tags,
-   unlike top-level vars/functions in regular scripts. */
-window.getActiveAffiliateCode = function(){
-  try {
-    var raw = localStorage.getItem('sl_aff');
-    if(!raw) return null;
-    var parsed = JSON.parse(raw);
-    if(parsed && parsed.code && parsed.expires && Date.now() < parsed.expires) return parsed.code;
-    localStorage.removeItem('sl_aff'); // expired — clean up
-    return null;
-  } catch(e){ return null; }
-};
 
 onAuthStateChanged(auth, async (user) => {
   window._user = user || null;
@@ -1113,6 +1067,25 @@ function closeModal(){
 })();
 
 /* ── TOAST ── */
+function copyCourseLink(btn){
+  var url = window.location.href;
+  var done = function(){
+    if(btn){
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<span>&#10003;</span> Link copied!';
+      setTimeout(function(){ btn.innerHTML = orig; }, 2000);
+    }
+    if(typeof showToast === 'function') showToast('&#128279;','Course link copied — ready to share!');
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(function(){
+      window.prompt('Copy this link:', url);
+    });
+  } else {
+    window.prompt('Copy this link:', url);
+  }
+}
+
 function showToast(icon,msg){
   var t=document.getElementById('toast'); if(!t) return;
   var ti=document.getElementById('toast-icon'); if(ti) ti.textContent=icon;
@@ -1219,16 +1192,6 @@ function showToast(icon,msg){
       var snap = await fb.getDoc(fb.doc(window._db,'courses',id));
       if(snap.exists()){
         courseData = Object.assign({id:snap.id}, snap.data());
-        // Live lookup: always show the instructor's CURRENT name, not the
-        // frozen snapshot that was saved onto the course doc at publish time.
-        if(courseData.instructorId){
-          try {
-            var instSnap = await fb.getDoc(fb.doc(window._db,'users',courseData.instructorId));
-            if(instSnap.exists() && instSnap.data().name){
-              courseData.instructorName = instSnap.data().name;
-            }
-          } catch(ie){ console.warn('Instructor name lookup failed:', ie.message); }
-        }
       }
     } catch(e){ console.warn('Course load error:', e.message); }
   }
@@ -1443,77 +1406,12 @@ function showToast(icon,msg){
   document.title = (courseData.title||'Course') + ' — SkillsLibry';
 
   var priceNGN = courseData.priceNGN || courseData.price || 50000;
-  var rate     = (window.CURRENCIES&&window.CURRENCIES[window._cur||'NGN'])?window.CURRENCIES[window._cur||'NGN'].rate:1;
-  var sym      = (window.CURRENCIES&&window.CURRENCIES[window._cur||'NGN'])?window.CURRENCIES[window._cur||'NGN'].symbol:'₦';
+  var rate     = (window.CURRENCIES&&window.CURRENCIES[window._cur||'USD'])?window.CURRENCIES[window._cur||'USD'].rate:1;
+  var sym      = (window.CURRENCIES&&window.CURRENCIES[window._cur||'USD'])?window.CURRENCIES[window._cur||'USD'].symbol:'$';
   var subFee   = 10500;
 
   var priceEl = document.getElementById('cd-price');
   if(priceEl){ priceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString(); priceEl.dataset.ngn = priceNGN; }
-
-  // Discount display: show the crossed-out original price + % off badge
-  // whenever the instructor set a priceOriginal higher than the current price.
-  var priceOriginal = courseData.priceOriginal || 0;
-  var priceOldEl  = document.getElementById('cd-price-old');
-  var discountEl  = document.getElementById('pc-discount');
-  if(priceOriginal > priceNGN){
-    if(priceOldEl){
-      priceOldEl.innerHTML = sym+' '+(Math.round(priceOriginal*rate)).toLocaleString();
-      priceOldEl.dataset.ngn = priceOriginal;
-      priceOldEl.style.display = 'block';
-    }
-    if(discountEl){
-      var discountPct = Math.round((1 - (priceNGN/priceOriginal))*100);
-      discountEl.textContent = '-'+discountPct+'% OFF';
-      discountEl.style.display = 'block';
-    }
-  } else {
-    if(priceOldEl) priceOldEl.style.display = 'none';
-    if(discountEl) discountEl.style.display = 'none';
-  }
-
-  // Urgency countdown: only shown if the instructor set a real deadline
-  // (saleEndsAt) — never a fabricated/fake countdown.
-  var timerEl = document.getElementById('pc-timer');
-  var boxesEl = document.getElementById('pc-countdown-boxes');
-  if(timerEl && courseData.saleEndsAt){
-    var deadline = new Date(courseData.saleEndsAt).getTime();
-    if(!isNaN(deadline) && deadline > Date.now()){
-      timerEl.style.display = 'flex';
-      if(boxesEl) boxesEl.style.display = 'flex';
-      var pad2 = function(n){ return String(n).padStart(2,'0'); };
-      var renderCountdown = function(){
-        var msLeft = deadline - Date.now();
-        if(msLeft <= 0){
-          timerEl.style.display = 'none';
-          if(boxesEl) boxesEl.style.display = 'none';
-          clearInterval(_pcTimerInterval);
-          return;
-        }
-        var d = Math.floor(msLeft/86400000);
-        var h = Math.floor((msLeft%86400000)/3600000);
-        var m = Math.floor((msLeft%3600000)/60000);
-        var s = Math.floor((msLeft%60000)/1000);
-        var parts = d>0 ? (d+'d '+pad2(h)+'h '+pad2(m)+'m') : (pad2(h)+'h '+pad2(m)+'m '+pad2(s)+'s');
-        timerEl.innerHTML = '&#9203; Discount ends in '+parts;
-        if(boxesEl){
-          var dEl=document.getElementById('cd-box-days'), hEl=document.getElementById('cd-box-hrs'),
-              mEl=document.getElementById('cd-box-mins'), sEl=document.getElementById('cd-box-secs');
-          if(dEl) dEl.textContent = pad2(d);
-          if(hEl) hEl.textContent = pad2(h);
-          if(mEl) mEl.textContent = pad2(m);
-          if(sEl) sEl.textContent = pad2(s);
-        }
-      };
-      renderCountdown();
-      var _pcTimerInterval = setInterval(renderCountdown, 1000);
-    } else {
-      timerEl.style.display = 'none';
-      if(boxesEl) boxesEl.style.display = 'none';
-    }
-  } else if(timerEl){
-    timerEl.style.display = 'none';
-    if(boxesEl) boxesEl.style.display = 'none';
-  }
 
   var enrollPriceEl = document.getElementById('enroll-price');
   if(enrollPriceEl) enrollPriceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString()+' + '+sym+' '+(Math.round(subFee*rate)).toLocaleString()+'/mo';
@@ -1524,6 +1422,7 @@ function showToast(icon,msg){
     title:        courseData.title || 'Course',
     instructorId: courseData.instructorId || 'instructor_1',
     priceNGN:     priceNGN,
+    checkoutUrl:  courseData.checkoutUrl || null,
   };
 
   // Auto-detect currency
@@ -1532,7 +1431,42 @@ function showToast(icon,msg){
   // Real data is now in place — reveal the page
   var loadingOverlay = document.getElementById('page-loading-overlay');
   if(loadingOverlay) loadingOverlay.style.display = 'none';
+
+  if(!localStorage.getItem('sl_currency_manual')){
+    fetch('https://ipapi.co/json/').then(function(r){return r.json();}).then(function(d){
+      var det = COUNTRY_CURRENCY[d.country_code]||'USD';
+      _cur = det; localStorage.setItem('sl_currency',det);
+      updateCurrencyBtn(); updateAllPrices();
+    }).catch(function(){});
+  }
 })();
+
+/* ── CURRENCY SYSTEM ── */
+var CURRENCIES = {
+  NGN: { symbol:'₦',    name:'Nigerian Naira',      flag:'🇳🇬', rate:1       },
+  USD: { symbol:'$',    name:'US Dollar',            flag:'🇺🇸', rate:0.00065 },
+  GBP: { symbol:'£',    name:'British Pound',        flag:'🇬🇧', rate:0.00052 },
+  EUR: { symbol:'€',    name:'Euro',                 flag:'🇪🇺', rate:0.00060 },
+  GHS: { symbol:'GH₵',  name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099  },
+  KES: { symbol:'KSh',  name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084   },
+  ZAR: { symbol:'R',    name:'South African Rand',   flag:'🇿🇦', rate:0.012   },
+  AED: { symbol:'AED',  name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024  },
+  CAD: { symbol:'CA$',  name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088 },
+  UGX: { symbol:'USh',  name:'Ugandan Shilling',     flag:'🇺🇬', rate:2.4     },
+  TZS: { symbol:'TSh',  name:'Tanzanian Shilling',   flag:'🇹🇿', rate:1.67    },
+  RWF: { symbol:'RWF',  name:'Rwandan Franc',        flag:'🇷🇼', rate:0.83    },
+  EGP: { symbol:'E£',   name:'Egyptian Pound',       flag:'🇪🇬', rate:0.032   },
+  XOF: { symbol:'CFA',  name:'West African CFA',     flag:'🌍',  rate:0.39    },
+};
+
+/* Country → currency map for auto-detect */
+var COUNTRY_CURRENCY = {
+  NG:'NGN', US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', NL:'EUR',
+  GH:'GHS', KE:'KES', ZA:'ZAR', AE:'AED', CA:'CAD',
+  AU:'USD', SG:'USD', IN:'USD',
+};
+
+var _activeCurrency = localStorage.getItem('sl_currency') || 'USD';
 
 function toggleMobileNav(){
   var menu = document.getElementById('mobile-nav-menu');
@@ -1576,7 +1510,7 @@ document.addEventListener('click', function(e){
     .then(function(data){
       var country = data.country_code;
       var detected = COUNTRY_CURRENCY[country] || 'USD';
-      _cur = detected;
+      _activeCurrency = detected;
       localStorage.setItem('sl_currency', detected);
       updateCurrencyBtn();
       updateAllPrices();
@@ -1618,200 +1552,21 @@ function showToast(icon, msg){
 
 /* ── CURRENCY ── */
 var CURRENCIES = {
-  NGN: { symbol:'₦', name:'Nigerian Naira', flag:'🇳🇬', rate:1 },
-  AED: { symbol:'AED', name:'UAE Dirham', flag:'🇦🇪', rate:0.00268734 },
-  AFN: { symbol:'Af', name:'Afghan Afghani', flag:'🇦🇫', rate:0.04831147 },
-  ALL: { symbol:'L', name:'Albanian Lek', flag:'🇦🇱', rate:0.06029142 },
-  AMD: { symbol:'֏', name:'Armenian Dram', flag:'🇦🇲', rate:0.26768176 },
-  AOA: { symbol:'Kz', name:'Angolan Kwanza', flag:'🇦🇴', rate:0.67419799 },
-  ARS: { symbol:'$', name:'Argentine Peso', flag:'🇦🇷', rate:1.0935 },
-  AUD: { symbol:'A$', name:'Australian Dollar', flag:'🇦🇺', rate:0.00104669 },
-  AWG: { symbol:'ƒ', name:'Aruban Florin', flag:'🇦🇼', rate:0.00130983 },
-  AZN: { symbol:'₼', name:'Azerbaijani Manat', flag:'🇦🇿', rate:0.00124463 },
-  BAM: { symbol:'KM', name:'Bosnia-Herzegovina Mark', flag:'🇧🇦', rate:0.00125663 },
-  BBD: { symbol:'Bds$', name:'Barbadian Dollar', flag:'🇧🇧', rate:0.0014635 },
-  BDT: { symbol:'৳', name:'Bangladeshi Taka', flag:'🇧🇩', rate:0.09044969 },
-  BGN: { symbol:'лв', name:'Bulgarian Lev', flag:'🇧🇬', rate:0.00125663 },
-  BHD: { symbol:'.د.ب', name:'Bahraini Dinar', flag:'🇧🇭', rate:0.00027514 },
-  BIF: { symbol:'FBu', name:'Burundian Franc', flag:'🇧🇮', rate:2.1886 },
-  BMD: { symbol:'BD$', name:'Bermudian Dollar', flag:'🇧🇲', rate:0.00073175 },
-  BND: { symbol:'B$', name:'Brunei Dollar', flag:'🇧🇳', rate:0.0009441 },
-  BOB: { symbol:'Bs.', name:'Bolivian Boliviano', flag:'🇧🇴', rate:0.00816009 },
-  BRL: { symbol:'R$', name:'Brazilian Real', flag:'🇧🇷', rate:0.00372174 },
-  BSD: { symbol:'B$', name:'Bahamian Dollar', flag:'🇧🇸', rate:0.00073175 },
-  BTN: { symbol:'Nu.', name:'Bhutanese Ngultrum', flag:'🇧🇹', rate:0.07070991 },
-  BWP: { symbol:'P', name:'Botswana Pula', flag:'🇧🇼', rate:0.01009585 },
-  BYN: { symbol:'Br', name:'Belarusian Ruble', flag:'🇧🇾', rate:0.00210268 },
-  BZD: { symbol:'BZ$', name:'Belize Dollar', flag:'🇧🇿', rate:0.0014635 },
-  CAD: { symbol:'CA$', name:'Canadian Dollar', flag:'🇨🇦', rate:0.00103081 },
-  CDF: { symbol:'FC', name:'Congolese Franc', flag:'🇨🇩', rate:1.6754 },
-  CHF: { symbol:'CHF', name:'Swiss Franc', flag:'🇨🇭', rate:0.00059769 },
-  CLP: { symbol:'CLP$', name:'Chilean Peso', flag:'🇨🇱', rate:0.69261989 },
-  CNY: { symbol:'¥', name:'Chinese Yuan', flag:'🇨🇳', rate:0.00495957 },
-  COP: { symbol:'COL$', name:'Colombian Peso', flag:'🇨🇴', rate:2.3469 },
-  CRC: { symbol:'₡', name:'Costa Rican Colón', flag:'🇨🇷', rate:0.33306007 },
-  CUP: { symbol:'$MN', name:'Cuban Peso', flag:'🇨🇺', rate:0.01756195 },
-  CVE: { symbol:'$', name:'Cape Verdean Escudo', flag:'🇨🇻', rate:0.07084447 },
-  CZK: { symbol:'Kč', name:'Czech Koruna', flag:'🇨🇿', rate:0.01551891 },
-  DJF: { symbol:'Fdj', name:'Djiboutian Franc', flag:'🇩🇯', rate:0.13004698 },
-  DKK: { symbol:'kr', name:'Danish Krone', flag:'🇩🇰', rate:0.00479383 },
-  DOP: { symbol:'RD$', name:'Dominican Peso', flag:'🇩🇴', rate:0.042602 },
-  DZD: { symbol:'دج', name:'Algerian Dinar', flag:'🇩🇿', rate:0.09765499 },
-  EGP: { symbol:'E£', name:'Egyptian Pound', flag:'🇪🇬', rate:0.03754035 },
-  ERN: { symbol:'Nfk', name:'Eritrean Nakfa', flag:'🇪🇷', rate:0.01097622 },
-  ETB: { symbol:'Br', name:'Ethiopian Birr', flag:'🇪🇹', rate:0.11740062 },
-  EUR: { symbol:'€', name:'Euro', flag:'🇪🇺', rate:0.00064247 },
-  FJD: { symbol:'FJ$', name:'Fijian Dollar', flag:'🇫🇯', rate:0.00164607 },
-  FKP: { symbol:'£', name:'Falkland Islands Pound', flag:'🇫🇰', rate:0.00054852 },
-  GBP: { symbol:'£', name:'British Pound', flag:'🇬🇧', rate:0.00054845 },
-  GEL: { symbol:'₾', name:'Georgian Lari', flag:'🇬🇪', rate:0.00191923 },
-  GHS: { symbol:'GH₵', name:'Ghanaian Cedi', flag:'🇬🇭', rate:0.00851484 },
-  GIP: { symbol:'£', name:'Gibraltar Pound', flag:'🇬🇮', rate:0.00054852 },
-  GMD: { symbol:'D', name:'Gambian Dalasi', flag:'🇬🇲', rate:0.05445881 },
-  GNF: { symbol:'FG', name:'Guinean Franc', flag:'🇬🇳', rate:6.4353 },
-  GTQ: { symbol:'Q', name:'Guatemalan Quetzal', flag:'🇬🇹', rate:0.00558492 },
-  GYD: { symbol:'G$', name:'Guyanese Dollar', flag:'🇬🇾', rate:0.15308958 },
-  HKD: { symbol:'HK$', name:'Hong Kong Dollar', flag:'🇭🇰', rate:0.00573866 },
-  HNL: { symbol:'L', name:'Honduran Lempira', flag:'🇭🇳', rate:0.01961187 },
-  HRK: { symbol:'kn', name:'Croatian Kuna', flag:'🇭🇷', rate:0.00484088 },
-  HTG: { symbol:'G', name:'Haitian Gourde', flag:'🇭🇹', rate:0.09561802 },
-  HUF: { symbol:'Ft', name:'Hungarian Forint', flag:'🇭🇺', rate:0.23190418 },
-  IDR: { symbol:'Rp', name:'Indonesian Rupiah', flag:'🇮🇩', rate:13.1335 },
-  ILS: { symbol:'₪', name:'Israeli Shekel', flag:'🇮🇱', rate:0.00223315 },
-  INR: { symbol:'₹', name:'Indian Rupee', flag:'🇮🇳', rate:0.07070281 },
-  IQD: { symbol:'ع.د', name:'Iraqi Dinar', flag:'🇮🇶', rate:0.95889428 },
-  IRR: { symbol:'﷼', name:'Iranian Rial', flag:'🇮🇷', rate:976.0463 },
-  ISK: { symbol:'kr', name:'Icelandic Króna', flag:'🇮🇸', rate:0.09203882 },
-  JMD: { symbol:'J$', name:'Jamaican Dollar', flag:'🇯🇲', rate:0.11582956 },
-  JOD: { symbol:'JD', name:'Jordanian Dinar', flag:'🇯🇴', rate:0.00051881 },
-  JPY: { symbol:'¥', name:'Japanese Yen', flag:'🇯🇵', rate:0.11977207 },
-  KES: { symbol:'KSh', name:'Kenyan Shilling', flag:'🇰🇪', rate:0.09480388 },
-  KGS: { symbol:'с', name:'Kyrgyzstani Som', flag:'🇰🇬', rate:0.06400848 },
-  KHR: { symbol:'៛', name:'Cambodian Riel', flag:'🇰🇭', rate:2.9645 },
-  KMF: { symbol:'CF', name:'Comorian Franc', flag:'🇰🇲', rate:0.31608586 },
-  KRW: { symbol:'₩', name:'South Korean Won', flag:'🇰🇷', rate:1.0683 },
-  KWD: { symbol:'KD', name:'Kuwaiti Dinar', flag:'🇰🇼', rate:0.00022655 },
-  KYD: { symbol:'CI$', name:'Cayman Islands Dollar', flag:'🇰🇾', rate:0.00060977 },
-  KZT: { symbol:'₸', name:'Kazakhstani Tenge', flag:'🇰🇿', rate:0.34786209 },
-  LAK: { symbol:'₭', name:'Lao Kip', flag:'🇱🇦', rate:16.4068 },
-  LBP: { symbol:'ل.ل', name:'Lebanese Pound', flag:'🇱🇧', rate:65.4914 },
-  LKR: { symbol:'Rs', name:'Sri Lankan Rupee', flag:'🇱🇰', rate:0.24617107 },
-  LRD: { symbol:'L$', name:'Liberian Dollar', flag:'🇱🇷', rate:0.13264469 },
-  LSL: { symbol:'L', name:'Lesotho Loti', flag:'🇱🇸', rate:0.01226929 },
-  LYD: { symbol:'LD', name:'Libyan Dinar', flag:'🇱🇾', rate:0.00468355 },
-  MAD: { symbol:'DH', name:'Moroccan Dirham', flag:'🇲🇦', rate:0.00685882 },
-  MDL: { symbol:'L', name:'Moldovan Leu', flag:'🇲🇩', rate:0.01286596 },
-  MGA: { symbol:'Ar', name:'Malagasy Ariary', flag:'🇲🇬', rate:3.1647 },
-  MKD: { symbol:'ден', name:'Macedonian Denar', flag:'🇲🇰', rate:0.0395463 },
-  MMK: { symbol:'K', name:'Myanmar Kyat', flag:'🇲🇲', rate:1.5364 },
-  MNT: { symbol:'₮', name:'Mongolian Tögrög', flag:'🇲🇳', rate:2.6082 },
-  MOP: { symbol:'MOP$', name:'Macanese Pataca', flag:'🇲🇴', rate:0.00591069 },
-  MRU: { symbol:'UM', name:'Mauritanian Ouguiya', flag:'🇲🇷', rate:0.02936417 },
-  MUR: { symbol:'₨', name:'Mauritian Rupee', flag:'🇲🇺', rate:0.03470732 },
-  MVR: { symbol:'Rf', name:'Maldivian Rufiyaa', flag:'🇲🇻', rate:0.01131897 },
-  MWK: { symbol:'MK', name:'Malawian Kwacha', flag:'🇲🇼', rate:1.2684 },
-  MXN: { symbol:'Mex$', name:'Mexican Peso', flag:'🇲🇽', rate:0.0127693 },
-  MYR: { symbol:'RM', name:'Malaysian Ringgit', flag:'🇲🇾', rate:0.00299373 },
-  MZN: { symbol:'MT', name:'Mozambican Metical', flag:'🇲🇿', rate:0.04649344 },
-  NAD: { symbol:'N$', name:'Namibian Dollar', flag:'🇳🇦', rate:0.01226929 },
-  NIO: { symbol:'C$', name:'Nicaraguan Córdoba', flag:'🇳🇮', rate:0.02694377 },
-  NOK: { symbol:'kr', name:'Norwegian Krone', flag:'🇳🇴', rate:0.0070089 },
-  NPR: { symbol:'Rs', name:'Nepalese Rupee', flag:'🇳🇵', rate:0.11313578 },
-  NZD: { symbol:'NZ$', name:'New Zealand Dollar', flag:'🇳🇿', rate:0.0012627 },
-  OMR: { symbol:'﷼', name:'Omani Rial', flag:'🇴🇲', rate:0.00028136 },
-  PAB: { symbol:'B/.', name:'Panamanian Balboa', flag:'🇵🇦', rate:0.00073175 },
-  PEN: { symbol:'S/', name:'Peruvian Sol', flag:'🇵🇪', rate:0.00249124 },
-  PGK: { symbol:'K', name:'Papua New Guinean Kina', flag:'🇵🇬', rate:0.00324816 },
-  PHP: { symbol:'₱', name:'Philippine Peso', flag:'🇵🇭', rate:0.04521822 },
-  PKR: { symbol:'Rs', name:'Pakistani Rupee', flag:'🇵🇰', rate:0.20348499 },
-  PLN: { symbol:'zł', name:'Polish Złoty', flag:'🇵🇱', rate:0.00277413 },
-  PYG: { symbol:'₲', name:'Paraguayan Guaraní', flag:'🇵🇾', rate:4.4292 },
-  QAR: { symbol:'﷼', name:'Qatari Riyal', flag:'🇶🇦', rate:0.00266356 },
-  RON: { symbol:'lei', name:'Romanian Leu', flag:'🇷🇴', rate:0.00336567 },
-  RSD: { symbol:'дин.', name:'Serbian Dinar', flag:'🇷🇸', rate:0.07551676 },
-  RUB: { symbol:'₽', name:'Russian Ruble', flag:'🇷🇺', rate:0.05694931 },
-  RWF: { symbol:'RWF', name:'Rwandan Franc', flag:'🇷🇼', rate:1.0748 },
-  SAR: { symbol:'﷼', name:'Saudi Riyal', flag:'🇸🇦', rate:0.00274405 },
-  SBD: { symbol:'SI$', name:'Solomon Islands Dollar', flag:'🇸🇧', rate:0.00587791 },
-  SCR: { symbol:'₨', name:'Seychellois Rupee', flag:'🇸🇨', rate:0.0106683 },
-  SDG: { symbol:'£SD', name:'Sudanese Pound', flag:'🇸🇩', rate:0.3354916 },
-  SEK: { symbol:'kr', name:'Swedish Krona', flag:'🇸🇪', rate:0.00709788 },
-  SGD: { symbol:'S$', name:'Singapore Dollar', flag:'🇸🇬', rate:0.00094395 },
-  SHP: { symbol:'£', name:'St Helena Pound', flag:'🇸🇭', rate:0.00054852 },
-  SLE: { symbol:'Le', name:'Sierra Leonean Leone', flag:'🇸🇱', rate:0.01782838 },
-  SOS: { symbol:'Sh', name:'Somali Shilling', flag:'🇸🇴', rate:0.41809256 },
-  SRD: { symbol:'$', name:'Surinamese Dollar', flag:'🇸🇷', rate:0.02778623 },
-  SSP: { symbol:'£', name:'South Sudanese Pound', flag:'🇸🇸', rate:3.5857 },
-  STN: { symbol:'Db', name:'São Tomé Dobra', flag:'🇸🇹', rate:0.01574107 },
-  SYP: { symbol:'£S', name:'Syrian Pound', flag:'🇸🇾', rate:0.08911169 },
-  SZL: { symbol:'E', name:'Swazi Lilangeni', flag:'🇸🇿', rate:0.01226929 },
-  THB: { symbol:'฿', name:'Thai Baht', flag:'🇹🇭', rate:0.02462866 },
-  TJS: { symbol:'SM', name:'Tajikistani Somoni', flag:'🇹🇯', rate:0.00675813 },
-  TMT: { symbol:'m', name:'Turkmenistan Manat', flag:'🇹🇲', rate:0.00256141 },
-  TND: { symbol:'DT', name:'Tunisian Dinar', flag:'🇹🇳', rate:0.00216239 },
-  TOP: { symbol:'T$', name:'Tongan Paʻanga', flag:'🇹🇴', rate:0.00173585 },
-  TRY: { symbol:'₺', name:'Turkish Lira', flag:'🇹🇷', rate:0.03464241 },
-  TTD: { symbol:'TT$', name:'Trinidad & Tobago Dollar', flag:'🇹🇹', rate:0.00497567 },
-  TWD: { symbol:'NT$', name:'New Taiwan Dollar', flag:'🇹🇼', rate:0.02367563 },
-  TZS: { symbol:'TSh', name:'Tanzanian Shilling', flag:'🇹🇿', rate:1.9252 },
-  UAH: { symbol:'₴', name:'Ukrainian Hryvnia', flag:'🇺🇦', rate:0.03282197 },
-  UGX: { symbol:'USh', name:'Ugandan Shilling', flag:'🇺🇬', rate:2.7344 },
-  USD: { symbol:'$', name:'US Dollar', flag:'🇺🇸', rate:0.00073175 },
-  UYU: { symbol:'$U', name:'Uruguayan Peso', flag:'🇺🇾', rate:0.02943844 },
-  UZS: { symbol:'so\'m', name:'Uzbekistani Som', flag:'🇺🇿', rate:8.7179 },
-  VES: { symbol:'Bs.S', name:'Venezuelan Bolívar', flag:'🇻🇪', rate:0.54312473 },
-  VND: { symbol:'₫', name:'Vietnamese Đồng', flag:'🇻🇳', rate:19.2011 },
-  VUV: { symbol:'VT', name:'Vanuatu Vatu', flag:'🇻🇺', rate:0.08675099 },
-  WST: { symbol:'WS$', name:'Samoan Tālā', flag:'🇼🇸', rate:0.00198757 },
-  XAF: { symbol:'FCFA', name:'Central African CFA Franc', flag:'🌍', rate:0.42144777 },
-  XCD: { symbol:'EC$', name:'East Caribbean Dollar', flag:'🌎', rate:0.00197572 },
-  XCG: { symbol:'Cg', name:'Caribbean Guilder', flag:'🌎', rate:0.00130983 },
-  XOF: { symbol:'CFA', name:'West African CFA Franc', flag:'🌍', rate:0.42144777 },
-  XPF: { symbol:'₣', name:'CFP Franc', flag:'🌏', rate:0.07666999 },
-  YER: { symbol:'﷼', name:'Yemeni Rial', flag:'🇾🇪', rate:0.17431291 },
-  ZAR: { symbol:'R', name:'South African Rand', flag:'🇿🇦', rate:0.01226622 },
-  ZMW: { symbol:'ZK', name:'Zambian Kwacha', flag:'🇿🇲', rate:0.01365866 },
-  ZWG: { symbol:'ZiG', name:'Zimbabwe Gold', flag:'🇿🇼', rate:0.0195013 },
+  NGN:{symbol:'₦',name:'Nigerian Naira',    flag:'🇳🇬',rate:1},
+  USD:{symbol:'$',        name:'US Dollar',         flag:'🇺🇸',rate:0.00065},
+  GBP:{symbol:'£',   name:'British Pound',     flag:'🇬🇧',rate:0.00052},
+  EUR:{symbol:'€',  name:'Euro',              flag:'🇪🇺',rate:0.00060},
+  GHS:{symbol:'GH₵',name:'Ghanaian Cedi',     flag:'🇬🇭',rate:0.0099},
+  KES:{symbol:'KSh',      name:'Kenyan Shilling',   flag:'🇰🇪',rate:0.084},
+  ZAR:{symbol:'R',        name:'South African Rand',flag:'🇿🇦',rate:0.012},
+  AED:{symbol:'AED',      name:'UAE Dirham',         flag:'🇦🇪',rate:0.0024},
+  CAD:{symbol:'CA$',      name:'Canadian Dollar',   flag:'🇨🇦',rate:0.00088},
 };
-/* Country → currency map for auto-detect */
-var COUNTRY_CURRENCY = {
- AE:'AED', AF:'AFN', AG:'XCD', AL:'ALL', AM:'AMD', AO:'AOA',
- AR:'ARS', AT:'EUR', AU:'AUD', AW:'AWG', AZ:'AZN', BA:'BAM',
- BB:'BBD', BD:'BDT', BE:'EUR', BF:'XOF', BG:'BGN', BH:'BHD',
- BI:'BIF', BJ:'XOF', BM:'BMD', BN:'BND', BO:'BOB', BR:'BRL',
- BS:'BSD', BT:'BTN', BW:'BWP', BY:'BYN', BZ:'BZD', CA:'CAD',
- CD:'CDF', CF:'XAF', CG:'XAF', CH:'CHF', CI:'XOF', CL:'CLP',
- CM:'XAF', CN:'CNY', CO:'COP', CR:'CRC', CU:'CUP', CV:'CVE',
- CW:'XCG', CY:'EUR', CZ:'CZK', DE:'EUR', DJ:'DJF', DK:'DKK',
- DM:'XCD', DO:'DOP', DZ:'DZD', EE:'EUR', EG:'EGP', ER:'ERN',
- ES:'EUR', ET:'ETB', FI:'EUR', FJ:'FJD', FK:'FKP', FR:'EUR',
- GA:'XAF', GB:'GBP', GD:'XCD', GE:'GEL', GH:'GHS', GI:'GIP',
- GM:'GMD', GN:'GNF', GQ:'XAF', GR:'EUR', GT:'GTQ', GW:'XOF',
- GY:'GYD', HK:'HKD', HN:'HNL', HR:'HRK', HT:'HTG', HU:'HUF',
- ID:'IDR', IE:'EUR', IL:'ILS', IN:'INR', IQ:'IQD', IR:'IRR',
- IS:'ISK', IT:'EUR', JM:'JMD', JO:'JOD', JP:'JPY', KE:'KES',
- KG:'KGS', KH:'KHR', KM:'KMF', KN:'XCD', KR:'KRW', KW:'KWD',
- KY:'KYD', KZ:'KZT', LA:'LAK', LB:'LBP', LC:'XCD', LK:'LKR',
- LR:'LRD', LS:'LSL', LT:'EUR', LU:'EUR', LV:'EUR', LY:'LYD',
- MA:'MAD', MD:'MDL', MG:'MGA', MK:'MKD', ML:'XOF', MM:'MMK',
- MN:'MNT', MO:'MOP', MR:'MRU', MT:'EUR', MU:'MUR', MV:'MVR',
- MW:'MWK', MX:'MXN', MY:'MYR', MZ:'MZN', NA:'NAD', NC:'XPF',
- NE:'XOF', NG:'NGN', NI:'NIO', NL:'EUR', NO:'NOK', NP:'NPR',
- NZ:'NZD', OM:'OMR', PA:'PAB', PE:'PEN', PF:'XPF', PG:'PGK',
- PH:'PHP', PK:'PKR', PL:'PLN', PT:'EUR', PY:'PYG', QA:'QAR',
- RO:'RON', RS:'RSD', RU:'RUB', RW:'RWF', SA:'SAR', SB:'SBD',
- SC:'SCR', SD:'SDG', SE:'SEK', SG:'SGD', SH:'SHP', SI:'EUR',
- SK:'EUR', SL:'SLE', SN:'XOF', SO:'SOS', SR:'SRD', SS:'SSP',
- ST:'STN', SX:'XCG', SY:'SYP', SZ:'SZL', TD:'XAF', TG:'XOF',
- TH:'THB', TJ:'TJS', TM:'TMT', TN:'TND', TO:'TOP', TR:'TRY',
- TT:'TTD', TW:'TWD', TZ:'TZS', UA:'UAH', UG:'UGX', US:'USD',
- UY:'UYU', UZ:'UZS', VC:'XCD', VE:'VES', VN:'VND', VU:'VUV',
- WS:'WST', YE:'YER', ZA:'ZAR', ZM:'ZMW', ZW:'ZWG',
-};
-var _cur = localStorage.getItem('sl_currency') || 'NGN';
+var COUNTRY_CURRENCY={NG:'NGN',US:'USD',GB:'GBP',DE:'EUR',FR:'EUR',GH:'GHS',KE:'KES',ZA:'ZAR',AE:'AED',CA:'CAD'};
+var _cur = localStorage.getItem('sl_currency') || 'USD';
 
 function convertPrice(ngn){
-  var c=CURRENCIES[_cur]; if(!c||_cur==='NGN') return '₦'+ngn.toLocaleString();
+  var c=CURRENCIES[_cur]; if(_cur==='NGN') return '₦'+ngn.toLocaleString(); if(!c) return '$'+ngn.toLocaleString();
   var v=ngn*c.rate; v=v>=100?Math.round(v):Math.round(v*100)/100;
   return c.symbol+' '+v.toLocaleString();
 }
@@ -1826,23 +1581,6 @@ function updateCurrencyBtn(){
     el.classList.toggle('active',el.dataset.code===_cur);
   });
 }
-/* Renders the searchable currency list from the full CURRENCIES data set. */
-function renderCurrencyOptions(filter){
-  var list = document.getElementById('currency-options-list');
-  if(!list || typeof CURRENCIES === 'undefined') return;
-  var f = (filter||'').trim().toLowerCase();
-  var html = '';
-  Object.keys(CURRENCIES).forEach(function(code){
-    var c = CURRENCIES[code];
-    if(f && code.toLowerCase().indexOf(f)===-1 && c.name.toLowerCase().indexOf(f)===-1) return;
-    var active = (code === _cur) ? ' active' : '';
-    html += '<div class="currency-option'+active+'" data-code="'+code+'" onclick="setCurrency(\''+code+'\');localStorage.setItem(\'sl_currency_manual\',\'1\');">'
-      +'<span class="c-flag">'+c.flag+'</span><span class="c-name">'+c.name+'</span><span class="c-symbol">'+c.symbol+'</span>'
-      +'</div>';
-  });
-  list.innerHTML = html || '<div style="padding:14px;font-size:12px;color:var(--text3);text-align:center;">No currency found</div>';
-}
-renderCurrencyOptions();
 function updateAllPrices(){
   document.querySelectorAll('[data-ngn]').forEach(function(el){
     var v=parseInt(el.dataset.ngn); if(v) el.innerHTML=convertPrice(v);
@@ -1861,11 +1599,6 @@ function toggleCurrencyDropdown(){
   var open=dd.classList.contains('open');
   dd.classList.toggle('open',!open);
   if(btn) btn.classList.toggle('open',!open);
-  if(!open){
-    var search = document.getElementById('currency-search');
-    if(search) search.value = '';
-    renderCurrencyOptions();
-  }
 }
 function closeCurrencyDropdown(){
   var dd=document.getElementById('currency-dropdown'); if(dd) dd.classList.remove('open');
@@ -1895,14 +1628,98 @@ function enrollClick(){
     return;
   }
 
+  // If the instructor has set an external checkout link, collect
+  // name+email first, then hand off to that checkout instead of our
+  // built-in Flutterwave flow.
+  if(_activeCourse.checkoutUrl){
+    openLeadCaptureModal();
+    return;
+  }
+
   // Show subscription breakdown modal first
   openEnrollModal();
+}
+
+function openLeadCaptureModal(){
+  var modal = document.createElement('div');
+  modal.id  = 'lead-capture-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;';
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 80px rgba(13,13,26,.2);animation:authPop .25s ease;">'
+    +'<div style="padding:24px 28px;border-bottom:1.5px solid #e4e6f0;">'
+      +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;margin-bottom:4px;">Almost there</div>'
+      +'<div style="font-size:13px;color:#8b8fa8;">We just need a couple details before taking you to checkout.</div>'
+    +'</div>'
+    +'<div style="padding:24px 28px;">'
+      +'<div style="margin-bottom:14px;"><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Full name</label><input id="lc-name" type="text" placeholder="Your full name" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;" onfocus="this.style.borderColor=\'#4ecca3\'" onblur="this.style.borderColor=\'#e4e6f0\'"/></div>'
+      +'<div style="margin-bottom:8px;"><label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Email address</label><input id="lc-email" type="email" placeholder="you@example.com" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;" onfocus="this.style.borderColor=\'#4ecca3\'" onblur="this.style.borderColor=\'#e4e6f0\'"/></div>'
+      +'<div id="lc-error" style="display:none;font-size:12px;color:#ef4444;margin-bottom:12px;"></div>'
+      +'<div style="font-size:11px;color:#8b8fa8;margin-bottom:16px;line-height:1.6;">We\'ll use this to send your access details and confirm your enrollment after checkout.</div>'
+      +'<div style="display:flex;gap:10px;">'
+        +'<button onclick="closeLeadCaptureModal()" style="flex:1;padding:12px;background:transparent;border:1.5px solid #e4e6f0;border-radius:8px;font-size:13px;font-weight:600;color:#4a4d6a;cursor:pointer;">Cancel</button>'
+        +'<button id="lc-submit-btn" onclick="submitLeadAndCheckout()" style="flex:2;padding:12px;background:#4ecca3;border:none;border-radius:8px;font-size:15px;font-weight:700;color:#0d0d1a;cursor:pointer;">Continue to checkout</button>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===this) closeLeadCaptureModal(); });
+
+  // Prefill from the logged-in account if available
+  if(window._userName){ var n=document.getElementById('lc-name'); if(n) n.value = window._userName; }
+  if(window._user && window._user.email){ var em=document.getElementById('lc-email'); if(em) em.value = window._user.email; }
+}
+
+function closeLeadCaptureModal(){
+  var m = document.getElementById('lead-capture-modal');
+  if(m) m.remove();
+}
+
+async function submitLeadAndCheckout(){
+  var name  = (document.getElementById('lc-name')||{}).value||'';
+  var email = (document.getElementById('lc-email')||{}).value||'';
+  var errEl = document.getElementById('lc-error');
+
+  if(!name.trim() || !email.trim()){
+    if(errEl){ errEl.textContent='Please enter your name and email.'; errEl.style.display='block'; }
+    return;
+  }
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!emailPattern.test(email.trim())){
+    if(errEl){ errEl.textContent='Please enter a valid email address.'; errEl.style.display='block'; }
+    return;
+  }
+  if(errEl) errEl.style.display = 'none';
+
+  var btn = document.getElementById('lc-submit-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Redirecting...'; }
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var leadRef = await fb.addDoc(fb.collection(window._db,'leads'), {
+      name: name.trim(),
+      email: email.trim(),
+      courseId: _activeCourse.id,
+      courseTitle: _activeCourse.title,
+      instructorId: _activeCourse.instructorId,
+      uid: window._user ? window._user.uid : null,
+      status: 'pending_checkout',
+      createdAt: fb.serverTimestamp(),
+    });
+
+    var checkoutUrl = _activeCourse.checkoutUrl;
+    var separator = checkoutUrl.indexOf('?') > -1 ? '&' : '?';
+    var finalUrl = checkoutUrl + separator + 'client_reference_id=' + encodeURIComponent(leadRef.id);
+
+    window.location.href = finalUrl;
+  } catch(e){
+    if(errEl){ errEl.textContent='Something went wrong: '+e.message; errEl.style.display='block'; }
+    if(btn){ btn.disabled=false; btn.textContent='Continue to checkout'; }
+  }
 }
 
 function openEnrollModal(){
   var c = _activeCourse;
   var rate = (CURRENCIES[_cur]||{}).rate||1;
-  var sym  = (CURRENCIES[_cur]||{}).symbol||'₦';
+  var sym  = (CURRENCIES[_cur]||{}).symbol||'$';
   var courseFee = Math.round(c.priceNGN * rate * 100)/100;
   var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
   var total     = Math.round((courseFee + subFee) * 100)/100;
@@ -1975,35 +1792,8 @@ function closeEnrollModal(){
   if(m) m.remove();
 }
 
-/* Loads the Flutterwave checkout SDK on demand if it isn't already
-   available — handles the case where the initial page-load script tag
-   was blocked (ad-blocker, network hiccup) or hasn't finished loading. */
-function loadFlutterwaveScript(){
-  return new Promise(function(resolve, reject){
-    if (typeof FlutterwaveCheckout === 'function') { resolve(); return; }
-    var existing = document.querySelector('script[src="https://checkout.flutterwave.com/v3.js"]');
-    if (existing) existing.remove();
-    var s = document.createElement('script');
-    s.src = 'https://checkout.flutterwave.com/v3.js';
-    s.onload = function(){ resolve(); };
-    s.onerror = function(){ reject(new Error('Failed to load payment script')); };
-    document.head.appendChild(s);
-  });
-}
-
-async function proceedToCheckout(){
+function proceedToCheckout(){
   closeEnrollModal();
-
-  if (typeof FlutterwaveCheckout !== 'function') {
-    showToast('⏳','Loading payment system, please wait...');
-    try {
-      await loadFlutterwaveScript();
-    } catch(loadErr){
-      console.error('Flutterwave SDK failed to load:', loadErr);
-      showToast('❌','Could not load the payment system. Please check your internet connection or disable any ad-blocker/privacy extension, then try again.');
-      return;
-    }
-  }
 
   var c = _activeCourse;
   var rate = (CURRENCIES[_cur]||{}).rate||1;
@@ -2011,63 +1801,52 @@ async function proceedToCheckout(){
   var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
   var total     = Math.round((courseFee + subFee) * 100)/100;
 
-  try {
-    FlutterwaveCheckout({
-      public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
-      tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-      amount:     total,
-      currency:   _cur,
-      payment_options: 'card,banktransfer,ussd,mobilemoney',
-      customer:{
-        email: window._user.email,
-        name:  window._userName || window._user.email,
-      },
-      meta:{
-        courseId:      String(c.id),
-        instructorId:  c.instructorId,
-        affiliateCode: getActiveAffiliateCode(),
-        paymentType:   'enrollment',
-        courseFeeNGN:  String(c.priceNGN || 50000),
-        subFeeNGN:     String(PLATFORM_SUB_NGN),
-      },
-      customizations:{
-        title:       'SkillsLibry',
-        description: c.title.replace(/&#x[\w]+;/g,'').replace(/&\w+;/g,''),
-        logo:        'https://www.skillslibry.com/logo.png',
-      },
-      callback: async function(response){
-        if(response.status === 'successful' || response.status === 'completed'){
-          showToast('⏳','Confirming payment...');
-          try {
-            var result = await window.slEnroll({
-              courseId:      String(c.id),
-              instructorId:  c.instructorId,
-              amount:        total,
-              currency:      _cur,
-              transactionId: response.transaction_id,
-              affiliateCode: getActiveAffiliateCode(),
-            });
-            if(result && result.ok){
-              showToast('🎉','Enrolled! Redirecting...');
-              setTimeout(function(){ window.location.href='/player?course='+c.id+'&community=1'; }, 1500);
-            } else {
-              console.error('slEnroll returned failure:', result);
-              showToast('⚠️','Payment received but enrollment failed to save. Please contact support with your payment reference: '+response.transaction_id);
-            }
-          } catch(enrollErr){
-            console.error('Enrollment write failed after successful payment:', enrollErr);
-            showToast('⚠️','Payment received but enrollment failed to save. Please contact support with your payment reference: '+response.transaction_id);
-          }
+  FlutterwaveCheckout({
+    public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
+    tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+    amount:     total,
+    currency:   _cur,
+    payment_options: 'card,banktransfer,ussd,mobilemoney',
+    customer:{
+      email: window._user.email,
+      name:  window._userName || window._user.email,
+    },
+    meta:{
+      courseId:      String(c.id),
+      instructorId:  c.instructorId,
+      affiliateCode: localStorage.getItem('sl_aff') || null,
+      paymentType:   'enrollment',
+      courseFeeNGN:  String(c.priceNGN || 50000),
+      subFeeNGN:     String(PLATFORM_SUB_NGN),
+    },
+    customizations:{
+      title:       'SkillsLibry',
+      description: c.title.replace(/&#x[\w]+;/g,'').replace(/&\w+;/g,''),
+      logo:        'https://www.skillslibry.com/logo.png',
+    },
+    callback: async function(response){
+      if(response.status === 'successful' || response.status === 'completed'){
+        showToast('⏳','Confirming payment...');
+        var result = await window.slEnroll({
+          courseId:      String(c.id),
+          instructorId:  c.instructorId,
+          amount:        amount,
+          currency:      _cur,
+          transactionId: response.transaction_id,
+          affiliateCode: localStorage.getItem('sl_aff') || null,
+        });
+        if(result && result.ok){
+          showToast('🎉','Enrolled! Redirecting...');
+          setTimeout(function(){ window.location.href='/player?course='+c.id+'&community=1'; }, 1500);
         } else {
-          showToast('❌','Payment was not completed.');
+          showToast('⚠️','Payment received. Contact support if access is delayed.');
         }
-      },
-      onclose: function(){}
-    });
-  } catch(checkoutErr){
-    console.error('Failed to launch Flutterwave checkout:', checkoutErr);
-    showToast('❌','Could not open the payment window. Please refresh the page and try again.');
-  }
+      } else {
+        showToast('❌','Payment was not completed.');
+      }
+    },
+    onclose: function(){}
+  });
 }
 
 /* ── RENDER TESTIMONIALS ── */
