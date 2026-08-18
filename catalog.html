@@ -156,10 +156,10 @@ h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
 .course-title{font-size:15px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:8px}
 .course-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text3);margin-bottom:14px}
 .rating{color:#f59e0b}
-.course-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;row-gap:10px;padding-top:14px;border-top:1px solid var(--border)}
+.course-footer{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid var(--border)}
 .course-price{font-family:'Poppins',sans-serif;font-size:22px;font-weight:600;color:var(--teal-dark)}
 .course-price-old{font-size:12px;color:var(--text3);text-decoration:line-through;margin-left:6px}
-.enroll-mini{padding:7px 16px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;text-decoration:none;display:inline-block;white-space:nowrap;flex-shrink:0;}
+.enroll-mini{padding:7px 16px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,0.3);color:var(--teal-dark);border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;text-decoration:none;display:inline-block;}
 .enroll-mini:hover{background:var(--teal);color:#0d0d1a}
 
 /* ─── INSTRUCTORS ─── */
@@ -538,9 +538,6 @@ h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif;font-weight:700}
   border-bottom:1px solid var(--border);
   background:var(--bg2);
 }
-.currency-search-input{width:calc(100% - 24px);margin:8px 12px;padding:8px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:13px;outline:none;box-sizing:border-box;}
-.currency-search-input:focus{border-color:var(--teal);}
-.currency-options-list{max-height:280px;overflow-y:auto;}
 .currency-option{
   display:flex;align-items:center;gap:10px;
   padding:10px 14px;
@@ -584,33 +581,6 @@ const db   = getFirestore(app);
 
 window._auth = auth;
 window._db   = db;
-
-/* ══ AFFILIATE REFERRAL CAPTURE ══ */
-(function captureAffiliateRef(){
-  try {
-    var ref = new URLSearchParams(window.location.search).get('ref');
-    if(!ref) return;
-    var code = ref.toUpperCase();
-    localStorage.setItem('sl_aff', JSON.stringify({ code: code, expires: Date.now() + 30*24*60*60*1000 }));
-
-    var sessionKey = 'sl_aff_click_logged_'+code;
-    if(sessionStorage.getItem(sessionKey)) return;
-    sessionStorage.setItem(sessionKey, '1');
-
-    var logClick = async function(){
-      if(!window._db) return;
-      try {
-        var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-        await fb.addDoc(fb.collection(window._db,'affiliateClicks'), {
-          affiliateCode: code,
-          page: window.location.pathname,
-          createdAt: fb.serverTimestamp(),
-        });
-      } catch(e){ console.warn('Affiliate click log failed:', e.message); }
-    };
-    if(window._db){ logClick(); } else { document.addEventListener('authReady', logClick, { once:true }); }
-  } catch(e){}
-})();
 
 onAuthStateChanged(auth, async (user) => {
   window._user = user || null;
@@ -743,10 +713,45 @@ function slErr(code) {
         <span>NGN</span>
         <span class="chevron">▾</span>
       </button>
-            <div class="currency-dropdown" id="currency-dropdown">
+      <div class="currency-dropdown" id="currency-dropdown">
         <div class="currency-dropdown-header">Select your currency</div>
-        <input type="text" id="currency-search" class="currency-search-input" placeholder="Search currency..." oninput="renderCurrencyOptions(this.value)" onclick="event.stopPropagation()"/>
-        <div id="currency-options-list" class="currency-options-list"></div>
+        <div class="currency-option" data-code="NGN" onclick="setCurrency('NGN');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇳🇬</span>
+          <span class="c-name">Nigerian Naira</span>
+          <span class="c-symbol">₦</span>
+        </div><div class="currency-option" data-code="USD" onclick="setCurrency('USD');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇺🇸</span>
+          <span class="c-name">US Dollar</span>
+          <span class="c-symbol">$</span>
+        </div><div class="currency-option" data-code="GBP" onclick="setCurrency('GBP');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇬🇧</span>
+          <span class="c-name">British Pound</span>
+          <span class="c-symbol">£</span>
+        </div><div class="currency-option" data-code="EUR" onclick="setCurrency('EUR');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇪🇺</span>
+          <span class="c-name">Euro</span>
+          <span class="c-symbol">€</span>
+        </div><div class="currency-option" data-code="GHS" onclick="setCurrency('GHS');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇬🇭</span>
+          <span class="c-name">Ghanaian Cedi</span>
+          <span class="c-symbol">GH₵</span>
+        </div><div class="currency-option" data-code="KES" onclick="setCurrency('KES');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇰🇪</span>
+          <span class="c-name">Kenyan Shilling</span>
+          <span class="c-symbol">KSh</span>
+        </div><div class="currency-option" data-code="ZAR" onclick="setCurrency('ZAR');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇿🇦</span>
+          <span class="c-name">South African Rand</span>
+          <span class="c-symbol">R</span>
+        </div><div class="currency-option" data-code="AED" onclick="setCurrency('AED');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇦🇪</span>
+          <span class="c-name">UAE Dirham</span>
+          <span class="c-symbol">AED</span>
+        </div><div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');">
+          <span class="c-flag">🇨🇦</span>
+          <span class="c-name">Canadian Dollar</span>
+          <span class="c-symbol">CA$</span>
+        </div>
       </div>
     </div>
     <a class="btn btn-ghost" href="#" onclick="window._user ? window.location.href='/dashboard' : openAuthModal(null,'signin')">My Learning</a>
@@ -894,7 +899,7 @@ const MODULES = [
   {num:'02',title:'Picking your niche and programs',meta:'5 lessons · 55 min',lessons:[{t:'How to choose a niche that converts',dur:'14 min'},{t:'Best affiliate programs paying in naira',dur:'18 min'},{t:'International programs Nigerians can join',dur:'10 min'},{t:'How to evaluate commission structures',dur:'8 min'},{t:'Your first affiliate link — live walkthrough',dur:'5 min'}]},
   {num:'03',title:'Building your funnel',meta:'5 lessons · 1h 2min',lessons:[{t:'What a funnel is and why you need one',dur:'10 min'},{t:'Building a landing page with no code',dur:'22 min'},{t:'Writing copy that converts Nigerian buyers',dur:'14 min'},{t:'Email follow-up sequences',dur:'12 min'},{t:'Testing and optimising',dur:'4 min'}]},
   {num:'04',title:'Traffic strategies',meta:'6 lessons · 58 min',lessons:[{t:'Free traffic — TikTok and WhatsApp',dur:'12 min'},{t:'Free traffic — Facebook groups',dur:'18 min'},{t:'Paid traffic — Meta ads for affiliates',dur:'14 min'},{t:'Paid traffic — Google ads basics',dur:'8 min'},{t:'Content marketing for long-term traffic',dur:'4 min'},{t:'Combining free and paid for max ROI',dur:'2 min'}]},
-  {num:'05',title:'Scaling to ₦500k/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
+  {num:'05',title:'Scaling to $1,000/month',meta:'4 lessons · 42 min',lessons:[{t:'Reading your numbers',dur:'12 min'},{t:'Stacking multiple affiliate programs',dur:'14 min'},{t:'Outsourcing and automating',dur:'10 min'},{t:'Protecting your income',dur:'6 min'}]},
   {num:'06',title:'Income activation plan — your first commission in 7 days',meta:'4 lessons · 31 min',lessons:[{t:'Your 7-day action plan',dur:'10 min'},{t:'Swipe file — 20 converting headlines',dur:'—'},{t:'Live Q&A replay',dur:'18 min'},{t:'What to do after your first sale',dur:'3 min'}]},
 ];
 
@@ -1111,202 +1116,34 @@ var cg=document.getElementById('catalog-grid'); if(cg) cg.innerHTML=COURSES.map(
 
 /* ── CURRENCY SYSTEM ── */
 var CURRENCIES = {
-  NGN: { symbol:'₦', name:'Nigerian Naira', flag:'🇳🇬', rate:1 },
-  AED: { symbol:'AED', name:'UAE Dirham', flag:'🇦🇪', rate:0.00268734 },
-  AFN: { symbol:'Af', name:'Afghan Afghani', flag:'🇦🇫', rate:0.04831147 },
-  ALL: { symbol:'L', name:'Albanian Lek', flag:'🇦🇱', rate:0.06029142 },
-  AMD: { symbol:'֏', name:'Armenian Dram', flag:'🇦🇲', rate:0.26768176 },
-  AOA: { symbol:'Kz', name:'Angolan Kwanza', flag:'🇦🇴', rate:0.67419799 },
-  ARS: { symbol:'$', name:'Argentine Peso', flag:'🇦🇷', rate:1.0935 },
-  AUD: { symbol:'A$', name:'Australian Dollar', flag:'🇦🇺', rate:0.00104669 },
-  AWG: { symbol:'ƒ', name:'Aruban Florin', flag:'🇦🇼', rate:0.00130983 },
-  AZN: { symbol:'₼', name:'Azerbaijani Manat', flag:'🇦🇿', rate:0.00124463 },
-  BAM: { symbol:'KM', name:'Bosnia-Herzegovina Mark', flag:'🇧🇦', rate:0.00125663 },
-  BBD: { symbol:'Bds$', name:'Barbadian Dollar', flag:'🇧🇧', rate:0.0014635 },
-  BDT: { symbol:'৳', name:'Bangladeshi Taka', flag:'🇧🇩', rate:0.09044969 },
-  BGN: { symbol:'лв', name:'Bulgarian Lev', flag:'🇧🇬', rate:0.00125663 },
-  BHD: { symbol:'.د.ب', name:'Bahraini Dinar', flag:'🇧🇭', rate:0.00027514 },
-  BIF: { symbol:'FBu', name:'Burundian Franc', flag:'🇧🇮', rate:2.1886 },
-  BMD: { symbol:'BD$', name:'Bermudian Dollar', flag:'🇧🇲', rate:0.00073175 },
-  BND: { symbol:'B$', name:'Brunei Dollar', flag:'🇧🇳', rate:0.0009441 },
-  BOB: { symbol:'Bs.', name:'Bolivian Boliviano', flag:'🇧🇴', rate:0.00816009 },
-  BRL: { symbol:'R$', name:'Brazilian Real', flag:'🇧🇷', rate:0.00372174 },
-  BSD: { symbol:'B$', name:'Bahamian Dollar', flag:'🇧🇸', rate:0.00073175 },
-  BTN: { symbol:'Nu.', name:'Bhutanese Ngultrum', flag:'🇧🇹', rate:0.07070991 },
-  BWP: { symbol:'P', name:'Botswana Pula', flag:'🇧🇼', rate:0.01009585 },
-  BYN: { symbol:'Br', name:'Belarusian Ruble', flag:'🇧🇾', rate:0.00210268 },
-  BZD: { symbol:'BZ$', name:'Belize Dollar', flag:'🇧🇿', rate:0.0014635 },
-  CAD: { symbol:'CA$', name:'Canadian Dollar', flag:'🇨🇦', rate:0.00103081 },
-  CDF: { symbol:'FC', name:'Congolese Franc', flag:'🇨🇩', rate:1.6754 },
-  CHF: { symbol:'CHF', name:'Swiss Franc', flag:'🇨🇭', rate:0.00059769 },
-  CLP: { symbol:'CLP$', name:'Chilean Peso', flag:'🇨🇱', rate:0.69261989 },
-  CNY: { symbol:'¥', name:'Chinese Yuan', flag:'🇨🇳', rate:0.00495957 },
-  COP: { symbol:'COL$', name:'Colombian Peso', flag:'🇨🇴', rate:2.3469 },
-  CRC: { symbol:'₡', name:'Costa Rican Colón', flag:'🇨🇷', rate:0.33306007 },
-  CUP: { symbol:'$MN', name:'Cuban Peso', flag:'🇨🇺', rate:0.01756195 },
-  CVE: { symbol:'$', name:'Cape Verdean Escudo', flag:'🇨🇻', rate:0.07084447 },
-  CZK: { symbol:'Kč', name:'Czech Koruna', flag:'🇨🇿', rate:0.01551891 },
-  DJF: { symbol:'Fdj', name:'Djiboutian Franc', flag:'🇩🇯', rate:0.13004698 },
-  DKK: { symbol:'kr', name:'Danish Krone', flag:'🇩🇰', rate:0.00479383 },
-  DOP: { symbol:'RD$', name:'Dominican Peso', flag:'🇩🇴', rate:0.042602 },
-  DZD: { symbol:'دج', name:'Algerian Dinar', flag:'🇩🇿', rate:0.09765499 },
-  EGP: { symbol:'E£', name:'Egyptian Pound', flag:'🇪🇬', rate:0.03754035 },
-  ERN: { symbol:'Nfk', name:'Eritrean Nakfa', flag:'🇪🇷', rate:0.01097622 },
-  ETB: { symbol:'Br', name:'Ethiopian Birr', flag:'🇪🇹', rate:0.11740062 },
-  EUR: { symbol:'€', name:'Euro', flag:'🇪🇺', rate:0.00064247 },
-  FJD: { symbol:'FJ$', name:'Fijian Dollar', flag:'🇫🇯', rate:0.00164607 },
-  FKP: { symbol:'£', name:'Falkland Islands Pound', flag:'🇫🇰', rate:0.00054852 },
-  GBP: { symbol:'£', name:'British Pound', flag:'🇬🇧', rate:0.00054845 },
-  GEL: { symbol:'₾', name:'Georgian Lari', flag:'🇬🇪', rate:0.00191923 },
-  GHS: { symbol:'GH₵', name:'Ghanaian Cedi', flag:'🇬🇭', rate:0.00851484 },
-  GIP: { symbol:'£', name:'Gibraltar Pound', flag:'🇬🇮', rate:0.00054852 },
-  GMD: { symbol:'D', name:'Gambian Dalasi', flag:'🇬🇲', rate:0.05445881 },
-  GNF: { symbol:'FG', name:'Guinean Franc', flag:'🇬🇳', rate:6.4353 },
-  GTQ: { symbol:'Q', name:'Guatemalan Quetzal', flag:'🇬🇹', rate:0.00558492 },
-  GYD: { symbol:'G$', name:'Guyanese Dollar', flag:'🇬🇾', rate:0.15308958 },
-  HKD: { symbol:'HK$', name:'Hong Kong Dollar', flag:'🇭🇰', rate:0.00573866 },
-  HNL: { symbol:'L', name:'Honduran Lempira', flag:'🇭🇳', rate:0.01961187 },
-  HRK: { symbol:'kn', name:'Croatian Kuna', flag:'🇭🇷', rate:0.00484088 },
-  HTG: { symbol:'G', name:'Haitian Gourde', flag:'🇭🇹', rate:0.09561802 },
-  HUF: { symbol:'Ft', name:'Hungarian Forint', flag:'🇭🇺', rate:0.23190418 },
-  IDR: { symbol:'Rp', name:'Indonesian Rupiah', flag:'🇮🇩', rate:13.1335 },
-  ILS: { symbol:'₪', name:'Israeli Shekel', flag:'🇮🇱', rate:0.00223315 },
-  INR: { symbol:'₹', name:'Indian Rupee', flag:'🇮🇳', rate:0.07070281 },
-  IQD: { symbol:'ع.د', name:'Iraqi Dinar', flag:'🇮🇶', rate:0.95889428 },
-  IRR: { symbol:'﷼', name:'Iranian Rial', flag:'🇮🇷', rate:976.0463 },
-  ISK: { symbol:'kr', name:'Icelandic Króna', flag:'🇮🇸', rate:0.09203882 },
-  JMD: { symbol:'J$', name:'Jamaican Dollar', flag:'🇯🇲', rate:0.11582956 },
-  JOD: { symbol:'JD', name:'Jordanian Dinar', flag:'🇯🇴', rate:0.00051881 },
-  JPY: { symbol:'¥', name:'Japanese Yen', flag:'🇯🇵', rate:0.11977207 },
-  KES: { symbol:'KSh', name:'Kenyan Shilling', flag:'🇰🇪', rate:0.09480388 },
-  KGS: { symbol:'с', name:'Kyrgyzstani Som', flag:'🇰🇬', rate:0.06400848 },
-  KHR: { symbol:'៛', name:'Cambodian Riel', flag:'🇰🇭', rate:2.9645 },
-  KMF: { symbol:'CF', name:'Comorian Franc', flag:'🇰🇲', rate:0.31608586 },
-  KRW: { symbol:'₩', name:'South Korean Won', flag:'🇰🇷', rate:1.0683 },
-  KWD: { symbol:'KD', name:'Kuwaiti Dinar', flag:'🇰🇼', rate:0.00022655 },
-  KYD: { symbol:'CI$', name:'Cayman Islands Dollar', flag:'🇰🇾', rate:0.00060977 },
-  KZT: { symbol:'₸', name:'Kazakhstani Tenge', flag:'🇰🇿', rate:0.34786209 },
-  LAK: { symbol:'₭', name:'Lao Kip', flag:'🇱🇦', rate:16.4068 },
-  LBP: { symbol:'ل.ل', name:'Lebanese Pound', flag:'🇱🇧', rate:65.4914 },
-  LKR: { symbol:'Rs', name:'Sri Lankan Rupee', flag:'🇱🇰', rate:0.24617107 },
-  LRD: { symbol:'L$', name:'Liberian Dollar', flag:'🇱🇷', rate:0.13264469 },
-  LSL: { symbol:'L', name:'Lesotho Loti', flag:'🇱🇸', rate:0.01226929 },
-  LYD: { symbol:'LD', name:'Libyan Dinar', flag:'🇱🇾', rate:0.00468355 },
-  MAD: { symbol:'DH', name:'Moroccan Dirham', flag:'🇲🇦', rate:0.00685882 },
-  MDL: { symbol:'L', name:'Moldovan Leu', flag:'🇲🇩', rate:0.01286596 },
-  MGA: { symbol:'Ar', name:'Malagasy Ariary', flag:'🇲🇬', rate:3.1647 },
-  MKD: { symbol:'ден', name:'Macedonian Denar', flag:'🇲🇰', rate:0.0395463 },
-  MMK: { symbol:'K', name:'Myanmar Kyat', flag:'🇲🇲', rate:1.5364 },
-  MNT: { symbol:'₮', name:'Mongolian Tögrög', flag:'🇲🇳', rate:2.6082 },
-  MOP: { symbol:'MOP$', name:'Macanese Pataca', flag:'🇲🇴', rate:0.00591069 },
-  MRU: { symbol:'UM', name:'Mauritanian Ouguiya', flag:'🇲🇷', rate:0.02936417 },
-  MUR: { symbol:'₨', name:'Mauritian Rupee', flag:'🇲🇺', rate:0.03470732 },
-  MVR: { symbol:'Rf', name:'Maldivian Rufiyaa', flag:'🇲🇻', rate:0.01131897 },
-  MWK: { symbol:'MK', name:'Malawian Kwacha', flag:'🇲🇼', rate:1.2684 },
-  MXN: { symbol:'Mex$', name:'Mexican Peso', flag:'🇲🇽', rate:0.0127693 },
-  MYR: { symbol:'RM', name:'Malaysian Ringgit', flag:'🇲🇾', rate:0.00299373 },
-  MZN: { symbol:'MT', name:'Mozambican Metical', flag:'🇲🇿', rate:0.04649344 },
-  NAD: { symbol:'N$', name:'Namibian Dollar', flag:'🇳🇦', rate:0.01226929 },
-  NIO: { symbol:'C$', name:'Nicaraguan Córdoba', flag:'🇳🇮', rate:0.02694377 },
-  NOK: { symbol:'kr', name:'Norwegian Krone', flag:'🇳🇴', rate:0.0070089 },
-  NPR: { symbol:'Rs', name:'Nepalese Rupee', flag:'🇳🇵', rate:0.11313578 },
-  NZD: { symbol:'NZ$', name:'New Zealand Dollar', flag:'🇳🇿', rate:0.0012627 },
-  OMR: { symbol:'﷼', name:'Omani Rial', flag:'🇴🇲', rate:0.00028136 },
-  PAB: { symbol:'B/.', name:'Panamanian Balboa', flag:'🇵🇦', rate:0.00073175 },
-  PEN: { symbol:'S/', name:'Peruvian Sol', flag:'🇵🇪', rate:0.00249124 },
-  PGK: { symbol:'K', name:'Papua New Guinean Kina', flag:'🇵🇬', rate:0.00324816 },
-  PHP: { symbol:'₱', name:'Philippine Peso', flag:'🇵🇭', rate:0.04521822 },
-  PKR: { symbol:'Rs', name:'Pakistani Rupee', flag:'🇵🇰', rate:0.20348499 },
-  PLN: { symbol:'zł', name:'Polish Złoty', flag:'🇵🇱', rate:0.00277413 },
-  PYG: { symbol:'₲', name:'Paraguayan Guaraní', flag:'🇵🇾', rate:4.4292 },
-  QAR: { symbol:'﷼', name:'Qatari Riyal', flag:'🇶🇦', rate:0.00266356 },
-  RON: { symbol:'lei', name:'Romanian Leu', flag:'🇷🇴', rate:0.00336567 },
-  RSD: { symbol:'дин.', name:'Serbian Dinar', flag:'🇷🇸', rate:0.07551676 },
-  RUB: { symbol:'₽', name:'Russian Ruble', flag:'🇷🇺', rate:0.05694931 },
-  RWF: { symbol:'RWF', name:'Rwandan Franc', flag:'🇷🇼', rate:1.0748 },
-  SAR: { symbol:'﷼', name:'Saudi Riyal', flag:'🇸🇦', rate:0.00274405 },
-  SBD: { symbol:'SI$', name:'Solomon Islands Dollar', flag:'🇸🇧', rate:0.00587791 },
-  SCR: { symbol:'₨', name:'Seychellois Rupee', flag:'🇸🇨', rate:0.0106683 },
-  SDG: { symbol:'£SD', name:'Sudanese Pound', flag:'🇸🇩', rate:0.3354916 },
-  SEK: { symbol:'kr', name:'Swedish Krona', flag:'🇸🇪', rate:0.00709788 },
-  SGD: { symbol:'S$', name:'Singapore Dollar', flag:'🇸🇬', rate:0.00094395 },
-  SHP: { symbol:'£', name:'St Helena Pound', flag:'🇸🇭', rate:0.00054852 },
-  SLE: { symbol:'Le', name:'Sierra Leonean Leone', flag:'🇸🇱', rate:0.01782838 },
-  SOS: { symbol:'Sh', name:'Somali Shilling', flag:'🇸🇴', rate:0.41809256 },
-  SRD: { symbol:'$', name:'Surinamese Dollar', flag:'🇸🇷', rate:0.02778623 },
-  SSP: { symbol:'£', name:'South Sudanese Pound', flag:'🇸🇸', rate:3.5857 },
-  STN: { symbol:'Db', name:'São Tomé Dobra', flag:'🇸🇹', rate:0.01574107 },
-  SYP: { symbol:'£S', name:'Syrian Pound', flag:'🇸🇾', rate:0.08911169 },
-  SZL: { symbol:'E', name:'Swazi Lilangeni', flag:'🇸🇿', rate:0.01226929 },
-  THB: { symbol:'฿', name:'Thai Baht', flag:'🇹🇭', rate:0.02462866 },
-  TJS: { symbol:'SM', name:'Tajikistani Somoni', flag:'🇹🇯', rate:0.00675813 },
-  TMT: { symbol:'m', name:'Turkmenistan Manat', flag:'🇹🇲', rate:0.00256141 },
-  TND: { symbol:'DT', name:'Tunisian Dinar', flag:'🇹🇳', rate:0.00216239 },
-  TOP: { symbol:'T$', name:'Tongan Paʻanga', flag:'🇹🇴', rate:0.00173585 },
-  TRY: { symbol:'₺', name:'Turkish Lira', flag:'🇹🇷', rate:0.03464241 },
-  TTD: { symbol:'TT$', name:'Trinidad & Tobago Dollar', flag:'🇹🇹', rate:0.00497567 },
-  TWD: { symbol:'NT$', name:'New Taiwan Dollar', flag:'🇹🇼', rate:0.02367563 },
-  TZS: { symbol:'TSh', name:'Tanzanian Shilling', flag:'🇹🇿', rate:1.9252 },
-  UAH: { symbol:'₴', name:'Ukrainian Hryvnia', flag:'🇺🇦', rate:0.03282197 },
-  UGX: { symbol:'USh', name:'Ugandan Shilling', flag:'🇺🇬', rate:2.7344 },
-  USD: { symbol:'$', name:'US Dollar', flag:'🇺🇸', rate:0.00073175 },
-  UYU: { symbol:'$U', name:'Uruguayan Peso', flag:'🇺🇾', rate:0.02943844 },
-  UZS: { symbol:'so\'m', name:'Uzbekistani Som', flag:'🇺🇿', rate:8.7179 },
-  VES: { symbol:'Bs.S', name:'Venezuelan Bolívar', flag:'🇻🇪', rate:0.54312473 },
-  VND: { symbol:'₫', name:'Vietnamese Đồng', flag:'🇻🇳', rate:19.2011 },
-  VUV: { symbol:'VT', name:'Vanuatu Vatu', flag:'🇻🇺', rate:0.08675099 },
-  WST: { symbol:'WS$', name:'Samoan Tālā', flag:'🇼🇸', rate:0.00198757 },
-  XAF: { symbol:'FCFA', name:'Central African CFA Franc', flag:'🌍', rate:0.42144777 },
-  XCD: { symbol:'EC$', name:'East Caribbean Dollar', flag:'🌎', rate:0.00197572 },
-  XCG: { symbol:'Cg', name:'Caribbean Guilder', flag:'🌎', rate:0.00130983 },
-  XOF: { symbol:'CFA', name:'West African CFA Franc', flag:'🌍', rate:0.42144777 },
-  XPF: { symbol:'₣', name:'CFP Franc', flag:'🌏', rate:0.07666999 },
-  YER: { symbol:'﷼', name:'Yemeni Rial', flag:'🇾🇪', rate:0.17431291 },
-  ZAR: { symbol:'R', name:'South African Rand', flag:'🇿🇦', rate:0.01226622 },
-  ZMW: { symbol:'ZK', name:'Zambian Kwacha', flag:'🇿🇲', rate:0.01365866 },
-  ZWG: { symbol:'ZiG', name:'Zimbabwe Gold', flag:'🇿🇼', rate:0.0195013 },
-};
-/* Country → currency map for auto-detect */
-var COUNTRY_CURRENCY = {
- AE:'AED', AF:'AFN', AG:'XCD', AL:'ALL', AM:'AMD', AO:'AOA',
- AR:'ARS', AT:'EUR', AU:'AUD', AW:'AWG', AZ:'AZN', BA:'BAM',
- BB:'BBD', BD:'BDT', BE:'EUR', BF:'XOF', BG:'BGN', BH:'BHD',
- BI:'BIF', BJ:'XOF', BM:'BMD', BN:'BND', BO:'BOB', BR:'BRL',
- BS:'BSD', BT:'BTN', BW:'BWP', BY:'BYN', BZ:'BZD', CA:'CAD',
- CD:'CDF', CF:'XAF', CG:'XAF', CH:'CHF', CI:'XOF', CL:'CLP',
- CM:'XAF', CN:'CNY', CO:'COP', CR:'CRC', CU:'CUP', CV:'CVE',
- CW:'XCG', CY:'EUR', CZ:'CZK', DE:'EUR', DJ:'DJF', DK:'DKK',
- DM:'XCD', DO:'DOP', DZ:'DZD', EE:'EUR', EG:'EGP', ER:'ERN',
- ES:'EUR', ET:'ETB', FI:'EUR', FJ:'FJD', FK:'FKP', FR:'EUR',
- GA:'XAF', GB:'GBP', GD:'XCD', GE:'GEL', GH:'GHS', GI:'GIP',
- GM:'GMD', GN:'GNF', GQ:'XAF', GR:'EUR', GT:'GTQ', GW:'XOF',
- GY:'GYD', HK:'HKD', HN:'HNL', HR:'HRK', HT:'HTG', HU:'HUF',
- ID:'IDR', IE:'EUR', IL:'ILS', IN:'INR', IQ:'IQD', IR:'IRR',
- IS:'ISK', IT:'EUR', JM:'JMD', JO:'JOD', JP:'JPY', KE:'KES',
- KG:'KGS', KH:'KHR', KM:'KMF', KN:'XCD', KR:'KRW', KW:'KWD',
- KY:'KYD', KZ:'KZT', LA:'LAK', LB:'LBP', LC:'XCD', LK:'LKR',
- LR:'LRD', LS:'LSL', LT:'EUR', LU:'EUR', LV:'EUR', LY:'LYD',
- MA:'MAD', MD:'MDL', MG:'MGA', MK:'MKD', ML:'XOF', MM:'MMK',
- MN:'MNT', MO:'MOP', MR:'MRU', MT:'EUR', MU:'MUR', MV:'MVR',
- MW:'MWK', MX:'MXN', MY:'MYR', MZ:'MZN', NA:'NAD', NC:'XPF',
- NE:'XOF', NG:'NGN', NI:'NIO', NL:'EUR', NO:'NOK', NP:'NPR',
- NZ:'NZD', OM:'OMR', PA:'PAB', PE:'PEN', PF:'XPF', PG:'PGK',
- PH:'PHP', PK:'PKR', PL:'PLN', PT:'EUR', PY:'PYG', QA:'QAR',
- RO:'RON', RS:'RSD', RU:'RUB', RW:'RWF', SA:'SAR', SB:'SBD',
- SC:'SCR', SD:'SDG', SE:'SEK', SG:'SGD', SH:'SHP', SI:'EUR',
- SK:'EUR', SL:'SLE', SN:'XOF', SO:'SOS', SR:'SRD', SS:'SSP',
- ST:'STN', SX:'XCG', SY:'SYP', SZ:'SZL', TD:'XAF', TG:'XOF',
- TH:'THB', TJ:'TJS', TM:'TMT', TN:'TND', TO:'TOP', TR:'TRY',
- TT:'TTD', TW:'TWD', TZ:'TZS', UA:'UAH', UG:'UGX', US:'USD',
- UY:'UYU', UZ:'UZS', VC:'XCD', VE:'VES', VN:'VND', VU:'VUV',
- WS:'WST', YE:'YER', ZA:'ZAR', ZM:'ZMW', ZW:'ZWG',
+  NGN: { symbol:'₦',    name:'Nigerian Naira',      flag:'🇳🇬', rate:1       },
+  USD: { symbol:'$',    name:'US Dollar',            flag:'🇺🇸', rate:0.00065 },
+  GBP: { symbol:'£',    name:'British Pound',        flag:'🇬🇧', rate:0.00052 },
+  EUR: { symbol:'€',    name:'Euro',                 flag:'🇪🇺', rate:0.00060 },
+  GHS: { symbol:'GH₵',  name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099  },
+  KES: { symbol:'KSh',  name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084   },
+  ZAR: { symbol:'R',    name:'South African Rand',   flag:'🇿🇦', rate:0.012   },
+  AED: { symbol:'AED',  name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024  },
+  CAD: { symbol:'CA$',  name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088 },
+  UGX: { symbol:'USh',  name:'Ugandan Shilling',     flag:'🇺🇬', rate:2.4     },
+  TZS: { symbol:'TSh',  name:'Tanzanian Shilling',   flag:'🇹🇿', rate:1.67    },
+  RWF: { symbol:'RWF',  name:'Rwandan Franc',        flag:'🇷🇼', rate:0.83    },
+  EGP: { symbol:'E£',   name:'Egyptian Pound',       flag:'🇪🇬', rate:0.032   },
+  XOF: { symbol:'CFA',  name:'West African CFA',     flag:'🌍',  rate:0.39    },
 };
 
-var _activeCurrency = localStorage.getItem('sl_currency') || 'NGN';
+/* Country → currency map for auto-detect */
+var COUNTRY_CURRENCY = {
+  NG:'NGN', US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', NL:'EUR',
+  GH:'GHS', KE:'KES', ZA:'ZAR', AE:'AED', CA:'CAD',
+  AU:'USD', SG:'USD', IN:'USD',
+};
+
+var _activeCurrency = localStorage.getItem('sl_currency') || 'USD';
 
 function convertPrice(ngnAmount){
   var c = CURRENCIES[_activeCurrency];
-  if(!c) return '₦' + ngnAmount.toLocaleString();
+  if(!c) return '$' + ngnAmount.toLocaleString();
   if(_activeCurrency === 'NGN') return '₦' + ngnAmount.toLocaleString();
   var converted = (ngnAmount * c.rate);
   // Round nicely
@@ -1337,24 +1174,6 @@ function updateCurrencyBtn(){
   });
 }
 
-/* Renders the searchable currency list from the full CURRENCIES data set. */
-function renderCurrencyOptions(filter){
-  var list = document.getElementById('currency-options-list');
-  if(!list || typeof CURRENCIES === 'undefined') return;
-  var f = (filter||'').trim().toLowerCase();
-  var html = '';
-  Object.keys(CURRENCIES).forEach(function(code){
-    var c = CURRENCIES[code];
-    if(f && code.toLowerCase().indexOf(f)===-1 && c.name.toLowerCase().indexOf(f)===-1) return;
-    var active = (code === _activeCurrency) ? ' active' : '';
-    html += '<div class="currency-option'+active+'" data-code="'+code+'" onclick="setCurrency(\''+code+'\');localStorage.setItem(\'sl_currency_manual\',\'1\');">'
-      +'<span class="c-flag">'+c.flag+'</span><span class="c-name">'+c.name+'</span><span class="c-symbol">'+c.symbol+'</span>'
-      +'</div>';
-  });
-  list.innerHTML = html || '<div style="padding:14px;font-size:12px;color:var(--text3);text-align:center;">No currency found</div>';
-}
-renderCurrencyOptions();
-
 function updateAllPrices(){
   // Update all elements with data-ngn attribute
   document.querySelectorAll('[data-ngn]').forEach(function(el){
@@ -1381,11 +1200,6 @@ function toggleCurrencyDropdown(){
   var isOpen = dd.classList.contains('open');
   dd.classList.toggle('open', !isOpen);
   if(btn) btn.classList.toggle('open', !isOpen);
-  if(!isOpen){
-    var search = document.getElementById('currency-search');
-    if(search) search.value = '';
-    renderCurrencyOptions();
-  }
 }
 function closeCurrencyDropdown(){
   var dd = document.getElementById('currency-dropdown');
@@ -1672,31 +1486,12 @@ document.addEventListener('authReady', function(e){
       return;
     }
 
-    // Live lookup: overwrite each course's frozen instructorName snapshot
-    // with the instructor's CURRENT name from their profile doc.
-    try {
-      var instructorIds = Array.from(new Set(courses.map(function(c){return c.instructorId;}).filter(Boolean)));
-      var nameMap = {};
-      await Promise.all(instructorIds.map(async function(uid){
-        try {
-          var iSnap = await fb.getDoc(fb.doc(window._db,'users',uid));
-          if(iSnap.exists() && iSnap.data().name) nameMap[uid] = iSnap.data().name;
-        } catch(ie){}
-      }));
-      courses.forEach(function(c){
-        if(c.instructorId && nameMap[c.instructorId]) c.instructorName = nameMap[c.instructorId];
-      });
-    } catch(e){ console.warn('Instructor name batch lookup failed:', e.message); }
-
     // Render real courses
-    var rate = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].rate : 1;
-    var sym  = (window.CURRENCIES && window.CURRENCIES[window._cur||'NGN']) ? window.CURRENCIES[window._cur||'NGN'].symbol : '₦';
+    var rate = (window.CURRENCIES && window.CURRENCIES[window._cur||'USD']) ? window.CURRENCIES[window._cur||'USD'].rate : 1;
+    var sym  = (window.CURRENCIES && window.CURRENCIES[window._cur||'USD']) ? window.CURRENCIES[window._cur||'USD'].symbol : '$';
 
     grid.innerHTML = courses.map(function(c){
       var price    = Math.round((c.priceNGN||0) * rate);
-      var priceOriginal = Math.round((c.priceOriginal||0) * rate);
-      var hasDiscount = priceOriginal > price;
-      var discountPct = hasDiscount ? Math.round((1 - (price/priceOriginal))*100) : 0;
       var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
       var thumbInner = c.thumbnailUrl
         ? '<img src="'+c.thumbnailUrl+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"/>'
@@ -1712,10 +1507,8 @@ document.addEventListener('authReady', function(e){
           +'</div>'
           +'<div class="course-title">'+(c.title||'Course')+'</div>'
           +'<div class="course-footer">'
-            +'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">'
-              +'<span class="course-price" data-ngn="'+(c.priceNGN||0)+'">'+sym+' '+price.toLocaleString()+'</span>'
-              +(hasDiscount ? '<span class="course-price-old" data-ngn="'+(c.priceOriginal||0)+'">'+sym+' '+priceOriginal.toLocaleString()+'</span>' : '')
-              +(hasDiscount ? '<span class="course-card-discount">-'+discountPct+'% OFF</span>' : '')
+            +'<div>'
+              +'<span class="course-price">'+sym+' '+price.toLocaleString()+'</span>'
             +'</div>'
             +'<a class="enroll-mini" href="/course?id='+c.id+'">Learn more</a>'
           +'</div>'
