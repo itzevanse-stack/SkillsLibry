@@ -909,9 +909,9 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
             <div class="frow-1">
               <div class="fg">
-                <label>Discount ends at (optional)</label>
-                <input class="fi" id="pr-sale-ends" type="datetime-local"/>
-                <div class="hint">If set, shows a live countdown timer on the course page to create urgency. Leave blank for no timer.</div>
+                <label>External checkout URL <span style="font-weight:400;color:var(--text3);">(optional)</span></label>
+                <input class="fi" id="pr-checkout-url" type="url" placeholder="e.g. https://checkout.cope.com/your-product-link"/>
+                <div class="hint">If set, students will be sent here to pay instead of the built-in checkout. Use this while we're setting up direct payment processing.</div>
               </div>
             </div>
 
@@ -1388,7 +1388,7 @@ var _course = {
   title:'', subtitle:'', category:'', level:'', language:'english',
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
   promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
-  priceNGN:0, priceOriginal:0, priceType:'paid', includes:[],
+  priceNGN:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
   status:'draft'
 };
 var _currentStep = 1;
@@ -1399,7 +1399,7 @@ function startNewCourse() {
     title:'', subtitle:'', category:'', level:'', language:'english',
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
     promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
-    priceNGN:0, priceOriginal:0, priceType:'paid', includes:[], status:'draft'
+    priceNGN:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[], status:'draft'
   };
   _currentStep = 1;
   // Reset form fields
@@ -1495,8 +1495,7 @@ function validateStep(n) {
       if(!price || price < 1000){ showToast('⚠️','Minimum price is ₦1,000.'); return false; }
       _course.priceNGN = price;
       _course.priceOriginal = parseFloat((document.getElementById('pr-original')||{}).value||0);
-      var saleEndsVal = (document.getElementById('pr-sale-ends')||{}).value||'';
-      _course.saleEndsAt = saleEndsVal ? new Date(saleEndsVal).toISOString() : null;
+      _course.checkoutUrl = ((document.getElementById('pr-checkout-url')||{}).value||'').trim() || null;
     }
   }
   return true;
@@ -1982,8 +1981,7 @@ function buildReview() {
   if(_course.priceType === 'paid'){
     _course.priceNGN = parseFloat((document.getElementById('pr-ngn')||{}).value||0);
     _course.priceOriginal = parseFloat((document.getElementById('pr-original')||{}).value||0);
-    var saleEndsVal = (document.getElementById('pr-sale-ends')||{}).value||'';
-    _course.saleEndsAt = saleEndsVal ? new Date(saleEndsVal).toISOString() : null;
+    _course.checkoutUrl = ((document.getElementById('pr-checkout-url')||{}).value||'').trim() || null;
   }
 
   var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); }, 0);
@@ -2094,7 +2092,7 @@ async function persistCourse(targetStatus, btn) {
       promoVideoUrl: _course.promoVideoUrl || null,
       priceNGN:     _course.priceNGN,
       priceOriginal:_course.priceOriginal,
-      saleEndsAt:   _course.saleEndsAt || null,
+      checkoutUrl:  _course.checkoutUrl || null,
       priceType:    _course.priceType,
       totalLessons: totalLessons,
       totalModules: _course.modules.length,
@@ -3075,7 +3073,7 @@ async function editCourse(courseId){
           return { title: l.title||'', type: l.type||'video', free: !!l.free, videoId: l.videoId||null, videoUrl: l.videoUrl||null };
         })};
       }),
-      priceNGN: c.priceNGN||0, priceOriginal: c.priceOriginal||0, saleEndsAt: c.saleEndsAt||null,
+      priceNGN: c.priceNGN||0, priceOriginal: c.priceOriginal||0, checkoutUrl: c.checkoutUrl||null,
       priceType: c.priceType||'paid', includes: c.includes||[], status: c.status||'draft'
     };
     _currentStep = 1;
@@ -3137,18 +3135,7 @@ async function editCourse(courseId){
     }
 
     // Populate step 5 - pricing
-    sv('pr-ngn', c.priceNGN); sv('pr-original', c.priceOriginal);
-    if(c.saleEndsAt){
-      try {
-        var seDate = new Date(c.saleEndsAt);
-        if(!isNaN(seDate.getTime())){
-          var pad = function(n){ return String(n).padStart(2,'0'); };
-          var localVal = seDate.getFullYear()+'-'+pad(seDate.getMonth()+1)+'-'+pad(seDate.getDate())
-            +'T'+pad(seDate.getHours())+':'+pad(seDate.getMinutes());
-          sv('pr-sale-ends', localVal);
-        }
-      } catch(se){}
-    }
+    sv('pr-ngn', c.priceNGN); sv('pr-original', c.priceOriginal); sv('pr-checkout-url', c.checkoutUrl);
 
     showToast('&#9997;️','Course loaded. Make your changes and resubmit.');
   } catch(e){
