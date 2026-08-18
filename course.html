@@ -190,7 +190,28 @@ a{text-decoration:none;color:inherit}
 .pc-price{font-family:'Poppins',sans-serif;font-size:36px;font-weight:900;color:var(--text);line-height:1;}
 .pc-price-old{font-size:16px;color:var(--text3);text-decoration:line-through;}
 .pc-discount{font-size:12px;font-weight:700;background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);padding:3px 8px;border-radius:4px;}
-.pc-timer{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:20px;display:flex;align-items:center;gap:6px;}
+.pc-timer{font-size:12px;color:var(--orange);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.countdown-widget{display:flex;gap:8px;margin-bottom:20px;}
+.countdown-box{
+  flex:1;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#151527 0%,#1f1f3a 100%);
+  border:1px solid rgba(78,204,163,.25);
+  border-radius:10px;padding:10px 4px 8px;text-align:center;
+  box-shadow:0 4px 18px rgba(13,13,26,.18);
+}
+.countdown-box::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(78,204,163,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.countdown-num{
+  font-family:'Poppins',sans-serif;font-size:21px;font-weight:800;line-height:1;
+  background:linear-gradient(135deg,var(--teal) 20%,#8ee6c8 60%,var(--purple) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  position:relative;font-variant-numeric:tabular-nums;
+}
+.countdown-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.45);margin-top:4px;position:relative;}
+.countdown-sep{align-self:center;color:rgba(78,204,163,.4);font-family:'Poppins',sans-serif;font-weight:800;font-size:18px;padding-bottom:14px;}
 
 .enroll-btn{
   width:100%;padding:16px;
@@ -510,7 +531,16 @@ a{text-decoration:none;color:inherit}
             <div class="pc-price-old" id="cd-price-old" style="display:none;"></div>
             <div class="pc-discount" id="pc-discount" style="display:none;"></div>
           </div>
-          <div class="pc-timer" id="pc-timer" style="display:none;">&#128197; <span id="pc-timer-text"></span><span id="cd-countdown" style="margin-left:6px;font-weight:700;"></span></div>
+          <div class="pc-timer" id="pc-timer" style="display:none;">&#128197; <span id="pc-timer-text"></span></div>
+          <div class="countdown-widget" id="cd-countdown-widget" style="display:none;">
+            <div class="countdown-box"><div class="countdown-num" id="cd-cd-days">00</div><div class="countdown-label">Days</div></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-box"><div class="countdown-num" id="cd-cd-hours">00</div><div class="countdown-label">Hrs</div></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-box"><div class="countdown-num" id="cd-cd-mins">00</div><div class="countdown-label">Min</div></div>
+            <div class="countdown-sep">:</div>
+            <div class="countdown-box"><div class="countdown-num" id="cd-cd-secs">00</div><div class="countdown-label">Sec</div></div>
+          </div>
 
           <div class="pc-includes" id="pc-includes" style="display:none;">
             <div class="pc-includes-title">This course includes</div>
@@ -934,35 +964,35 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
 
 <script>
 
-/* ── LIVE COUNTDOWN TO A SCHEDULED START DATE ── */
-function startCountdown(elId, startDateIso){
-  var el = document.getElementById(elId);
-  if(!el || !startDateIso) return;
+/* ── LIVE COUNTDOWN TO A SCHEDULED START DATE (real-time D:H:M:S) ── */
+function startCountdown(prefix, startDateIso){
+  var daysEl  = document.getElementById(prefix+'-days');
+  var hoursEl = document.getElementById(prefix+'-hours');
+  var minsEl  = document.getElementById(prefix+'-mins');
+  var secsEl  = document.getElementById(prefix+'-secs');
+  if(!daysEl || !hoursEl || !minsEl || !secsEl || !startDateIso) return;
+
   var target = new Date(startDateIso+'T00:00:00').getTime();
   if(isNaN(target)) return;
 
+  function pad(n){ return n < 10 ? '0'+n : String(n); }
+
   function tick(){
-    var now = Date.now();
-    var diff = target - now;
+    var diff = target - Date.now();
     if(diff <= 0){
-      el.textContent = '· Starting now';
+      daysEl.textContent = hoursEl.textContent = minsEl.textContent = secsEl.textContent = '00';
+      clearInterval(daysEl._countdownInterval);
       return;
     }
-    var days  = Math.floor(diff / 86400000);
-    var hours = Math.floor((diff % 86400000) / 3600000);
-    var mins  = Math.floor((diff % 3600000) / 60000);
-    if(days > 0){
-      el.textContent = '· '+days+'d '+hours+'h left';
-    } else if(hours > 0){
-      el.textContent = '· '+hours+'h '+mins+'m left';
-    } else {
-      var secs = Math.floor((diff % 60000) / 1000);
-      el.textContent = '· '+mins+'m '+secs+'s left';
-    }
+    daysEl.textContent  = pad(Math.floor(diff / 86400000));
+    hoursEl.textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    minsEl.textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    secsEl.textContent  = pad(Math.floor((diff % 60000) / 1000));
   }
+
   tick();
-  clearInterval(el._countdownInterval);
-  el._countdownInterval = setInterval(tick, 1000);
+  clearInterval(daysEl._countdownInterval);
+  daysEl._countdownInterval = setInterval(tick, 1000);
 }
 
 /* ── ENROLL BUTTON ATTENTION PULSE (every 5-10s, random) ── */
@@ -1041,8 +1071,10 @@ async function loadTestimonialsForCourse(){
           +'</div>';
       } else if(t.type==='video' && t.mediaUrl){
         var embed = (typeof videoUrlToEmbed==='function') ? videoUrlToEmbed(t.mediaUrl) : t.mediaUrl;
+        var thumb = (typeof extractVideoThumb==='function') ? extractVideoThumb(t.mediaUrl) : null;
         if(embed && /^https?:\/\/(www\.)?(youtube|youtu\.be|vimeo|wistia|fast\.wistia)/.test(embed)){
           mediaHtml = '<div class="tcard-media">'
+            +(thumb?'<img src="'+thumb+'" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.style.display=\'none\'"/>':'')
             +'<div class="tcard-play-overlay" data-embed="'+embed.replace(/"/g,'&quot;')+'" onclick="playEmbedTesti(this)"><div class="tcard-play-circle"><div class="tcard-play-icon"></div></div></div>'
             +'<div class="tcard-media-badge">Video</div>'
             +'</div>';
@@ -1494,14 +1526,17 @@ function showToast(icon,msg){
   // Start date badge + live countdown — only for scheduled-start courses
   var timerEl = document.getElementById('pc-timer');
   var timerTextEl = document.getElementById('pc-timer-text');
+  var countdownWidget = document.getElementById('cd-countdown-widget');
   if(courseData.startType === 'scheduled' && courseData.startDate){
     var startD = new Date(courseData.startDate+'T00:00:00');
     var startLabel = isNaN(startD) ? courseData.startDate : startD.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
     if(timerTextEl) timerTextEl.textContent = 'Starts ' + startLabel;
     if(timerEl) timerEl.style.display = 'flex';
-    startCountdown('cd-countdown', courseData.startDate);
+    if(countdownWidget) countdownWidget.style.display = 'flex';
+    startCountdown('cd-cd', courseData.startDate);
   } else if(timerEl){
     timerEl.style.display = 'none';
+    if(countdownWidget) countdownWidget.style.display = 'none';
   }
 
   // Set active course for enrollment
@@ -1845,6 +1880,31 @@ function proceedToCheckout(){
 
 /* ── LOAD COURSE FROM URL ── */
 
+
+function extractVideoThumb(raw){
+  if(!raw) return null;
+  var text = raw.trim();
+  var srcMatch = text.match(/src=["']([^"']+)["']/i);
+  var candidate = srcMatch ? srcMatch[1] : text;
+
+  var wistiaPatterns = [
+    /fast\.wistia\.(?:net|com)\/embed\/(?:iframe|medias)\/([a-zA-Z0-9]+)/,
+    /wistia\.com\/medias\/([a-zA-Z0-9]+)/,
+    /wi\.st\/([a-zA-Z0-9]+)/,
+    /wvideo=([a-zA-Z0-9]+)/,
+    /wistia_async_([a-zA-Z0-9]+)/
+  ];
+  for(var i=0;i<wistiaPatterns.length;i++){
+    var wm = text.match(wistiaPatterns[i]) || candidate.match(wistiaPatterns[i]);
+    if(wm) return 'https://fast.wistia.com/embed/medias/'+wm[1]+'/swatch';
+  }
+
+  var yt = candidate.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/)
+        || text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+  if(yt) return 'https://img.youtube.com/vi/'+yt[1]+'/hqdefault.jpg';
+
+  return null;
+}
 
 function videoUrlToEmbed(raw){
   if(!raw) return null;
