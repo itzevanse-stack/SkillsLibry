@@ -77,22 +77,6 @@ a{text-decoration:none;color:inherit}
 .btn-teal:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(78,204,163,.35);}
 .btn-lg{padding:15px 32px;font-size:15px;border-radius:var(--r);}
 
-/* Currency */
-.currency-switcher{position:relative;}
-.currency-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
-.currency-btn:hover,.currency-btn.open{border-color:var(--teal);color:var(--teal-dark);}
-.currency-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh-lg);min-width:210px;z-index:200;display:none;overflow:hidden;}
-.currency-dropdown.open{display:block;animation:fadeDown .15s ease;}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.currency-dropdown-header{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
-.currency-option{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);}
-.currency-option:last-child{border-bottom:none;}
-.currency-option:hover,.currency-option.active{background:var(--teal-dim);color:var(--teal-dark);}
-.currency-option .c-flag{font-size:18px;width:24px;text-align:center;}
-.currency-option .c-name{flex:1;}
-.currency-option .c-symbol{font-size:11px;color:var(--text3);font-weight:600;}
-.currency-option.active .c-symbol{color:var(--teal-dark);}
-
 /* ── HERO BAND ── */
 .course-hero{
   background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
@@ -375,6 +359,7 @@ a{text-decoration:none;color:inherit}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:13px 18px;font-size:13px;color:var(--text);display:none;box-shadow:var(--sh-lg);max-width:300px;}
 .toast.show{display:flex;align-items:center;gap:10px;animation:fadeDown .25s ease;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .toast-icon{font-size:18px;}
 
 @media(max-width:900px){
@@ -420,21 +405,7 @@ a{text-decoration:none;color:inherit}
     <span></span><span></span><span></span>
   </button>
   <div class="nav-right">
-    <div class="currency-switcher" id="currency-switcher">
-      <button class="currency-btn" id="currency-btn" onclick="toggleCurrencyDropdown()">USD &#9660;</button>
-      <div class="currency-dropdown" id="currency-dropdown">
-        <div class="currency-dropdown-header">Select your currency</div>
-        <div class="currency-option" data-code="NGN" onclick="setCurrency('NGN');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127475;&#127468;</span><span class="c-name">Nigerian Naira</span><span class="c-symbol">&#x20a6;</span></div>
-        <div class="currency-option" data-code="USD" onclick="setCurrency('USD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127482;&#127480;</span><span class="c-name">US Dollar</span><span class="c-symbol">$</span></div>
-        <div class="currency-option" data-code="GBP" onclick="setCurrency('GBP');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127468;&#127463;</span><span class="c-name">British Pound</span><span class="c-symbol">&#163;</span></div>
-        <div class="currency-option" data-code="EUR" onclick="setCurrency('EUR');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127466;&#127482;</span><span class="c-name">Euro</span><span class="c-symbol">&#8364;</span></div>
-        <div class="currency-option" data-code="GHS" onclick="setCurrency('GHS');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127468;&#127469;</span><span class="c-name">Ghanaian Cedi</span><span class="c-symbol">GH&#8373;</span></div>
-        <div class="currency-option" data-code="KES" onclick="setCurrency('KES');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127472;&#127466;</span><span class="c-name">Kenyan Shilling</span><span class="c-symbol">KSh</span></div>
-        <div class="currency-option" data-code="ZAR" onclick="setCurrency('ZAR');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127487;&#127462;</span><span class="c-name">South African Rand</span><span class="c-symbol">R</span></div>
-        <div class="currency-option" data-code="AED" onclick="setCurrency('AED');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127462;&#127466;</span><span class="c-name">UAE Dirham</span><span class="c-symbol">AED</span></div>
-        <div class="currency-option" data-code="CAD" onclick="setCurrency('CAD');localStorage.setItem('sl_currency_manual','1');"><span class="c-flag">&#127464;&#127462;</span><span class="c-name">Canadian Dollar</span><span class="c-symbol">CA$</span></div>
-      </div>
-    </div>
+
     <a class="btn btn-ghost" href="#" id="nav-my-learning" onclick="window._user?window.location.href='/dashboard':openAuthModal(null,'si')">My Learning</a>
     <div id="nav-user-menu" style="display:none;align-items:center;gap:10px;">
       <span id="nav-user-name" style="font-size:13px;font-weight:600;color:var(--text2);"></span>
@@ -515,11 +486,11 @@ a{text-decoration:none;color:inherit}
       <div class="purchase-card">
         <div class="pc-body">
           <div class="pc-price-row">
-            <div class="pc-price" id="cd-price" data-ngn="35000">&#x20a6;35,000</div>
+            <div class="pc-price" id="cd-price">$97</div>
             <div class="pc-price-old" id="cd-price-old" style="display:none;"></div>
             <div class="pc-discount" id="pc-discount" style="display:none;"></div>
           </div>
-          <div class="pc-timer" id="pc-timer" style="display:none;"></div>
+          <div class="pc-timer" id="pc-timer" style="display:none;">&#128197; <span id="pc-timer-text"></span></div>
 
           <div class="pc-includes" id="pc-includes">
             <div class="pc-includes-title">This course includes</div>
@@ -531,12 +502,12 @@ a{text-decoration:none;color:inherit}
           </div>
 
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
-            Enroll now &mdash; <span id="enroll-price">&#x20a6;35,000 + &#x20a6;10,500/mo</span>
+            Enroll now &mdash; <span id="enroll-price">$97</span>
           </button>
           <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
-          <button onclick="copyCourseLink(this)" style="width:100%;margin-top:14px;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <span>&#128279;</span> Copy course link
-          </button>
+          <div style="width:100%;margin-top:14px;padding:10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:8px;">
+            <span>&#128272;</span> Secure checkout via Cope
+          </div>
         </div>
       </div>
     </div>
@@ -1044,28 +1015,6 @@ function toggleModule(header){
   if(chevron) chevron.classList.toggle('open');
 }
 
-/* ── MODAL ── */
-function openEnrollModal(){
-  var em=document.getElementById('enroll-modal');
-  var pd=document.getElementById('modal-price-display');
-  var pn=document.getElementById('modal-price-note');
-  var ib=document.getElementById('modal-install-btn');
-  if(pd) pd.textContent='';
-  if(pn) pn.textContent='';
-  if(ib) ib.style.display='block';
-  if(em) em.classList.add('open');
-}
-
-
-function closeModal(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.classList.remove('open');
-}
-(function(){
-  var em=document.getElementById('enroll-modal');
-  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
-})();
-
 /* ── TOAST ── */
 function copyCourseLink(btn){
   var url = window.location.href;
@@ -1405,68 +1354,42 @@ function showToast(icon,msg){
   // Update page title
   document.title = (courseData.title||'Course') + ' — SkillsLibry';
 
-  var priceNGN = courseData.priceNGN || courseData.price || 50000;
-  var rate     = (window.CURRENCIES&&window.CURRENCIES[window._cur||'USD'])?window.CURRENCIES[window._cur||'USD'].rate:1;
-  var sym      = (window.CURRENCIES&&window.CURRENCIES[window._cur||'USD'])?window.CURRENCIES[window._cur||'USD'].symbol:'$';
-  var subFee   = 10500;
+  var priceUSD = courseData.priceUSD || courseData.price || 97;
 
   var priceEl = document.getElementById('cd-price');
-  if(priceEl){ priceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString(); priceEl.dataset.ngn = priceNGN; }
+  if(priceEl) priceEl.innerHTML = '$'+priceUSD.toLocaleString();
 
   var enrollPriceEl = document.getElementById('enroll-price');
-  if(enrollPriceEl) enrollPriceEl.innerHTML = sym+' '+(Math.round(priceNGN*rate)).toLocaleString()+' + '+sym+' '+(Math.round(subFee*rate)).toLocaleString()+'/mo';
+  if(enrollPriceEl) enrollPriceEl.innerHTML = '$'+priceUSD.toLocaleString();
+
+  // Start date badge — only shown when the instructor scheduled a fixed start
+  var timerEl = document.getElementById('pc-timer');
+  var timerTextEl = document.getElementById('pc-timer-text');
+  if(courseData.startType === 'scheduled' && courseData.startDate){
+    var startD = new Date(courseData.startDate+'T00:00:00');
+    var startLabel = isNaN(startD) ? courseData.startDate : startD.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    if(timerTextEl) timerTextEl.textContent = 'Starts ' + startLabel;
+    if(timerEl) timerEl.style.display = 'flex';
+  } else if(timerEl){
+    timerEl.style.display = 'none';
+  }
 
   // Set active course for enrollment
   _activeCourse = {
     id:           courseData.id || id,
     title:        courseData.title || 'Course',
     instructorId: courseData.instructorId || 'instructor_1',
-    priceNGN:     priceNGN,
+    priceUSD:     priceUSD,
     checkoutUrl:  courseData.checkoutUrl || null,
+    startType:    courseData.startType || 'instant',
+    startDate:    courseData.startDate || null,
   };
-
-  // Auto-detect currency
-  updateCurrencyBtn();
 
   // Real data is now in place — reveal the page
   var loadingOverlay = document.getElementById('page-loading-overlay');
   if(loadingOverlay) loadingOverlay.style.display = 'none';
 
-  if(!localStorage.getItem('sl_currency_manual')){
-    fetch('https://ipapi.co/json/').then(function(r){return r.json();}).then(function(d){
-      var det = COUNTRY_CURRENCY[d.country_code]||'USD';
-      _cur = det; localStorage.setItem('sl_currency',det);
-      updateCurrencyBtn(); updateAllPrices();
-    }).catch(function(){});
-  }
 })();
-
-/* ── CURRENCY SYSTEM ── */
-var CURRENCIES = {
-  NGN: { symbol:'₦',    name:'Nigerian Naira',      flag:'🇳🇬', rate:1       },
-  USD: { symbol:'$',    name:'US Dollar',            flag:'🇺🇸', rate:0.00065 },
-  GBP: { symbol:'£',    name:'British Pound',        flag:'🇬🇧', rate:0.00052 },
-  EUR: { symbol:'€',    name:'Euro',                 flag:'🇪🇺', rate:0.00060 },
-  GHS: { symbol:'GH₵',  name:'Ghanaian Cedi',        flag:'🇬🇭', rate:0.0099  },
-  KES: { symbol:'KSh',  name:'Kenyan Shilling',      flag:'🇰🇪', rate:0.084   },
-  ZAR: { symbol:'R',    name:'South African Rand',   flag:'🇿🇦', rate:0.012   },
-  AED: { symbol:'AED',  name:'UAE Dirham',            flag:'🇦🇪', rate:0.0024  },
-  CAD: { symbol:'CA$',  name:'Canadian Dollar',      flag:'🇨🇦', rate:0.00088 },
-  UGX: { symbol:'USh',  name:'Ugandan Shilling',     flag:'🇺🇬', rate:2.4     },
-  TZS: { symbol:'TSh',  name:'Tanzanian Shilling',   flag:'🇹🇿', rate:1.67    },
-  RWF: { symbol:'RWF',  name:'Rwandan Franc',        flag:'🇷🇼', rate:0.83    },
-  EGP: { symbol:'E£',   name:'Egyptian Pound',       flag:'🇪🇬', rate:0.032   },
-  XOF: { symbol:'CFA',  name:'West African CFA',     flag:'🌍',  rate:0.39    },
-};
-
-/* Country → currency map for auto-detect */
-var COUNTRY_CURRENCY = {
-  NG:'NGN', US:'USD', GB:'GBP', DE:'EUR', FR:'EUR', NL:'EUR',
-  GH:'GHS', KE:'KES', ZA:'ZAR', AE:'AED', CA:'CAD',
-  AU:'USD', SG:'USD', IN:'USD',
-};
-
-var _activeCurrency = localStorage.getItem('sl_currency') || 'USD';
 
 function toggleMobileNav(){
   var menu = document.getElementById('mobile-nav-menu');
@@ -1479,49 +1402,6 @@ function toggleMobileNav(){
   btn.classList.toggle('open', !isOpen);
   document.body.style.overflow = isOpen ? '' : 'hidden';
 }
-
-function toggleCurrencyDropdown(){
-  var dd = document.getElementById('currency-dropdown');
-  var btn = document.getElementById('currency-btn');
-  if(!dd) return;
-  var isOpen = dd.classList.contains('open');
-  dd.classList.toggle('open', !isOpen);
-  if(btn) btn.classList.toggle('open', !isOpen);
-}
-function closeCurrencyDropdown(){
-  var dd = document.getElementById('currency-dropdown');
-  var btn = document.getElementById('currency-btn');
-  if(dd) dd.classList.remove('open');
-  if(btn) btn.classList.remove('open');
-}
-
-/* Close on outside click */
-document.addEventListener('click', function(e){
-  var sw = document.getElementById('currency-switcher');
-  if(sw && !sw.contains(e.target)) closeCurrencyDropdown();
-});
-
-/* Auto-detect country via free IP API */
-(function(){
-  // Only auto-detect if user hasn't manually chosen
-  if(localStorage.getItem('sl_currency_manual')) return;
-  fetch('https://ipapi.co/json/')
-    .then(function(r){ return r.json(); })
-    .then(function(data){
-      var country = data.country_code;
-      var detected = COUNTRY_CURRENCY[country] || 'USD';
-      _activeCurrency = detected;
-      localStorage.setItem('sl_currency', detected);
-      updateCurrencyBtn();
-      updateAllPrices();
-    })
-    .catch(function(){ /* silently fall back to NGN */ });
-})();
-
-/* Init */
-updateCurrencyBtn();
-
-
 
 /* ── TABS ── */
 function switchTab(btn, pane){
@@ -1550,72 +1430,8 @@ function showToast(icon, msg){
   setTimeout(function(){ t.classList.remove('show'); }, 3200);
 }
 
-/* ── CURRENCY ── */
-var CURRENCIES = {
-  NGN:{symbol:'₦',name:'Nigerian Naira',    flag:'🇳🇬',rate:1},
-  USD:{symbol:'$',        name:'US Dollar',         flag:'🇺🇸',rate:0.00065},
-  GBP:{symbol:'£',   name:'British Pound',     flag:'🇬🇧',rate:0.00052},
-  EUR:{symbol:'€',  name:'Euro',              flag:'🇪🇺',rate:0.00060},
-  GHS:{symbol:'GH₵',name:'Ghanaian Cedi',     flag:'🇬🇭',rate:0.0099},
-  KES:{symbol:'KSh',      name:'Kenyan Shilling',   flag:'🇰🇪',rate:0.084},
-  ZAR:{symbol:'R',        name:'South African Rand',flag:'🇿🇦',rate:0.012},
-  AED:{symbol:'AED',      name:'UAE Dirham',         flag:'🇦🇪',rate:0.0024},
-  CAD:{symbol:'CA$',      name:'Canadian Dollar',   flag:'🇨🇦',rate:0.00088},
-};
-var COUNTRY_CURRENCY={NG:'NGN',US:'USD',GB:'GBP',DE:'EUR',FR:'EUR',GH:'GHS',KE:'KES',ZA:'ZAR',AE:'AED',CA:'CAD'};
-var _cur = localStorage.getItem('sl_currency') || 'USD';
-
-function convertPrice(ngn){
-  var c=CURRENCIES[_cur]; if(_cur==='NGN') return '₦'+ngn.toLocaleString(); if(!c) return '$'+ngn.toLocaleString();
-  var v=ngn*c.rate; v=v>=100?Math.round(v):Math.round(v*100)/100;
-  return c.symbol+' '+v.toLocaleString();
-}
-function setCurrency(code){
-  _cur=code; localStorage.setItem('sl_currency',code);
-  updateCurrencyBtn(); updateAllPrices(); closeCurrencyDropdown();
-}
-function updateCurrencyBtn(){
-  var btn=document.getElementById('currency-btn');
-  if(btn) btn.textContent=_cur+' ▾';
-  document.querySelectorAll('.currency-option').forEach(function(el){
-    el.classList.toggle('active',el.dataset.code===_cur);
-  });
-}
-function updateAllPrices(){
-  document.querySelectorAll('[data-ngn]').forEach(function(el){
-    var v=parseInt(el.dataset.ngn); if(v) el.innerHTML=convertPrice(v);
-  });
-  var priceEl = document.getElementById('cd-price');
-  var ep = document.getElementById('enroll-price');
-  if(ep && priceEl && priceEl.dataset.ngn){
-    var mainPriceNGN = parseInt(priceEl.dataset.ngn) || 0;
-    ep.innerHTML = convertPrice(mainPriceNGN) + ' + ' + convertPrice(PLATFORM_SUB_NGN) + '/mo';
-  }
-}
-function toggleCurrencyDropdown(){
-  var dd=document.getElementById('currency-dropdown');
-  var btn=document.getElementById('currency-btn');
-  if(!dd) return;
-  var open=dd.classList.contains('open');
-  dd.classList.toggle('open',!open);
-  if(btn) btn.classList.toggle('open',!open);
-}
-function closeCurrencyDropdown(){
-  var dd=document.getElementById('currency-dropdown'); if(dd) dd.classList.remove('open');
-  var btn=document.getElementById('currency-btn'); if(btn) btn.classList.remove('open');
-}
-document.addEventListener('click',function(e){
-  var sw=document.getElementById('currency-switcher');
-  if(sw&&!sw.contains(e.target)) closeCurrencyDropdown();
-});
-
 /* ── ENROLL ── */
 var _activeCourse = null;
-
-/* ══════════════════════════════════════════
-   SUBSCRIPTION CONSTANTS
-══════════════════════════════════════════ */
-var PLATFORM_SUB_NGN = 10500; // ₦10,500/month platform subscription
 
 function enrollClick(){
   if(!_activeCourse){ showToast('⏳','Course loading, please wait a moment...'); return; }
@@ -1718,11 +1534,7 @@ async function submitLeadAndCheckout(){
 
 function openEnrollModal(){
   var c = _activeCourse;
-  var rate = (CURRENCIES[_cur]||{}).rate||1;
-  var sym  = (CURRENCIES[_cur]||{}).symbol||'$';
-  var courseFee = Math.round(c.priceNGN * rate * 100)/100;
-  var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
-  var total     = Math.round((courseFee + subFee) * 100)/100;
+  var courseFee = c.priceUSD || 0;
 
   // Build modal HTML
   var modal = document.createElement('div');
@@ -1731,7 +1543,7 @@ function openEnrollModal(){
   modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(13,13,26,.2);animation:authPop .25s ease;">'
     +'<div style="padding:24px 28px;border-bottom:1.5px solid #e4e6f0;">'
       +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;margin-bottom:4px;">Confirm enrollment</div>'
-      +'<div style="font-size:13px;color:#8b8fa8;">Review your payment breakdown before proceeding.</div>'
+      +'<div style="font-size:13px;color:#8b8fa8;">Review your payment before proceeding.</div>'
     +'</div>'
     +'<div style="padding:24px 28px;">'
 
@@ -1739,18 +1551,9 @@ function openEnrollModal(){
       +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e4e6f0;">'
         +'<div>'
           +'<div style="font-size:13px;font-weight:600;color:#0d0d1a;">Course access</div>'
-          +'<div style="font-size:12px;color:#8b8fa8;">One-time course fee</div>'
+          +'<div style="font-size:12px;color:#8b8fa8;">One-time payment · lifetime access</div>'
         +'</div>'
-        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:#0d0d1a;">'+sym+' '+courseFee.toLocaleString()+'</div>'
-      +'</div>'
-
-      // Subscription row
-      +'<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #e4e6f0;">'
-        +'<div>'
-          +'<div style="font-size:13px;font-weight:600;color:#0d0d1a;">Platform subscription</div>'
-          +'<div style="font-size:12px;color:#8b8fa8;">Billed monthly · Community + video access</div>'
-        +'</div>'
-        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:#0d0d1a;">'+sym+' '+subFee.toLocaleString()+'/mo</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:#0d0d1a;">$'+courseFee.toLocaleString()+'</div>'
       +'</div>'
 
       // What you get
@@ -1765,15 +1568,10 @@ function openEnrollModal(){
         +'</div>'
       +'</div>'
 
-      // Access warning
-      +'<div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#92400e;">'
-        +'⚠️ Access is tied to your active subscription. If payment fails twice, access is removed automatically.'
-      +'</div>'
-
       // Total
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">'
         +'<div style="font-size:14px;font-weight:600;color:#0d0d1a;">Due today</div>'
-        +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:800;color:#4ecca3;">'+sym+' '+total.toLocaleString()+'</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:800;color:#4ecca3;">$'+courseFee.toLocaleString()+'</div>'
       +'</div>'
 
       +'<div style="display:flex;gap:10px;">'
@@ -1796,16 +1594,13 @@ function proceedToCheckout(){
   closeEnrollModal();
 
   var c = _activeCourse;
-  var rate = (CURRENCIES[_cur]||{}).rate||1;
-  var courseFee = Math.round(c.priceNGN * rate * 100)/100;
-  var subFee    = Math.round(PLATFORM_SUB_NGN * rate * 100)/100;
-  var total     = Math.round((courseFee + subFee) * 100)/100;
+  var courseFee = c.priceUSD || 0;
 
   FlutterwaveCheckout({
     public_key: 'FLWPUBK-05c7da210401dea446976402be395abc-X',
     tx_ref:     'SKL-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-    amount:     total,
-    currency:   _cur,
+    amount:     courseFee,
+    currency:   'USD',
     payment_options: 'card,banktransfer,ussd,mobilemoney',
     customer:{
       email: window._user.email,
@@ -1816,8 +1611,7 @@ function proceedToCheckout(){
       instructorId:  c.instructorId,
       affiliateCode: localStorage.getItem('sl_aff') || null,
       paymentType:   'enrollment',
-      courseFeeNGN:  String(c.priceNGN || 50000),
-      subFeeNGN:     String(PLATFORM_SUB_NGN),
+      courseFeeUSD:  String(c.priceUSD || 0),
     },
     customizations:{
       title:       'SkillsLibry',
@@ -1830,8 +1624,8 @@ function proceedToCheckout(){
         var result = await window.slEnroll({
           courseId:      String(c.id),
           instructorId:  c.instructorId,
-          amount:        amount,
-          currency:      _cur,
+          amount:        courseFee,
+          currency:      'USD',
           transactionId: response.transaction_id,
           affiliateCode: localStorage.getItem('sl_aff') || null,
         });
