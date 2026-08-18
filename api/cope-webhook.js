@@ -16,13 +16,48 @@ const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 // is assigned — see bottom of file. Doing it here would be wiped out by
 // the reassignment below.)
 
+// Normalizes a pasted private key regardless of how it got mangled:
+// - strips surrounding quotes if the whole value got quoted
+// - converts literal "\n" text into real newlines
+// - trims stray whitespace
+function normalizePrivateKey(raw) {
+  if (!raw) return '';
+  let key = raw.trim();
+  if (
+    (key.startsWith('"') && key.endsWith('"')) ||
+    (key.startsWith("'") && key.endsWith("'"))
+  ) {
+    key = key.slice(1, -1);
+  }
+  key = key.replace(/\\n/g, '\n');
+  return key.trim();
+}
+
 function getFirebaseAdmin() {
   if (!getApps().length) {
+    // Preferred, foolproof path: one base64-encoded blob of the entire
+    // service account JSON file. Immune to newline/quote mangling entirely
+    // because it's a single opaque string with no special characters.
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+      const json = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
+      const serviceAccount = JSON.parse(json);
+      initializeApp({ credential: cert(serviceAccount) });
+      return getFirestore();
+    }
+
+    // Fallback: the three separate env vars, with defensive normalization.
+    const privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY);
+    if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+      throw new Error(
+        'FIREBASE_PRIVATE_KEY does not look like a valid PEM key after normalization. ' +
+        'Strongly recommended: switch to FIREBASE_SERVICE_ACCOUNT_BASE64 instead (see setup notes).'
+      );
+    }
     initializeApp({
       credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: (process.env.FIREBASE_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
+        privateKey: privateKey,
       }),
     });
   }
