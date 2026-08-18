@@ -77,6 +77,22 @@ a{text-decoration:none;color:inherit}
 .btn-teal:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 4px 16px rgba(78,204,163,.35);}
 .btn-lg{padding:15px 32px;font-size:15px;border-radius:var(--r);}
 
+/* Currency */
+.currency-switcher{position:relative;}
+.currency-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.currency-btn:hover,.currency-btn.open{border-color:var(--teal);color:var(--teal-dark);}
+.currency-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);box-shadow:var(--sh-lg);min-width:210px;z-index:200;display:none;overflow:hidden;}
+.currency-dropdown.open{display:block;animation:fadeDown .15s ease;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.currency-dropdown-header{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);background:var(--bg2);border-bottom:1px solid var(--border);}
+.currency-option{display:flex;align-items:center;gap:10px;padding:10px 14px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border);}
+.currency-option:last-child{border-bottom:none;}
+.currency-option:hover,.currency-option.active{background:var(--teal-dim);color:var(--teal-dark);}
+.currency-option .c-flag{font-size:18px;width:24px;text-align:center;}
+.currency-option .c-name{flex:1;}
+.currency-option .c-symbol{font-size:11px;color:var(--text3);font-weight:600;}
+.currency-option.active .c-symbol{color:var(--teal-dark);}
+
 /* ── HERO BAND ── */
 .course-hero{
   background:linear-gradient(135deg,#0d0d1a 0%,#1a1a2e 100%);
@@ -359,7 +375,6 @@ a{text-decoration:none;color:inherit}
 /* ── TOAST ── */
 .toast{position:fixed;bottom:24px;right:24px;z-index:999;background:#fff;border:1.5px solid var(--border);border-radius:var(--r);padding:13px 18px;font-size:13px;color:var(--text);display:none;box-shadow:var(--sh-lg);max-width:300px;}
 .toast.show{display:flex;align-items:center;gap:10px;animation:fadeDown .25s ease;}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 .toast-icon{font-size:18px;}
 
 @media(max-width:900px){
@@ -463,6 +478,7 @@ a{text-decoration:none;color:inherit}
       </div>
 
       <div class="hero-badges" style="margin:-8px 0 20px;">
+        <span class="badge" id="cd-type" style="display:none;background:var(--purple);color:#fff;"></span>
         <span class="badge badge-updated" id="cd-updated" style="display:none;"></span>
         <span class="badge badge-students" id="cd-students" style="display:none;"></span>
       </div>
@@ -492,13 +508,9 @@ a{text-decoration:none;color:inherit}
           </div>
           <div class="pc-timer" id="pc-timer" style="display:none;">&#128197; <span id="pc-timer-text"></span></div>
 
-          <div class="pc-includes" id="pc-includes">
+          <div class="pc-includes" id="pc-includes" style="display:none;">
             <div class="pc-includes-title">This course includes</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Full course video access</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Private student community</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Direct instructor Q&amp;A</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Verified certificate on completion</div>
-            <div class="include-item"><div class="include-check">&#10003;</div>Course updates included</div>
+            <div id="pc-includes-list"></div>
           </div>
 
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
@@ -1015,6 +1027,28 @@ function toggleModule(header){
   if(chevron) chevron.classList.toggle('open');
 }
 
+/* ── MODAL ── */
+function openEnrollModal(){
+  var em=document.getElementById('enroll-modal');
+  var pd=document.getElementById('modal-price-display');
+  var pn=document.getElementById('modal-price-note');
+  var ib=document.getElementById('modal-install-btn');
+  if(pd) pd.textContent='';
+  if(pn) pn.textContent='';
+  if(ib) ib.style.display='block';
+  if(em) em.classList.add('open');
+}
+
+
+function closeModal(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.classList.remove('open');
+}
+(function(){
+  var em=document.getElementById('enroll-modal');
+  if(em) em.addEventListener('click',function(e){ if(e.target===this) closeModal(); });
+})();
+
 /* ── TOAST ── */
 function copyCourseLink(btn){
   var url = window.location.href;
@@ -1354,6 +1388,25 @@ function showToast(icon,msg){
   // Update page title
   document.title = (courseData.title||'Course') + ' — SkillsLibry';
 
+  // Content type badge — only shown if the instructor set one
+  var typeEl = document.getElementById('cd-type');
+  if(typeEl && courseData.contentType){
+    typeEl.textContent = courseData.contentType.toUpperCase();
+    typeEl.style.display = 'inline-flex';
+  }
+
+  // "This course includes" — built only from what the instructor actually checked.
+  // Nothing is assumed or hardcoded; an empty list means the card is hidden entirely.
+  var pcIncludes = document.getElementById('pc-includes');
+  var pcIncludesList = document.getElementById('pc-includes-list');
+  if(pcIncludesList && Array.isArray(courseData.includes) && courseData.includes.length){
+    pcIncludesList.innerHTML = courseData.includes.map(function(inc){
+      var label = (inc && inc.label) ? inc.label : String(inc);
+      return '<div class="include-item"><div class="include-check">&#10003;</div>'+label.replace(/</g,'&lt;')+'</div>';
+    }).join('');
+    if(pcIncludes) pcIncludes.style.display = 'block';
+  }
+
   var priceUSD = courseData.priceUSD || courseData.price || 97;
 
   var priceEl = document.getElementById('cd-price');
@@ -1383,6 +1436,8 @@ function showToast(icon,msg){
     checkoutUrl:  courseData.checkoutUrl || null,
     startType:    courseData.startType || 'instant',
     startDate:    courseData.startDate || null,
+    contentType:  courseData.contentType || 'course',
+    includes:     Array.isArray(courseData.includes) ? courseData.includes : [],
   };
 
   // Real data is now in place — reveal the page
@@ -1535,6 +1590,9 @@ async function submitLeadAndCheckout(){
 function openEnrollModal(){
   var c = _activeCourse;
   var courseFee = c.priceUSD || 0;
+  var includesHtml = (c.includes && c.includes.length)
+    ? c.includes.map(function(inc){ return '✓ '+((inc&&inc.label)?inc.label:String(inc))+'<br/>'; }).join('')
+    : '✓ Full access to all course videos';
 
   // Build modal HTML
   var modal = document.createElement('div');
@@ -1560,11 +1618,7 @@ function openEnrollModal(){
       +'<div style="background:#f8f9fc;border-radius:10px;padding:14px 16px;margin:16px 0;">'
         +'<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#8b8fa8;margin-bottom:10px;">What you get</div>'
         +'<div style="font-size:13px;color:#4a4d6a;line-height:1.8;">'
-          +'✓ Full access to all course videos<br/>'
-          +'✓ Private student community<br/>'
-          +'✓ Direct instructor Q&A<br/>'
-          +'✓ Course updates as they happen<br/>'
-          +'✓ Verified certificate on completion'
+          +includesHtml
         +'</div>'
       +'</div>'
 
