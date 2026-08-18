@@ -14,7 +14,7 @@
   --purple:#6c63ff;
   --bg2:#f8f9fc;--border:#e4e6f0;
   --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
-  --red:#ef4444;
+  --red:#ef4444;--orange:#f59e0b;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 a{text-decoration:none;}
@@ -30,12 +30,21 @@ body{
   font-family:'Poppins',sans-serif;font-weight:800;font-size:24px;color:#fff;
   margin-bottom:24px;
 }
+.start-banner{
+  max-width:440px;width:100%;background:#fff;border:1.5px solid rgba(245,158,11,.35);
+  border-radius:14px;padding:14px 18px;margin-bottom:16px;display:none;
+  align-items:center;gap:12px;box-shadow:0 4px 20px rgba(13,13,26,.05);
+}
+.start-banner.show{display:flex;}
+.start-banner .sb-icon{font-size:22px;flex-shrink:0;}
+.start-banner .sb-text{font-size:13px;color:var(--text2);line-height:1.5;}
+.start-banner .sb-text strong{color:var(--text);}
+.start-banner.instant{border-color:rgba(78,204,163,.35);}
 .card{
   background:#fff;border:1.5px solid var(--border);border-radius:20px;
   padding:40px 36px;max-width:440px;width:100%;text-align:center;
   box-shadow:0 12px 48px rgba(13,13,26,.08);
 }
-.icon{font-size:48px;margin-bottom:16px;}
 h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;margin-bottom:10px;}
 p{font-size:14px;color:var(--text3);line-height:1.7;margin-bottom:24px;}
 .btn{
@@ -53,11 +62,22 @@ p{font-size:14px;color:var(--text3);line-height:1.7;margin-bottom:24px;}
   border-radius:50%;margin:0 auto 20px;animation:spin .8s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
+input{
+  width:100%;padding:11px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:14px;margin-bottom:10px;font-family:inherit;
+}
 </style>
 </head>
 <body>
 
 <div class="logo">S</div>
+
+<!-- Start-date banner — shown above the card once we know the course's start info -->
+<div class="start-banner" id="start-banner">
+  <div class="sb-icon" id="sb-icon">&#128197;</div>
+  <div class="sb-text" id="sb-text"></div>
+</div>
+
 <div class="card" id="welcome-card">
   <div class="spinner"></div>
   <h1>Confirming your enrollment...</h1>
@@ -67,59 +87,189 @@ p{font-size:14px;color:var(--text3);line-height:1.7;margin-bottom:24px;}
 <!-- ══ FIREBASE ══ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithCustomToken, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
   authDomain: "skillslibry.firebaseapp.com",
   projectId: "skillslibry",
 });
+window._auth = getAuth(app);
 window._db = getFirestore(app);
-document.dispatchEvent(new CustomEvent('dbReady'));
+window._signInWithCustomToken = signInWithCustomToken;
+window._updatePassword = updatePassword;
+window._getDoc = getDoc;
+window._doc = doc;
+window._authReady = true;
+document.dispatchEvent(new CustomEvent('authReady'));
 </script>
 
 <script>
-var MAX_ATTEMPTS = 8;
+var MAX_ATTEMPTS = 10;
 var POLL_DELAY_MS = 2000;
 
-function showState(iconHtml, title, msg, showPlayerBtn, courseId){
-  var card = document.getElementById('welcome-card');
-  card.innerHTML =
-    '<div style="font-size:48px;margin-bottom:16px;">'+iconHtml+'</div>'
-    +'<h1>'+title+'</h1>'
-    +'<p>'+msg+'</p>'
-    +(showPlayerBtn
-      ? '<a class="btn" href="/player'+(courseId?'?course='+courseId:'')+'">Go to my course</a>'
-      : '<a class="btn" href="/dashboard">Go to my dashboard</a>')
-    +'<div><a class="btn-ghost" href="/catalog" style="display:inline-block;">Browse more courses</a></div>';
+function showCard(html){
+  document.getElementById('welcome-card').innerHTML = html;
 }
 
-async function checkEnrollment(leadId, attempt){
-  if(!window._db){
-    setTimeout(function(){ checkEnrollment(leadId, attempt); }, 300);
-    return;
+function formatDateHuman(iso){
+  if(!iso) return '';
+  var d = new Date(iso+'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+
+function renderStartBanner(courseTitle, startType, startDate){
+  var banner = document.getElementById('start-banner');
+  var icon = document.getElementById('sb-icon');
+  var text = document.getElementById('sb-text');
+  if(!banner || !courseTitle) return;
+
+  if(startType === 'scheduled' && startDate){
+    icon.innerHTML = '&#128197;';
+    text.innerHTML = 'Your <strong>' + courseTitle + '</strong> training starts on <strong>' + formatDateHuman(startDate) + '</strong>. You can create your account and explore your dashboard right away — your lessons unlock automatically on the start date.';
+    banner.classList.remove('instant');
+    banner.classList.add('show');
+  } else {
+    icon.innerHTML = '&#9889;';
+    text.innerHTML = '<strong>' + courseTitle + '</strong> is instant access — start learning right away!';
+    banner.classList.add('instant');
+    banner.classList.add('show');
   }
+}
+
+async function fetchCourseAndShowBanner(courseId){
+  if(!courseId || !window._db) return;
   try {
-    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    var snap = await fb.getDocs(fb.query(
-      fb.collection(window._db,'enrollments'),
-      fb.where('leadId','==', leadId)
-    ));
+    var snap = await window._getDoc(window._doc(window._db, 'courses', courseId));
+    if(snap.exists()){
+      var c = snap.data();
+      renderStartBanner(c.title || 'Course', c.startType || 'instant', c.startDate || null);
+    }
+  } catch(e){}
+}
 
-    if(!snap.empty){
-      var enrollment = snap.docs[0].data();
-      showState('&#127881;', 'You\'re in!', 'Your enrollment is confirmed. Head to your course to get started.', true, enrollment.courseId);
+function successState(courseId){
+  showCard(
+    '<div style="font-size:48px;margin-bottom:16px;">&#127881;</div>'
+    +'<h1>You\'re in!</h1>'
+    +'<p>Your enrollment is confirmed. Head to your course to get started.</p>'
+    +'<a class="btn" href="/player'+(courseId?'?course='+courseId:'')+'">Go to my course</a>'
+    +'<div><a class="btn-ghost" href="/catalog" style="display:inline-block;">Browse more courses</a></div>'
+  );
+}
+
+function stalledState(){
+  showCard(
+    '<div style="font-size:48px;margin-bottom:16px;">&#9203;</div>'
+    +'<h1>Almost there</h1>'
+    +'<p>Your payment may still be processing. This can take a few minutes — check your email for confirmation, or visit your dashboard shortly.</p>'
+    +'<a class="btn" href="/dashboard">Go to my dashboard</a>'
+    +'<div><a class="btn-ghost" href="/catalog" style="display:inline-block;">Browse more courses</a></div>'
+  );
+}
+
+function errorState(msg){
+  showCard(
+    '<div style="font-size:48px;margin-bottom:16px;">&#9888;&#65039;</div>'
+    +'<h1>Something went wrong</h1>'
+    +'<p>'+msg+'</p>'
+    +'<a class="btn" href="/dashboard">Go to my dashboard</a>'
+    +'<div><a class="btn-ghost" href="/catalog" style="display:inline-block;">Browse more courses</a></div>'
+  );
+}
+
+function passwordState(courseId){
+  showCard(
+    '<div style="font-size:48px;margin-bottom:16px;">&#128274;</div>'
+    +'<h1>Set your password</h1>'
+    +'<p>Your account is ready. Create a password so you can sign back in anytime.</p>'
+    +'<form id="pw-form" style="text-align:left;">'
+      +'<input type="password" id="pw1" placeholder="New password" minlength="8" required>'
+      +'<input type="password" id="pw2" placeholder="Confirm password" minlength="8" required>'
+      +'<div id="pw-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none;"></div>'
+      +'<button type="submit" class="btn" style="width:100%;">Set password &amp; continue</button>'
+    +'</form>'
+  );
+
+  document.getElementById('pw-form').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var pw1 = document.getElementById('pw1').value;
+    var pw2 = document.getElementById('pw2').value;
+    var errEl = document.getElementById('pw-error');
+
+    if(pw1.length < 8){
+      errEl.textContent = 'Password must be at least 8 characters.';
+      errEl.style.display = 'block';
+      return;
+    }
+    if(pw1 !== pw2){
+      errEl.textContent = 'Passwords do not match.';
+      errEl.style.display = 'block';
       return;
     }
 
-    if(attempt >= MAX_ATTEMPTS){
-      showState('&#9203;', 'Almost there', 'Your payment may still be processing. This can take a few minutes — check your email for confirmation, or visit your dashboard shortly.', false, null);
-      return;
+    try {
+      await window._updatePassword(window._auth.currentUser, pw1);
+      successState(courseId);
+    } catch(err){
+      errEl.textContent = 'Could not set password. Please try again.';
+      errEl.style.display = 'block';
     }
+  });
+}
 
-    setTimeout(function(){ checkEnrollment(leadId, attempt+1); }, POLL_DELAY_MS);
+async function finishSignIn(data){
+  try {
+    await window._signInWithCustomToken(window._auth, data.token);
+    fetchCourseAndShowBanner(data.courseId);
+
+    if(data.isNewUser){
+      passwordState(data.courseId);
+    } else {
+      successState(data.courseId);
+    }
   } catch(e){
-    showState('&#9888;&#65039;', 'Something went wrong', 'We couldn\'t confirm your enrollment automatically. If you completed payment, check your email or contact support.', false, null);
+    errorState('We confirmed your payment but couldn\'t sign you in automatically. Please log in with your email.');
+  }
+}
+
+async function pollForToken(leadId, attempt){
+  try {
+    var resp = await fetch('/api/get-signin-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ leadId: leadId })
+    });
+
+    if(resp.status === 404){
+      if(attempt >= MAX_ATTEMPTS){ stalledState(); return; }
+      setTimeout(function(){ pollForToken(leadId, attempt+1); }, POLL_DELAY_MS);
+      return;
+    }
+
+    if(!resp.ok){
+      var body = await resp.json().catch(function(){ return {}; });
+      if(body.error === 'already_used'){
+        errorState('This confirmation link has already been used. Head to your dashboard to access your course.');
+      } else if(body.error === 'expired'){
+        errorState('This confirmation link expired. If you completed payment, check your email or contact support.');
+      } else {
+        errorState('We couldn\'t confirm your enrollment automatically. If you completed payment, check your email or contact support.');
+      }
+      return;
+    }
+
+    var data = await resp.json();
+
+    if(!window._authReady){
+      setTimeout(function(){ finishSignIn(data); }, 200);
+      return;
+    }
+    finishSignIn(data);
+  } catch(e){
+    errorState('We couldn\'t confirm your enrollment automatically. If you completed payment, check your email or contact support.');
   }
 }
 
@@ -128,11 +278,16 @@ async function checkEnrollment(leadId, attempt){
   var leadId = params.get('lead') || params.get('client_reference_id');
 
   if(!leadId){
-    showState('&#128075;', 'Welcome to SkillsLibry', 'Head to your dashboard to see your courses.', false, null);
+    showCard(
+      '<div style="font-size:48px;margin-bottom:16px;">&#128075;</div>'
+      +'<h1>Welcome to SkillsLibry</h1>'
+      +'<p>Head to your dashboard to see your courses.</p>'
+      +'<a class="btn" href="/dashboard">Go to my dashboard</a>'
+    );
     return;
   }
 
-  checkEnrollment(leadId, 0);
+  pollForToken(leadId, 0);
 })();
 </script>
 
