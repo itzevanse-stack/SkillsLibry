@@ -566,7 +566,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sp-stats">
         <div class="sp-stat"><div class="sp-stat-val" id="sp-courses">0</div><div class="sp-stat-label">Courses</div></div>
         <div class="sp-stat"><div class="sp-stat-val" id="sp-students">0</div><div class="sp-stat-label">Students</div></div>
-        <div class="sp-stat"><div class="sp-stat-val" id="sp-earnings">₦0</div><div class="sp-stat-label">Earnings</div></div>
+        <div class="sp-stat"><div class="sp-stat-val" id="sp-earnings">$0</div><div class="sp-stat-label">Earnings</div></div>
       </div>
     </div>
 
@@ -640,7 +640,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
         </div>
         <div class="stat-card">
           <div class="sc-icon green">&#128176;</div>
-          <div class="sc-val" id="ov-earnings">₦0</div>
+          <div class="sc-val" id="ov-earnings">$0</div>
           <div class="sc-label">Total earnings</div>
         </div>
         <div class="stat-card">
@@ -725,8 +725,21 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
           <div class="frow-1">
             <div class="fg">
               <label>Course title *</label>
-              <input class="fi" id="ci-title" type="text" placeholder="e.g. Affiliate Marketing Mastery: From Zero to ₦500k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
+              <input class="fi" id="ci-title" type="text" placeholder="e.g. Affiliate Marketing Mastery: From Zero to $10k/Month" maxlength="120" oninput="updateCharCount('ci-title','ci-title-count',120)"/>
               <div class="char-count"><span id="ci-title-count">0</span>/120</div>
+            </div>
+          </div>
+
+          <div class="frow">
+            <div class="fg">
+              <label>Content type *</label>
+              <select class="fi" id="ci-content-type">
+                <option value="course">Course</option>
+                <option value="masterclass">Masterclass</option>
+                <option value="webinar">Webinar</option>
+                <option value="workshop">Workshop</option>
+              </select>
+              <div class="hint">Shown to students as a badge on the course page.</div>
             </div>
           </div>
 
@@ -896,13 +909,13 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
           <div id="price-inputs">
             <div class="frow">
               <div class="fg">
-                <label>Price in NGN (₦) *</label>
-                <input class="fi" id="pr-ngn" type="number" placeholder="e.g. 35000" min="1000"/>
-                <div class="hint">Minimum ₦1,000. Your earnings: <strong id="pr-earn">₦0</strong></div>
+                <label>Price in USD ($) *</label>
+                <input class="fi" id="pr-usd" type="number" placeholder="e.g. 97" min="5" step="0.01"/>
+                <div class="hint">Minimum $5. Your earnings: <strong id="pr-earn">$0</strong></div>
               </div>
               <div class="fg">
                 <label>Original price (for discount display)</label>
-                <input class="fi" id="pr-original" type="number" placeholder="e.g. 60000"/>
+                <input class="fi" id="pr-original" type="number" placeholder="e.g. 197" step="0.01"/>
                 <div class="hint">Show the original price crossed out to show the discount.</div>
               </div>
             </div>
@@ -917,25 +930,48 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
             <div class="frow-1">
               <div class="fg">
+                <label>When does this course start?</label>
+                <div class="price-cards" style="margin-top:4px;">
+                  <div class="price-card selected" id="pc-start-instant" onclick="selectStartType('instant')">
+                    <div class="pc-icon">&#9889;</div>
+                    <div class="pc-title">Instant access</div>
+                    <div class="pc-desc">Students can start the moment they enroll.</div>
+                  </div>
+                  <div class="price-card" id="pc-start-scheduled" onclick="selectStartType('scheduled')">
+                    <div class="pc-icon">&#128197;</div>
+                    <div class="pc-title">Scheduled start date</div>
+                    <div class="pc-desc">Everyone starts together on a set date.</div>
+                  </div>
+                </div>
+                <div id="start-date-input" style="display:none;margin-top:14px;">
+                  <label>Start date *</label>
+                  <input class="fi" id="ci-start-date" type="date"/>
+                  <div class="hint">Students see this date before they pay, and again right after enrolling.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="frow-1">
+              <div class="fg">
                 <label>What's included in this course</label>
                 <div class="m2col" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;" id="includes-list">
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-cert" checked/> Verified certificate on completion
+                    <input type="checkbox" class="inc-checkbox" id="inc-cert" data-key="certificate" data-label="Verified certificate on completion"/> Verified certificate on completion
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-lifetime" checked/> Lifetime access & free updates
+                    <input type="checkbox" class="inc-checkbox" id="inc-lifetime" data-key="lifetime" data-label="Lifetime access & free updates"/> Lifetime access & free updates
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-dl"/> Downloadable resources
+                    <input type="checkbox" class="inc-checkbox" id="inc-dl" data-key="downloadables" data-label="Downloadable resources"/> Downloadable resources
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-community"/> Private community access
+                    <input type="checkbox" class="inc-checkbox" id="inc-community" data-key="community" data-label="Private community access"/> Private community access
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-mentorship"/> Live mentorship sessions
+                    <input type="checkbox" class="inc-checkbox" id="inc-mentorship" data-key="mentorship" data-label="Live mentorship sessions"/> Live mentorship sessions
                   </label>
                   <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;font-weight:400;">
-                    <input type="checkbox" id="inc-quiz"/> Quizzes & assignments
+                    <input type="checkbox" class="inc-checkbox" id="inc-quiz" data-key="quiz" data-label="Quizzes & assignments"/> Quizzes & assignments
                   </label>
                 </div>
               </div>
@@ -951,6 +987,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
           <div class="review-card">
             <h4>Course details</h4>
             <div class="review-row"><span class="review-label">Title</span><span class="review-val" id="rv-title">—</span></div>
+            <div class="review-row"><span class="review-label">Type</span><span class="review-val" id="rv-type">—</span></div>
             <div class="review-row"><span class="review-label">Category</span><span class="review-val" id="rv-cat">—</span></div>
             <div class="review-row"><span class="review-label">Level</span><span class="review-val" id="rv-level">—</span></div>
             <div class="review-row"><span class="review-label">Language</span><span class="review-val" id="rv-lang">—</span></div>
@@ -968,6 +1005,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
             <h4>Pricing</h4>
             <div class="review-row"><span class="review-label">Price</span><span class="review-val" id="rv-price">—</span></div>
             <div class="review-row"><span class="review-label">Your earnings per sale</span><span class="review-val" id="rv-earn">—</span></div>
+            <div class="review-row"><span class="review-label">Starts</span><span class="review-val" id="rv-start">—</span></div>
           </div>
 
           <div class="review-card">
@@ -1115,7 +1153,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sec-header"><div class="sec-title">Payouts</div></div>
       <div class="payout-card">
         <div style="font-size:12px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Pending payout</div>
-        <div style="font-family:'Poppins',sans-serif;font-size:40px;font-weight:800;color:var(--teal-dark);margin-bottom:4px;" id="payout-pending">₦0</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:40px;font-weight:800;color:var(--teal-dark);margin-bottom:4px;" id="payout-pending">$0</div>
         <div style="font-size:13px;color:var(--text2);">Paid out every month on the 1st. Bank transfer or Flutterwave.</div>
       </div>
       <div style="color:var(--text3);text-align:center;padding:32px;">No payout history yet.</div>
@@ -1385,10 +1423,11 @@ function showToast(icon, msg) {
    COURSE BUILDER STATE
 ══════════════════════════════════════════ */
 var _course = {
-  title:'', subtitle:'', category:'', level:'', language:'english',
+  title:'', subtitle:'', category:'', level:'', language:'english', contentType:'course',
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
   promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
-  priceNGN:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
+  priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
+  startType:'instant', startDate:null,
   status:'draft'
 };
 var _currentStep = 1;
@@ -1396,16 +1435,20 @@ var _totalSteps  = 5;
 
 function startNewCourse() {
   _course = {
-    title:'', subtitle:'', category:'', level:'', language:'english',
+    title:'', subtitle:'', category:'', level:'', language:'english', contentType:'course',
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
     promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
-    priceNGN:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[], status:'draft'
+    priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
+    startType:'instant', startDate:null, status:'draft'
   };
   _currentStep = 1;
   // Reset form fields
-  ['ci-title','ci-subtitle','ci-desc','pr-ngn','pr-original'].forEach(function(id){
+  ['ci-title','ci-subtitle','ci-desc','pr-usd','pr-original','ci-start-date'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value = '';
   });
+  var ctEl = document.getElementById('ci-content-type'); if(ctEl) ctEl.value = 'course';
+  document.querySelectorAll('.inc-checkbox').forEach(function(cb){ cb.checked = false; });
+  selectStartType('instant');
   document.getElementById('learn-list').innerHTML = '';
   document.getElementById('req-list').innerHTML   = '';
   document.getElementById('modules-builder').innerHTML = '';
@@ -1463,6 +1506,14 @@ function goStep(n) {
 function nextStep(){ goStep(_currentStep+1); }
 function prevStep(){ goStep(_currentStep-1); }
 
+function collectIncludes(){
+  var out = [];
+  document.querySelectorAll('.inc-checkbox').forEach(function(cb){
+    if(cb.checked) out.push({ key: cb.dataset.key, label: cb.dataset.label });
+  });
+  return out;
+}
+
 function validateStep(n) {
   if(n === 1) {
     var title = (document.getElementById('ci-title')||{}).value||'';
@@ -1476,6 +1527,7 @@ function validateStep(n) {
     // Save to state
     _course.title    = title.trim();
     _course.subtitle = document.getElementById('ci-subtitle').value.trim();
+    _course.contentType = (document.getElementById('ci-content-type')||{}).value || 'course';
     _course.category = cat;
     _course.level    = level;
     _course.language = document.getElementById('ci-lang').value;
@@ -1491,12 +1543,20 @@ function validateStep(n) {
   }
   if(n === 4) {
     if(_course.priceType === 'paid') {
-      var price = parseFloat((document.getElementById('pr-ngn')||{}).value||0);
-      if(!price || price < 1000){ showToast('⚠️','Minimum price is ₦1,000.'); return false; }
-      _course.priceNGN = price;
+      var price = parseFloat((document.getElementById('pr-usd')||{}).value||0);
+      if(!price || price < 5){ showToast('⚠️','Minimum price is $5.'); return false; }
+      _course.priceUSD = price;
       _course.priceOriginal = parseFloat((document.getElementById('pr-original')||{}).value||0);
       _course.checkoutUrl = ((document.getElementById('pr-checkout-url')||{}).value||'').trim() || null;
     }
+    if(_course.startType === 'scheduled'){
+      var sd = (document.getElementById('ci-start-date')||{}).value||'';
+      if(!sd){ showToast('⚠️','Please choose a start date, or switch to instant access.'); return false; }
+      _course.startDate = sd;
+    } else {
+      _course.startDate = null;
+    }
+    _course.includes = collectIncludes();
   }
   return true;
 }
@@ -1961,14 +2021,21 @@ function selectPriceType(type) {
   document.getElementById('price-inputs').style.display = type==='paid' ? 'block' : 'none';
 }
 
+function selectStartType(type) {
+  _course.startType = type;
+  document.getElementById('pc-start-instant').classList.toggle('selected', type==='instant');
+  document.getElementById('pc-start-scheduled').classList.toggle('selected', type==='scheduled');
+  document.getElementById('start-date-input').style.display = type==='scheduled' ? 'block' : 'none';
+}
+
 document.addEventListener('DOMContentLoaded', function(){
-  var priceInput = document.getElementById('pr-ngn');
+  var priceInput = document.getElementById('pr-usd');
   if(priceInput){
     priceInput.addEventListener('input', function(){
       var v = parseFloat(this.value)||0;
-      var earn = Math.round(v * 0.60);
+      var earn = Math.round(v * 0.60 * 100)/100;
       var el = document.getElementById('pr-earn');
-      if(el) el.textContent = '₦'+earn.toLocaleString();
+      if(el) el.textContent = '$'+earn.toLocaleString();
     });
   }
 });
@@ -1976,13 +2043,24 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ══════════════════════════════════════════
    REVIEW
 ══════════════════════════════════════════ */
+function formatDateHuman(iso){
+  if(!iso) return '—';
+  var d = new Date(iso+'T00:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+
 function buildReview() {
   // Sync pricing from form
   if(_course.priceType === 'paid'){
-    _course.priceNGN = parseFloat((document.getElementById('pr-ngn')||{}).value||0);
+    _course.priceUSD = parseFloat((document.getElementById('pr-usd')||{}).value||0);
     _course.priceOriginal = parseFloat((document.getElementById('pr-original')||{}).value||0);
     _course.checkoutUrl = ((document.getElementById('pr-checkout-url')||{}).value||'').trim() || null;
   }
+  if(_course.startType === 'scheduled'){
+    _course.startDate = (document.getElementById('ci-start-date')||{}).value || _course.startDate;
+  }
+  _course.includes = collectIncludes();
 
   var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); }, 0);
   var uploadedVideos = _course.modules.reduce(function(a,m){
@@ -1991,6 +2069,7 @@ function buildReview() {
 
   function setText(id, val){ var el=document.getElementById(id); if(el) el.textContent=val; }
   setText('rv-title',    _course.title||'—');
+  setText('rv-type',     _course.contentType ? (_course.contentType.charAt(0).toUpperCase()+_course.contentType.slice(1)) : 'Course');
   setText('rv-cat',      _course.category||'—');
   setText('rv-level',    _course.level||'—');
   setText('rv-lang',     _course.language||'—');
@@ -1998,8 +2077,9 @@ function buildReview() {
   setText('rv-modules',  _course.modules.length);
   setText('rv-lessons',  totalLessons);
   setText('rv-videos',   uploadedVideos);
-  setText('rv-price',    _course.priceType==='free' ? 'Free' : ('₦'+(_course.priceNGN||0).toLocaleString()));
-  setText('rv-earn',     _course.priceType==='free' ? '₦0' : ('₦'+Math.round((_course.priceNGN||0)*0.6).toLocaleString()));
+  setText('rv-price',    _course.priceType==='free' ? 'Free' : ('$'+(_course.priceUSD||0).toLocaleString()));
+  setText('rv-earn',     _course.priceType==='free' ? '$0' : ('$'+(Math.round((_course.priceUSD||0)*0.6*100)/100).toLocaleString()));
+  setText('rv-start',    _course.startType==='scheduled' ? formatDateHuman(_course.startDate) : 'Instant access');
 
   // Checklist
   var checks = [
@@ -2010,7 +2090,8 @@ function buildReview() {
     { ok: _course.modules.length > 0, label: 'At least one module added' },
     { ok: totalLessons > 0, label: 'At least one lesson added' },
     { ok: uploadedVideos > 0, label: 'At least one video uploaded' },
-    { ok: _course.priceType==='free' || _course.priceNGN > 0, label: 'Price set' },
+    { ok: _course.priceType==='free' || _course.priceUSD > 0, label: 'Price set' },
+    { ok: _course.startType==='instant' || !!_course.startDate, label: 'Start date set' },
   ];
   var cl = document.getElementById('review-checklist');
   if(cl) cl.innerHTML = checks.map(function(c){
@@ -2072,6 +2153,7 @@ async function persistCourse(targetStatus, btn) {
     var courseData = {
       title:        _course.title,
       subtitle:     _course.subtitle,
+      contentType:  _course.contentType || 'course',
       category:     _course.category,
       level:        _course.level,
       language:     _course.language,
@@ -2090,10 +2172,13 @@ async function persistCourse(targetStatus, btn) {
       thumbnailUrl: _course.thumbnailUrl || null,
       promoVideoId: _course.promoVideoId || null,
       promoVideoUrl: _course.promoVideoUrl || null,
-      priceNGN:     _course.priceNGN,
+      priceUSD:     _course.priceUSD,
       priceOriginal:_course.priceOriginal,
       checkoutUrl:  _course.checkoutUrl || null,
       priceType:    _course.priceType,
+      startType:    _course.startType || 'instant',
+      startDate:    _course.startType === 'scheduled' ? (_course.startDate || null) : null,
+      includes:     _course.includes || [],
       totalLessons: totalLessons,
       totalModules: _course.modules.length,
       instructorId:  window._user.uid,
@@ -3029,7 +3114,7 @@ async function loadMyCourses(){
           return '<div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);flex-wrap:wrap;">'
             +'<div style="flex:1;min-width:200px;">'
               +'<div style="font-family:Poppins,sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;">'+(c.title||'Untitled')+'</div>'
-              +'<div style="font-size:12px;color:var(--text3);">'+(c.category||'')+(c.category?' - ':'')+(c.totalStudents||0)+' students - N'+(c.priceNGN||0).toLocaleString()+'</div>'
+              +'<div style="font-size:12px;color:var(--text3);">'+(c.category||'')+(c.category?' - ':'')+(c.totalStudents||0)+' students - $'+(c.priceUSD||0).toLocaleString()+'</div>'
             +'</div>'
             +'<span style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:100px;background:'+color+'20;color:'+color+';">'+label+'</span>'
             +'<div style="display:flex;gap:8px;">'
@@ -3062,7 +3147,7 @@ async function editCourse(courseId){
     _course = {
       id: courseId,
       title: c.title||'', subtitle: c.subtitle||'', category: c.category||'',
-      level: c.level||'', language: c.language||'english', duration: c.duration||'',
+      level: c.level||'', language: c.language||'english', contentType: c.contentType||'course', duration: c.duration||'',
       description: c.description||'', thumbnail: c.thumbnailUrl||c.thumbnail||null,
       thumbnailUrl: c.thumbnailUrl||null,
       promoVideo: null, promoVideoId: c.promoVideoId||null, promoVideoUrl: c.promoVideoUrl||null,
@@ -3073,8 +3158,10 @@ async function editCourse(courseId){
           return { title: l.title||'', type: l.type||'video', free: !!l.free, videoId: l.videoId||null, videoUrl: l.videoUrl||null };
         })};
       }),
-      priceNGN: c.priceNGN||0, priceOriginal: c.priceOriginal||0, checkoutUrl: c.checkoutUrl||null,
-      priceType: c.priceType||'paid', includes: c.includes||[], status: c.status||'draft'
+      priceUSD: c.priceUSD||0, priceOriginal: c.priceOriginal||0, checkoutUrl: c.checkoutUrl||null,
+      priceType: c.priceType||'paid', includes: c.includes||[],
+      startType: c.startType||'instant', startDate: c.startDate||null,
+      status: c.status||'draft'
     };
     _currentStep = 1;
 
@@ -3082,6 +3169,7 @@ async function editCourse(courseId){
     var sv = function(id,v){ var el=document.getElementById(id); if(el) el.value=v||''; };
     sv('ci-title', c.title); sv('ci-subtitle', c.subtitle); sv('ci-cat', c.category);
     sv('ci-level', c.level); sv('ci-lang', c.language||'english'); sv('ci-duration', c.duration);
+    sv('ci-content-type', c.contentType||'course');
 
     // Populate step 2 fields
     sv('ci-desc', c.description);
@@ -3135,7 +3223,15 @@ async function editCourse(courseId){
     }
 
     // Populate step 5 - pricing
-    sv('pr-ngn', c.priceNGN); sv('pr-original', c.priceOriginal); sv('pr-checkout-url', c.checkoutUrl);
+    sv('pr-usd', c.priceUSD); sv('pr-original', c.priceOriginal); sv('pr-checkout-url', c.checkoutUrl);
+    selectStartType(c.startType||'instant');
+    if(c.startType==='scheduled') sv('ci-start-date', c.startDate);
+
+    // Restore includes checkboxes
+    var savedKeys = (c.includes||[]).map(function(i){ return i.key || i; });
+    document.querySelectorAll('.inc-checkbox').forEach(function(cb){
+      cb.checked = savedKeys.indexOf(cb.dataset.key) > -1;
+    });
 
     showToast('&#9997;️','Course loaded. Make your changes and resubmit.');
   } catch(e){
