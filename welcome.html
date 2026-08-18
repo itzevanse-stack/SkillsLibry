@@ -40,6 +40,21 @@ body{
 .start-banner .sb-text{font-size:13px;color:var(--text2);line-height:1.5;}
 .start-banner .sb-text strong{color:var(--text);}
 .start-banner.instant{border-color:rgba(78,204,163,.35);}
+.countdown-widget{display:flex;gap:6px;margin-top:12px;}
+.countdown-box{
+  flex:1;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#151527 0%,#1f1f3a 100%);
+  border:1px solid rgba(78,204,163,.3);
+  border-radius:9px;padding:9px 2px 7px;text-align:center;
+  box-shadow:0 4px 14px rgba(13,13,26,.15);
+}
+.countdown-num{
+  font-family:'Poppins',sans-serif;font-size:18px;font-weight:800;line-height:1;
+  background:linear-gradient(135deg,var(--teal) 20%,#8ee6c8 60%,var(--purple) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  font-variant-numeric:tabular-nums;
+}
+.countdown-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:rgba(255,255,255,.45);margin-top:3px;}
 .card{
   background:#fff;border:1.5px solid var(--border);border-radius:20px;
   padding:40px 36px;max-width:440px;width:100%;text-align:center;
@@ -75,9 +90,14 @@ input{
 <!-- Start-date banner — shown above the card once we know the course's start info -->
 <div class="start-banner" id="start-banner">
   <div class="sb-icon" id="sb-icon">&#128197;</div>
-  <div class="sb-text" id="sb-text">
+  <div class="sb-text" style="flex:1;">
     <span id="sb-message"></span>
-    <div id="sb-countdown" style="margin-top:6px;font-weight:700;color:var(--text);display:none;"></div>
+    <div class="countdown-widget" id="sb-countdown-widget" style="display:none;">
+      <div class="countdown-box"><div class="countdown-num" id="sb-cd-days">00</div><div class="countdown-label">Days</div></div>
+      <div class="countdown-box"><div class="countdown-num" id="sb-cd-hours">00</div><div class="countdown-label">Hrs</div></div>
+      <div class="countdown-box"><div class="countdown-num" id="sb-cd-mins">00</div><div class="countdown-label">Min</div></div>
+      <div class="countdown-box"><div class="countdown-num" id="sb-cd-secs">00</div><div class="countdown-label">Sec</div></div>
+    </div>
   </div>
 </div>
 
@@ -125,29 +145,34 @@ function formatDateHuman(iso){
 
 // Shows the start-date banner above the card. courseTitle/startType/startDate
 // come from the course doc, fetched once we know which course this is.
-function startCountdown(elId, startDateIso){
-  var el = document.getElementById(elId);
-  if(!el || !startDateIso) return;
+function startCountdown(prefix, startDateIso){
+  var daysEl  = document.getElementById(prefix+'-days');
+  var hoursEl = document.getElementById(prefix+'-hours');
+  var minsEl  = document.getElementById(prefix+'-mins');
+  var secsEl  = document.getElementById(prefix+'-secs');
+  if(!daysEl || !hoursEl || !minsEl || !secsEl || !startDateIso) return;
+
   var target = new Date(startDateIso+'T00:00:00').getTime();
   if(isNaN(target)) return;
-  el.style.display = 'block';
+
+  function pad(n){ return n < 10 ? '0'+n : String(n); }
 
   function tick(){
     var diff = target - Date.now();
-    if(diff <= 0){ el.textContent = 'Starting now'; return; }
-    var days  = Math.floor(diff / 86400000);
-    var hours = Math.floor((diff % 86400000) / 3600000);
-    var mins  = Math.floor((diff % 3600000) / 60000);
-    if(days > 0){ el.textContent = days+'d '+hours+'h until start'; }
-    else if(hours > 0){ el.textContent = hours+'h '+mins+'m until start'; }
-    else {
-      var secs = Math.floor((diff % 60000) / 1000);
-      el.textContent = mins+'m '+secs+'s until start';
+    if(diff <= 0){
+      daysEl.textContent = hoursEl.textContent = minsEl.textContent = secsEl.textContent = '00';
+      clearInterval(daysEl._countdownInterval);
+      return;
     }
+    daysEl.textContent  = pad(Math.floor(diff / 86400000));
+    hoursEl.textContent = pad(Math.floor((diff % 86400000) / 3600000));
+    minsEl.textContent  = pad(Math.floor((diff % 3600000) / 60000));
+    secsEl.textContent  = pad(Math.floor((diff % 60000) / 1000));
   }
+
   tick();
-  clearInterval(el._countdownInterval);
-  el._countdownInterval = setInterval(tick, 1000);
+  clearInterval(daysEl._countdownInterval);
+  daysEl._countdownInterval = setInterval(tick, 1000);
 }
 
 function renderStartBanner(courseTitle, startType, startDate){
@@ -161,7 +186,9 @@ function renderStartBanner(courseTitle, startType, startDate){
     msg.innerHTML = 'Your <strong>' + courseTitle + '</strong> training starts on <strong>' + formatDateHuman(startDate) + '</strong>. You can create your account and explore your dashboard right away — your lessons unlock automatically on the start date.';
     banner.classList.remove('instant');
     banner.classList.add('show');
-    startCountdown('sb-countdown', startDate);
+    var widget = document.getElementById('sb-countdown-widget');
+    if(widget) widget.style.display = 'flex';
+    startCountdown('sb-cd', startDate);
   } else {
     icon.innerHTML = '&#9889;';
     msg.innerHTML = '<strong>' + courseTitle + '</strong> is instant access — start learning right away!';
