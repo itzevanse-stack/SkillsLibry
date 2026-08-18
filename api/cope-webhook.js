@@ -73,9 +73,12 @@ function verifyCopeSignature(rawBody, signatureHeader, signingSecret) {
     .update(`${timestamp}.${rawBody}`)
     .digest('hex');
 
+  const expectedBuf = Buffer.from(expectedSig, 'hex');
+  const providedBuf = Buffer.from(providedSig, 'hex');
+
   const sigMatches =
-    expectedSig.length === providedSig.length &&
-    crypto.timingSafeEqual(Buffer.from(expectedSig), Buffer.from(providedSig));
+    expectedBuf.length === providedBuf.length &&
+    crypto.timingSafeEqual(expectedBuf, providedBuf);
 
   if (!sigMatches) return { ok: false, reason: 'Signature mismatch' };
   return { ok: true };
