@@ -771,7 +771,7 @@ async function loadOverview(){
   var setText = function(id,v){ var el=document.getElementById(id); if(el) el.textContent=v; };
   setText('ov-courses', courses.length);
   setText('ov-students', students.length);
-  setText('ov-revenue', '₦'+totalRev.toLocaleString());
+  setText('ov-revenue', '$'+totalRev.toLocaleString());
   setText('ov-instructors', instructors.length);
   setText('ov-apps', pendingApps.length);
   if(pending.length) document.getElementById('ov-pending-label').textContent = pending.length+' pending review';
@@ -808,7 +808,7 @@ function renderActionFeed(pendingCourses, pendingApps){
     html += '<div style="font-family:Poppins,sans-serif;font-size:13px;font-weight:700;margin:16px 0 10px;">Pending Courses</div>';
     pendingCourses.forEach(function(c){
       html += '<div class="action-row">'
-        +'<div><div style="font-size:13px;font-weight:600;">'+(c.title||'Untitled')+'</div><div style="font-size:12px;color:var(--text3);">by '+(c.instructorName||'—')+' · ₦'+(c.priceNGN||0).toLocaleString()+'</div></div>'
+        +'<div><div style="font-size:13px;font-weight:600;">'+(c.title||'Untitled')+'</div><div style="font-size:12px;color:var(--text3);">by '+(c.instructorName||'—')+' · $'+(c.priceUSD||0).toLocaleString()+'</div></div>'
         +'<div style="display:flex;gap:8px;">'
           +'<button class="tbl-btn tbl-approve" data-id="'+c.id+'" onclick="doApprove(this)">✓ Approve</button>'
           +'<button class="tbl-btn tbl-reject" data-id="'+c.id+'" onclick="doReject(this)">Reject</button>'
@@ -858,7 +858,7 @@ async function loadCourses(){
       var row = document.createElement('tr');
       row.innerHTML = '<td><div style="font-weight:600;color:var(--text);max-width:260px;">'+(c.title||'Untitled')+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">'+(c.category||'')+'</div></td>'
         +'<td>'+(c.instructorName||'—')+'</td>'
-        +'<td style="font-weight:600;">₦'+(c.priceNGN||0).toLocaleString()+'</td>'
+        +'<td style="font-weight:600;">$'+(c.priceUSD||0).toLocaleString()+'</td>'
         +'<td>'+badge+'</td>'
         +'<td></td>';
       var td = row.lastElementChild;
@@ -1006,7 +1006,7 @@ async function loadGrantCourseOptions(){
     var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
     if(!courses.length){ sel.innerHTML = '<option value="">No courses found</option>'; return; }
     sel.innerHTML = courses.map(function(c){
-      return '<option value="'+c.id+'" data-instructor="'+(c.instructorId||'')+'" data-price="'+(c.priceNGN||0)+'">'+(c.title||c.id)+'</option>';
+      return '<option value="'+c.id+'" data-instructor="'+(c.instructorId||'')+'" data-price="'+(c.priceUSD||0)+'">'+(c.title||c.id)+'</option>';
     }).join('');
   } catch(e){
     sel.innerHTML = '<option value="">Failed to load courses</option>';
@@ -1052,7 +1052,7 @@ async function grantFreeAccess(){
       courseId:      courseId,
       instructorId:  instructorId || null,
       paidAmount:    0,
-      currency:      'NGN',
+      currency:      'USD',
       transactionId: 'admin-manual-grant',
       platformCut:   0,
       instructorCut: 0,
@@ -1209,8 +1209,8 @@ async function loadPayouts(){
       + payouts.map(function(p){
           return '<tr>'
             +'<td style="font-family:monospace;font-size:12px;">'+(p.id||'—')+'</td>'
-            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">₦'+(p.pendingAmount||0).toLocaleString()+'</td>'
-            +'<td>'+(p.currency||'NGN')+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">$'+(p.pendingAmount||0).toLocaleString()+'</td>'
+            +'<td>'+(p.currency||'USD')+'</td>'
             +'<td><button class="tbl-btn tbl-approve" onclick="processPayout()">Process payout</button></td>'
             +'</tr>';
         }).join('')
@@ -1236,7 +1236,7 @@ async function loadAffiliatePayouts(){
       var data = d.data();
       if(data.status === 'paid') return;
       var code = data.affiliateCode;
-      if(!byCode[code]) byCode[code] = { total:0, currency:data.currency||'NGN', docIds:[] };
+      if(!byCode[code]) byCode[code] = { total:0, currency:data.currency||'USD', docIds:[] };
       byCode[code].total += (data.commission||0);
       byCode[code].docIds.push(d.id);
     });
@@ -1272,7 +1272,7 @@ async function loadAffiliatePayouts(){
           return '<tr>'
             +'<td><div style="font-weight:600;">'+r.name+'</div><div style="font-size:12px;color:var(--text3);">'+r.email+'</div></td>'
             +'<td>'+bankInfo+'</td>'
-            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(r.currency==='NGN'?'&#8358;':r.currency+' ')+r.total.toLocaleString()+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(r.currency==='USD'?'$':r.currency+' ')+r.total.toLocaleString()+'</td>'
             +'<td><button class="tbl-btn tbl-approve" data-ids="'+r.docIds.join(',')+'" onclick="markAffiliatePaid(this)" '+(r.bankName?'':'disabled title="No bank details on file"')+'>Mark as paid</button></td>'
             +'</tr>';
         }).join('')
@@ -1350,7 +1350,7 @@ async function loadMarketplacePayouts(){
           return '<tr>'
             +'<td style="font-weight:600;">'+(p.freelancerName||'—')+'</td>'
             +'<td style="font-family:monospace;font-size:12px;">'+(p.contractId||'—')+'</td>'
-            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(p.currency==='USD'?'$':'&#8358;')+(p.amount||0).toLocaleString()+'</td>'
+            +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">$'+(p.amount||0).toLocaleString()+'</td>'
             +'<td><button class="tbl-btn tbl-approve" data-id="'+p.id+'" onclick="markMarketplacePaid(this)">Mark as paid</button></td>'
             +'</tr>';
         }).join('')
