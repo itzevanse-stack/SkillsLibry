@@ -75,7 +75,10 @@ input{
 <!-- Start-date banner — shown above the card once we know the course's start info -->
 <div class="start-banner" id="start-banner">
   <div class="sb-icon" id="sb-icon">&#128197;</div>
-  <div class="sb-text" id="sb-text"></div>
+  <div class="sb-text" id="sb-text">
+    <span id="sb-message"></span>
+    <div id="sb-countdown" style="margin-top:6px;font-weight:700;color:var(--text);display:none;"></div>
+  </div>
 </div>
 
 <div class="card" id="welcome-card">
@@ -120,20 +123,48 @@ function formatDateHuman(iso){
   return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 }
 
+// Shows the start-date banner above the card. courseTitle/startType/startDate
+// come from the course doc, fetched once we know which course this is.
+function startCountdown(elId, startDateIso){
+  var el = document.getElementById(elId);
+  if(!el || !startDateIso) return;
+  var target = new Date(startDateIso+'T00:00:00').getTime();
+  if(isNaN(target)) return;
+  el.style.display = 'block';
+
+  function tick(){
+    var diff = target - Date.now();
+    if(diff <= 0){ el.textContent = 'Starting now'; return; }
+    var days  = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var mins  = Math.floor((diff % 3600000) / 60000);
+    if(days > 0){ el.textContent = days+'d '+hours+'h until start'; }
+    else if(hours > 0){ el.textContent = hours+'h '+mins+'m until start'; }
+    else {
+      var secs = Math.floor((diff % 60000) / 1000);
+      el.textContent = mins+'m '+secs+'s until start';
+    }
+  }
+  tick();
+  clearInterval(el._countdownInterval);
+  el._countdownInterval = setInterval(tick, 1000);
+}
+
 function renderStartBanner(courseTitle, startType, startDate){
   var banner = document.getElementById('start-banner');
   var icon = document.getElementById('sb-icon');
-  var text = document.getElementById('sb-text');
+  var msg = document.getElementById('sb-message');
   if(!banner || !courseTitle) return;
 
   if(startType === 'scheduled' && startDate){
     icon.innerHTML = '&#128197;';
-    text.innerHTML = 'Your <strong>' + courseTitle + '</strong> training starts on <strong>' + formatDateHuman(startDate) + '</strong>. You can create your account and explore your dashboard right away — your lessons unlock automatically on the start date.';
+    msg.innerHTML = 'Your <strong>' + courseTitle + '</strong> training starts on <strong>' + formatDateHuman(startDate) + '</strong>. You can create your account and explore your dashboard right away — your lessons unlock automatically on the start date.';
     banner.classList.remove('instant');
     banner.classList.add('show');
+    startCountdown('sb-countdown', startDate);
   } else {
     icon.innerHTML = '&#9889;';
-    text.innerHTML = '<strong>' + courseTitle + '</strong> is instant access — start learning right away!';
+    msg.innerHTML = '<strong>' + courseTitle + '</strong> is instant access — start learning right away!';
     banner.classList.add('instant');
     banner.classList.add('show');
   }
@@ -147,7 +178,9 @@ async function fetchCourseAndShowBanner(courseId){
       var c = snap.data();
       renderStartBanner(c.title || 'Course', c.startType || 'instant', c.startDate || null);
     }
-  } catch(e){}
+  } catch(e){
+    // Non-critical — if this fails we just skip the banner, enrollment still proceeds.
+  }
 }
 
 function successState(courseId){
@@ -223,6 +256,7 @@ function passwordState(courseId){
 async function finishSignIn(data){
   try {
     await window._signInWithCustomToken(window._auth, data.token);
+    // Fire the start-date banner once we're signed in and know the course.
     fetchCourseAndShowBanner(data.courseId);
 
     if(data.isNewUser){
