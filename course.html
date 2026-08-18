@@ -209,6 +209,12 @@ a{text-decoration:none;color:inherit}
 .enroll-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(78,204,163,.45);}
 .enroll-btn:hover::before{opacity:1;}
 .enroll-btn:active{transform:translateY(0);}
+.enroll-btn.pulse{animation:enrollPulse .7s ease;}
+@keyframes enrollPulse{
+  0%{transform:scale(1);box-shadow:0 4px 20px rgba(78,204,163,.3);}
+  40%{transform:scale(1.045);box-shadow:0 8px 30px rgba(78,204,163,.55);}
+  100%{transform:scale(1);box-shadow:0 4px 20px rgba(78,204,163,.3);}
+}
 .pc-guarantee{text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:6px;}
 
 .pc-includes{border-top:1.5px solid var(--border);padding-top:18px;}
@@ -959,6 +965,22 @@ function startCountdown(elId, startDateIso){
   el._countdownInterval = setInterval(tick, 1000);
 }
 
+/* ── ENROLL BUTTON ATTENTION PULSE (every 5-10s, random) ── */
+function startEnrollButtonPulse(){
+  var btn = document.getElementById('enroll-btn');
+  if(!btn) return;
+  function schedule(){
+    var delay = 5000 + Math.random()*5000; // 5-10s
+    setTimeout(function(){
+      btn.classList.remove('pulse');
+      void btn.offsetWidth; // restart animation
+      btn.classList.add('pulse');
+      schedule();
+    }, delay);
+  }
+  schedule();
+}
+
 /* ── DATA ── */
 var COURSES = [];
 
@@ -1499,6 +1521,8 @@ function showToast(icon,msg){
   var loadingOverlay = document.getElementById('page-loading-overlay');
   if(loadingOverlay) loadingOverlay.style.display = 'none';
 
+  startEnrollButtonPulse();
+
 })();
 
 function toggleMobileNav(){
@@ -1545,20 +1569,23 @@ var _activeCourse = null;
 
 function enrollClick(){
   if(!_activeCourse){ showToast('⏳','Course loading, please wait a moment...'); return; }
+
+  // If the instructor has set an external checkout link (Cope), no account
+  // is needed up front — we just collect name+email, send them to pay, and
+  // the webhook creates their account + signs them in automatically on
+  // /welcome after payment succeeds. Do NOT gate this behind sign-in.
+  if(_activeCourse.checkoutUrl){
+    openLeadCaptureModal();
+    return;
+  }
+
+  // Built-in checkout requires an existing session (charges the logged-in user directly).
   if(!window._user){
     openAuthModal(function(){ enrollClick(); }, 'su');
     return;
   }
   if(typeof window.slSignIn !== 'function'){
     showToast('⏳','Connecting... please try again in a moment.');
-    return;
-  }
-
-  // If the instructor has set an external checkout link, collect
-  // name+email first, then hand off to that checkout instead of our
-  // built-in Flutterwave flow.
-  if(_activeCourse.checkoutUrl){
-    openLeadCaptureModal();
     return;
   }
 
