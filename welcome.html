@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Welcome — SkillsLibry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/x-icon" href="/favicon.ico"/>
+<style>
+:root{
+  --teal:#4ecca3;--teal-dark:#2db88a;--teal-dim:rgba(78,204,163,.1);
+  --purple:#6c63ff;
+  --bg2:#f8f9fc;--border:#e4e6f0;
+  --text:#0d0d1a;--text2:#4a4d6a;--text3:#8b8fa8;
+  --red:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;}
+body{
+  background:var(--bg2);color:var(--text);font-family:'Inter',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;
+}
+.logo{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,var(--teal),var(--purple));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Poppins',sans-serif;font-weight:800;font-size:24px;color:#fff;
+  margin-bottom:24px;
+}
+.card{
+  background:#fff;border:1.5px solid var(--border);border-radius:20px;
+  padding:40px 36px;max-width:440px;width:100%;text-align:center;
+  box-shadow:0 12px 48px rgba(13,13,26,.08);
+}
+.icon{font-size:48px;margin-bottom:16px;}
+h1{font-family:'Poppins',sans-serif;font-size:22px;font-weight:700;margin-bottom:10px;}
+p{font-size:14px;color:var(--text3);line-height:1.7;margin-bottom:24px;}
+.btn{
+  display:inline-block;padding:13px 32px;background:var(--teal);
+  color:#0d0d1a;font-weight:700;font-size:15px;border-radius:10px;
+  border:none;cursor:pointer;font-family:'Inter',sans-serif;
+}
+.btn-ghost{
+  display:inline-block;padding:11px 24px;background:transparent;
+  border:1.5px solid var(--border);color:var(--text2);font-weight:600;
+  font-size:13px;border-radius:8px;cursor:pointer;margin-top:12px;
+}
+.spinner{
+  width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--teal);
+  border-radius:50%;margin:0 auto 20px;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="logo">S</div>
+<div class="card" id="welcome-card">
+  <div class="spinner"></div>
+  <h1>Confirming your enrollment...</h1>
+  <p>This usually takes just a few seconds. Please don't close this page.</p>
+</div>
+
+<!-- ══ FIREBASE ══ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyDm5r-Oxa9yDazJU4KMm03GZG2g5kZk8Y0",
+  authDomain: "skillslibry.firebaseapp.com",
+  projectId: "skillslibry",
+});
+window._db = getFirestore(app);
+document.dispatchEvent(new CustomEvent('dbReady'));
+</script>
+
+<script>
+var MAX_ATTEMPTS = 8;
+var POLL_DELAY_MS = 2000;
+
+function showState(iconHtml, title, msg, showPlayerBtn, courseId){
+  var card = document.getElementById('welcome-card');
+  card.innerHTML =
+    '<div style="font-size:48px;margin-bottom:16px;">'+iconHtml+'</div>'
+    +'<h1>'+title+'</h1>'
+    +'<p>'+msg+'</p>'
+    +(showPlayerBtn
+      ? '<a class="btn" href="/player'+(courseId?'?course='+courseId:'')+'">Go to my course</a>'
+      : '<a class="btn" href="/dashboard">Go to my dashboard</a>')
+    +'<div><a class="btn-ghost" href="/catalog" style="display:inline-block;">Browse more courses</a></div>';
+}
+
+async function checkEnrollment(leadId, attempt){
+  if(!window._db){
+    setTimeout(function(){ checkEnrollment(leadId, attempt); }, 300);
+    return;
+  }
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'enrollments'),
+      fb.where('leadId','==', leadId)
+    ));
+
+    if(!snap.empty){
+      var enrollment = snap.docs[0].data();
+      showState('&#127881;', 'You\'re in!', 'Your enrollment is confirmed. Head to your course to get started.', true, enrollment.courseId);
+      return;
+    }
+
+    if(attempt >= MAX_ATTEMPTS){
+      showState('&#9203;', 'Almost there', 'Your payment may still be processing. This can take a few minutes — check your email for confirmation, or visit your dashboard shortly.', false, null);
+      return;
+    }
+
+    setTimeout(function(){ checkEnrollment(leadId, attempt+1); }, POLL_DELAY_MS);
+  } catch(e){
+    showState('&#9888;&#65039;', 'Something went wrong', 'We couldn\'t confirm your enrollment automatically. If you completed payment, check your email or contact support.', false, null);
+  }
+}
+
+(function(){
+  var params = new URLSearchParams(window.location.search);
+  var leadId = params.get('lead') || params.get('client_reference_id');
+
+  if(!leadId){
+    showState('&#128075;', 'Welcome to SkillsLibry', 'Head to your dashboard to see your courses.', false, null);
+    return;
+  }
+
+  checkEnrollment(leadId, 0);
+})();
+</script>
+
+</body>
+</html>
