@@ -506,7 +506,7 @@ a{text-decoration:none;color:inherit}
             <div class="pc-price-old" id="cd-price-old" style="display:none;"></div>
             <div class="pc-discount" id="pc-discount" style="display:none;"></div>
           </div>
-          <div class="pc-timer" id="pc-timer" style="display:none;">&#128197; <span id="pc-timer-text"></span></div>
+          <div class="pc-timer" id="pc-timer" style="display:none;">&#128197; <span id="pc-timer-text"></span><span id="cd-countdown" style="margin-left:6px;font-weight:700;"></span></div>
 
           <div class="pc-includes" id="pc-includes" style="display:none;">
             <div class="pc-includes-title">This course includes</div>
@@ -930,6 +930,37 @@ document.getElementById('auth-modal').addEventListener('click', function(e){
 </script>
 
 <script>
+
+/* ── LIVE COUNTDOWN TO A SCHEDULED START DATE ── */
+function startCountdown(elId, startDateIso){
+  var el = document.getElementById(elId);
+  if(!el || !startDateIso) return;
+  var target = new Date(startDateIso+'T00:00:00').getTime();
+  if(isNaN(target)) return;
+
+  function tick(){
+    var now = Date.now();
+    var diff = target - now;
+    if(diff <= 0){
+      el.textContent = '· Starting now';
+      return;
+    }
+    var days  = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var mins  = Math.floor((diff % 3600000) / 60000);
+    if(days > 0){
+      el.textContent = '· '+days+'d '+hours+'h left';
+    } else if(hours > 0){
+      el.textContent = '· '+hours+'h '+mins+'m left';
+    } else {
+      var secs = Math.floor((diff % 60000) / 1000);
+      el.textContent = '· '+mins+'m '+secs+'s left';
+    }
+  }
+  tick();
+  clearInterval(el._countdownInterval);
+  el._countdownInterval = setInterval(tick, 1000);
+}
 
 /* ── DATA ── */
 var COURSES = [];
@@ -1415,7 +1446,23 @@ function showToast(icon,msg){
   var enrollPriceEl = document.getElementById('enroll-price');
   if(enrollPriceEl) enrollPriceEl.innerHTML = '$'+priceUSD.toLocaleString();
 
-  // Start date badge — only shown when the instructor scheduled a fixed start
+  // Original/compare-at price — crossed out, with a discount % badge
+  var priceOldEl = document.getElementById('cd-price-old');
+  var discountEl = document.getElementById('pc-discount');
+  var priceOriginal = parseFloat(courseData.priceOriginal) || 0;
+  if(priceOriginal > priceUSD){
+    if(priceOldEl){ priceOldEl.textContent = '$'+priceOriginal.toLocaleString(); priceOldEl.style.display = 'inline'; }
+    if(discountEl){
+      var pct = Math.round((1 - priceUSD/priceOriginal) * 100);
+      discountEl.textContent = pct+'% off';
+      discountEl.style.display = 'inline-block';
+    }
+  } else {
+    if(priceOldEl) priceOldEl.style.display = 'none';
+    if(discountEl) discountEl.style.display = 'none';
+  }
+
+  // Start date badge + live countdown — only for scheduled-start courses
   var timerEl = document.getElementById('pc-timer');
   var timerTextEl = document.getElementById('pc-timer-text');
   if(courseData.startType === 'scheduled' && courseData.startDate){
@@ -1423,6 +1470,7 @@ function showToast(icon,msg){
     var startLabel = isNaN(startD) ? courseData.startDate : startD.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
     if(timerTextEl) timerTextEl.textContent = 'Starts ' + startLabel;
     if(timerEl) timerEl.style.display = 'flex';
+    startCountdown('cd-countdown', courseData.startDate);
   } else if(timerEl){
     timerEl.style.display = 'none';
   }
