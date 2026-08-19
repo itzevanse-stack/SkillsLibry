@@ -276,35 +276,23 @@ a{text-decoration:none;color:inherit}
   display:flex;align-items:center;gap:10px;
 }
 .desc-body p{font-size:15px;color:var(--text2);line-height:1.8;margin-bottom:12px;}
-.learn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.learn-grid{display:flex;flex-direction:column;gap:10px;}
 .learn-item{
-  position:relative;overflow:hidden;
-  display:flex;flex-direction:column;align-items:flex-start;gap:12px;
-  aspect-ratio:1/1;justify-content:flex-start;
-  font-size:13px;color:var(--text2);line-height:1.55;
+  display:flex;align-items:center;gap:16px;
+  font-size:14px;color:var(--text2);line-height:1.5;
   background:#fff;border:1.5px solid var(--border);
-  border-radius:var(--r-lg);padding:18px;
-  transition:all .22s ease;
+  border-radius:var(--r-lg);padding:16px 20px;
+  box-shadow:var(--sh);transition:all .22s ease;
 }
-.learn-item:hover{
-  border-color:rgba(78,204,163,.4);
-  box-shadow:0 10px 28px rgba(78,204,163,.14);
-  transform:translateY(-3px);
-}
-.learn-item::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--teal),var(--purple));
-  opacity:0;transition:opacity .22s ease;
-}
-.learn-item:hover::before{opacity:1;}
+.learn-item:hover{border-color:rgba(78,204,163,.35);box-shadow:0 8px 24px rgba(13,13,26,.08);}
 .learn-check{
-  width:34px;height:34px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--teal-dim),rgba(108,99,255,.08));
-  border:1.5px solid rgba(78,204,163,.3);
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal) 0%,#3aa88a 100%);
+  box-shadow:0 4px 12px rgba(78,204,163,.3);
   display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:var(--teal-dark);font-weight:700;
+  font-size:15px;color:#fff;font-weight:700;
 }
-.learn-item-text{font-weight:500;color:var(--text);}
+.learn-item-text{font-weight:600;color:var(--text);}
 .req-item{
   display:flex;align-items:flex-start;gap:10px;
   font-size:14px;color:var(--text2);padding:10px 0;
@@ -434,12 +422,7 @@ a{text-decoration:none;color:inherit}
 @media(max-width:900px){
   .hero-inner{grid-template-columns:1fr;}
   .purchase-card{position:static;}
-  .learn-grid{grid-template-columns:repeat(2,1fr);}
   .testi-grid{grid-template-columns:1fr;}
-}
-@media(max-width:520px){
-  .learn-grid{grid-template-columns:1fr 1fr;gap:10px;}
-  .learn-item{aspect-ratio:auto;padding:14px;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
@@ -1879,11 +1862,9 @@ function renderModules(modules){
   ml.innerHTML = modules.map(function(m, mi){
     var lessons = m.lessons || [];
     var lessonsHtml = lessons.map(function(l){
-      var hasVideo = !!(l.videoId || l.videoUrl);
       return '<div class="lesson-row">'
         +'<div class="lesson-icon">▶</div>'
         +'<span class="lesson-title">'+(l.title||'Untitled lesson')+'</span>'
-        +(hasVideo ? '' : '<span class="lesson-dur" style="font-style:italic;">No video yet</span>')
         +'<span class="lesson-tag '+(l.free?'tag-free':'tag-lock')+'">'+(l.free?'Free preview':'Enrolled')+'</span>'
         +'</div>';
     }).join('');
