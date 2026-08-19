@@ -921,6 +921,8 @@ async function init(){
           instructorPhoto: liveInstructorPhoto,
           instructorBio: liveInstructorBio,
           description: data.description || '',
+          startType:   data.startType || 'instant',
+          startDate:   data.startDate || null,
           learns:      data.learns || [],
           requirements:data.requirements || [],
           modules:     (data.modules||[]).map(function(m,mi){
@@ -955,6 +957,18 @@ async function init(){
             return;
           }
         }
+
+        // Enrolled and active — but if the instructor scheduled a future
+        // start date, the actual lessons stay locked until then. This is
+        // the real enforcement point (not just a dashboard visual), since
+        // this page is where video content actually gets served.
+        if(_course.startType === 'scheduled' && _course.startDate){
+          var startMs = new Date(_course.startDate+'T00:00:00').getTime();
+          if(!isNaN(startMs) && startMs > Date.now()){
+            showStartLock(_course.startDate, _course.title);
+            return;
+          }
+        }
       }
     } catch(e){
       console.warn('Firestore load failed, using sample:', e.message);
@@ -985,6 +999,42 @@ function showAccessRevoked(){
     +'<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:28px;">Your subscription payment failed twice. Your access has been suspended. Renew your subscription to continue learning.</div>'
     +'<a href="/catalog" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Renew access</a>'
     +'</div></div>';
+}
+
+function showStartLock(startDateIso, courseTitle){
+  var startD = new Date(startDateIso+'T00:00:00');
+  var startLabel = isNaN(startD) ? startDateIso : startD.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+  document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d0d1a;font-family:Inter,sans-serif;padding:20px;">'
+    +'<div style="text-align:center;padding:48px;max-width:480px;">'
+    +'<div style="font-size:56px;margin-bottom:20px;">&#128197;</div>'
+    +'<div style="font-family:Poppins,sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:12px;">'+(courseTitle||'This course')+' starts on '+startLabel+'</div>'
+    +'<div style="font-size:14px;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:28px;">You\'re enrolled — your lessons unlock automatically the moment this cohort starts. No action needed, just check back then.</div>'
+    +'<div id="lock-countdown" style="display:flex;gap:8px;justify-content:center;margin-bottom:32px;">'
+      +'<div style="background:linear-gradient(160deg,#151527,#1f1f3a);border:1px solid rgba(78,204,163,.25);border-radius:10px;padding:12px 6px;min-width:64px;"><div id="lc-days" style="font-family:Poppins,sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#4ecca3,#8ee6c8,#6c63ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">00</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.45);margin-top:4px;">Days</div></div>'
+      +'<div style="background:linear-gradient(160deg,#151527,#1f1f3a);border:1px solid rgba(78,204,163,.25);border-radius:10px;padding:12px 6px;min-width:64px;"><div id="lc-hours" style="font-family:Poppins,sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#4ecca3,#8ee6c8,#6c63ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">00</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.45);margin-top:4px;">Hrs</div></div>'
+      +'<div style="background:linear-gradient(160deg,#151527,#1f1f3a);border:1px solid rgba(78,204,163,.25);border-radius:10px;padding:12px 6px;min-width:64px;"><div id="lc-mins" style="font-family:Poppins,sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#4ecca3,#8ee6c8,#6c63ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">00</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.45);margin-top:4px;">Min</div></div>'
+      +'<div style="background:linear-gradient(160deg,#151527,#1f1f3a);border:1px solid rgba(78,204,163,.25);border-radius:10px;padding:12px 6px;min-width:64px;"><div id="lc-secs" style="font-family:Poppins,sans-serif;font-size:24px;font-weight:800;background:linear-gradient(135deg,#4ecca3,#8ee6c8,#6c63ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;">00</div><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.45);margin-top:4px;">Sec</div></div>'
+    +'</div>'
+    +'<a href="/dashboard" style="display:inline-block;padding:13px 28px;background:#4ecca3;color:#0d0d1a;border-radius:8px;font-weight:700;text-decoration:none;">Back to dashboard</a>'
+    +'</div></div>';
+
+  var target = startD.getTime();
+  if(isNaN(target)) return;
+  function pad(n){ return n<10 ? '0'+n : String(n); }
+  function tick(){
+    var diff = target - Date.now();
+    if(diff <= 0){ window.location.reload(); return; }
+    var d = document.getElementById('lc-days'), h = document.getElementById('lc-hours'),
+        m = document.getElementById('lc-mins'), s = document.getElementById('lc-secs');
+    if(!d) return;
+    d.textContent = pad(Math.floor(diff/86400000));
+    h.textContent = pad(Math.floor((diff%86400000)/3600000));
+    m.textContent = pad(Math.floor((diff%3600000)/60000));
+    s.textContent = pad(Math.floor((diff%60000)/1000));
+  }
+  tick();
+  setInterval(tick, 1000);
 }
 
 function showAccessDenied(){
