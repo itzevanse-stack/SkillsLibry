@@ -187,6 +187,9 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     <div class="sidebar-item" id="si-bizleads" onclick="showAdmin('bizleads')">
       <span class="sidebar-icon">&#128188;</span> Business Leads
     </div>
+    <div class="sidebar-item" id="si-checkoutleads" onclick="showAdmin('checkoutleads')">
+      <span class="sidebar-icon">&#128722;</span> Checkout Leads
+    </div>
     <div class="sidebar-item" id="si-mktpayouts" onclick="showAdmin('mktpayouts')">
       <span class="sidebar-icon">&#129309;</span> Expert Payouts
     </div>
@@ -296,6 +299,20 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
       <div class="card">
         <div class="card-head">Business Leads <span id="bizleads-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
         <div id="bizleads-body"><div class="loading"><div class="loading-spin"></div></div></div>
+      </div>
+    </div>
+
+    <!-- CHECKOUT LEADS -->
+    <div class="admin-view" id="view-checkoutleads">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+        <div class="stat-card"><div class="stat-num" id="cl-total">—</div><div class="stat-label">Checkout starts</div></div>
+        <div class="stat-card"><div class="stat-num" id="cl-converted" style="color:var(--teal-dark);">—</div><div class="stat-label">Converted to sale</div></div>
+        <div class="stat-card"><div class="stat-num" id="cl-rate" style="color:var(--orange);">—</div><div class="stat-label">Conversion rate</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">Checkout Leads <span id="checkoutleads-count" style="font-size:12px;font-weight:500;color:var(--text3);"></span></div>
+        <div style="font-size:12px;color:var(--text3);padding:0 0 12px;">Everyone who clicked "Enroll" and reached Cope checkout — whether or not they finished paying. Use this to see where people drop off.</div>
+        <div id="checkoutleads-body"><div class="loading"><div class="loading-spin"></div></div></div>
       </div>
     </div>
 
@@ -711,6 +728,7 @@ function showAdmin(view){
   if(view==='testimonials')loadTestimonialsAdmin();
   if(view==='payouts')      { loadPayouts(); loadAffiliatePayouts(); }
   if(view==='bizleads')     loadBizLeads();
+  if(view==='checkoutleads') loadCheckoutLeads();
   if(view==='mktpayouts')   loadMarketplacePayouts();
   if(view==='expertapps')   loadExpertApplications();
 
@@ -1274,6 +1292,55 @@ async function loadAffiliatePayouts(){
             +'<td>'+bankInfo+'</td>'
             +'<td style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;color:var(--teal-dark);">'+(r.currency==='USD'?'$':r.currency+' ')+r.total.toLocaleString()+'</td>'
             +'<td><button class="tbl-btn tbl-approve" data-ids="'+r.docIds.join(',')+'" onclick="markAffiliatePaid(this)" '+(r.bankName?'':'disabled title="No bank details on file"')+'>Mark as paid</button></td>'
+            +'</tr>';
+        }).join('')
+      + '</tbody></table>';
+  } catch(e){ el.innerHTML='<div class="empty">Error: '+e.message+'</div>'; }
+}
+
+async function loadCheckoutLeads(){
+  var el = document.getElementById('checkoutleads-body'); if(!el) return;
+  el.innerHTML = '<div class="loading"><div class="loading-spin"></div></div>';
+  var db = await waitForDb(); if(!db){ el.innerHTML='<div class="empty">Not connected.</div>'; return; }
+  try {
+    var fb = await getFs();
+    var snap = await fb.getDocs(fb.collection(db,'leads'));
+    var leads = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+
+    document.getElementById('checkoutleads-count').textContent = leads.length+' total';
+
+    var converted = leads.filter(function(l){ return l.status === 'converted'; }).length;
+    var rate = leads.length ? Math.round((converted/leads.length)*100) : 0;
+    var setText = function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+    setText('cl-total', leads.length);
+    setText('cl-converted', converted);
+    setText('cl-rate', rate+'%');
+
+    if(!leads.length){
+      el.innerHTML = '<div class="empty"><div class="empty-icon">&#128722;</div>No checkout leads yet — these appear the moment someone clicks "Enroll" on a course.</div>';
+      return;
+    }
+
+    // Newest first
+    leads.sort(function(a,b){
+      var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+      var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+    el.innerHTML = '<table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Course</th><th>Status</th><th>Started</th></tr></thead><tbody>'
+      + leads.map(function(l){
+          var converted = l.status === 'converted';
+          var statusHtml = converted
+            ? '<span style="color:var(--teal-dark);font-weight:600;">&#9989; Converted</span>'
+            : '<span style="color:var(--text3);">&#8987; Pending checkout</span>';
+          var when = l.createdAt && l.createdAt.toDate ? l.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+          return '<tr>'
+            +'<td style="font-weight:600;">'+(l.name||'—')+'</td>'
+            +'<td>'+(l.email||'—')+'</td>'
+            +'<td>'+(l.courseTitle||'—')+'</td>'
+            +'<td>'+statusHtml+'</td>'
+            +'<td style="color:var(--text3);">'+when+'</td>'
             +'</tr>';
         }).join('')
       + '</tbody></table>';
