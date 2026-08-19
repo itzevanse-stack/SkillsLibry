@@ -216,11 +216,6 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
       <div style="width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">&#128276;</div>
       <div id="notif-badge" style="display:none;position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;"></div>
     </div>
-    <!-- Messages -->
-    <div class="nav-msg-icon" onclick="switchDash(document.getElementById('si-messages'),'dash-messages')" title="Messages">
-      &#128172;
-      <div id="msg-badge" style="display:none;position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;"></div>
-    </div>
     <!-- Avatar -->
     <div class="avatar-wrap student-avatar-wrap" id="nav-avatar" style="width:36px;height:36px;font-size:14px;cursor:pointer;" onclick="switchDash(document.getElementById('si-settings'),'dash-settings')" title="Profile settings">?</div>
     <input type="file" id="nav-avatar-input" accept="image/*" style="display:none;" onchange="uploadStudentAvatar(this)"/>
@@ -1395,13 +1390,11 @@ async function updateMessageBadges(){
     }
 
     var total = unreadDms + unreadAnns;
-    var navBadge = document.getElementById('msg-badge');
-    var siBadge  = document.getElementById('si-msg-badge');
-    [navBadge, siBadge].forEach(function(b){
-      if(!b) return;
-      if(total > 0){ b.textContent = total>9?'9+':String(total); b.style.display='flex'; }
-      else { b.style.display='none'; }
-    });
+    var siBadge = document.getElementById('si-msg-badge');
+    if(siBadge){
+      if(total > 0){ siBadge.textContent = total>9?'9+':String(total); siBadge.style.display=''; }
+      else { siBadge.style.display='none'; }
+    }
   } catch(e){ /* non-critical */ }
 }
 
