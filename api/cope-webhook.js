@@ -11,15 +11,8 @@
 const crypto = require('crypto');
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getAuth } = require('firebase-admin/auth');
 
-// (config is attached to module.exports further down, after the handler
-// is assigned — see bottom of file. Doing it here would be wiped out by
-// the reassignment below.)
-
-// Normalizes a pasted private key regardless of how it got mangled:
-// - strips surrounding quotes if the whole value got quoted
-// - converts literal "\n" text into real newlines
-// - trims stray whitespace
 function normalizePrivateKey(raw) {
   if (!raw) return '';
   let key = raw.trim();
@@ -35,9 +28,6 @@ function normalizePrivateKey(raw) {
 
 function getFirebaseAdmin() {
   if (!getApps().length) {
-    // Preferred, foolproof path: one base64-encoded blob of the entire
-    // service account JSON file. Immune to newline/quote mangling entirely
-    // because it's a single opaque string with no special characters.
     if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
       const json = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf8');
       const serviceAccount = JSON.parse(json);
@@ -45,7 +35,6 @@ function getFirebaseAdmin() {
       return getFirestore();
     }
 
-    // Fallback: the three separate env vars, with defensive normalization.
     const privateKey = normalizePrivateKey(process.env.FIREBASE_PRIVATE_KEY);
     if (!privateKey.includes('BEGIN PRIVATE KEY')) {
       throw new Error(
@@ -73,9 +62,6 @@ function readRawBody(req) {
   });
 }
 
-// Verifies Cope's signature header: "t=<unix_timestamp>,v1=<hex_hmac_sha256>"
-// HMAC is computed over "{timestamp}.{rawBody}" using the webhook signing
-// secret (shown once when the endpoint is created in the Cope dashboard).
 function verifyCopeSignature(rawBody, signatureHeader, signingSecret) {
   if (!signatureHeader) return { ok: false, reason: 'Missing signature header' };
 
@@ -124,6 +110,46 @@ function extractLeadId(event) {
   );
 }
 
+// Tries several common places a payment processor might put the paid
+// amount. Cope's exact payload shape may not match every path here, so
+// this is defensive — if none of these hit, the caller falls back to the
+// course's listed price so revenue reporting is never silently zero.
+function extractPaidAmount(event) {
+  const data = event.data || {};
+  const candidates = [
+    data.amount,
+    data.amount_total,
+    data.total,
+    data.cart && data.cart.amount,
+    data.cart && data.cart.total,
+    data.order && data.order.amount,
+    data.order && data.order.total,
+    data.checkout && data.checkout.amount,
+    data.metadata && data.metadata.amount,
+  ];
+  for (const c of candidates) {
+    const n = parseFloat(c);
+    if (!isNaN(n) && n > 0) return n;
+  }
+  return null;
+}
+
+async function getOrCreateAuthUser(auth, lead) {
+  try {
+    const existing = await auth.getUserByEmail(lead.email);
+    return { uid: existing.uid, isNew: false };
+  } catch (e) {
+    if (e.code !== 'auth/user-not-found') throw e;
+  }
+  const tempPassword = crypto.randomBytes(24).toString('hex');
+  const newUser = await auth.createUser({
+    email: lead.email,
+    password: tempPassword,
+    displayName: lead.name || undefined,
+  });
+  return { uid: newUser.uid, isNew: true };
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -135,8 +161,6 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Could not read request body' });
   }
 
-  // Accept either header name — Cope's test events use X-Webhook-Signature;
-  // production events may use X-Cope-Signature. Check both defensively.
   const signatureHeader =
     req.headers['x-webhook-signature'] || req.headers['x-cope-signature'];
 
@@ -161,8 +185,6 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON body' });
   }
 
-  // Handle Cope's synthetic test event (no real order data) — just confirm
-  // we received and verified it, without touching Firestore.
   if (event.message && event.message.toLowerCase().includes('test webhook')) {
     console.log('Cope test webhook received and verified successfully.');
     return res.status(200).json({ ok: true, note: 'Test event verified.' });
@@ -212,11 +234,45 @@ module.exports = async function handler(req, res) {
 
     const lead = leadSnap.data();
 
+    // Resolve the amount actually paid. Prefer whatever Cope's payload
+    // tells us directly; fall back to the course's current listed price so
+    // the admin revenue report is never silently zero for a real sale.
+    let paidAmount = extractPaidAmount(event);
+    let amountSource = 'webhook_payload';
+    let courseDoc = null;
+    if (lead.courseId) {
+      const courseSnap = await db.collection('courses').doc(lead.courseId).get();
+      if (courseSnap.exists) courseDoc = courseSnap.data();
+    }
+    if (paidAmount === null) {
+      paidAmount = (courseDoc && courseDoc.priceUSD) || 0;
+      amountSource = 'course_price_fallback';
+    }
+
+    const auth = getAuth();
+    let uid, isNewUser;
+    try {
+      const result = await getOrCreateAuthUser(auth, lead);
+      uid = result.uid;
+      isNewUser = result.isNew;
+    } catch (e) {
+      console.error('Cope webhook: failed to get/create auth user for', lead.email, e);
+      await dedupeRef.set({ type: eventType, processedAt: FieldValue.serverTimestamp(), acted: false, error: 'auth user creation failed: ' + e.message });
+      return res.status(200).json({ ok: true, note: 'Auth user creation failed — logged for review.' });
+    }
+
+    await db.collection('users').doc(uid).set({
+      email: lead.email,
+      name: lead.name || '',
+      role: 'student',
+      createdAt: FieldValue.serverTimestamp(),
+    }, { merge: true });
+
     const enrollmentRef = await db.collection('enrollments').add({
       courseId: lead.courseId,
       courseTitle: lead.courseTitle || '',
       instructorId: lead.instructorId || null,
-      uid: lead.uid || null,
+      uid: uid,
       studentEmail: lead.email,
       studentName: lead.name,
       leadId: leadId,
@@ -224,16 +280,31 @@ module.exports = async function handler(req, res) {
       subscriptionStatus: 'active',
       failedPayments: 0,
       copeEventId: eventId,
+      paidAmount: paidAmount,
+      currency: 'USD',
+      amountSource: amountSource,
       enrolledAt: FieldValue.serverTimestamp(),
     });
 
-    await leadRef.update({ status: 'converted', enrollmentId: enrollmentRef.id, convertedAt: FieldValue.serverTimestamp() });
+    await leadRef.update({ status: 'converted', uid: uid, enrollmentId: enrollmentRef.id, convertedAt: FieldValue.serverTimestamp() });
 
     if (lead.courseId) {
       await db.collection('courses').doc(lead.courseId).update({
         totalStudents: FieldValue.increment(1),
       }).catch(() => {});
     }
+
+    const signInToken = await auth.createCustomToken(uid);
+    await db.collection('signInTokens').doc(leadId).set({
+      token: signInToken,
+      uid: uid,
+      isNewUser: isNewUser,
+      courseId: lead.courseId || null,
+      enrollmentId: enrollmentRef.id,
+      used: false,
+      createdAt: FieldValue.serverTimestamp(),
+      expiresAt: Date.now() + 10 * 60 * 1000,
+    });
 
     await dedupeRef.set({
       type: eventType,
@@ -242,7 +313,7 @@ module.exports = async function handler(req, res) {
       enrollmentId: enrollmentRef.id,
     });
 
-    console.log(`COPE ENROLLED: ${lead.email} | course: ${lead.courseId}`);
+    console.log(`COPE ENROLLED: ${lead.email} | course: ${lead.courseId} | newUser: ${isNewUser} | $${paidAmount} (${amountSource})`);
 
     return res.status(200).json({ ok: true, enrollmentId: enrollmentRef.id });
   } catch (err) {
@@ -251,10 +322,6 @@ module.exports = async function handler(req, res) {
   }
 };
 
-// Disable automatic body parsing so we can verify the HMAC against the
-// exact raw bytes Cope signed — a parsed/re-stringified body will not
-// match the signature. Must be attached AFTER module.exports is assigned
-// above, otherwise this gets wiped out by that reassignment.
 module.exports.config = {
   api: { bodyParser: false },
 };
