@@ -592,14 +592,14 @@ a{text-decoration:none;color:inherit}
     <!-- TAB: DESCRIPTION -->
     <div id="tab-desc" class="tab-pane active">
 
+      <div class="desc-section" id="desc-section-wrap" style="display:none;">
+        <div class="desc-section-title">&#128196; <span id="desc-section-title-text">Course description</span></div>
+        <div class="desc-body" id="cd-description" style="white-space:pre-line;"></div>
+      </div>
+
       <div class="desc-section" id="learns-section" style="display:none;">
         <div class="desc-section-title">&#9989; What you will learn</div>
         <div class="learn-grid" id="cd-learns"></div>
-      </div>
-
-      <div class="desc-section" id="desc-section-wrap" style="display:none;">
-        <div class="desc-section-title">&#128196; Course description</div>
-        <div class="desc-body" id="cd-description" style="white-space:pre-line;"></div>
       </div>
 
       <div class="desc-section" id="req-section" style="display:none;">
@@ -1326,6 +1326,14 @@ function showToast(icon,msg){
     descEl.textContent = courseData.description;
     var dw = document.getElementById('desc-section-wrap');
     if(dw) dw.style.display = 'block';
+
+    var descTitleEl = document.getElementById('desc-section-title-text');
+    if(descTitleEl){
+      var ct = courseData.contentType;
+      descTitleEl.textContent = (ct && ct !== 'course')
+        ? (ct.charAt(0).toUpperCase()+ct.slice(1)+' Description')
+        : 'Course Description';
+    }
   }
 
   // What you will learn (real data only)
