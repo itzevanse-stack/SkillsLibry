@@ -570,11 +570,6 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   </a>
   <div class="nav-tag">Instructor Portal</div>
   <div class="nav-right">
-    <a class="btn btn-ghost btn-sm" href="/">View site</a>
-    <div class="nav-msg-icon" onclick="showView('students')" title="Messages">
-      &#128172;
-      <div id="inst-msg-badge" style="display:none;position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;"></div>
-    </div>
     <button class="btn btn-ghost btn-sm" onclick="openGlobalAnnouncementModal()">&#128226; Announce</button>
     <button class="btn btn-teal btn-sm" onclick="showView('builder'); startNewCourse();">+ New course</button>
   </div>
@@ -619,8 +614,9 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('testimonials')" id="nav-testimonials">
         <div class="si-icon">&#11088;</div> Testimonials
       </div>
-      <div class="sidebar-item" onclick="showView('students')" id="nav-students">
+      <div class="sidebar-item" onclick="showView('students')" id="nav-students" style="position:relative;">
         <div class="si-icon">&#128101;</div> Students
+        <span id="inst-msg-badge" style="display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;"></span>
       </div>
     </div>
 
@@ -3382,7 +3378,7 @@ async function loadInstructorMessages(){
 function updateInstMsgBadge(count){
   var b = document.getElementById('inst-msg-badge');
   if(!b) return;
-  if(count > 0){ b.textContent = count>9?'9+':String(count); b.style.display='flex'; }
+  if(count > 0){ b.textContent = count>9?'9+':String(count); b.style.display=''; }
   else { b.style.display='none'; }
 }
 
