@@ -115,6 +115,34 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 .tour-btn-ghost{background:transparent;color:var(--text3);}
 .tour-btn-ghost:hover{color:var(--text2);}
 .tour-arrow{position:fixed;z-index:902;width:14px;height:14px;background:#fff;transform:rotate(45deg);}
+
+/* ── MESSAGING ── */
+.msg-layout{display:grid;grid-template-columns:300px 1fr;gap:0;background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;height:calc(100vh - 180px);min-height:500px;}
+.msg-sublist{border-right:1.5px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;}
+.msg-subtabs{display:flex;border-bottom:1.5px solid var(--border);flex-shrink:0;}
+.msg-subtab{flex:1;padding:13px;text-align:center;font-size:12px;font-weight:700;color:var(--text3);cursor:pointer;border-bottom:2.5px solid transparent;}
+.msg-subtab.active{color:var(--teal-dark);border-bottom-color:var(--teal);}
+.conv-row{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+.conv-row:hover{background:var(--bg2);}
+.conv-row.active{background:var(--teal-dim);}
+.conv-row.unread .conv-name{font-weight:800;}
+.conv-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.conv-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.conv-preview{font-size:12px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px;}
+.conv-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+.msg-thread{display:flex;flex-direction:column;height:100%;}
+.msg-thread-header{padding:14px 20px;border-bottom:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;flex-shrink:0;}
+.msg-thread-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;}
+.msg-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;}
+.msg-bubble.from-instructor{align-self:flex-start;background:var(--bg2);color:var(--text);border-bottom-left-radius:4px;}
+.msg-bubble.from-student{align-self:flex-end;background:var(--teal);color:#0d0d1a;border-bottom-right-radius:4px;}
+.msg-bubble-time{font-size:10px;opacity:.6;margin-top:4px;}
+.msg-thread-input{display:flex;gap:10px;padding:14px 16px;border-top:1.5px solid var(--border);flex-shrink:0;}
+.msg-thread-input textarea{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;resize:none;outline:none;min-height:42px;max-height:100px;}
+.ann-card{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:12px;}
+.ann-card-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ann-card-text{font-size:13px;color:var(--text2);line-height:1.65;}
+.nav-msg-icon{position:relative;width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;}
 .my-course-card.locked{cursor:default;}
 .my-course-card.locked:hover{border-color:var(--border);transform:none;}
 .my-course-card.locked .my-course-thumb{background:linear-gradient(135deg,#1a1a2e,#0d0d1a);opacity:.75;}
@@ -188,6 +216,11 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
       <div style="width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;">&#128276;</div>
       <div id="notif-badge" style="display:none;position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;"></div>
     </div>
+    <!-- Messages -->
+    <div class="nav-msg-icon" onclick="switchDash(document.getElementById('si-messages'),'dash-messages')" title="Messages">
+      &#128172;
+      <div id="msg-badge" style="display:none;position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;"></div>
+    </div>
     <!-- Avatar -->
     <div class="avatar-wrap student-avatar-wrap" id="nav-avatar" style="width:36px;height:36px;font-size:14px;cursor:pointer;" onclick="switchDash(document.getElementById('si-settings'),'dash-settings')" title="Profile settings">?</div>
     <input type="file" id="nav-avatar-input" accept="image/*" style="display:none;" onchange="uploadStudentAvatar(this)"/>
@@ -209,6 +242,10 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
     </div>
     <div class="sidebar-item" id="si-community" onclick="switchDash(this,'dash-community')">
       <span class="sidebar-icon">&#128101;</span> Community
+    </div>
+    <div class="sidebar-item" id="si-messages" onclick="switchDash(this,'dash-messages')" style="position:relative;">
+      <span class="sidebar-icon">&#128172;</span> Messages
+      <span id="si-msg-badge" style="display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;"></span>
     </div>
     <div class="sidebar-item" id="si-certificates" onclick="switchDash(this,'dash-certificates')">
       <span class="sidebar-icon">&#127891;</span> Certificates
@@ -282,6 +319,31 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
         <div style="text-align:center;padding:60px;color:var(--text3);">
           <div style="font-size:48px;margin-bottom:12px;">&#128101;</div>
           <div style="font-weight:600;">Loading communities...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div class="dash-view" id="dash-messages">
+      <div class="dash-header">
+        <div class="dash-title">Messages</div>
+        <div class="dash-sub">Direct messages from your instructors, and their announcements.</div>
+      </div>
+      <div class="msg-layout">
+        <div class="msg-sublist">
+          <div class="msg-subtabs">
+            <div class="msg-subtab active" id="msg-subtab-dm" onclick="switchMsgSubtab('dm')">Direct</div>
+            <div class="msg-subtab" id="msg-subtab-ann" onclick="switchMsgSubtab('ann')">Announcements</div>
+          </div>
+          <div id="dm-conv-list" style="flex:1;overflow-y:auto;">
+            <div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">Loading...</div>
+          </div>
+        </div>
+        <div id="msg-main-panel" style="overflow-y:auto;">
+          <div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text3);padding:40px;">
+            <div style="font-size:40px;margin-bottom:10px;">&#128172;</div>
+            <div style="font-size:13px;">Select a conversation to start chatting.</div>
+          </div>
         </div>
       </div>
     </div>
@@ -979,6 +1041,7 @@ function switchDash(el, view){
   if(view==='dash-courses')      loadEnrolledCourses('enrolled-courses-grid');
   if(view==='dash-affiliate')    loadAffiliateData();
   if(view==='dash-settings')     loadSettings();
+  if(view==='dash-messages')     loadStudentMessages();
   // Auto-close mobile sidebar after picking a tab
   var sidebar = document.querySelector('.sidebar');
   if(sidebar && sidebar.classList.contains('mobile-open')) toggleSidebar();
@@ -1025,6 +1088,7 @@ document.addEventListener('authReady', async function(e){
   // Load overview
   loadEnrolledCourses('overview-courses-grid');
   loadMyCommunities();
+  initMessageBadgeTracking();
 
   // First-time visitors get the guided tour automatically. A short delay
   // lets the overview cards/greeting render first so nothing jumps mid-tour.
@@ -1060,6 +1124,285 @@ function startDashboardCountdowns(grid){
   tick();
   clearInterval(grid._countdownInterval);
   grid._countdownInterval = setInterval(tick, 1000);
+}
+
+/* ══════════════════════════════════════════
+   MESSAGING (student side)
+   Two-way DMs with instructors + a read-only feed
+   of announcements from every instructor the student
+   is enrolled under. Students can never message each
+   other — every conversation is instructor<->student.
+══════════════════════════════════════════ */
+var _msgSubtab = 'dm';
+var _activeConvId = null;
+var _msgUnsub = null; // not using realtime listeners here, kept simple with polling-free manual refresh
+var _studentInstructorIds = [];
+var _annSeenKey = null;
+
+function switchMsgSubtab(tab){
+  _msgSubtab = tab;
+  document.getElementById('msg-subtab-dm').classList.toggle('active', tab==='dm');
+  document.getElementById('msg-subtab-ann').classList.toggle('active', tab==='ann');
+  if(tab==='dm') renderDmList();
+  else renderAnnouncementsList();
+}
+
+async function loadStudentMessages(){
+  if(!window._user || !window._db) return;
+  _annSeenKey = 'sl_ann_seen_' + window._user.uid;
+
+  var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  window._fbFs = fb; // cache for reuse in this module
+
+  // Figure out which instructors this student has ever paid for a course
+  // from — this doubles as the "auto add to instructor's chat list" logic:
+  // there's no separate contacts table to maintain, the instructor's side
+  // derives the same list live from these same enrollment docs.
+  var enrollSnap = await fb.getDocs(fb.query(
+    fb.collection(window._db,'enrollments'),
+    fb.where('studentId','==', window._user.uid)
+  ));
+  var ids = {};
+  enrollSnap.docs.forEach(function(d){
+    var e = d.data();
+    if(e.instructorId) ids[e.instructorId] = true;
+  });
+  _studentInstructorIds = Object.keys(ids);
+
+  if(_msgSubtab === 'dm') renderDmList();
+  else renderAnnouncementsList();
+
+  updateMessageBadges();
+}
+
+async function renderDmList(){
+  var listEl = document.getElementById('dm-conv-list');
+  if(!listEl || !window._db) return;
+  listEl.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">Loading...</div>';
+
+  try {
+    var fb = window._fbFs;
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'conversations'),
+      fb.where('studentUid','==', window._user.uid)
+    ));
+    var convs = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    convs.sort(function(a,b){
+      var ta = a.lastMessageAt && a.lastMessageAt.toMillis ? a.lastMessageAt.toMillis() : 0;
+      var tb = b.lastMessageAt && b.lastMessageAt.toMillis ? b.lastMessageAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+    if(!convs.length){
+      listEl.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">No messages yet. Your instructor will show up here once they message you.</div>';
+      return;
+    }
+
+    listEl.innerHTML = convs.map(function(c){
+      var unread = c.unreadForStudent ? ' unread' : '';
+      var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      return '<div class="conv-row'+unread+'" onclick="openConversation(\''+c.id+'\',\''+(c.instructorName||'Instructor').replace(/'/g,"\\'")+'\')">'
+        +'<div class="conv-avatar">'+initials+'</div>'
+        +'<div style="flex:1;min-width:0;">'
+          +'<div class="conv-name">'+(c.instructorName||'Instructor')+'</div>'
+          +'<div class="conv-preview">'+(c.lastMessage||'No messages yet')+'</div>'
+        +'</div>'
+        +(c.unreadForStudent ? '<div class="conv-unread-dot"></div>' : '')
+      +'</div>';
+    }).join('');
+  } catch(e){
+    listEl.innerHTML = '<div style="padding:20px;color:var(--red);font-size:13px;">Error: '+e.message+'</div>';
+  }
+}
+
+async function renderAnnouncementsList(){
+  var panel = document.getElementById('msg-main-panel');
+  var listEl = document.getElementById('dm-conv-list');
+  if(listEl) listEl.innerHTML = ''; // announcements don't use the left list — show feed in main panel
+  if(!panel || !window._db) return;
+
+  panel.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">Loading announcements...</div>';
+
+  if(!_studentInstructorIds.length){
+    panel.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">Enroll in a course to receive announcements from its instructor.</div>';
+    return;
+  }
+
+  try {
+    var fb = window._fbFs;
+    // Firestore 'in' queries cap at 30 values — chunk defensively in case
+    // a student is ever enrolled under many different instructors.
+    var chunks = [];
+    for(var i=0;i<_studentInstructorIds.length;i+=10){ chunks.push(_studentInstructorIds.slice(i,i+10)); }
+
+    var allAnns = [];
+    for(var c=0;c<chunks.length;c++){
+      var snap = await fb.getDocs(fb.query(
+        fb.collection(window._db,'announcements'),
+        fb.where('instructorId','in', chunks[c])
+      ));
+      snap.docs.forEach(function(d){ allAnns.push(Object.assign({id:d.id}, d.data())); });
+    }
+
+    allAnns.sort(function(a,b){
+      var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+      var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
+
+    // Mark as seen now that the student is looking at this tab
+    localStorage.setItem(_annSeenKey, String(Date.now()));
+    updateMessageBadges();
+
+    if(!allAnns.length){
+      panel.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3);">No announcements yet.</div>';
+      return;
+    }
+
+    panel.innerHTML = '<div style="padding:20px;">' + allAnns.map(function(a){
+      var initials = (a.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var when = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      return '<div class="ann-card">'
+        +'<div class="ann-card-head"><div class="conv-avatar" style="width:32px;height:32px;font-size:11px;">'+initials+'</div>'
+          +'<div><div style="font-size:13px;font-weight:700;">'+(a.instructorName||'Instructor')+'</div><div style="font-size:11px;color:var(--text3);">'+when+'</div></div>'
+        +'</div>'
+        +'<div class="ann-card-text">'+(a.text||'').replace(/</g,'&lt;')+'</div>'
+      +'</div>';
+    }).join('') + '</div>';
+  } catch(e){
+    panel.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+async function openConversation(convId, instructorName){
+  _activeConvId = convId;
+  document.querySelectorAll('.conv-row').forEach(function(r){ r.classList.remove('active'); });
+  var panel = document.getElementById('msg-main-panel');
+  panel.innerHTML = '<div class="msg-thread">'
+    +'<div class="msg-thread-header">'+instructorName+'</div>'
+    +'<div class="msg-thread-body" id="msg-thread-body"><div style="text-align:center;color:var(--text3);font-size:13px;">Loading...</div></div>'
+    +'<div class="msg-thread-input">'
+      +'<textarea id="msg-input" placeholder="Message '+instructorName+'..." onkeydown="if(event.key===\'Enter\' && !event.shiftKey){ event.preventDefault(); sendStudentMessage(); }"></textarea>'
+      +'<button onclick="sendStudentMessage()" style="padding:0 20px;background:var(--teal);border:none;border-radius:10px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Send</button>'
+    +'</div>'
+  +'</div>';
+
+  try {
+    var fb = window._fbFs;
+    // Mark this conversation read for the student
+    await fb.updateDoc(fb.doc(window._db,'conversations',convId), { unreadForStudent:false });
+
+    var msgSnap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'conversations',convId,'messages'),
+      fb.orderBy('createdAt','asc')
+    ));
+    var body = document.getElementById('msg-thread-body');
+    var msgs = msgSnap.docs.map(function(d){ return d.data(); });
+    if(!msgs.length){
+      body.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;">Say hello!</div>';
+    } else {
+      body.innerHTML = msgs.map(function(m){
+        var when = m.createdAt && m.createdAt.toDate ? m.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+        return '<div class="msg-bubble from-'+(m.senderRole||'instructor')+'">'+(m.text||'').replace(/</g,'&lt;')+'<div class="msg-bubble-time">'+when+'</div></div>';
+      }).join('');
+    }
+    body.scrollTop = body.scrollHeight;
+    updateMessageBadges();
+  } catch(e){
+    var body = document.getElementById('msg-thread-body');
+    if(body) body.innerHTML = '<div style="color:var(--red);font-size:13px;">Error loading messages: '+e.message+'</div>';
+  }
+}
+
+async function sendStudentMessage(){
+  var input = document.getElementById('msg-input');
+  var text = (input.value||'').trim();
+  if(!text || !_activeConvId) return;
+  input.value = '';
+  input.disabled = true;
+
+  try {
+    var fb = window._fbFs;
+    await fb.addDoc(fb.collection(window._db,'conversations',_activeConvId,'messages'), {
+      senderId: window._user.uid,
+      senderRole: 'student',
+      text: text,
+      createdAt: fb.serverTimestamp(),
+    });
+    await fb.updateDoc(fb.doc(window._db,'conversations',_activeConvId), {
+      lastMessage: text,
+      lastMessageAt: fb.serverTimestamp(),
+      lastSenderRole: 'student',
+      unreadForInstructor: true,
+    });
+    // Re-render the thread to show the new message
+    var body = document.getElementById('msg-thread-body');
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble from-student';
+    bubble.textContent = text;
+    body.appendChild(bubble);
+    body.scrollTop = body.scrollHeight;
+  } catch(e){
+    showToast('&#10007;','Could not send: '+e.message);
+  } finally {
+    input.disabled = false;
+  }
+}
+
+async function initMessageBadgeTracking(){
+  if(!window._user || !window._db) return;
+  _annSeenKey = 'sl_ann_seen_' + window._user.uid;
+  try {
+    var fb = window._fbFs || await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    window._fbFs = fb;
+    var enrollSnap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'enrollments'),
+      fb.where('studentId','==', window._user.uid)
+    ));
+    var ids = {};
+    enrollSnap.docs.forEach(function(d){
+      var e = d.data();
+      if(e.instructorId) ids[e.instructorId] = true;
+    });
+    _studentInstructorIds = Object.keys(ids);
+    updateMessageBadges();
+  } catch(e){ /* non-critical */ }
+}
+
+async function updateMessageBadges(){
+  if(!window._user || !window._db) return;
+  try {
+    var fb = window._fbFs || await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'conversations'),
+      fb.where('studentUid','==', window._user.uid),
+      fb.where('unreadForStudent','==', true)
+    ));
+    var unreadDms = snap.size;
+
+    var unreadAnns = 0;
+    if(_studentInstructorIds.length){
+      var lastSeen = parseInt(localStorage.getItem(_annSeenKey||'')||'0', 10);
+      var chunks = [];
+      for(var i=0;i<_studentInstructorIds.length;i+=10){ chunks.push(_studentInstructorIds.slice(i,i+10)); }
+      for(var c=0;c<chunks.length;c++){
+        var aSnap = await fb.getDocs(fb.query(fb.collection(window._db,'announcements'), fb.where('instructorId','in', chunks[c])));
+        aSnap.docs.forEach(function(d){
+          var ts = d.data().createdAt && d.data().createdAt.toMillis ? d.data().createdAt.toMillis() : 0;
+          if(ts > lastSeen) unreadAnns++;
+        });
+      }
+    }
+
+    var total = unreadDms + unreadAnns;
+    var navBadge = document.getElementById('msg-badge');
+    var siBadge  = document.getElementById('si-msg-badge');
+    [navBadge, siBadge].forEach(function(b){
+      if(!b) return;
+      if(total > 0){ b.textContent = total>9?'9+':String(total); b.style.display='flex'; }
+      else { b.style.display='none'; }
+    });
+  } catch(e){ /* non-critical */ }
 }
 
 /* ══ ENROLLED COURSES ══ */
