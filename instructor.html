@@ -502,6 +502,28 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   box-shadow:var(--sh);
 }
 
+/* ── MESSAGING (instructor side) ── */
+.msg-layout{display:grid;grid-template-columns:300px 1fr;gap:0;background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;height:calc(100vh - 220px);min-height:500px;}
+.msg-sublist{border-right:1.5px solid var(--border);overflow-y:auto;}
+.conv-row{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;}
+.conv-row:hover{background:var(--bg2);}
+.conv-row.active{background:var(--teal-dim);}
+.conv-row.unread .conv-name{font-weight:800;}
+.conv-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),var(--purple));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.conv-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.conv-preview{font-size:12px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:170px;}
+.conv-unread-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0;}
+.msg-thread{display:flex;flex-direction:column;height:100%;}
+.msg-thread-header{padding:14px 20px;border-bottom:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;flex-shrink:0;}
+.msg-thread-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;}
+.msg-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;}
+.msg-bubble.from-student{align-self:flex-start;background:var(--bg2);color:var(--text);border-bottom-left-radius:4px;}
+.msg-bubble.from-instructor{align-self:flex-end;background:var(--teal);color:#0d0d1a;border-bottom-right-radius:4px;}
+.msg-bubble-time{font-size:10px;opacity:.6;margin-top:4px;}
+.msg-thread-input{display:flex;gap:10px;padding:14px 16px;border-top:1.5px solid var(--border);flex-shrink:0;}
+.msg-thread-input textarea{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;resize:none;outline:none;min-height:42px;max-height:100px;}
+.nav-msg-icon{position:relative;width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0;}
+
 /* ── TOAST ── */
 .toast{
   position:fixed;bottom:24px;right:24px;z-index:999;
@@ -549,6 +571,11 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <div class="nav-tag">Instructor Portal</div>
   <div class="nav-right">
     <a class="btn btn-ghost btn-sm" href="/">View site</a>
+    <div class="nav-msg-icon" onclick="showView('students')" title="Messages">
+      &#128172;
+      <div id="inst-msg-badge" style="display:none;position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:var(--red);color:#fff;font-size:9px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="openGlobalAnnouncementModal()">&#128226; Announce</button>
     <button class="btn btn-teal btn-sm" onclick="showView('builder'); startNewCourse();">+ New course</button>
   </div>
 </nav>
@@ -1141,10 +1168,17 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
     <!-- STUDENTS -->
     <div class="page-view" id="view-students">
-      <div class="sec-header"><div class="sec-title">Students</div></div>
-      <div style="color:var(--text3);text-align:center;padding:48px;">
-        <div style="font-size:36px;margin-bottom:12px;">&#128101;</div>
-        <div>Your enrolled students will appear here.</div>
+      <div class="sec-header"><div><div class="sec-title">Students</div><div class="sec-sub">Every student who has ever enrolled in one of your courses shows up here automatically — message them directly anytime.</div></div></div>
+      <div class="msg-layout">
+        <div class="msg-sublist" id="inst-conv-list">
+          <div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">Loading students...</div>
+        </div>
+        <div id="inst-msg-main-panel" style="overflow-y:auto;">
+          <div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text3);padding:40px;">
+            <div style="font-size:40px;margin-bottom:10px;">&#128172;</div>
+            <div style="font-size:13px;">Select a student to start chatting.</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1402,6 +1436,7 @@ function showView(v) {
   if(v === 'community' && typeof loadInstructorCommunities === 'function') loadInstructorCommunities();
   if(v === 'profile'   && typeof loadProfile === 'function') loadProfile();
   if(v === 'testimonials' && typeof loadInstructorTestimonials === 'function') loadInstructorTestimonials();
+  if(v === 'students'  && typeof loadInstructorMessages === 'function') loadInstructorMessages();
 
   // Auto-close mobile sidebar drawer after navigating
   var sidebar = document.querySelector('.sidebar');
@@ -2882,6 +2917,7 @@ document.addEventListener('authReady', function(e){
   loadProfile();
   loadMyCourses();
   startCommunityNotifListener();
+  refreshInstMessageBadgeOnly();
 
   // Set sidebar name/avatar
   var spName = document.getElementById('sp-name');
@@ -3252,6 +3288,248 @@ async function deleteCourse(id, title){
 /* ══ COMMUNITY SYSTEM ══ */
 var _activeCourseId = null;
 var _commUnread = 0;
+
+/* ══════════════════════════════════════════
+   MESSAGING (instructor side)
+   Contact list is derived live from enrollment records —
+   every student who has ever paid for one of this
+   instructor's courses shows up automatically, no manual
+   "add contact" step needed. Two-way DMs plus a global
+   announcement broadcast to every student across every
+   course this instructor teaches.
+══════════════════════════════════════════ */
+var _instActiveConvId = null;
+var _instFbFs = null;
+
+async function refreshInstMessageBadgeOnly(){
+  if(!window._user || !window._db) return;
+  try {
+    var fb = _instFbFs || await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    _instFbFs = fb;
+    var convSnap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'conversations'),
+      fb.where('instructorId','==', window._user.uid),
+      fb.where('unreadForInstructor','==', true)
+    ));
+    updateInstMsgBadge(convSnap.size);
+  } catch(e){ /* non-critical */ }
+}
+
+async function loadInstructorMessages(){
+  if(!window._user || !window._db) return;
+  var listEl = document.getElementById('inst-conv-list');
+  if(!listEl) return;
+  listEl.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">Loading students...</div>';
+
+  try {
+    var fb = _instFbFs || await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    _instFbFs = fb;
+
+    var enrollSnap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'enrollments'),
+      fb.where('instructorId','==', window._user.uid)
+    ));
+    var byUid = {};
+    enrollSnap.docs.forEach(function(d){
+      var e = d.data();
+      if(!e.uid) return;
+      if(!byUid[e.uid]) byUid[e.uid] = { uid:e.uid, name:e.studentName||e.studentEmail||'Student', email:e.studentEmail||'' };
+    });
+    var students = Object.values(byUid);
+
+    if(!students.length){
+      listEl.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">No students yet. They\'ll show up here the moment someone enrolls.</div>';
+      updateInstMsgBadge(0);
+      return;
+    }
+
+    // Pull existing conversations to know unread state + last message preview
+    var convSnap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'conversations'),
+      fb.where('instructorId','==', window._user.uid)
+    ));
+    var convByStudent = {};
+    convSnap.docs.forEach(function(d){ convByStudent[d.data().studentUid] = Object.assign({id:d.id}, d.data()); });
+
+    var unreadTotal = 0;
+    var rows = students.map(function(s){
+      var conv = convByStudent[s.uid];
+      if(conv && conv.unreadForInstructor) unreadTotal++;
+      var initials = s.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var unreadCls = (conv && conv.unreadForInstructor) ? ' unread' : '';
+      var preview = conv ? (conv.lastMessage||'No messages yet') : 'No messages yet';
+      var convId = conv ? conv.id : (window._user.uid+'_'+s.uid);
+      return {
+        html: '<div class="conv-row'+unreadCls+'" data-conv="'+convId+'" onclick="openInstConversation(\''+convId+'\',\''+s.uid+'\',\''+s.name.replace(/'/g,"\\'")+'\')">'
+          +'<div class="conv-avatar">'+initials+'</div>'
+          +'<div style="flex:1;min-width:0;">'
+            +'<div class="conv-name">'+s.name+'</div>'
+            +'<div class="conv-preview">'+preview+'</div>'
+          +'</div>'
+          +(conv && conv.unreadForInstructor ? '<div class="conv-unread-dot"></div>' : '')
+        +'</div>',
+        lastAt: conv && conv.lastMessageAt && conv.lastMessageAt.toMillis ? conv.lastMessageAt.toMillis() : 0,
+      };
+    });
+    rows.sort(function(a,b){ return b.lastAt - a.lastAt; });
+    listEl.innerHTML = rows.map(function(r){ return r.html; }).join('');
+    updateInstMsgBadge(unreadTotal);
+  } catch(e){
+    listEl.innerHTML = '<div style="padding:20px;color:var(--red);font-size:13px;">Error: '+e.message+'</div>';
+  }
+}
+
+function updateInstMsgBadge(count){
+  var b = document.getElementById('inst-msg-badge');
+  if(!b) return;
+  if(count > 0){ b.textContent = count>9?'9+':String(count); b.style.display='flex'; }
+  else { b.style.display='none'; }
+}
+
+async function openInstConversation(convId, studentUid, studentName){
+  _instActiveConvId = convId;
+  document.querySelectorAll('.conv-row').forEach(function(r){ r.classList.remove('active'); });
+  var row = document.querySelector('[data-conv="'+convId+'"]');
+  if(row) row.classList.add('active');
+
+  var panel = document.getElementById('inst-msg-main-panel');
+  panel.innerHTML = '<div class="msg-thread">'
+    +'<div class="msg-thread-header">'+studentName+'</div>'
+    +'<div class="msg-thread-body" id="inst-msg-thread-body"><div style="text-align:center;color:var(--text3);font-size:13px;">Loading...</div></div>'
+    +'<div class="msg-thread-input">'
+      +'<textarea id="inst-msg-input" placeholder="Message '+studentName+'..." onkeydown="if(event.key===\'Enter\' && !event.shiftKey){ event.preventDefault(); sendInstMessage(); }"></textarea>'
+      +'<button onclick="sendInstMessage()" style="padding:0 20px;background:var(--teal);border:none;border-radius:10px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Send</button>'
+    +'</div>'
+  +'</div>';
+
+  try {
+    var fb = _instFbFs;
+    var convRef = fb.doc(window._db,'conversations',convId);
+    var convSnap = await fb.getDoc(convRef);
+
+    if(!convSnap.exists()){
+      // Lazily create the conversation the first time the instructor opens
+      // it — this is what "auto-adds" a student to the chat list in
+      // practice: the contact list itself is always derived from
+      // enrollments, and the conversation doc is only created on first use.
+      await fb.setDoc(convRef, {
+        instructorId: window._user.uid,
+        instructorName: window._userName || 'Instructor',
+        studentUid: studentUid,
+        studentName: studentName,
+        lastMessage: '',
+        lastMessageAt: fb.serverTimestamp(),
+        lastSenderRole: null,
+        unreadForStudent: false,
+        unreadForInstructor: false,
+        createdAt: fb.serverTimestamp(),
+      });
+    } else {
+      await fb.updateDoc(convRef, { unreadForInstructor:false });
+    }
+
+    var msgSnap = await fb.getDocs(fb.query(
+      fb.collection(window._db,'conversations',convId,'messages'),
+      fb.orderBy('createdAt','asc')
+    ));
+    var body = document.getElementById('inst-msg-thread-body');
+    var msgs = msgSnap.docs.map(function(d){ return d.data(); });
+    if(!msgs.length){
+      body.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:13px;">No messages yet — say hello!</div>';
+    } else {
+      body.innerHTML = msgs.map(function(m){
+        var when = m.createdAt && m.createdAt.toDate ? m.createdAt.toDate().toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+        return '<div class="msg-bubble from-'+(m.senderRole||'student')+'">'+(m.text||'').replace(/</g,'&lt;')+'<div class="msg-bubble-time">'+when+'</div></div>';
+      }).join('');
+    }
+    body.scrollTop = body.scrollHeight;
+  } catch(e){
+    var body = document.getElementById('inst-msg-thread-body');
+    if(body) body.innerHTML = '<div style="color:var(--red);font-size:13px;">Error: '+e.message+'</div>';
+  }
+}
+
+async function sendInstMessage(){
+  var input = document.getElementById('inst-msg-input');
+  var text = (input.value||'').trim();
+  if(!text || !_instActiveConvId) return;
+  input.value = '';
+  input.disabled = true;
+
+  try {
+    var fb = _instFbFs;
+    await fb.addDoc(fb.collection(window._db,'conversations',_instActiveConvId,'messages'), {
+      senderId: window._user.uid,
+      senderRole: 'instructor',
+      text: text,
+      createdAt: fb.serverTimestamp(),
+    });
+    await fb.updateDoc(fb.doc(window._db,'conversations',_instActiveConvId), {
+      lastMessage: text,
+      lastMessageAt: fb.serverTimestamp(),
+      lastSenderRole: 'instructor',
+      unreadForStudent: true,
+    });
+    var body = document.getElementById('inst-msg-thread-body');
+    var bubble = document.createElement('div');
+    bubble.className = 'msg-bubble from-instructor';
+    bubble.textContent = text;
+    body.appendChild(bubble);
+    body.scrollTop = body.scrollHeight;
+  } catch(e){
+    showToast('&#10007;','Could not send: '+e.message);
+  } finally {
+    input.disabled = false;
+  }
+}
+
+/* ── GLOBAL ANNOUNCEMENT (broadcasts to every student across every course) ── */
+function openGlobalAnnouncementModal(){
+  var modal = document.createElement('div');
+  modal.id = 'global-ann-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:998;display:flex;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;';
+  modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:460px;overflow:hidden;box-shadow:0 24px 80px rgba(13,13,26,.25);">'
+    +'<div style="padding:24px 28px;border-bottom:1.5px solid #e4e6f0;">'
+      +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;margin-bottom:4px;">&#128226; Post an announcement</div>'
+      +'<div style="font-size:13px;color:#8b8fa8;">This goes straight to every student\'s inbox, across all your courses.</div>'
+    +'</div>'
+    +'<div style="padding:24px 28px;">'
+      +'<textarea id="global-ann-text" placeholder="What do you want to tell your students?" style="width:100%;min-height:120px;padding:12px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;resize:vertical;outline:none;line-height:1.6;"></textarea>'
+      +'<div style="display:flex;gap:10px;margin-top:18px;">'
+        +'<button onclick="closeGlobalAnnouncementModal()" style="flex:1;padding:12px;background:transparent;border:1.5px solid #e4e6f0;border-radius:8px;font-size:13px;font-weight:600;color:#4a4d6a;cursor:pointer;">Cancel</button>'
+        +'<button onclick="sendGlobalAnnouncement()" style="flex:2;padding:12px;background:#4ecca3;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;">Send to all students</button>'
+      +'</div>'
+    +'</div>'
+  +'</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', function(e){ if(e.target===this) closeGlobalAnnouncementModal(); });
+}
+
+function closeGlobalAnnouncementModal(){
+  var m = document.getElementById('global-ann-modal');
+  if(m) m.remove();
+}
+
+async function sendGlobalAnnouncement(){
+  var textEl = document.getElementById('global-ann-text');
+  var text = (textEl.value||'').trim();
+  if(!text){ showToast('&#9888;&#65039;','Write something first.'); return; }
+  if(!window._db || !window._user){ showToast('&#9888;&#65039;','Please wait, connecting...'); return; }
+
+  try {
+    var fb = _instFbFs || await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.addDoc(fb.collection(window._db,'announcements'), {
+      instructorId: window._user.uid,
+      instructorName: window._userName || 'Instructor',
+      text: text,
+      createdAt: fb.serverTimestamp(),
+    });
+    closeGlobalAnnouncementModal();
+    showToast('&#128226;','Announcement sent to all your students!');
+  } catch(e){
+    showToast('&#10007;','Failed to send: '+e.message);
+  }
+}
 
 async function loadInstructorCommunities(){
   var el = document.getElementById('inst-community-list'); if(!el) return;
