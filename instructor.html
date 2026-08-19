@@ -998,6 +998,13 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
                   </label>
                 </div>
               </div>
+
+              <div class="fg" style="margin-top:16px;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;">
+                  <input type="checkbox" id="ci-allow-dm" checked/> Allow students to message me directly (1-on-1)
+                </label>
+                <div class="hint">When on, students enrolled in this course can start a private chat with you. Turn off if this course is self-paced only, with no personal guidance included.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1458,7 +1465,7 @@ var _course = {
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
   promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
   priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
-  startType:'instant', startDate:null,
+  startType:'instant', startDate:null, allowDM:true,
   status:'draft'
 };
 var _currentStep = 1;
@@ -1470,7 +1477,7 @@ function startNewCourse() {
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
     promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
     priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
-    startType:'instant', startDate:null, status:'draft'
+    startType:'instant', startDate:null, allowDM:true, status:'draft'
   };
   _currentStep = 1;
   // Reset form fields
@@ -1479,6 +1486,7 @@ function startNewCourse() {
   });
   var ctEl = document.getElementById('ci-content-type'); if(ctEl) ctEl.value = 'course';
   document.querySelectorAll('.inc-checkbox').forEach(function(cb){ cb.checked = false; });
+  var dmEl = document.getElementById('ci-allow-dm'); if(dmEl) dmEl.checked = true;
   selectStartType('instant');
   document.getElementById('learn-list').innerHTML = '';
   document.getElementById('req-list').innerHTML   = '';
@@ -1588,6 +1596,7 @@ function validateStep(n) {
       _course.startDate = null;
     }
     _course.includes = collectIncludes();
+    _course.allowDM = !!(document.getElementById('ci-allow-dm')||{}).checked;
   }
   return true;
 }
@@ -2092,8 +2101,7 @@ function buildReview() {
     _course.startDate = (document.getElementById('ci-start-date')||{}).value || _course.startDate;
   }
   _course.includes = collectIncludes();
-
-  var totalLessons = _course.modules.reduce(function(a,m){ return a+(m.lessons?m.lessons.length:0); }, 0);
+  _course.allowDM = !!(document.getElementById('ci-allow-dm')||{}).checked;
   var uploadedVideos = _course.modules.reduce(function(a,m){
     return a + (m.lessons||[]).filter(function(l){ return l.type==='video' && l.videoId; }).length;
   }, 0);
@@ -2210,6 +2218,7 @@ async function persistCourse(targetStatus, btn) {
       startType:    _course.startType || 'instant',
       startDate:    _course.startType === 'scheduled' ? (_course.startDate || null) : null,
       includes:     _course.includes || [],
+      allowDM:      _course.allowDM !== false,
       totalLessons: totalLessons,
       totalModules: _course.modules.length,
       instructorId:  window._user.uid,
@@ -3192,7 +3201,7 @@ async function editCourse(courseId){
       }),
       priceUSD: c.priceUSD||0, priceOriginal: c.priceOriginal||0, checkoutUrl: c.checkoutUrl||null,
       priceType: c.priceType||'paid', includes: c.includes||[],
-      startType: c.startType||'instant', startDate: c.startDate||null,
+      startType: c.startType||'instant', startDate: c.startDate||null, allowDM: c.allowDM !== false,
       status: c.status||'draft'
     };
     _currentStep = 1;
@@ -3264,6 +3273,7 @@ async function editCourse(courseId){
     document.querySelectorAll('.inc-checkbox').forEach(function(cb){
       cb.checked = savedKeys.indexOf(cb.dataset.key) > -1;
     });
+    var dmEl = document.getElementById('ci-allow-dm'); if(dmEl) dmEl.checked = c.allowDM !== false;
 
     showToast('&#9997;️','Course loaded. Make your changes and resubmit.');
   } catch(e){
