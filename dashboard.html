@@ -1170,6 +1170,44 @@ async function loadStudentMessages(){
   updateMessageBadges();
 }
 
+var _studentInstructorMap = {}; // { instructorId: { name, allowDM } }
+
+// Builds the student's instructor list from their own enrollments — same
+// "derived, always in sync, no separate contacts table" approach used on
+// the instructor side. allowDM is true if ANY enrolled course under that
+// instructor has direct messaging turned on.
+async function loadStudentInstructorMap(){
+  var fb = window._fbFs;
+  var enrollSnap = await fb.getDocs(fb.query(
+    fb.collection(window._db,'enrollments'),
+    fb.where('studentId','==', window._user.uid)
+  ));
+  var enrollments = enrollSnap.docs.map(function(d){ return d.data(); });
+
+  var courseIds = Array.from(new Set(enrollments.map(function(e){ return e.courseId; }).filter(Boolean)));
+  var courseDocs = {};
+  await Promise.all(courseIds.map(async function(cid){
+    var snap = await fb.getDoc(fb.doc(window._db,'courses',cid));
+    if(snap.exists()) courseDocs[cid] = snap.data();
+  }));
+
+  var map = {};
+  enrollments.forEach(function(e){
+    if(!e.instructorId) return;
+    var course = courseDocs[e.courseId] || {};
+    var allow = course.allowDM !== false;
+    if(!map[e.instructorId]) map[e.instructorId] = { allowDM:false, name:'Instructor' };
+    if(allow) map[e.instructorId].allowDM = true;
+  });
+
+  await Promise.all(Object.keys(map).map(async function(iid){
+    var uSnap = await fb.getDoc(fb.doc(window._db,'users',iid));
+    map[iid].name = uSnap.exists() ? (uSnap.data().name || 'Instructor') : 'Instructor';
+  }));
+
+  return map;
+}
+
 async function renderDmList(){
   var listEl = document.getElementById('dm-conv-list');
   if(!listEl || !window._db) return;
@@ -1177,34 +1215,52 @@ async function renderDmList(){
 
   try {
     var fb = window._fbFs;
+    _studentInstructorMap = await loadStudentInstructorMap();
+    var instructorIds = Object.keys(_studentInstructorMap);
+
+    if(!instructorIds.length){
+      listEl.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">Enroll in a course to message its instructor.</div>';
+      return;
+    }
+
     var snap = await fb.getDocs(fb.query(
       fb.collection(window._db,'conversations'),
       fb.where('studentUid','==', window._user.uid)
     ));
-    var convs = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
-    convs.sort(function(a,b){
-      var ta = a.lastMessageAt && a.lastMessageAt.toMillis ? a.lastMessageAt.toMillis() : 0;
-      var tb = b.lastMessageAt && b.lastMessageAt.toMillis ? b.lastMessageAt.toMillis() : 0;
-      return tb - ta;
+    var convByInstructor = {};
+    snap.docs.forEach(function(d){ convByInstructor[d.data().instructorId] = Object.assign({id:d.id}, d.data()); });
+
+    var rows = instructorIds.map(function(iid){
+      var inst = _studentInstructorMap[iid];
+      var conv = convByInstructor[iid];
+      var convId = conv ? conv.id : (iid+'_'+window._user.uid);
+      var lastAt = conv && conv.lastMessageAt && conv.lastMessageAt.toMillis ? conv.lastMessageAt.toMillis() : 0;
+      var initials = inst.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var nameEsc = inst.name.replace(/'/g,"\\'");
+
+      var html;
+      if(!inst.allowDM){
+        html = '<div class="conv-row" style="opacity:.5;cursor:default;">'
+          +'<div class="conv-avatar">'+initials+'</div>'
+          +'<div style="flex:1;min-width:0;"><div class="conv-name">'+inst.name+'</div>'
+          +'<div class="conv-preview">Direct messaging is off for this instructor</div></div>'
+        +'</div>';
+      } else {
+        var unreadCls = (conv && conv.unreadForStudent) ? ' unread' : '';
+        var preview = conv ? (conv.lastMessage || 'No messages yet') : 'Tap to say hello';
+        html = '<div class="conv-row'+unreadCls+'" onclick="openConversation(\''+convId+'\',\''+iid+'\',\''+nameEsc+'\')">'
+          +'<div class="conv-avatar">'+initials+'</div>'
+          +'<div style="flex:1;min-width:0;">'
+            +'<div class="conv-name">'+inst.name+'</div>'
+            +'<div class="conv-preview">'+preview+'</div>'
+          +'</div>'
+          +(conv && conv.unreadForStudent ? '<div class="conv-unread-dot"></div>' : '')
+        +'</div>';
+      }
+      return { html: html, lastAt: lastAt };
     });
-
-    if(!convs.length){
-      listEl.innerHTML = '<div style="text-align:center;padding:40px 16px;color:var(--text3);font-size:13px;">No messages yet. Your instructor will show up here once they message you.</div>';
-      return;
-    }
-
-    listEl.innerHTML = convs.map(function(c){
-      var unread = c.unreadForStudent ? ' unread' : '';
-      var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-      return '<div class="conv-row'+unread+'" onclick="openConversation(\''+c.id+'\',\''+(c.instructorName||'Instructor').replace(/'/g,"\\'")+'\')">'
-        +'<div class="conv-avatar">'+initials+'</div>'
-        +'<div style="flex:1;min-width:0;">'
-          +'<div class="conv-name">'+(c.instructorName||'Instructor')+'</div>'
-          +'<div class="conv-preview">'+(c.lastMessage||'No messages yet')+'</div>'
-        +'</div>'
-        +(c.unreadForStudent ? '<div class="conv-unread-dot"></div>' : '')
-      +'</div>';
-    }).join('');
+    rows.sort(function(a,b){ return b.lastAt - a.lastAt; });
+    listEl.innerHTML = rows.map(function(r){ return r.html; }).join('');
   } catch(e){
     listEl.innerHTML = '<div style="padding:20px;color:var(--red);font-size:13px;">Error: '+e.message+'</div>';
   }
@@ -1254,14 +1310,26 @@ async function renderAnnouncementsList(){
       return;
     }
 
+    // Needed to know whether "Reply privately" should show per-announcement
+    if(!Object.keys(_studentInstructorMap).length){
+      _studentInstructorMap = await loadStudentInstructorMap();
+    }
+
     panel.innerHTML = '<div style="padding:20px;">' + allAnns.map(function(a){
       var initials = (a.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
       var when = a.createdAt && a.createdAt.toDate ? a.createdAt.toDate().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      var inst = _studentInstructorMap[a.instructorId];
+      var canReply = inst && inst.allowDM;
+      var convId = a.instructorId+'_'+window._user.uid;
+      var nameEsc = (a.instructorName||'Instructor').replace(/'/g,"\\'");
       return '<div class="ann-card">'
         +'<div class="ann-card-head"><div class="conv-avatar" style="width:32px;height:32px;font-size:11px;">'+initials+'</div>'
           +'<div><div style="font-size:13px;font-weight:700;">'+(a.instructorName||'Instructor')+'</div><div style="font-size:11px;color:var(--text3);">'+when+'</div></div>'
         +'</div>'
         +'<div class="ann-card-text">'+(a.text||'').replace(/</g,'&lt;')+'</div>'
+        +(canReply
+          ? '<button onclick="switchMsgSubtab(\'dm\'); setTimeout(function(){ openConversation(\''+convId+'\',\''+a.instructorId+'\',\''+nameEsc+'\'); },50);" style="margin-top:10px;padding:7px 14px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);border-radius:7px;font-size:12px;font-weight:700;color:var(--teal-dark);cursor:pointer;">&#128172; Reply privately</button>'
+          : '')
       +'</div>';
     }).join('') + '</div>';
   } catch(e){
@@ -1269,7 +1337,7 @@ async function renderAnnouncementsList(){
   }
 }
 
-async function openConversation(convId, instructorName){
+async function openConversation(convId, instructorId, instructorName){
   _activeConvId = convId;
   document.querySelectorAll('.conv-row').forEach(function(r){ r.classList.remove('active'); });
   var panel = document.getElementById('msg-main-panel');
@@ -1284,8 +1352,27 @@ async function openConversation(convId, instructorName){
 
   try {
     var fb = window._fbFs;
-    // Mark this conversation read for the student
-    await fb.updateDoc(fb.doc(window._db,'conversations',convId), { unreadForStudent:false });
+    var convRef = fb.doc(window._db,'conversations',convId);
+    var convSnap = await fb.getDoc(convRef);
+
+    if(!convSnap.exists()){
+      // Student is starting this conversation for the first time.
+      await fb.setDoc(convRef, {
+        instructorId: instructorId,
+        instructorName: instructorName,
+        studentUid: window._user.uid,
+        studentName: window._userName || 'Student',
+        lastMessage: '',
+        lastMessageAt: fb.serverTimestamp(),
+        lastSenderRole: null,
+        unreadForStudent: false,
+        unreadForInstructor: false,
+        createdAt: fb.serverTimestamp(),
+      });
+    } else {
+      // Mark this conversation read for the student
+      await fb.updateDoc(convRef, { unreadForStudent:false });
+    }
 
     var msgSnap = await fb.getDocs(fb.query(
       fb.collection(window._db,'conversations',convId,'messages'),
