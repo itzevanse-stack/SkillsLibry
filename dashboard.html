@@ -99,6 +99,32 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 .continue-btn{width:100%;padding:10px;background:var(--teal);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;transition:all .2s;}
 .continue-btn:hover{background:var(--teal-dark);}
 
+/* ── ONBOARDING TOUR ── */
+.tour-overlay{position:fixed;inset:0;z-index:900;pointer-events:none;}
+.tour-spotlight{position:fixed;z-index:901;border-radius:12px;box-shadow:0 0 0 9999px rgba(10,10,20,.72);transition:all .35s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+.tour-card{position:fixed;z-index:902;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(13,13,26,.3);padding:20px 22px;max-width:320px;transition:all .35s cubic-bezier(.4,0,.2,1);}
+.tour-card-welcome{position:fixed;inset:0;z-index:902;display:flex;align-items:center;justify-content:center;}
+.tour-card-welcome-inner{background:#fff;border-radius:20px;box-shadow:0 24px 80px rgba(13,13,26,.3);padding:40px 36px;max-width:420px;text-align:center;}
+.tour-step-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-dark);background:var(--teal-dim);border-radius:100px;padding:3px 10px;margin-bottom:10px;}
+.tour-title{font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.tour-text{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:18px;}
+.tour-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.tour-btn{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;}
+.tour-btn-primary{background:var(--teal);color:#0d0d1a;}
+.tour-btn-primary:hover{background:var(--teal-dark);}
+.tour-btn-ghost{background:transparent;color:var(--text3);}
+.tour-btn-ghost:hover{color:var(--text2);}
+.tour-arrow{position:fixed;z-index:902;width:14px;height:14px;background:#fff;transform:rotate(45deg);}
+.my-course-card.locked{cursor:default;}
+.my-course-card.locked:hover{border-color:var(--border);transform:none;}
+.my-course-card.locked .my-course-thumb{background:linear-gradient(135deg,#1a1a2e,#0d0d1a);opacity:.75;}
+.lock-badge{position:absolute;top:10px;right:10px;background:rgba(13,13,26,.75);backdrop-filter:blur(4px);border-radius:100px;padding:5px 11px;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:5px;}
+.mini-countdown{display:flex;gap:5px;margin-bottom:12px;}
+.mini-countdown-box{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:6px 2px;text-align:center;}
+.mini-countdown-num{font-family:'Poppins',sans-serif;font-size:14px;font-weight:800;color:var(--teal-dark);line-height:1;}
+.mini-countdown-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-top:2px;}
+.locked-btn{width:100%;padding:10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;color:var(--text3);cursor:default;display:flex;align-items:center;justify-content:center;gap:6px;}
+
 /* COMMUNITY CARDS */
 .comm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
 .comm-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--sh);}
@@ -328,7 +354,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
           <div class="settings-body" style="display:flex;align-items:center;gap:20px;">
             <div class="avatar-wrap student-avatar-wrap" id="settings-avatar" style="width:80px;height:80px;font-size:26px;">?</div>
             <div>
-              <label for="settings-avatar-file" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:6px;padding:8px 16px;cursor:pointer;">&#128444; Upload photo</label>
+              <label for="settings-avatar-file" id="settings-avatar-label" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--teal-dark);background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.25);border-radius:6px;padding:8px 16px;cursor:pointer;">&#128444; Upload photo</label>
               <input type="file" id="settings-avatar-file" accept="image/*" style="display:none;" onchange="uploadStudentAvatar(this)"/>
               <div style="font-size:11px;color:var(--text3);margin-top:6px;">JPG or PNG · Max 5MB</div>
             </div>
@@ -385,6 +411,15 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
           <div class="settings-body">
             <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Sign out from your account on this device.</div>
             <button onclick="doSignOut()" style="padding:10px 20px;background:transparent;border:1.5px solid var(--red);border-radius:8px;font-size:13px;font-weight:600;color:var(--red);cursor:pointer;">Sign out</button>
+          </div>
+        </div>
+
+        <!-- Replay tour -->
+        <div class="settings-card">
+          <div class="settings-head">Need a refresher?</div>
+          <div class="settings-body" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+            <div style="font-size:13px;color:var(--text2);">Take the guided tour again anytime.</div>
+            <button onclick="startTour(true)" style="padding:10px 20px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);border-radius:8px;font-size:13px;font-weight:700;color:var(--teal-dark);cursor:pointer;white-space:nowrap;">&#127895; Take a tour</button>
           </div>
         </div>
 
@@ -764,6 +799,176 @@ function toggleSidebar(){
   document.body.style.overflow = isOpen ? '' : 'hidden';
 }
 
+/* ══════════════════════════════════════════
+   ONBOARDING TOUR
+   A guided walkthrough of the real dashboard —
+   every step points at an actual element, switches
+   to the right tab first if needed, and highlights
+   it with a spotlight + tooltip. No fake screenshots.
+══════════════════════════════════════════ */
+var TOUR_STEPS = [
+  { welcome:true,
+    title:'Welcome to SkillsLibry! &#127881;',
+    text:'Let\'s take 60 seconds to show you around your dashboard — your courses, community, certificates, and profile settings.' },
+  { target:'#si-overview', view:'dash-overview',
+    title:'Your Overview',
+    text:'This is your home base — enrolled courses, communities joined, and new notifications at a glance.' },
+  { target:'#si-courses', view:'dash-courses',
+    title:'My Courses',
+    text:'Every course you\'ve enrolled in lives here. If an instructor sets a future start date, the course still shows up — just locked with a live countdown until it opens.' },
+  { target:'#si-community', view:'dash-community',
+    title:'Community',
+    text:'Each course has its own private community. Chat with other students and your instructor, ask questions, and share wins.' },
+  { target:'#si-certificates', view:'dash-certificates',
+    title:'Certificates',
+    text:'Once you finish a course, your verified certificate shows up here — ready to share or download.' },
+  { target:'#si-affiliate', view:'dash-affiliate',
+    title:'Affiliate Links',
+    text:'Grab your unique referral link here. Anyone who enrolls through it earns you a commission.' },
+  { target:'#si-settings', view:'dash-settings',
+    title:'Settings',
+    text:'This is where you manage everything about your account — profile photo, name, phone, country, and password.' },
+  { target:'#settings-avatar-label', view:'dash-settings',
+    title:'Upload a profile photo',
+    text:'Tap here anytime to add or change your profile picture. JPG or PNG, up to 5MB.' },
+  { target:'#set-name', view:'dash-settings',
+    title:'Keep your info up to date',
+    text:'Update your name, phone number, and country here — don\'t forget to hit "Save changes" when you\'re done.' },
+  { target:'#nav-avatar',
+    title:'Quick access, anywhere',
+    text:'Your profile photo shows up here too, in the top bar. Click it anytime to jump straight back into Settings.' },
+  { welcome:true,
+    title:'You\'re all set! &#127881;',
+    text:'Explore your courses, say hello in the community, and start learning. You can replay this tour anytime from Settings.' },
+];
+
+var _tourIdx = 0;
+var _tourResizeHandler = null;
+
+function tourStorageKey(){
+  return 'sl_dash_onboarded_' + (window._user ? window._user.uid : 'anon');
+}
+
+function startTour(force){
+  if(!force && localStorage.getItem(tourStorageKey())) return;
+  _tourIdx = 0;
+  renderTourStep();
+}
+
+function endTour(){
+  localStorage.setItem(tourStorageKey(), '1');
+  document.querySelectorAll('.tour-overlay,.tour-spotlight,.tour-card,.tour-card-welcome,.tour-arrow').forEach(function(el){ el.remove(); });
+  if(_tourResizeHandler){ window.removeEventListener('resize', _tourResizeHandler); _tourResizeHandler = null; }
+  var sidebar = document.querySelector('.sidebar');
+  if(sidebar && window.innerWidth <= 768 && sidebar.classList.contains('mobile-open')) toggleSidebar();
+}
+
+function tourNext(){
+  if(_tourIdx >= TOUR_STEPS.length-1){ endTour(); return; }
+  _tourIdx++;
+  renderTourStep();
+}
+function tourPrev(){
+  if(_tourIdx <= 0) return;
+  _tourIdx--;
+  renderTourStep();
+}
+
+function renderTourStep(){
+  // Clear previous step's DOM
+  document.querySelectorAll('.tour-overlay,.tour-spotlight,.tour-card,.tour-card-welcome,.tour-arrow').forEach(function(el){ el.remove(); });
+  if(_tourResizeHandler){ window.removeEventListener('resize', _tourResizeHandler); _tourResizeHandler = null; }
+
+  var step = TOUR_STEPS[_tourIdx];
+  if(!step) return;
+
+  // Switch to the right dashboard tab first, if this step needs one
+  if(step.view){
+    var siId = step.target && step.target.indexOf('#si-')===0 ? step.target.slice(1) : null;
+    var navEl = siId ? document.getElementById(siId) : null;
+    switchDash(navEl, step.view);
+  }
+
+  // On mobile, make sure the sidebar is visible if we're pointing at it
+  if(step.target && step.target.indexOf('#si-')===0){
+    var sidebar = document.querySelector('.sidebar');
+    if(sidebar && window.innerWidth <= 768 && !sidebar.classList.contains('mobile-open')){
+      toggleSidebar();
+    }
+  }
+
+  var stepNum = _tourIdx+1;
+  var totalSteps = TOUR_STEPS.length;
+
+  if(step.welcome){
+    var wrap = document.createElement('div');
+    wrap.className = 'tour-card-welcome';
+    var isLast = _tourIdx === TOUR_STEPS.length-1;
+    wrap.innerHTML = '<div class="tour-card-welcome-inner">'
+      +'<div style="font-size:44px;margin-bottom:16px;">'+(isLast?'&#9989;':'&#128075;')+'</div>'
+      +'<div style="font-family:Poppins,sans-serif;font-size:19px;font-weight:800;color:var(--text);margin-bottom:10px;">'+step.title+'</div>'
+      +'<div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:26px;">'+step.text+'</div>'
+      +'<div style="display:flex;gap:10px;justify-content:center;">'
+        +(isLast?'':'<button class="tour-btn tour-btn-ghost" onclick="endTour()">Skip tour</button>')
+        +'<button class="tour-btn tour-btn-primary" style="padding:10px 24px;font-size:13px;" onclick="'+(isLast?'endTour()':'tourNext()')+'">'+(isLast?'Done':'Start tour')+'</button>'
+      +'</div>'
+    +'</div>';
+    document.body.appendChild(wrap);
+    return;
+  }
+
+  // Give the DOM a beat to finish switching tabs before measuring position
+  setTimeout(function(){ positionTourStep(step, stepNum, totalSteps); }, 80);
+}
+
+function positionTourStep(step, stepNum, totalSteps){
+  var target = document.querySelector(step.target);
+  if(!target){ tourNext(); return; } // element not found — skip gracefully rather than break
+
+  function draw(){
+    var rect = target.getBoundingClientRect();
+    var pad = 8;
+
+    var spot = document.querySelector('.tour-spotlight') || document.createElement('div');
+    spot.className = 'tour-spotlight';
+    spot.style.top    = (rect.top-pad)+'px';
+    spot.style.left   = (rect.left-pad)+'px';
+    spot.style.width  = (rect.width+pad*2)+'px';
+    spot.style.height = (rect.height+pad*2)+'px';
+    if(!spot.parentNode) document.body.appendChild(spot);
+
+    var card = document.querySelector('.tour-card') || document.createElement('div');
+    card.className = 'tour-card';
+    var isLast = stepNum === totalSteps;
+    card.innerHTML = '<div class="tour-step-badge">Step '+stepNum+' of '+totalSteps+'</div>'
+      +'<div class="tour-title">'+step.title+'</div>'
+      +'<div class="tour-text">'+step.text+'</div>'
+      +'<div class="tour-footer">'
+        +'<button class="tour-btn tour-btn-ghost" onclick="endTour()">Skip</button>'
+        +'<div style="display:flex;gap:8px;">'
+          +(stepNum>1?'<button class="tour-btn tour-btn-ghost" onclick="tourPrev()">Back</button>':'')
+          +'<button class="tour-btn tour-btn-primary" onclick="tourNext()">'+(isLast?'Finish':'Next')+'</button>'
+        +'</div>'
+      +'</div>';
+    if(!card.parentNode) document.body.appendChild(card);
+
+    // Position the card below the target if there's room, else above; clamp to viewport
+    var cardW = 320, cardH = card.offsetHeight || 160;
+    var top = rect.bottom + 16;
+    if(top + cardH > window.innerHeight - 12) top = rect.top - cardH - 16;
+    if(top < 12) top = 12;
+    var left = rect.left;
+    if(left + cardW > window.innerWidth - 12) left = window.innerWidth - cardW - 12;
+    if(left < 12) left = 12;
+    card.style.top  = top+'px';
+    card.style.left = left+'px';
+  }
+
+  draw();
+  _tourResizeHandler = draw;
+  window.addEventListener('resize', _tourResizeHandler);
+}
+
 function switchDash(el, view){
   document.querySelectorAll('.sidebar-item').forEach(function(i){ i.classList.remove('active'); });
   document.querySelectorAll('.dash-view').forEach(function(v){ v.classList.remove('active'); });
@@ -820,7 +1025,42 @@ document.addEventListener('authReady', async function(e){
   // Load overview
   loadEnrolledCourses('overview-courses-grid');
   loadMyCommunities();
+
+  // First-time visitors get the guided tour automatically. A short delay
+  // lets the overview cards/greeting render first so nothing jumps mid-tour.
+  setTimeout(function(){ startTour(false); }, 900);
 });
+
+/* Drives the live D:H:M:S countdowns on any locked course cards in a grid.
+   Once a card's timer hits zero it re-runs loadEnrolledCourses so the card
+   flips over to its normal, clickable state without a manual refresh. */
+function startDashboardCountdowns(grid){
+  var widgets = grid.querySelectorAll('.mini-countdown');
+  if(!widgets.length) return;
+  var gridId = grid.id;
+
+  function pad(n){ return n<10 ? '0'+n : String(n); }
+  function tick(){
+    var anyExpired = false;
+    widgets.forEach(function(w){
+      var target = new Date(w.dataset.start+'T00:00:00').getTime();
+      if(isNaN(target)) return;
+      var diff = target - Date.now();
+      if(diff <= 0){ anyExpired = true; return; }
+      w.querySelector('.cd-d').textContent = pad(Math.floor(diff/86400000));
+      w.querySelector('.cd-h').textContent = pad(Math.floor((diff%86400000)/3600000));
+      w.querySelector('.cd-m').textContent = pad(Math.floor((diff%3600000)/60000));
+      w.querySelector('.cd-s').textContent = pad(Math.floor((diff%60000)/1000));
+    });
+    if(anyExpired){
+      clearInterval(grid._countdownInterval);
+      loadEnrolledCourses(gridId);
+    }
+  }
+  tick();
+  clearInterval(grid._countdownInterval);
+  grid._countdownInterval = setInterval(tick, 1000);
+}
 
 /* ══ ENROLLED COURSES ══ */
 async function loadEnrolledCourses(gridId){
@@ -857,6 +1097,28 @@ async function loadEnrolledCourses(gridId){
       var statusColor = en.subscriptionStatus==='payment_failed'?'#f59e0b':'#22c55e';
       var statusLabel = en.subscriptionStatus==='payment_failed'?'&#9888;&#65039; Payment failed':'&#9989; Active';
       var next = en.nextBillingDate ? new Date(en.nextBillingDate).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+
+      // Locked state — instructor scheduled a future start date. The course
+      // shows up and keeps counting down, but isn't clickable until then.
+      // Real enforcement lives in player.html; this is just the honest UI.
+      var startMs = (course.startType === 'scheduled' && course.startDate) ? new Date(course.startDate+'T00:00:00').getTime() : null;
+      if(startMs && !isNaN(startMs) && startMs > Date.now()){
+        var startLabel = new Date(startMs).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        return '<div class="my-course-card locked">'
+          +'<div class="my-course-thumb">&#127891;<div class="lock-badge">&#128274; Starts '+startLabel+'</div></div>'
+          +'<div class="my-course-body">'
+            +'<div class="my-course-title">'+(course.title||'Course')+'</div>'
+            +'<div class="mini-countdown" data-start="'+course.startDate+'">'
+              +'<div class="mini-countdown-box"><div class="mini-countdown-num cd-d">00</div><div class="mini-countdown-label">Days</div></div>'
+              +'<div class="mini-countdown-box"><div class="mini-countdown-num cd-h">00</div><div class="mini-countdown-label">Hrs</div></div>'
+              +'<div class="mini-countdown-box"><div class="mini-countdown-num cd-m">00</div><div class="mini-countdown-label">Min</div></div>'
+              +'<div class="mini-countdown-box"><div class="mini-countdown-num cd-s">00</div><div class="mini-countdown-label">Sec</div></div>'
+            +'</div>'
+            +'<button class="locked-btn">&#128274; Unlocks on '+startLabel+'</button>'
+          +'</div>'
+        +'</div>';
+      }
+
       return '<div class="my-course-card" onclick="window.location.href=\'/player?course='+en.courseId+'\'">'
         +'<div class="my-course-thumb">&#127891;<div class="progress-bar-wrap"><div class="progress-bar" style="width:'+pct+'%"></div></div></div>'
         +'<div class="my-course-body">'
@@ -869,6 +1131,7 @@ async function loadEnrolledCourses(gridId){
       +'</div>';
     }));
     grid.innerHTML = cards.join('');
+    startDashboardCountdowns(grid);
   } catch(e){
     grid.innerHTML = '<div style="padding:20px;color:var(--red);">Error: '+e.message+'</div>';
   }
