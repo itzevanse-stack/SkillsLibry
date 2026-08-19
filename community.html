@@ -353,6 +353,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
   </div>
   <div class="nav-right">
     <button class="btn btn-ghost panel-toggle-btn" onclick="togglePanel()" style="align-items:center;gap:6px;" aria-label="Menu">&#9776;</button>
+    <a class="btn btn-ghost" href="/dashboard">&#8592; Dashboard</a>
     <a class="btn btn-ghost" href="/player" id="back-to-course">&#9654; Continue learning</a>
   </div>
 </nav>
@@ -901,6 +902,8 @@ function switchTab(tab){
 
   var nn = document.getElementById('nav-course-name');
   var ct = document.getElementById('cm-title');
+  var backBtn = document.getElementById('back-to-course');
+  if(backBtn) backBtn.href = '/player?course='+encodeURIComponent(_courseId);
   if(nn) nn.textContent = _courseName;
   if(ct) ct.innerHTML   = _courseName;
 
