@@ -1594,7 +1594,8 @@ function toggleMobileNav(){
 }
 
 /* ── TABS ── */
-function switchTab(btn, pane){
+function switchTab(btn, pane, isAuto){
+  if(!isAuto) stopTabAutoplay(); // any real click ends autoplay for good
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.querySelectorAll('.tab-pane').forEach(function(p){ p.classList.remove('active'); });
   btn.classList.add('active');
@@ -1602,6 +1603,50 @@ function switchTab(btn, pane){
   if(el) el.classList.add('active');
   if(pane === 'tab-testi') loadTestimonialsForCourse();
 }
+
+/* ── TABS AUTOPLAY ──
+   Cycles Description → Testimonials → Modules every 5s, purely to signal
+   the tabs are there and clickable. Stops permanently the instant the
+   person clicks a tab themselves — their choice is never overridden —
+   and pauses (without stopping) while their mouse is over the tab bar,
+   so a slow reader doesn't get cut off mid-read. */
+var _tabAutoplayTimer = null;
+var _tabAutoplayStopped = false;
+var TAB_ORDER = [
+  {id:'tab-desc',    pane:'tab-desc'},
+  {id:'tab-testi',   pane:'tab-testi'},
+  {id:'tab-modules', pane:'tab-modules'},
+];
+
+function stopTabAutoplay(){
+  _tabAutoplayStopped = true;
+  clearInterval(_tabAutoplayTimer);
+}
+
+function startTabAutoplay(){
+  var bar = document.querySelector('.tabs-bar');
+  if(!bar) return;
+
+  var idx = 0;
+  function tick(){
+    if(_tabAutoplayStopped) { clearInterval(_tabAutoplayTimer); return; }
+    idx = (idx + 1) % TAB_ORDER.length;
+    var buttons = document.querySelectorAll('.tab-btn');
+    var target = TAB_ORDER[idx];
+    var btn = buttons[idx];
+    if(btn) switchTab(btn, target.pane, true);
+  }
+
+  _tabAutoplayTimer = setInterval(tick, 5000);
+
+  bar.addEventListener('mouseenter', function(){ clearInterval(_tabAutoplayTimer); });
+  bar.addEventListener('mouseleave', function(){
+    if(_tabAutoplayStopped) return;
+    clearInterval(_tabAutoplayTimer);
+    _tabAutoplayTimer = setInterval(tick, 5000);
+  });
+}
+startTabAutoplay();
 
 /* ── MODULES ACCORDION ── */
 function toggleModule(head){
