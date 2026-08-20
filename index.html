@@ -357,6 +357,19 @@ a{text-decoration:none;color:inherit}
 }
 .course-price{font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:var(--text);}
 .course-price-old{font-size:12px;color:var(--text3);text-decoration:line-through;margin-left:6px;}
+.course-see-pricing{font-size:13px;font-weight:700;color:var(--text3);display:inline-flex;align-items:center;gap:4px;}
+.course-discount-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;
+  color:#fff;padding:7px 14px;border-radius:100px;
+  background:linear-gradient(135deg,#f97316,#ef4444);
+  animation:discountBreathe 2.4s ease-in-out infinite;
+}
+.course-discount-badge .fire{font-size:13px;}
+@keyframes discountBreathe{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(239,68,68,.4);}
+  50%{opacity:.82;box-shadow:0 0 0 6px rgba(239,68,68,0);}
+}
 .enroll-mini{
   padding:7px 16px;background:var(--teal-dim);
   border:1.5px solid rgba(78,204,163,.3);color:var(--teal-dark);
@@ -1942,6 +1955,15 @@ document.addEventListener('authReady', function(e){
 
     grid.innerHTML = shown.map(function(c){
       var price    = c.priceUSD || 0;
+      var original = parseFloat(c.priceOriginal) || 0;
+      var hasDiscount = original > price;
+      var pricingHtml;
+      if(hasDiscount){
+        var pct = Math.round((1 - price/original) * 100);
+        pricingHtml = '<span class="course-discount-badge"><span class="fire">&#128293;</span>'+pct+'% OFF</span>';
+      } else {
+        pricingHtml = '<span class="course-see-pricing">See pricing &#8594;</span>';
+      }
       var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
       var photoURL = c.instructorId ? photoByInstructor[c.instructorId] : null;
       var avatarInner = photoURL
@@ -1956,7 +1978,7 @@ document.addEventListener('authReady', function(e){
           +'<div class="course-instructor"><div class="avatar-xs">'+avatarInner+'</div><span class="course-instructor-name">'+(c.instructorName||'Instructor')+'</span></div>'
           +'<div class="course-title">'+(c.title||'Course')+'</div>'
           +'<div class="course-footer">'
-            +'<div><span class="course-price">$'+price.toLocaleString()+'</span></div>'
+            +'<div>'+pricingHtml+'</div>'
             +'<a class="enroll-mini" href="/course?id='+c.id+'">Learn more</a>'
           +'</div>'
         +'</div>'
