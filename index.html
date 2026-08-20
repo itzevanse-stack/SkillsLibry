@@ -1927,16 +1927,33 @@ document.addEventListener('authReady', function(e){
     var courses = snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
     if(courses.length === 0) return; // keep sample
 
-    grid.innerHTML = courses.slice(0,6).map(function(c){
+    var shown = courses.slice(0,6);
+
+    // Pull each instructor's real profile photo — one lookup per unique
+    // instructor, not per course, since several courses can share one.
+    var instructorIds = Array.from(new Set(shown.map(function(c){ return c.instructorId; }).filter(Boolean)));
+    var photoByInstructor = {};
+    await Promise.all(instructorIds.map(async function(iid){
+      try {
+        var uSnap = await fb.getDoc(fb.doc(window._db,'users',iid));
+        if(uSnap.exists()) photoByInstructor[iid] = uSnap.data().photoURL || null;
+      } catch(e){}
+    }));
+
+    grid.innerHTML = shown.map(function(c){
       var price    = c.priceUSD || 0;
       var initials = (c.instructorName||'I').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var photoURL = c.instructorId ? photoByInstructor[c.instructorId] : null;
+      var avatarInner = photoURL
+        ? '<img src="'+photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'
+        : initials;
       var thumbInner = c.thumbnailUrl
         ? '<img src="'+c.thumbnailUrl+'" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0;"/>'
         : '&#127891;';
       return '<div class="course-card" onclick="goCourse(this.dataset.id)" data-id="'+c.id+'">'
         +'<div class="course-thumb" style="position:relative;overflow:hidden;">'+thumbInner+'<div class="course-thumb-cat" style="position:relative;z-index:1;">'+(c.category||'Course')+'</div></div>'
         +'<div class="course-body">'
-          +'<div class="course-instructor"><div class="avatar-xs">'+initials+'</div><span class="course-instructor-name">'+(c.instructorName||'Instructor')+'</span></div>'
+          +'<div class="course-instructor"><div class="avatar-xs">'+avatarInner+'</div><span class="course-instructor-name">'+(c.instructorName||'Instructor')+'</span></div>'
           +'<div class="course-title">'+(c.title||'Course')+'</div>'
           +'<div class="course-footer">'
             +'<div><span class="course-price">$'+price.toLocaleString()+'</span></div>'
