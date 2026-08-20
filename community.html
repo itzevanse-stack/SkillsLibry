@@ -1388,16 +1388,66 @@ var _activeLiveSession = null;
 var _liveEnabledForCourse = true;
 var _liveCountdownInterval2 = null;
 
-function openJitsiModal(roomName, displayName){
+var _jitsiApi = null;
+
+function loadJaasScript(appId){
+  return new Promise(function(resolve, reject){
+    if(window.JitsiMeetExternalAPI){ resolve(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://8x8.vc/'+appId+'/external_api.js';
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function openJitsiModal(sessionId, displayName){
   var modal = document.createElement('div');
   modal.id = 'jitsi-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:999;background:#0d0d1a;display:flex;flex-direction:column;';
   modal.innerHTML = '<div style="padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:#111;flex-shrink:0;">'
     +'<div style="color:#fff;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;">&#128308; Live session</div>'
-    +'<button onclick="document.getElementById(\'jitsi-modal\').remove()" style="padding:8px 18px;background:#ef4444;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;">Leave call</button>'
+    +'<button onclick="closeJitsiModalStudent()" style="padding:8px 18px;background:#ef4444;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;">Leave call</button>'
   +'</div>'
-  +'<iframe src="https://meet.jit.si/'+encodeURIComponent(roomName)+'#userInfo.displayName=%22'+encodeURIComponent(displayName||'Guest')+'%22" style="flex:1;border:none;width:100%;" allow="camera;microphone;fullscreen;display-capture;autoplay"></iframe>';
+  +'<div id="jitsi-container" style="flex:1;"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-family:Inter,sans-serif;font-size:13px;">Connecting...</div></div>';
   document.body.appendChild(modal);
+
+  try {
+    var idToken = await window._auth.currentUser.getIdToken();
+    var resp = await fetch('/api/jitsi-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+idToken },
+      body: JSON.stringify({ sessionId: sessionId }),
+    });
+    if(!resp.ok){
+      var errBody = await resp.json().catch(function(){ return {}; });
+      throw new Error(errBody.error || 'Could not get join token');
+    }
+    var data = await resp.json();
+
+    await loadJaasScript(data.appId);
+
+    var container = document.getElementById('jitsi-container');
+    container.innerHTML = '';
+    _jitsiApi = new window.JitsiMeetExternalAPI('8x8.vc', {
+      roomName: data.roomName,
+      jwt: data.jwt,
+      parentNode: container,
+      width: '100%',
+      height: '100%',
+      userInfo: { displayName: displayName || 'Guest' },
+    });
+    _jitsiApi.addListener('videoConferenceLeft', closeJitsiModalStudent);
+  } catch(e){
+    var container2 = document.getElementById('jitsi-container');
+    if(container2) container2.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#ef4444;font-family:Inter,sans-serif;font-size:13px;padding:20px;text-align:center;">Could not join: '+e.message+'</div>';
+  }
+}
+
+function closeJitsiModalStudent(){
+  if(_jitsiApi){ _jitsiApi.dispose(); _jitsiApi = null; }
+  var m = document.getElementById('jitsi-modal');
+  if(m) m.remove();
 }
 
 async function startLiveSessionWatcher(){
@@ -1501,7 +1551,7 @@ function joinLiveSession(){
   if(!_activeLiveSession){ showToast && showToast('&#8987;','No live session right now.'); return; }
 
   if(_activeLiveSession.status === 'live'){
-    openJitsiModal(_activeLiveSession.roomName, window._userName || 'Student');
+    openJitsiModal(_activeLiveSession.id, window._userName || 'Student');
     return;
   }
 
