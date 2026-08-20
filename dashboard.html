@@ -1142,6 +1142,13 @@ function switchMsgSubtab(tab){
   else renderAnnouncementsList();
 }
 
+function replyToAnnouncement(annId){
+  var ann = _annMap[annId];
+  if(!ann) return;
+  switchMsgSubtab('dm');
+  openConversation(ann.convId, ann.instructorId, ann.instructorName, ann.text);
+}
+
 async function loadStudentMessages(){
   if(!window._user || !window._db) return;
   _annSeenKey = 'sl_ann_seen_' + window._user.uid;
@@ -1170,7 +1177,14 @@ async function loadStudentMessages(){
   updateMessageBadges();
 }
 
-var _studentInstructorMap = {}; // { instructorId: { name, allowDM } }
+var _studentInstructorMap = {}; // { instructorId: { name, allowDM, photoURL } }
+var _annMap = {}; // { announcementId: { text, instructorId, instructorName, convId } }
+
+function escapeHtml(text){
+  var div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
 
 // Builds the student's instructor list from their own enrollments — same
 // "derived, always in sync, no separate contacts table" approach used on
@@ -1326,14 +1340,19 @@ async function renderAnnouncementsList(){
       var inst = _studentInstructorMap[a.instructorId];
       var canReply = inst && inst.allowDM;
       var convId = a.instructorId+'_'+window._user.uid;
-      var nameEsc = (a.instructorName||'Instructor').replace(/'/g,"\\'");
+
+      // Stash details in a lookup map rather than inlining raw announcement
+      // text into an onclick string — avoids breaking on quotes/newlines
+      // in whatever the instructor wrote.
+      _annMap[a.id] = { text: a.text||'', instructorId: a.instructorId, instructorName: a.instructorName||'Instructor', convId: convId };
+
       return '<div class="ann-card">'
         +'<div class="ann-card-head"><div class="conv-avatar" style="width:32px;height:32px;font-size:11px;">'+initials+'</div>'
           +'<div><div style="font-size:13px;font-weight:700;">'+(a.instructorName||'Instructor')+'</div><div style="font-size:11px;color:var(--text3);">'+when+'</div></div>'
         +'</div>'
         +'<div class="ann-card-text">'+(a.text||'').replace(/</g,'&lt;')+'</div>'
         +(canReply
-          ? '<button onclick="switchMsgSubtab(\'dm\'); setTimeout(function(){ openConversation(\''+convId+'\',\''+a.instructorId+'\',\''+nameEsc+'\'); },50);" style="margin-top:10px;padding:7px 14px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);border-radius:7px;font-size:12px;font-weight:700;color:var(--teal-dark);cursor:pointer;">&#128172; Reply privately</button>'
+          ? '<button onclick="replyToAnnouncement(\''+a.id+'\')" style="margin-top:10px;padding:7px 14px;background:var(--teal-dim);border:1.5px solid rgba(78,204,163,.3);border-radius:7px;font-size:12px;font-weight:700;color:var(--teal-dark);cursor:pointer;">&#128172; Reply privately</button>'
           : '')
       +'</div>';
     }).join('') + '</div>';
@@ -1342,7 +1361,7 @@ async function renderAnnouncementsList(){
   }
 }
 
-async function openConversation(convId, instructorId, instructorName){
+async function openConversation(convId, instructorId, instructorName, quoteText){
   _activeConvId = convId;
   document.querySelectorAll('.conv-row').forEach(function(r){ r.classList.remove('active'); });
   var panel = document.getElementById('msg-main-panel');
@@ -1351,14 +1370,28 @@ async function openConversation(convId, instructorId, instructorName){
   var headAvatar = instInfo && instInfo.photoURL
     ? '<img src="'+instInfo.photoURL+'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:8px;vertical-align:middle;"/>'
     : '<span class="conv-avatar" style="width:28px;height:28px;font-size:11px;display:inline-flex;margin-right:8px;vertical-align:middle;">'+headInitials+'</span>';
+
+  // If this thread was opened via "Reply privately" on an announcement,
+  // show what's being replied to right above the input — so the context
+  // isn't lost just because it lands in the same ongoing conversation.
+  var quoteBanner = quoteText
+    ? '<div style="padding:8px 16px;background:var(--bg2);border-top:1.5px solid var(--border);font-size:11px;color:var(--text3);">'
+      +'<strong style="color:var(--text2);">Replying to announcement:</strong> "'+escapeHtml(quoteText.length>120 ? quoteText.slice(0,120)+'…' : quoteText)+'"'
+    +'</div>'
+    : '';
+
   panel.innerHTML = '<div class="msg-thread">'
     +'<div class="msg-thread-header">'+headAvatar+instructorName+'</div>'
     +'<div class="msg-thread-body" id="msg-thread-body"><div style="text-align:center;color:var(--text3);font-size:13px;">Loading...</div></div>'
+    +quoteBanner
     +'<div class="msg-thread-input">'
       +'<textarea id="msg-input" placeholder="Message '+instructorName+'..." onkeydown="if(event.key===\'Enter\' && !event.shiftKey){ event.preventDefault(); sendStudentMessage(); }"></textarea>'
       +'<button onclick="sendStudentMessage()" style="padding:0 20px;background:var(--teal);border:none;border-radius:10px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Send</button>'
     +'</div>'
   +'</div>';
+
+  var inputEl = document.getElementById('msg-input');
+  if(inputEl) inputEl.focus();
 
   try {
     var fb = window._fbFs;
