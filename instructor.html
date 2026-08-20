@@ -3817,7 +3817,20 @@ function makeRoomName(courseId){
   return 'skl-'+courseId.replace(/[^a-zA-Z0-9]/g,'')+'-'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 }
 
-function openJitsiModal(roomName, displayName, onClose){
+var _jitsiApi = null;
+
+function loadJaasScript(appId){
+  return new Promise(function(resolve, reject){
+    if(window.JitsiMeetExternalAPI){ resolve(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://8x8.vc/'+appId+'/external_api.js';
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function openJitsiModal(sessionId, displayName, onClose){
   var modal = document.createElement('div');
   modal.id = 'jitsi-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:999;background:#0d0d1a;display:flex;flex-direction:column;';
@@ -3825,13 +3838,45 @@ function openJitsiModal(roomName, displayName, onClose){
     +'<div style="color:#fff;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;">&#128308; Live session</div>'
     +'<button onclick="closeJitsiModal()" style="padding:8px 18px;background:#ef4444;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;">Leave call</button>'
   +'</div>'
-  +'<iframe id="jitsi-frame" src="https://meet.jit.si/'+encodeURIComponent(roomName)+'#userInfo.displayName=%22'+encodeURIComponent(displayName||'Guest')+'%22" style="flex:1;border:none;width:100%;" allow="camera;microphone;fullscreen;display-capture;autoplay"></iframe>'
+  +'<div id="jitsi-container" style="flex:1;"><div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-family:Inter,sans-serif;font-size:13px;">Connecting...</div></div>'
   +'</div>';
   document.body.appendChild(modal);
   window._jitsiOnClose = onClose || null;
+
+  try {
+    var idToken = await window._auth.currentUser.getIdToken();
+    var resp = await fetch('/api/jitsi-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+idToken },
+      body: JSON.stringify({ sessionId: sessionId }),
+    });
+    if(!resp.ok){
+      var errBody = await resp.json().catch(function(){ return {}; });
+      throw new Error(errBody.error || 'Could not get join token');
+    }
+    var data = await resp.json();
+
+    await loadJaasScript(data.appId);
+
+    var container = document.getElementById('jitsi-container');
+    container.innerHTML = '';
+    _jitsiApi = new window.JitsiMeetExternalAPI('8x8.vc', {
+      roomName: data.roomName,
+      jwt: data.jwt,
+      parentNode: container,
+      width: '100%',
+      height: '100%',
+      userInfo: { displayName: displayName || 'Guest' },
+    });
+    _jitsiApi.addListener('videoConferenceLeft', closeJitsiModal);
+  } catch(e){
+    var container2 = document.getElementById('jitsi-container');
+    if(container2) container2.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#ef4444;font-family:Inter,sans-serif;font-size:13px;padding:20px;text-align:center;">Could not join: '+e.message+'</div>';
+  }
 }
 
 function closeJitsiModal(){
+  if(_jitsiApi){ _jitsiApi.dispose(); _jitsiApi = null; }
   var m = document.getElementById('jitsi-modal');
   if(m) m.remove();
   if(typeof window._jitsiOnClose === 'function') window._jitsiOnClose();
@@ -4087,11 +4132,11 @@ async function startLiveSession(sessionId, roomName){
     await fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { status:'live', startedAt: fb.serverTimestamp() });
     loadAllLiveSessions();
   } catch(e){ showToast('&#10060;','Could not start: '+e.message); return; }
-  openJitsiModal(roomName, window._userName || 'Instructor');
+  openJitsiModal(sessionId, window._userName || 'Instructor');
 }
 
 function rejoinLiveSession(sessionId, roomName){
-  openJitsiModal(roomName, window._userName || 'Instructor');
+  openJitsiModal(sessionId, window._userName || 'Instructor');
 }
 
 async function endLiveSession(sessionId){
