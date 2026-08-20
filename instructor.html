@@ -3305,6 +3305,7 @@ var _commUnread = 0;
    course this instructor teaches.
 ══════════════════════════════════════════ */
 var _instActiveConvId = null;
+var _instStudentMap = {}; // { studentUid: { name, email, photoURL } }
 var _instFbFs = null;
 
 async function refreshInstMessageBadgeOnly(){
@@ -3349,6 +3350,13 @@ async function loadInstructorMessages(){
       return;
     }
 
+    // Pull profile photos for each student
+    await Promise.all(students.map(async function(s){
+      var uSnap = await fb.getDoc(fb.doc(window._db,'users',s.uid));
+      s.photoURL = uSnap.exists() ? (uSnap.data().photoURL || null) : null;
+      _instStudentMap[s.uid] = s;
+    }));
+
     // Pull existing conversations to know unread state + last message preview
     var convSnap = await fb.getDocs(fb.query(
       fb.collection(window._db,'conversations'),
@@ -3362,12 +3370,15 @@ async function loadInstructorMessages(){
       var conv = convByStudent[s.uid];
       if(conv && conv.unreadForInstructor) unreadTotal++;
       var initials = s.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      var avatarInner = s.photoURL
+        ? '<img src="'+s.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'
+        : initials;
       var unreadCls = (conv && conv.unreadForInstructor) ? ' unread' : '';
       var preview = conv ? (conv.lastMessage||'No messages yet') : 'No messages yet';
       var convId = conv ? conv.id : (window._user.uid+'_'+s.uid);
       return {
         html: '<div class="conv-row'+unreadCls+'" data-conv="'+convId+'" onclick="openInstConversation(\''+convId+'\',\''+s.uid+'\',\''+s.name.replace(/'/g,"\\'")+'\')">'
-          +'<div class="conv-avatar">'+initials+'</div>'
+          +'<div class="conv-avatar">'+avatarInner+'</div>'
           +'<div style="flex:1;min-width:0;">'
             +'<div class="conv-name">'+s.name+'</div>'
             +'<div class="conv-preview">'+preview+'</div>'
@@ -3399,8 +3410,13 @@ async function openInstConversation(convId, studentUid, studentName){
   if(row) row.classList.add('active');
 
   var panel = document.getElementById('inst-msg-main-panel');
+  var studInfo = _instStudentMap[studentUid];
+  var headInitials = studentName.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  var headAvatar = studInfo && studInfo.photoURL
+    ? '<img src="'+studInfo.photoURL+'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:8px;vertical-align:middle;"/>'
+    : '<span class="conv-avatar" style="width:28px;height:28px;font-size:11px;display:inline-flex;margin-right:8px;vertical-align:middle;">'+headInitials+'</span>';
   panel.innerHTML = '<div class="msg-thread">'
-    +'<div class="msg-thread-header">'+studentName+'</div>'
+    +'<div class="msg-thread-header">'+headAvatar+studentName+'</div>'
     +'<div class="msg-thread-body" id="inst-msg-thread-body"><div style="text-align:center;color:var(--text3);font-size:13px;">Loading...</div></div>'
     +'<div class="msg-thread-input">'
       +'<textarea id="inst-msg-input" placeholder="Message '+studentName+'..." onkeydown="if(event.key===\'Enter\' && !event.shiftKey){ event.preventDefault(); sendInstMessage(); }"></textarea>'
