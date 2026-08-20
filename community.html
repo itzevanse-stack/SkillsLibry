@@ -302,6 +302,18 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
 .live-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5);margin-bottom:12px;display:flex;align-items:center;}
 .live-title{font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.4;}
 .live-time{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px;}
+.live-details{font-size:12px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:14px;white-space:pre-line;}
+.live-cd-row{display:flex;gap:6px;margin-bottom:16px;}
+.live-cd-box{
+  flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(78,204,163,.25);
+  border-radius:8px;padding:9px 2px;text-align:center;
+}
+.live-cd-num{
+  font-family:'Poppins',sans-serif;font-size:18px;font-weight:800;
+  background:linear-gradient(135deg,#4ecca3,#8ee6c8,#6c63ff);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums;
+}
+.live-cd-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.4);margin-top:3px;}
 .live-join-btn{
   width:100%;padding:11px;background:var(--teal);
   color:#0d0d1a;font-family:'Poppins',sans-serif;
@@ -490,10 +502,17 @@ button{font-family:'Inter',sans-serif;cursor:pointer}
 
     <!-- Live session card -->
     <div class="live-card" id="live-card" style="display:none;">
-      <div class="live-label"><span class="live-dot"></span> Next live session</div>
+      <div class="live-label"><span class="live-dot"></span> <span id="live-label-text">Next live session</span></div>
       <div class="live-title" id="live-title" style="display:none;"></div>
       <div class="live-time" id="live-time" style="display:none;"></div>
-      <button class="live-join-btn" onclick="joinLiveSession()">&#127909; Set reminder</button>
+      <div class="live-details" id="live-details" style="display:none;"></div>
+      <div class="live-cd-row" id="live-cd-row" style="display:none;">
+        <div class="live-cd-box"><div class="live-cd-num" id="live-cd-d">00</div><div class="live-cd-label">Days</div></div>
+        <div class="live-cd-box"><div class="live-cd-num" id="live-cd-h">00</div><div class="live-cd-label">Hrs</div></div>
+        <div class="live-cd-box"><div class="live-cd-num" id="live-cd-m">00</div><div class="live-cd-label">Min</div></div>
+        <div class="live-cd-box"><div class="live-cd-num" id="live-cd-s">00</div><div class="live-cd-label">Sec</div></div>
+      </div>
+      <button class="live-join-btn" id="live-join-btn" onclick="joinLiveSession()">&#127909; Set reminder</button>
     </div>
 
     <!-- Community stats -->
@@ -954,6 +973,7 @@ document.addEventListener('authReady', async function(e){
   renderAll();
   updateCounts();
   renderTopContributors();
+  startLiveSessionWatcher();
 });
 
 async function autoJoinCommunity(){
@@ -1356,8 +1376,150 @@ function renderTopContributors(){
   }).join('');
 }
 
+/* ══════════════════════════════════════════
+   LIVE SESSIONS (student side)
+   Real-time watcher via onSnapshot so the card flips to
+   "LIVE NOW" the instant the instructor starts — no refresh
+   needed. Gated entirely by the course's liveEnabled flag;
+   if the instructor hasn't turned live sessions on for this
+   course, this whole feature stays invisible.
+══════════════════════════════════════════ */
+var _activeLiveSession = null;
+var _liveEnabledForCourse = true;
+var _liveCountdownInterval2 = null;
+
+function openJitsiModal(roomName, displayName){
+  var modal = document.createElement('div');
+  modal.id = 'jitsi-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:999;background:#0d0d1a;display:flex;flex-direction:column;';
+  modal.innerHTML = '<div style="padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:#111;flex-shrink:0;">'
+    +'<div style="color:#fff;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;">&#128308; Live session</div>'
+    +'<button onclick="document.getElementById(\'jitsi-modal\').remove()" style="padding:8px 18px;background:#ef4444;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;">Leave call</button>'
+  +'</div>'
+  +'<iframe src="https://meet.jit.si/'+encodeURIComponent(roomName)+'#userInfo.displayName=%22'+encodeURIComponent(displayName||'Guest')+'%22" style="flex:1;border:none;width:100%;" allow="camera;microphone;fullscreen;display-capture;autoplay"></iframe>';
+  document.body.appendChild(modal);
+}
+
+async function startLiveSessionWatcher(){
+  if(!window._db || !_courseId) return;
+  var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+  try {
+    var courseSnap = await fb.getDoc(fb.doc(window._db,'courses',_courseId));
+    _liveEnabledForCourse = courseSnap.exists() ? (courseSnap.data().liveEnabled !== false) : true;
+  } catch(e){ _liveEnabledForCourse = true; }
+
+  if(!_liveEnabledForCourse){
+    var card = document.getElementById('live-card');
+    if(card) card.style.display = 'none';
+    return;
+  }
+
+  fb.onSnapshot(
+    fb.query(fb.collection(window._db,'liveSessions'), fb.where('courseId','==', _courseId)),
+    function(snap){
+      var sessions = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); })
+        .filter(function(s){ return s.status !== 'ended'; });
+      sessions.sort(function(a,b){ return new Date(a.scheduledAt) - new Date(b.scheduledAt); });
+      // Prefer a currently-live one; otherwise the next scheduled one
+      _activeLiveSession = sessions.find(function(s){ return s.status==='live'; }) || sessions[0] || null;
+      renderLiveCard();
+    },
+    function(err){ console.warn('Live session watch failed:', err.message); }
+  );
+}
+
+function renderLiveCard(){
+  var card = document.getElementById('live-card');
+  var labelText = document.getElementById('live-label-text');
+  var titleEl = document.getElementById('live-title');
+  var timeEl = document.getElementById('live-time');
+  var detailsEl = document.getElementById('live-details');
+  var cdRow = document.getElementById('live-cd-row');
+  var btn = document.getElementById('live-join-btn');
+  if(!card) return;
+
+  clearInterval(_liveCountdownInterval2);
+
+  if(!_activeLiveSession || !_liveEnabledForCourse){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  titleEl.textContent = _activeLiveSession.title;
+  titleEl.style.display = 'block';
+
+  if(_activeLiveSession.details){
+    detailsEl.textContent = _activeLiveSession.details;
+    detailsEl.style.display = 'block';
+  } else {
+    detailsEl.style.display = 'none';
+  }
+
+  if(_activeLiveSession.status === 'live'){
+    labelText.textContent = 'Live now';
+    timeEl.style.display = 'none';
+    cdRow.style.display = 'none';
+    btn.innerHTML = '&#128308; Join now';
+  } else {
+    labelText.textContent = 'Next live session';
+    var when = new Date(_activeLiveSession.scheduledAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+    timeEl.textContent = when;
+    timeEl.style.display = 'block';
+    cdRow.style.display = 'flex';
+    btn.innerHTML = '&#127909; Set reminder';
+    startCardCountdown(_activeLiveSession.scheduledAt);
+  }
+}
+
+function startCardCountdown(scheduledAt){
+  var target = new Date(scheduledAt).getTime();
+  if(isNaN(target)) return;
+  function pad(n){ return n<10 ? '0'+n : String(n); }
+  function tick(){
+    var diff = target - Date.now();
+    if(diff <= 0){
+      ['live-cd-d','live-cd-h','live-cd-m','live-cd-s'].forEach(function(id){
+        var el = document.getElementById(id); if(el) el.textContent = '00';
+      });
+      return;
+    }
+    var dEl = document.getElementById('live-cd-d'), hEl = document.getElementById('live-cd-h'),
+        mEl = document.getElementById('live-cd-m'), sEl = document.getElementById('live-cd-s');
+    if(!dEl) return;
+    dEl.textContent = pad(Math.floor(diff/86400000));
+    hEl.textContent = pad(Math.floor((diff%86400000)/3600000));
+    mEl.textContent = pad(Math.floor((diff%3600000)/60000));
+    sEl.textContent = pad(Math.floor((diff%60000)/1000));
+  }
+  tick();
+  clearInterval(_liveCountdownInterval2);
+  _liveCountdownInterval2 = setInterval(tick, 1000);
+}
+
 function joinLiveSession(){
-  showToast('&#128336;','Reminder set! You\'ll be notified before the session.');
+  if(!_activeLiveSession){ showToast && showToast('&#8987;','No live session right now.'); return; }
+
+  if(_activeLiveSession.status === 'live'){
+    openJitsiModal(_activeLiveSession.roomName, window._userName || 'Student');
+    return;
+  }
+
+  // Not live yet — set a lightweight local reminder. Ask for browser
+  // notification permission so we can actually ping them, but degrade
+  // gracefully to just the confirmation toast if they decline.
+  var when = new Date(_activeLiveSession.scheduledAt).getTime();
+  var msUntil = when - Date.now();
+  if(msUntil > 0 && msUntil < 24*3600*1000 && 'Notification' in window){
+    Notification.requestPermission().then(function(perm){
+      if(perm === 'granted'){
+        setTimeout(function(){
+          new Notification('Live session starting: '+_activeLiveSession.title);
+        }, msUntil);
+      }
+    });
+  }
+  showToast && showToast('&#128336;','Reminder set! We\'ll notify you when it starts.');
 }
 </script>
 
