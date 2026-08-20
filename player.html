@@ -347,75 +347,86 @@ h1,h2,h3,h4{font-family:'Poppins',sans-serif}
 
 /* ── CURRICULUM SIDEBAR ── */
 .curriculum-sidebar{
-  background:#111;border-left:1px solid rgba(255,255,255,.08);
+  background:#f8f9fc;border-left:1px solid #e4e6f0;
   display:flex;flex-direction:column;overflow:hidden;
 }
 .cs-header{
   padding:16px 20px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  background:#0d0d1a;
+  border-bottom:1.5px solid #e4e6f0;
+  background:#fff;
   flex-shrink:0;
 }
-.cs-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.cs-title{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;color:#0d0d1a;margin-bottom:4px;}
 .cs-progress{display:flex;align-items:center;gap:10px;}
 .cs-progress-bar{
-  flex:1;height:4px;background:rgba(255,255,255,.1);
+  flex:1;height:4px;background:#e4e6f0;
   border-radius:100px;overflow:hidden;
 }
 .cs-progress-fill{height:100%;background:var(--teal);border-radius:100px;transition:width .4s;}
-.cs-progress-txt{font-size:11px;color:var(--teal);font-weight:600;white-space:nowrap;}
-.cs-body{overflow-y:auto;flex:1;}
+.cs-progress-txt{font-size:11px;color:var(--teal-dark,#2db88a);font-weight:600;white-space:nowrap;}
+.cs-body{overflow-y:auto;flex:1;padding:14px;}
 
-/* Module in sidebar */
-.cs-module{border-bottom:1px solid rgba(255,255,255,.06);}
+/* Module card — matches course.html's public Modules tab styling */
+.cs-module{
+  background:#fff;border:1.5px solid #e4e6f0;
+  border-radius:14px;margin-bottom:10px;overflow:hidden;
+  box-shadow:0 2px 10px rgba(13,13,26,.04);transition:all .2s ease;
+}
+.cs-module:hover{border-color:rgba(78,204,163,.35);}
 .cs-module-head{
-  display:flex;align-items:center;gap:10px;
-  padding:14px 18px;cursor:pointer;
-  background:rgba(255,255,255,.03);
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;cursor:pointer;
   transition:background .2s;
 }
-.cs-module-head:hover{background:rgba(255,255,255,.06);}
+.cs-module-head:hover{background:#f8f9fc;}
 .cs-module-num{
-  width:24px;height:24px;border-radius:50%;
-  background:rgba(255,255,255,.08);
+  width:30px;height:30px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--teal) 0%,#3aa88a 100%);
+  box-shadow:0 3px 8px rgba(78,204,163,.3);
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;color:rgba(255,255,255,.6);
-  flex-shrink:0;
+  font-family:'Poppins',sans-serif;font-size:12px;font-weight:800;color:#fff;
 }
-.cs-module-title{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);flex:1;}
-.cs-module-meta{font-size:10px;color:rgba(255,255,255,.35);}
-.cs-chevron{font-size:12px;color:rgba(255,255,255,.3);transition:transform .2s;}
-.cs-chevron.open{transform:rotate(180deg);}
-.cs-lessons{display:none;}
+.cs-module-title{font-size:13px;font-weight:700;color:#0d0d1a;flex:1;min-width:0;}
+.cs-module-meta{
+  font-size:10px;font-weight:700;color:var(--teal-dark,#2db88a);
+  background:rgba(78,204,163,.1);border:1px solid rgba(78,204,163,.25);
+  padding:3px 8px;border-radius:100px;white-space:nowrap;flex-shrink:0;
+}
+.cs-chevron{
+  font-size:14px;color:#8b8fa8;transition:transform .25s ease;
+  width:22px;height:22px;border-radius:50%;background:#f0f2f7;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.cs-chevron.open{transform:rotate(180deg);background:rgba(78,204,163,.1);color:var(--teal-dark,#2db88a);}
+.cs-lessons{display:none;border-top:1px solid #e4e6f0;background:#f8f9fc;}
 .cs-lessons.open{display:block;}
 
-/* Lesson in sidebar */
+/* Lesson row */
 .cs-lesson{
-  display:flex;align-items:center;gap:10px;
-  padding:11px 18px 11px 36px;cursor:pointer;
-  transition:background .2s;border-left:2px solid transparent;
+  display:flex;align-items:center;gap:12px;
+  padding:11px 16px;cursor:pointer;
+  transition:all .15s ease;border-bottom:1px solid #e4e6f0;
 }
-.cs-lesson:hover{background:rgba(255,255,255,.04);}
-.cs-lesson.active{
-  background:rgba(78,204,163,.08);
-  border-left-color:var(--teal);
-}
-.cs-lesson.completed .cs-lesson-check{background:var(--teal);border-color:var(--teal);color:#0d0d1a;}
+.cs-lesson:last-child{border-bottom:none;}
+.cs-lesson:hover{background:#fff;padding-left:19px;}
+.cs-lesson.active{background:rgba(78,204,163,.08);}
 .cs-lesson-check{
-  width:20px;height:20px;border-radius:50%;flex-shrink:0;
-  border:1.5px solid rgba(255,255,255,.2);
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:#fff;border:1.5px solid #e4e6f0;
   display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:rgba(255,255,255,.4);
-  transition:all .2s;
+  font-size:10px;color:#8b8fa8;transition:all .15s ease;
 }
+.cs-lesson.active .cs-lesson-check{border-color:var(--teal);background:rgba(78,204,163,.12);color:var(--teal-dark,#2db88a);}
+.cs-lesson.completed .cs-lesson-check{background:var(--teal);border-color:var(--teal);color:#fff;}
 .cs-lesson-info{flex:1;min-width:0;}
 .cs-lesson-title{
-  font-size:12px;color:rgba(255,255,255,.7);
+  font-size:12.5px;font-weight:500;color:#4a4d6a;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.cs-lesson.active .cs-lesson-title{color:#fff;font-weight:600;}
-.cs-lesson-type{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;}
-.cs-lesson-duration{font-size:10px;color:rgba(255,255,255,.3);flex-shrink:0;}
+.cs-lesson.active .cs-lesson-title{color:#0d0d1a;font-weight:700;}
+.cs-lesson-tag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:100px;flex-shrink:0;letter-spacing:.02em;}
+.cs-tag-done{background:rgba(78,204,163,.1);color:var(--teal-dark,#2db88a);border:1px solid rgba(78,204,163,.25);}
+.cs-tag-current{background:rgba(108,99,255,.1);color:#6c63ff;border:1px solid rgba(108,99,255,.25);}
 
 /* ── TOAST ── */
 .toast{
@@ -1062,7 +1073,7 @@ function renderCurriculum(){
   var body = document.getElementById('curriculum-body');
   if(!body||!_course) return;
 
-  if(!_course.modules||!_course.modules.length){ body.innerHTML='<div style="padding:20px;color:rgba(255,255,255,.4);text-align:center;">No lessons yet.</div>'; return; }
+  if(!_course.modules||!_course.modules.length){ body.innerHTML='<div style="padding:20px;color:#8b8fa8;text-align:center;">No lessons yet.</div>'; return; }
   body.innerHTML = _course.modules.map(function(mod, mIdx){
     var isOpen = _openMods[mIdx] !== false;
     if(_openMods[mIdx]===undefined) _openMods[mIdx] = mIdx===0;
@@ -1071,17 +1082,18 @@ function renderCurriculum(){
     var doneCount    = mod.lessons.filter(function(_,lIdx){ return _completed[mIdx+'_'+lIdx]; }).length;
 
     var lessonsHtml = mod.lessons.map(function(les, lIdx){
-      var isActive    = mIdx===_curMod && lIdx===_curLes;
-      var isDone      = !!_completed[mIdx+'_'+lIdx];
-      var typeIcon    = les.type==='video' ? '&#9654;' : les.type==='quiz' ? '&#10067;' : '&#128196;';
+      var isActive = mIdx===_curMod && lIdx===_curLes;
+      var isDone   = !!_completed[mIdx+'_'+lIdx];
+      var tag = isDone ? '<span class="cs-lesson-tag cs-tag-done">&#10003; Done</span>'
+              : isActive ? '<span class="cs-lesson-tag cs-tag-current">&#9654; Current</span>'
+              : '';
       return '<div class="cs-lesson'+(isActive?' active':'')+(isDone?' completed':'')
         +'" onclick="loadLesson('+mIdx+','+lIdx+')">'
-        +'<div class="cs-lesson-check">'+(isDone?'&#10003;':'')+'</div>'
+        +'<div class="cs-lesson-check">'+(isDone?'&#10003;':'&#9654;')+'</div>'
         +'<div class="cs-lesson-info">'
         +'<div class="cs-lesson-title">'+les.title+'</div>'
-        +'<div class="cs-lesson-type">'+typeIcon+' '+les.type.charAt(0).toUpperCase()+les.type.slice(1)+'</div>'
         +'</div>'
-        +'<div class="cs-lesson-duration">'+les.duration+'</div>'
+        +tag
         +'</div>';
     }).join('');
 
@@ -1089,7 +1101,7 @@ function renderCurriculum(){
       +'<div class="cs-module-head" onclick="toggleMod('+mIdx+')">'
         +'<div class="cs-module-num">'+(mIdx+1)+'</div>'
         +'<div class="cs-module-title">'+mod.title+'</div>'
-        +'<div class="cs-module-meta">'+doneCount+'/'+totalLessons+'</div>'
+        +'<div class="cs-module-meta">'+doneCount+'/'+totalLessons+' lessons</div>'
         +'<div class="cs-chevron'+(isOpen?' open':'')+'" id="cs-chev-'+mIdx+'">&#8964;</div>'
       +'</div>'
       +'<div class="cs-lessons'+(isOpen?' open':'')+'" id="cs-les-'+mIdx+'">'+lessonsHtml+'</div>'
