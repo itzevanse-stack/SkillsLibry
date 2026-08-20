@@ -3444,8 +3444,13 @@ async function loadInstructorMessages(){
     var byUid = {};
     enrollSnap.docs.forEach(function(d){
       var e = d.data();
-      if(!e.uid) return;
-      if(!byUid[e.uid]) byUid[e.uid] = { uid:e.uid, name:e.studentName||e.studentEmail||'Student', email:e.studentEmail||'' };
+      // The Cope webhook writes the student's id as "uid"; the admin
+      // free-grant tool (and the older built-in checkout) writes it as
+      // "studentId" instead. Accept either so no enrollment silently
+      // disappears from this list depending on how the student got in.
+      var studentUid = e.uid || e.studentId;
+      if(!studentUid) return;
+      if(!byUid[studentUid]) byUid[studentUid] = { uid:studentUid, name:e.studentName||e.studentEmail||null, email:e.studentEmail||'' };
     });
     var students = Object.values(byUid);
 
@@ -3455,10 +3460,15 @@ async function loadInstructorMessages(){
       return;
     }
 
-    // Pull profile photos for each student
+    // Pull profile photos for each student, and fill in name/email from
+    // their user doc when the enrollment itself didn't carry it (true for
+    // admin-granted enrollments, which don't denormalize student details).
     await Promise.all(students.map(async function(s){
       var uSnap = await fb.getDoc(fb.doc(window._db,'users',s.uid));
-      s.photoURL = uSnap.exists() ? (uSnap.data().photoURL || null) : null;
+      var udata = uSnap.exists() ? uSnap.data() : {};
+      s.photoURL = udata.photoURL || null;
+      if(!s.name) s.name = udata.name || udata.email || 'Student';
+      if(!s.email) s.email = udata.email || '';
       _instStudentMap[s.uid] = s;
     }));
 
