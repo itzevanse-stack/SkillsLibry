@@ -502,6 +502,55 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   box-shadow:var(--sh);
 }
 
+/* ── LIVE SESSIONS (instructor side) ── */
+.live-hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#0d0d1a 0%,#161632 100%);
+  border-radius:20px;padding:36px 40px;
+}
+.live-hero-glow{
+  position:absolute;top:-40%;right:-10%;width:420px;height:420px;
+  background:radial-gradient(ellipse,rgba(78,204,163,.18) 0%,transparent 65%);
+  pointer-events:none;
+}
+@keyframes liveHeroPulse{0%,100%{box-shadow:0 0 0 0 rgba(78,204,163,.5);}50%{box-shadow:0 0 0 6px rgba(78,204,163,0);}}
+
+.live-tab{
+  padding:9px 18px;border-radius:9px;font-size:13px;font-weight:700;
+  color:var(--text3);cursor:pointer;transition:all .18s ease;
+  background:var(--bg2);border:1.5px solid var(--border);
+}
+.live-tab:hover{color:var(--text2);}
+.live-tab.active{background:var(--teal-dim);border-color:rgba(78,204,163,.35);color:var(--teal-dark);}
+
+.live-card2{
+  background:#fff;border:1.5px solid var(--border);border-radius:16px;
+  padding:20px;box-shadow:var(--sh);transition:all .2s ease;position:relative;overflow:hidden;
+}
+.live-card2:hover{border-color:rgba(78,204,163,.35);box-shadow:0 10px 30px rgba(13,13,26,.08);transform:translateY(-2px);}
+.live-card2.is-live{border-color:rgba(239,68,68,.4);box-shadow:0 4px 24px rgba(239,68,68,.12);}
+.live-card2-course{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--purple,#6c63ff);margin-bottom:8px;
+}
+.live-card2-title{font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.4;}
+.live-badge-live{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#ef4444;color:#fff;font-size:10px;font-weight:800;
+  padding:4px 10px;border-radius:100px;letter-spacing:.03em;margin-bottom:10px;
+}
+.live-badge-live .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:liveHeroPulse 1.2s ease-in-out infinite;}
+.live-cd-row{display:flex;gap:6px;margin:14px 0;}
+.live-cd-box{
+  flex:1;background:linear-gradient(160deg,#151527,#1f1f3a);
+  border:1px solid rgba(78,204,163,.25);border-radius:8px;
+  padding:8px 2px;text-align:center;
+}
+.live-cd-num{font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;
+  background:linear-gradient(135deg,#4ecca3,#8ee6c8,#6c63ff);-webkit-background-clip:text;
+  background-clip:text;-webkit-text-fill-color:transparent;font-variant-numeric:tabular-nums;}
+.live-cd-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.45);margin-top:2px;}
+
 /* ── MESSAGING (instructor side) ── */
 .msg-layout{display:grid;grid-template-columns:300px 1fr;gap:0;background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;height:calc(100vh - 220px);min-height:500px;}
 .msg-sublist{border-right:1.5px solid var(--border);overflow-y:auto;}
@@ -516,7 +565,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .msg-thread{display:flex;flex-direction:column;height:100%;}
 .msg-thread-header{padding:14px 20px;border-bottom:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;flex-shrink:0;}
 .msg-thread-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;}
-.msg-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;}
+.msg-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;white-space:pre-wrap;}
 .msg-bubble.from-student{align-self:flex-start;background:var(--bg2);color:var(--text);border-bottom-left-radius:4px;}
 .msg-bubble.from-instructor{align-self:flex-end;background:var(--teal);color:#0d0d1a;border-bottom-right-radius:4px;}
 .msg-bubble-time{font-size:10px;opacity:.6;margin-top:4px;}
@@ -617,6 +666,10 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       <div class="sidebar-item" onclick="showView('students')" id="nav-students" style="position:relative;">
         <div class="si-icon">&#128101;</div> Students
         <span id="inst-msg-badge" style="display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;"></span>
+      </div>
+      <div class="sidebar-item" onclick="showView('live')" id="nav-live" style="position:relative;">
+        <div class="si-icon">&#128249;</div> Live Sessions
+        <span id="nav-live-badge" style="display:none;position:absolute;right:14px;top:50%;transform:translateY(-50%);background:#ef4444;color:#fff;font-size:8px;font-weight:800;padding:2px 6px;border-radius:100px;letter-spacing:.03em;">LIVE</span>
       </div>
     </div>
 
@@ -1005,6 +1058,13 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
                 </label>
                 <div class="hint">When on, students enrolled in this course can start a private chat with you. Turn off if this course is self-paced only, with no personal guidance included.</div>
               </div>
+
+              <div class="fg" style="margin-top:16px;">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;">
+                  <input type="checkbox" id="ci-live-enabled" checked/> Live sessions are part of this course
+                </label>
+                <div class="hint">When on, you can schedule live training calls for this course from your Live Sessions page — students see them on the community page with a countdown, and get notified the moment one's scheduled. Turn off for fully self-paced courses.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1185,6 +1245,36 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
       </div>
     </div>
 
+    <!-- LIVE SESSIONS -->
+    <div class="page-view" id="view-live">
+      <div class="live-hero">
+        <div class="live-hero-glow"></div>
+        <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+          <div>
+            <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(78,204,163,.12);border:1px solid rgba(78,204,163,.3);border-radius:100px;padding:5px 14px;margin-bottom:14px;">
+              <span style="width:7px;height:7px;border-radius:50%;background:#4ecca3;animation:liveHeroPulse 1.6s ease-in-out infinite;"></span>
+              <span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#4ecca3;">Live Sessions</span>
+            </div>
+            <div style="font-family:'Poppins',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:8px;">Go live with your students</div>
+            <div style="font-size:14px;color:rgba(255,255,255,.55);max-width:480px;line-height:1.6;">Schedule a training call, and every enrolled student gets notified instantly — with a live countdown right in their community.</div>
+          </div>
+          <button onclick="openScheduleLiveModal()" style="flex-shrink:0;padding:15px 30px;background:linear-gradient(135deg,#4ecca3,#3aa88a);border:none;border-radius:12px;font-size:15px;font-weight:800;color:#0d0d1a;cursor:pointer;box-shadow:0 8px 28px rgba(78,204,163,.35);display:flex;align-items:center;gap:8px;">
+            <span style="font-size:18px;">&#128249;</span> Schedule live session
+          </button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin:24px 0 20px;">
+        <div class="live-tab active" id="live-tab-upcoming" onclick="switchLiveTab('upcoming')">Upcoming</div>
+        <div class="live-tab" id="live-tab-live" onclick="switchLiveTab('live')">Live now</div>
+        <div class="live-tab" id="live-tab-past" onclick="switchLiveTab('past')">Past</div>
+      </div>
+
+      <div id="live-sessions-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;">
+        <div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3);">Loading...</div>
+      </div>
+    </div>
+
     <!-- PAYOUTS -->
     <div class="page-view" id="view-payouts">
       <div class="sec-header"><div class="sec-title">Payouts</div></div>
@@ -1213,6 +1303,16 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
           <button onclick="backToCommunityList()" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;">&#8592; Back</button>
           <div style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;" id="comm-detail-title">Community</div>
           <span style="font-size:12px;padding:3px 10px;background:var(--teal-dim);color:var(--teal-dark);border-radius:100px;font-weight:700;" id="comm-detail-count">0 members</span>
+        </div>
+        <div style="background:linear-gradient(135deg,#0d0d1a,#1a1a2e);border-radius:14px;padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="font-size:24px;">&#128249;</div>
+            <div>
+              <div style="font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:#fff;">Live sessions for this course</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.5);">Schedule, start, or manage calls from your Live Sessions page.</div>
+            </div>
+          </div>
+          <button onclick="showView('live'); setTimeout(function(){ filterLiveByCourse(_activeCourseId); },50);" style="flex-shrink:0;padding:10px 18px;background:var(--teal);border:none;border-radius:8px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;white-space:nowrap;">Manage &#8594;</button>
         </div>
         <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px;">
           <div style="font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;margin-bottom:14px;">&#128162; Post Announcement</div>
@@ -1440,6 +1540,7 @@ function showView(v) {
   if(v === 'profile'   && typeof loadProfile === 'function') loadProfile();
   if(v === 'testimonials' && typeof loadInstructorTestimonials === 'function') loadInstructorTestimonials();
   if(v === 'students'  && typeof loadInstructorMessages === 'function') loadInstructorMessages();
+  if(v === 'live'       && typeof loadAllLiveSessions === 'function') loadAllLiveSessions();
 
   // Auto-close mobile sidebar drawer after navigating
   var sidebar = document.querySelector('.sidebar');
@@ -1465,7 +1566,7 @@ var _course = {
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
   promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
   priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
-  startType:'instant', startDate:null, allowDM:true,
+  startType:'instant', startDate:null, allowDM:true, liveEnabled:true,
   status:'draft'
 };
 var _currentStep = 1;
@@ -1477,7 +1578,7 @@ function startNewCourse() {
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
     promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
     priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
-    startType:'instant', startDate:null, allowDM:true, status:'draft'
+    startType:'instant', startDate:null, allowDM:true, liveEnabled:true, status:'draft'
   };
   _currentStep = 1;
   // Reset form fields
@@ -1597,6 +1698,7 @@ function validateStep(n) {
     }
     _course.includes = collectIncludes();
     _course.allowDM = !!(document.getElementById('ci-allow-dm')||{}).checked;
+    _course.liveEnabled = !!(document.getElementById('ci-live-enabled')||{}).checked;
   }
   return true;
 }
@@ -2102,6 +2204,7 @@ function buildReview() {
   }
   _course.includes = collectIncludes();
   _course.allowDM = !!(document.getElementById('ci-allow-dm')||{}).checked;
+  _course.liveEnabled = !!(document.getElementById('ci-live-enabled')||{}).checked;
   var uploadedVideos = _course.modules.reduce(function(a,m){
     return a + (m.lessons||[]).filter(function(l){ return l.type==='video' && l.videoId; }).length;
   }, 0);
@@ -2219,6 +2322,7 @@ async function persistCourse(targetStatus, btn) {
       startDate:    _course.startType === 'scheduled' ? (_course.startDate || null) : null,
       includes:     _course.includes || [],
       allowDM:      _course.allowDM !== false,
+      liveEnabled:  _course.liveEnabled !== false,
       totalLessons: totalLessons,
       totalModules: _course.modules.length,
       instructorId:  window._user.uid,
@@ -3201,7 +3305,7 @@ async function editCourse(courseId){
       }),
       priceUSD: c.priceUSD||0, priceOriginal: c.priceOriginal||0, checkoutUrl: c.checkoutUrl||null,
       priceType: c.priceType||'paid', includes: c.includes||[],
-      startType: c.startType||'instant', startDate: c.startDate||null, allowDM: c.allowDM !== false,
+      startType: c.startType||'instant', startDate: c.startDate||null, allowDM: c.allowDM !== false, liveEnabled: c.liveEnabled !== false,
       status: c.status||'draft'
     };
     _currentStep = 1;
@@ -3274,6 +3378,7 @@ async function editCourse(courseId){
       cb.checked = savedKeys.indexOf(cb.dataset.key) > -1;
     });
     var dmEl = document.getElementById('ci-allow-dm'); if(dmEl) dmEl.checked = c.allowDM !== false;
+    var liveEl = document.getElementById('ci-live-enabled'); if(liveEl) liveEl.checked = c.liveEnabled !== false;
 
     showToast('&#9997;️','Course loaded. Make your changes and resubmit.');
   } catch(e){
@@ -3682,6 +3787,320 @@ async function submitReply(courseId, postId){
     loadCommunityPosts(courseId);
   } catch(e){ showToast('&#10060;','Error: '+e.message); }
 }
+
+/* ══════════════════════════════════════════
+   LIVE SESSIONS
+   Built-in video calls via Jitsi Meet (meet.jit.si) —
+   no API key, no external tool needed. Instructor
+   schedules a session for any course that has live
+   sessions enabled; students get notified immediately
+   (announcement in their inbox + the course community
+   feed) and see a live countdown until it starts.
+══════════════════════════════════════════ */
+var _liveCourses = [];       // courses with liveEnabled !== false
+var _liveSessions = [];      // all this instructor's sessions, all courses
+var _liveTab = 'upcoming';
+var _liveCourseFilter = null;
+var _liveCountdownInterval = null;
+
+function makeRoomName(courseId){
+  return 'skl-'+courseId.replace(/[^a-zA-Z0-9]/g,'')+'-'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+}
+
+function openJitsiModal(roomName, displayName, onClose){
+  var modal = document.createElement('div');
+  modal.id = 'jitsi-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:999;background:#0d0d1a;display:flex;flex-direction:column;';
+  modal.innerHTML = '<div style="padding:12px 20px;display:flex;align-items:center;justify-content:space-between;background:#111;flex-shrink:0;">'
+    +'<div style="color:#fff;font-family:Poppins,sans-serif;font-size:13px;font-weight:700;">&#128308; Live session</div>'
+    +'<button onclick="closeJitsiModal()" style="padding:8px 18px;background:#ef4444;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;">Leave call</button>'
+  +'</div>'
+  +'<iframe id="jitsi-frame" src="https://meet.jit.si/'+encodeURIComponent(roomName)+'#userInfo.displayName=%22'+encodeURIComponent(displayName||'Guest')+'%22" style="flex:1;border:none;width:100%;" allow="camera;microphone;fullscreen;display-capture;autoplay"></iframe>'
+  +'</div>';
+  document.body.appendChild(modal);
+  window._jitsiOnClose = onClose || null;
+}
+
+function closeJitsiModal(){
+  var m = document.getElementById('jitsi-modal');
+  if(m) m.remove();
+  if(typeof window._jitsiOnClose === 'function') window._jitsiOnClose();
+  window._jitsiOnClose = null;
+}
+
+async function ensureLiveCourses(){
+  if(_liveCourses.length || !window._db || !window._user) return;
+  var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+  var snap = await fb.getDocs(fb.query(fb.collection(window._db,'courses'), fb.where('instructorId','==', window._user.uid)));
+  _liveCourses = snap.docs
+    .map(function(d){ return { id:d.id, title:(d.data().title||'Untitled course'), liveEnabled: d.data().liveEnabled !== false }; })
+    .filter(function(c){ return c.liveEnabled; });
+}
+
+function openScheduleLiveModal(){
+  ensureLiveCourses().then(function(){
+    var modal = document.createElement('div');
+    modal.id = 'schedule-live-modal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:998;display:flex;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;';
+
+    if(!_liveCourses.length){
+      modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;padding:32px 28px;text-align:center;">'
+        +'<div style="font-size:36px;margin-bottom:14px;">&#128249;</div>'
+        +'<div style="font-family:Poppins,sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;">No eligible courses</div>'
+        +'<div style="font-size:13px;color:#8b8fa8;line-height:1.6;margin-bottom:20px;">None of your courses have live sessions turned on yet. Enable it under a course\'s Pricing step, then come back here.</div>'
+        +'<button onclick="closeScheduleLiveModal()" style="padding:10px 24px;background:#4ecca3;border:none;border-radius:8px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Got it</button>'
+      +'</div>';
+      document.body.appendChild(modal);
+      return;
+    }
+
+    var courseOptions = _liveCourses.map(function(c){
+      var sel = (_liveCourseFilter===c.id) ? ' selected' : '';
+      return '<option value="'+c.id+'"'+sel+'>'+c.title+'</option>';
+    }).join('');
+
+    modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 24px 80px rgba(13,13,26,.25);">'
+      +'<div style="padding:24px 28px;border-bottom:1.5px solid #e4e6f0;">'
+        +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;">&#128249; Schedule a live session</div>'
+        +'<div style="font-size:13px;color:#8b8fa8;margin-top:4px;">Every enrolled student gets notified the moment you schedule this.</div>'
+      +'</div>'
+      +'<div style="padding:24px 28px;">'
+        +'<label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Course</label>'
+        +'<select id="live-course-input" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;margin-bottom:14px;background:#fff;">'+courseOptions+'</select>'
+        +'<label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Session title</label>'
+        +'<input id="live-title-input" type="text" placeholder="e.g. Live Q&A — traffic strategies" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;margin-bottom:14px;"/>'
+        +'<label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">What will you cover? <span style="font-weight:400;color:#8b8fa8;">(shown in the notification)</span></label>'
+        +'<textarea id="live-details-input" placeholder="e.g. We\'ll cover traffic strategies, live funnel critiques, and Q&A." style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;min-height:70px;resize:vertical;margin-bottom:14px;"></textarea>'
+        +'<label style="display:block;font-size:12px;font-weight:600;color:#4a4d6a;margin-bottom:6px;">Date &amp; time</label>'
+        +'<input id="live-datetime-input" type="datetime-local" style="width:100%;padding:11px 14px;border:1.5px solid #e4e6f0;border-radius:8px;font-size:14px;font-family:Inter,sans-serif;outline:none;margin-bottom:18px;"/>'
+        +'<div style="display:flex;gap:10px;">'
+          +'<button onclick="closeScheduleLiveModal()" style="flex:1;padding:12px;background:transparent;border:1.5px solid #e4e6f0;border-radius:8px;font-size:13px;font-weight:600;color:#4a4d6a;cursor:pointer;">Cancel</button>'
+          +'<button onclick="scheduleLiveSession()" style="flex:2;padding:12px;background:#4ecca3;border:none;border-radius:8px;font-size:14px;font-weight:700;color:#0d0d1a;cursor:pointer;">Schedule &amp; notify students</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+    document.body.appendChild(modal);
+    modal.addEventListener('click', function(e){ if(e.target===this) closeScheduleLiveModal(); });
+  });
+}
+
+function closeScheduleLiveModal(){
+  var m = document.getElementById('schedule-live-modal');
+  if(m) m.remove();
+}
+
+async function scheduleLiveSession(){
+  var courseEl = document.getElementById('live-course-input');
+  var titleEl = document.getElementById('live-title-input');
+  var detailsEl = document.getElementById('live-details-input');
+  var dtEl = document.getElementById('live-datetime-input');
+  var courseId = courseEl ? courseEl.value : '';
+  var title = titleEl ? titleEl.value.trim() : '';
+  var details = detailsEl ? detailsEl.value.trim() : '';
+  var dtVal = dtEl ? dtEl.value : '';
+  if(!courseId || !title || !dtVal){ showToast('&#9888;','Pick a course, title, and date/time.'); return; }
+  if(!window._db || !window._user) return;
+
+  var course = _liveCourses.find(function(c){ return c.id===courseId; });
+  var courseTitle = course ? course.title : 'your course';
+  var scheduledIso = new Date(dtVal).toISOString();
+  var whenLabel = new Date(dtVal).toLocaleString('en-US',{weekday:'long',month:'long',day:'numeric',hour:'numeric',minute:'2-digit'});
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+    await fb.addDoc(fb.collection(window._db,'liveSessions'), {
+      courseId: courseId,
+      courseTitle: courseTitle,
+      instructorId: window._user.uid,
+      instructorName: window._userName || 'Instructor',
+      title: title,
+      details: details,
+      roomName: makeRoomName(courseId),
+      scheduledAt: scheduledIso,
+      status: 'scheduled',
+      createdAt: fb.serverTimestamp(),
+    });
+
+    // Automatic notification — this is the real delivery mechanism right
+    // now (no email/push system exists yet): it lands in every enrolled
+    // student's Messages > Announcements inbox immediately with an unread
+    // badge, AND in this course's community announcement feed.
+    var notifText = '📅 Live session scheduled: "'+title+'"\n\n'
+      + 'When: '+whenLabel+'\n'
+      + (details ? '\n'+details+'\n\n' : '\n')
+      + 'Head to the "'+courseTitle+'" community to see the countdown and join when it starts.';
+
+    await fb.addDoc(fb.collection(window._db,'announcements'), {
+      instructorId: window._user.uid,
+      instructorName: window._userName || 'Instructor',
+      text: notifText,
+      createdAt: fb.serverTimestamp(),
+    });
+
+    await fb.addDoc(fb.collection(window._db,'community_'+courseId+'_ann'), {
+      title: '📅 Live session: '+title,
+      text: (details ? details+'\n\n' : '') + 'Starts '+whenLabel+'. See the countdown in this community and join when it starts.',
+      author: window._userName || 'Instructor',
+      uid: window._user.uid,
+      pinned: true,
+      createdAt: fb.serverTimestamp(),
+    }).catch(function(){});
+
+    closeScheduleLiveModal();
+    showToast('&#10003;','Scheduled! Every enrolled student has been notified.');
+    loadAllLiveSessions();
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
+function switchLiveTab(tab){
+  _liveTab = tab;
+  ['upcoming','live','past'].forEach(function(t){
+    var el = document.getElementById('live-tab-'+t);
+    if(el) el.classList.toggle('active', t===tab);
+  });
+  renderLiveSessionsGrid();
+}
+
+function filterLiveByCourse(courseId){
+  _liveCourseFilter = courseId;
+  renderLiveSessionsGrid();
+}
+
+async function loadAllLiveSessions(){
+  var grid = document.getElementById('live-sessions-grid');
+  if(!grid || !window._db || !window._user) return;
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--text3);">Loading...</div>';
+
+  await ensureLiveCourses();
+
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    var snap = await fb.getDocs(fb.query(fb.collection(window._db,'liveSessions'), fb.where('instructorId','==', window._user.uid)));
+    _liveSessions = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    renderLiveSessionsGrid();
+  } catch(e){
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--red);">Error: '+e.message+'</div>';
+  }
+}
+
+function renderLiveSessionsGrid(){
+  var grid = document.getElementById('live-sessions-grid');
+  if(!grid) return;
+
+  clearInterval(_liveCountdownInterval);
+
+  var liveCount = _liveSessions.filter(function(s){ return s.status==='live'; }).length;
+  var navBadge = document.getElementById('nav-live-badge');
+  if(navBadge) navBadge.style.display = liveCount>0 ? 'block' : 'none';
+
+  var filtered = _liveSessions.filter(function(s){
+    if(_liveCourseFilter && s.courseId !== _liveCourseFilter) return false;
+    if(_liveTab === 'upcoming') return s.status === 'scheduled';
+    if(_liveTab === 'live') return s.status === 'live';
+    return s.status === 'ended';
+  });
+  filtered.sort(function(a,b){
+    var da = new Date(a.scheduledAt), db = new Date(b.scheduledAt);
+    return _liveTab==='past' ? db-da : da-db;
+  });
+
+  if(!filtered.length){
+    var emptyMsg = _liveTab==='upcoming' ? 'No upcoming sessions. Schedule one to get started!'
+      : _liveTab==='live' ? 'Nothing is live right now.'
+      : 'No past sessions yet.';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:56px 20px;color:var(--text3);">'
+      +'<div style="font-size:40px;margin-bottom:12px;">&#128249;</div>'+emptyMsg+'</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(function(s){
+    var isLive = s.status === 'live';
+    var isPast = s.status === 'ended';
+    var when = new Date(s.scheduledAt).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'});
+
+    var countdownHtml = (!isPast) ? (
+      '<div class="live-cd-row" data-target="'+s.scheduledAt+'">'
+        +'<div class="live-cd-box"><div class="live-cd-num cd-d">00</div><div class="live-cd-label">Days</div></div>'
+        +'<div class="live-cd-box"><div class="live-cd-num cd-h">00</div><div class="live-cd-label">Hrs</div></div>'
+        +'<div class="live-cd-box"><div class="live-cd-num cd-m">00</div><div class="live-cd-label">Min</div></div>'
+        +'<div class="live-cd-box"><div class="live-cd-num cd-s">00</div><div class="live-cd-label">Sec</div></div>'
+      +'</div>'
+    ) : '';
+
+    var actionsHtml = isLive
+      ? '<button onclick="rejoinLiveSession(\''+s.id+'\',\''+s.roomName+'\')" style="flex:2;padding:10px;background:#ef4444;border:none;border-radius:8px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;">Rejoin call</button>'
+        +'<button onclick="endLiveSession(\''+s.id+'\')" style="flex:1;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;">End</button>'
+      : isPast
+      ? '<div style="flex:1;text-align:center;font-size:12px;color:var(--text3);padding:8px;">Ended</div>'
+      : '<button onclick="startLiveSession(\''+s.id+'\',\''+s.roomName+'\')" style="flex:2;padding:10px;background:var(--teal);border:none;border-radius:8px;font-size:12px;font-weight:700;color:#0d0d1a;cursor:pointer;">Start now</button>'
+        +'<button onclick="cancelLiveSession(\''+s.id+'\')" style="flex:1;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;">Cancel</button>';
+
+    return '<div class="live-card2'+(isLive?' is-live':'')+'">'
+      +(isLive ? '<div class="live-badge-live"><span class="dot"></span> LIVE NOW</div>' : '')
+      +'<div class="live-card2-course">'+(s.courseTitle||'Course')+'</div>'
+      +'<div class="live-card2-title">'+s.title+'</div>'
+      +'<div style="font-size:12px;color:var(--text3);">'+when+'</div>'
+      +countdownHtml
+      +'<div style="display:flex;gap:8px;margin-top:14px;">'+actionsHtml+'</div>'
+    +'</div>';
+  }).join('');
+
+  if(_liveTab !== 'past') startLiveCardCountdowns();
+}
+
+function startLiveCardCountdowns(){
+  function pad(n){ return n<10 ? '0'+n : String(n); }
+  function tick(){
+    document.querySelectorAll('.live-cd-row').forEach(function(row){
+      var target = new Date(row.dataset.target).getTime();
+      if(isNaN(target)) return;
+      var diff = target - Date.now();
+      if(diff <= 0){
+        row.querySelectorAll('.live-cd-num').forEach(function(n){ n.textContent = '00'; });
+        return;
+      }
+      row.querySelector('.cd-d').textContent = pad(Math.floor(diff/86400000));
+      row.querySelector('.cd-h').textContent = pad(Math.floor((diff%86400000)/3600000));
+      row.querySelector('.cd-m').textContent = pad(Math.floor((diff%3600000)/60000));
+      row.querySelector('.cd-s').textContent = pad(Math.floor((diff%60000)/1000));
+    });
+  }
+  tick();
+  clearInterval(_liveCountdownInterval);
+  _liveCountdownInterval = setInterval(tick, 1000);
+}
+
+async function startLiveSession(sessionId, roomName){
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { status:'live', startedAt: fb.serverTimestamp() });
+    loadAllLiveSessions();
+  } catch(e){ showToast('&#10060;','Could not start: '+e.message); return; }
+  openJitsiModal(roomName, window._userName || 'Instructor');
+}
+
+function rejoinLiveSession(sessionId, roomName){
+  openJitsiModal(roomName, window._userName || 'Instructor');
+}
+
+async function endLiveSession(sessionId){
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { status:'ended', endedAt: fb.serverTimestamp() });
+    showToast('&#10003;','Session ended.');
+    loadAllLiveSessions();
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
+async function cancelLiveSession(sessionId){
+  try {
+    var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+    await fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { status:'ended', endedAt: fb.serverTimestamp() });
+    loadAllLiveSessions();
+  } catch(e){ showToast('&#10060;','Error: '+e.message); }
+}
+
 
 async function postAnnouncement(){
   var titleEl = document.getElementById('ann-title-input');
