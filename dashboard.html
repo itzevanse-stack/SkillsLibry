@@ -133,7 +133,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;}
 .msg-thread{display:flex;flex-direction:column;height:100%;}
 .msg-thread-header{padding:14px 20px;border-bottom:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;flex-shrink:0;}
 .msg-thread-body{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:10px;}
-.msg-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;}
+.msg-bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.5;white-space:pre-wrap;}
 .msg-bubble.from-instructor{align-self:flex-start;background:var(--bg2);color:var(--text);border-bottom-left-radius:4px;}
 .msg-bubble.from-student{align-self:flex-end;background:var(--teal);color:#0d0d1a;border-bottom-right-radius:4px;}
 .msg-bubble-time{font-size:10px;opacity:.6;margin-top:4px;}
@@ -1138,6 +1138,19 @@ function switchMsgSubtab(tab){
   _msgSubtab = tab;
   document.getElementById('msg-subtab-dm').classList.toggle('active', tab==='dm');
   document.getElementById('msg-subtab-ann').classList.toggle('active', tab==='ann');
+
+  // Reset the right panel back to its default state on every tab switch —
+  // otherwise it keeps showing whatever was last drawn into it (e.g. old
+  // announcement cards lingering after switching back to Direct).
+  var panel = document.getElementById('msg-main-panel');
+  if(panel){
+    panel.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--text3);padding:40px;">'
+      +'<div style="font-size:40px;margin-bottom:10px;">&#128172;</div>'
+      +'<div style="font-size:13px;">Select a conversation to start chatting.</div>'
+    +'</div>';
+  }
+  _activeConvId = null;
+
   if(tab==='dm') renderDmList();
   else renderAnnouncementsList();
 }
@@ -1371,27 +1384,28 @@ async function openConversation(convId, instructorId, instructorName, quoteText)
     ? '<img src="'+instInfo.photoURL+'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:8px;vertical-align:middle;"/>'
     : '<span class="conv-avatar" style="width:28px;height:28px;font-size:11px;display:inline-flex;margin-right:8px;vertical-align:middle;">'+headInitials+'</span>';
 
-  // If this thread was opened via "Reply privately" on an announcement,
-  // show what's being replied to right above the input — so the context
-  // isn't lost just because it lands in the same ongoing conversation.
-  var quoteBanner = quoteText
-    ? '<div style="padding:8px 16px;background:var(--bg2);border-top:1.5px solid var(--border);font-size:11px;color:var(--text3);">'
-      +'<strong style="color:var(--text2);">Replying to announcement:</strong> "'+escapeHtml(quoteText.length>120 ? quoteText.slice(0,120)+'…' : quoteText)+'"'
-    +'</div>'
-    : '';
-
   panel.innerHTML = '<div class="msg-thread">'
     +'<div class="msg-thread-header">'+headAvatar+instructorName+'</div>'
     +'<div class="msg-thread-body" id="msg-thread-body"><div style="text-align:center;color:var(--text3);font-size:13px;">Loading...</div></div>'
-    +quoteBanner
     +'<div class="msg-thread-input">'
       +'<textarea id="msg-input" placeholder="Message '+instructorName+'..." onkeydown="if(event.key===\'Enter\' && !event.shiftKey){ event.preventDefault(); sendStudentMessage(); }"></textarea>'
       +'<button onclick="sendStudentMessage()" style="padding:0 20px;background:var(--teal);border:none;border-radius:10px;font-size:13px;font-weight:700;color:#0d0d1a;cursor:pointer;">Send</button>'
     +'</div>'
   +'</div>';
 
+  // If this came from "Reply privately" on an announcement, put the quote
+  // directly INTO the message itself (not just a UI-only banner) — that's
+  // the only way the instructor actually sees the same context on their
+  // side, since messages just carry whatever text was sent.
   var inputEl = document.getElementById('msg-input');
-  if(inputEl) inputEl.focus();
+  if(inputEl){
+    if(quoteText){
+      var trimmed = quoteText.length > 200 ? quoteText.slice(0,200)+'…' : quoteText;
+      inputEl.value = '> Re your announcement: "'+trimmed+'"\n\n';
+    }
+    inputEl.focus();
+    inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+  }
 
   try {
     var fb = window._fbFs;
