@@ -1202,7 +1202,9 @@ async function loadStudentInstructorMap(){
 
   await Promise.all(Object.keys(map).map(async function(iid){
     var uSnap = await fb.getDoc(fb.doc(window._db,'users',iid));
-    map[iid].name = uSnap.exists() ? (uSnap.data().name || 'Instructor') : 'Instructor';
+    var udata = uSnap.exists() ? uSnap.data() : {};
+    map[iid].name = udata.name || 'Instructor';
+    map[iid].photoURL = udata.photoURL || null;
   }));
 
   return map;
@@ -1237,11 +1239,14 @@ async function renderDmList(){
       var lastAt = conv && conv.lastMessageAt && conv.lastMessageAt.toMillis ? conv.lastMessageAt.toMillis() : 0;
       var initials = inst.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
       var nameEsc = inst.name.replace(/'/g,"\\'");
+      var avatarInner = inst.photoURL
+        ? '<img src="'+inst.photoURL+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'
+        : initials;
 
       var html;
       if(!inst.allowDM){
         html = '<div class="conv-row" style="opacity:.5;cursor:default;">'
-          +'<div class="conv-avatar">'+initials+'</div>'
+          +'<div class="conv-avatar">'+avatarInner+'</div>'
           +'<div style="flex:1;min-width:0;"><div class="conv-name">'+inst.name+'</div>'
           +'<div class="conv-preview">Direct messaging is off for this instructor</div></div>'
         +'</div>';
@@ -1249,7 +1254,7 @@ async function renderDmList(){
         var unreadCls = (conv && conv.unreadForStudent) ? ' unread' : '';
         var preview = conv ? (conv.lastMessage || 'No messages yet') : 'Tap to say hello';
         html = '<div class="conv-row'+unreadCls+'" onclick="openConversation(\''+convId+'\',\''+iid+'\',\''+nameEsc+'\')">'
-          +'<div class="conv-avatar">'+initials+'</div>'
+          +'<div class="conv-avatar">'+avatarInner+'</div>'
           +'<div style="flex:1;min-width:0;">'
             +'<div class="conv-name">'+inst.name+'</div>'
             +'<div class="conv-preview">'+preview+'</div>'
@@ -1341,8 +1346,13 @@ async function openConversation(convId, instructorId, instructorName){
   _activeConvId = convId;
   document.querySelectorAll('.conv-row').forEach(function(r){ r.classList.remove('active'); });
   var panel = document.getElementById('msg-main-panel');
+  var instInfo = _studentInstructorMap[instructorId];
+  var headInitials = instructorName.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  var headAvatar = instInfo && instInfo.photoURL
+    ? '<img src="'+instInfo.photoURL+'" style="width:28px;height:28px;border-radius:50%;object-fit:cover;margin-right:8px;vertical-align:middle;"/>'
+    : '<span class="conv-avatar" style="width:28px;height:28px;font-size:11px;display:inline-flex;margin-right:8px;vertical-align:middle;">'+headInitials+'</span>';
   panel.innerHTML = '<div class="msg-thread">'
-    +'<div class="msg-thread-header">'+instructorName+'</div>'
+    +'<div class="msg-thread-header">'+headAvatar+instructorName+'</div>'
     +'<div class="msg-thread-body" id="msg-thread-body"><div style="text-align:center;color:var(--text3);font-size:13px;">Loading...</div></div>'
     +'<div class="msg-thread-input">'
       +'<textarea id="msg-input" placeholder="Message '+instructorName+'..." onkeydown="if(event.key===\'Enter\' && !event.shiftKey){ event.preventDefault(); sendStudentMessage(); }"></textarea>'
