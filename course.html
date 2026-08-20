@@ -589,7 +589,7 @@ a{text-decoration:none;color:inherit}
           </div>
 
           <button class="enroll-btn" id="enroll-btn" onclick="enrollClick()" style="margin-top:20px;">
-            Enroll now &mdash; <span id="enroll-price">$97</span>
+            GET ACCESS NOW!
           </button>
           <div class="pc-guarantee">&#128274; 30-day money-back guarantee</div>
           <div style="width:100%;margin-top:14px;padding:10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center;gap:8px;">
@@ -1698,7 +1698,13 @@ function openLeadCaptureModal(){
   var modal = document.createElement('div');
   modal.id  = 'lead-capture-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;background:rgba(13,13,26,.7);backdrop-filter:blur(8px);padding:16px;';
+  var priceLabel = '$'+((_activeCourse&&_activeCourse.priceUSD)||0).toLocaleString();
+  var titleLabel = (_activeCourse&&_activeCourse.title) ? _activeCourse.title.replace(/</g,'&lt;') : 'Course';
   modal.innerHTML = '<div style="background:#fff;border-radius:20px;width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 80px rgba(13,13,26,.2);animation:authPop .25s ease;">'
+    +'<div style="padding:16px 28px;background:linear-gradient(135deg,var(--teal-dim),rgba(108,99,255,.06));border-bottom:1.5px solid #e4e6f0;display:flex;align-items:center;justify-content:space-between;gap:12px;">'
+      +'<div style="font-size:13px;font-weight:700;color:#0d0d1a;line-height:1.4;">'+titleLabel+'</div>'
+      +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:800;color:var(--teal-dark);white-space:nowrap;">'+priceLabel+'</div>'
+    +'</div>'
     +'<div style="padding:24px 28px;border-bottom:1.5px solid #e4e6f0;">'
       +'<div style="font-family:Poppins,sans-serif;font-size:18px;font-weight:700;color:#0d0d1a;margin-bottom:4px;">Almost there</div>'
       +'<div style="font-size:13px;color:#8b8fa8;">We just need a couple details before taking you to checkout.</div>'
