@@ -252,18 +252,44 @@ a{text-decoration:none;color:inherit}
 
 /* ── TABS ── */
 .tabs-bar{
-  display:flex;border-bottom:2px solid var(--border);
+  display:inline-flex;gap:6px;
+  padding:6px;
   margin-bottom:32px;
-  background:var(--bg2);
+  background:linear-gradient(135deg,var(--bg3),var(--bg2));
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  position:relative;overflow:hidden;
+}
+.tabs-bar::before{
+  content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(78,204,163,.16),transparent);
+  animation:tabsShimmer 3.2s ease-in-out infinite;pointer-events:none;
+}
+@keyframes tabsShimmer{
+  0%{left:-60%;}
+  55%{left:130%;}
+  100%{left:130%;}
 }
 .tab-btn{
-  padding:16px 24px;font-size:14px;font-weight:600;
-  color:var(--text3);background:transparent;border:none;cursor:pointer;
-  border-bottom:2.5px solid transparent;margin-bottom:-2px;
-  transition:all .2s;
+  padding:11px 22px;font-size:13.5px;font-weight:700;
+  color:var(--text2);background:transparent;border:none;border-radius:10px;
+  cursor:pointer;position:relative;z-index:1;
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+  animation:tabPopIn .5s cubic-bezier(.34,1.56,.64,1) backwards;
 }
-.tab-btn:hover{color:var(--text);}
-.tab-btn.active{color:var(--teal-dark);border-bottom-color:var(--teal);}
+.tab-btn:nth-child(1){animation-delay:.05s;}
+.tab-btn:nth-child(2){animation-delay:.15s;}
+.tab-btn:nth-child(3){animation-delay:.25s;}
+@keyframes tabPopIn{
+  from{opacity:0;transform:translateY(8px) scale(.85);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+.tab-btn:hover{color:var(--text);background:rgba(255,255,255,.7);transform:translateY(-1px);}
+.tab-btn.active{
+  color:#fff;background:linear-gradient(135deg,var(--teal) 0%,#3aa88a 100%);
+  box-shadow:0 6px 16px rgba(78,204,163,.4);
+}
+.tab-btn.active:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(78,204,163,.45);}
 .tab-pane{display:none;animation:fadeIn .2s ease;}
 .tab-pane.active{display:block;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
