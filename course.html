@@ -1594,16 +1594,42 @@ function showToast(icon,msg){
   // the description/testimonials/modules tabs, so visitors see the offer
   // explained before being asked to pay — the top-of-page jump button
   // covers anyone who already knows they want in. Desktop keeps its
-  // original side-by-side layout untouched.
-  if(window.innerWidth <= 900){
+  // original sticky side-by-side layout.
+  //
+  // This re-checks on every resize (not just once at page load) so it
+  // stays correct no matter what width the window happens to be at when
+  // the page first loads — e.g. testing narrow then maximizing the
+  // window won't leave the price card stuck at the bottom on desktop.
+  (function(){
     var wrap = document.getElementById('purchase-card-wrap');
+    var heroInner = document.querySelector('.hero-inner');
     var content = document.querySelector('.course-content');
-    if(wrap && content && content.parentNode){
-      content.parentNode.insertBefore(wrap, content.nextSibling);
-      wrap.style.paddingTop = '0';
-      wrap.style.margin = '32px 0';
+    if(!wrap || !heroInner || !content) return;
+
+    var isReflowed = false;
+    function applyLayout(){
+      var shouldReflow = window.innerWidth <= 900;
+      if(shouldReflow === isReflowed) return; // already in the right state
+
+      if(shouldReflow){
+        content.parentNode.insertBefore(wrap, content.nextSibling);
+        wrap.style.paddingTop = '0';
+        wrap.style.margin = '32px 0';
+      } else {
+        heroInner.appendChild(wrap);
+        wrap.style.paddingTop = '64px';
+        wrap.style.margin = '';
+      }
+      isReflowed = shouldReflow;
     }
-  }
+
+    applyLayout();
+    var resizeTimer;
+    window.addEventListener('resize', function(){
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(applyLayout, 150);
+    });
+  })();
 
 })();
 
