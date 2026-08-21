@@ -133,6 +133,15 @@ module.exports = async function handler(req, res) {
     const userSnap = await db.collection('users').doc(uid).get();
     const userData = userSnap.exists ? userSnap.data() : {};
 
+    // Never embed a raw base64 data URI into the JWT as an "avatar" — some
+    // photo uploads on this platform store the image inline as
+    // data:image/...;base64,... rather than a hosted URL, and stuffing
+    // that into a JWT balloons it to tens of thousands of characters,
+    // which gets silently rejected/reset by the server. Only pass a real
+    // http(s) URL; otherwise leave it blank.
+    const rawPhoto = userData.photoURL || '';
+    const safeAvatar = /^https?:\/\//i.test(rawPhoto) ? rawPhoto : '';
+
     const appId = process.env.JAAS_APP_ID;
     const kid = process.env.JAAS_KID;
     const privateKeyPem = Buffer.from(process.env.JAAS_PRIVATE_KEY_BASE64 || '', 'base64').toString('utf8');
@@ -149,7 +158,7 @@ module.exports = async function handler(req, res) {
       roomName: fullRoomName,
       userName: userData.name || decoded.name || 'Guest',
       userEmail: userData.email || decoded.email || '',
-      userAvatar: userData.photoURL || '',
+      userAvatar: safeAvatar,
       isModerator,
     });
 
