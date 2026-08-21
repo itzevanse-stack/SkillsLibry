@@ -1540,7 +1540,7 @@ function showView(v) {
   if(v === 'profile'   && typeof loadProfile === 'function') loadProfile();
   if(v === 'testimonials' && typeof loadInstructorTestimonials === 'function') loadInstructorTestimonials();
   if(v === 'students'  && typeof loadInstructorMessages === 'function') loadInstructorMessages();
-  if(v === 'live'       && typeof loadAllLiveSessions === 'function') loadAllLiveSessions();
+  if(v === 'live'       && typeof loadAllLiveSessions === 'function'){ loadAllLiveSessions(); startLiveSessionsPolling(); }
 
   // Auto-close mobile sidebar drawer after navigating
   var sidebar = document.querySelector('.sidebar');
@@ -3874,6 +3874,22 @@ async function openJitsiModal(sessionId, displayName, onClose){
       },
     });
     _jitsiApi.addListener('videoConferenceLeft', closeJitsiModal);
+
+    // Report how many people are actually in the room right now, so the
+    // Live Sessions page can show it without anyone having to open the
+    // call. Best-effort only — if this write fails for any reason, the
+    // call itself still works fine, we just skip the count.
+    var reportParticipantCount = function(){
+      try {
+        var count = _jitsiApi.getNumberOfParticipants();
+        import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js').then(function(fb){
+          fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { participantCount: count }).catch(function(){});
+        });
+      } catch(e){}
+    };
+    _jitsiApi.addListener('participantJoined', reportParticipantCount);
+    _jitsiApi.addListener('participantLeft', reportParticipantCount);
+    _jitsiApi.addListener('videoConferenceJoined', reportParticipantCount);
   } catch(e){
     var container2 = document.getElementById('jitsi-container');
     if(container2) container2.innerHTML = '<div style="height:100%;display:flex;align-items:center;justify-content:center;color:#ef4444;font-family:Inter,sans-serif;font-size:13px;padding:20px;text-align:center;">Could not join: '+e.message+'</div>';
@@ -4013,6 +4029,17 @@ async function scheduleLiveSession(){
   } catch(e){ showToast('&#10060;','Error: '+e.message); }
 }
 
+var _liveSessionsPollInterval = null;
+
+function startLiveSessionsPolling(){
+  clearInterval(_liveSessionsPollInterval);
+  _liveSessionsPollInterval = setInterval(function(){
+    var stillOnLiveView = document.getElementById('view-live') && document.getElementById('view-live').classList.contains('active');
+    if(!stillOnLiveView){ clearInterval(_liveSessionsPollInterval); return; }
+    loadAllLiveSessions();
+  }, 8000);
+}
+
 function switchLiveTab(tab){
   _liveTab = tab;
   ['upcoming','live','past'].forEach(function(t){
@@ -4097,7 +4124,7 @@ function renderLiveSessionsGrid(){
         +'<button onclick="cancelLiveSession(\''+s.id+'\')" style="flex:1;padding:10px;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;">Cancel</button>';
 
     return '<div class="live-card2'+(isLive?' is-live':'')+'">'
-      +(isLive ? '<div class="live-badge-live"><span class="dot"></span> LIVE NOW</div>' : '')
+      +(isLive ? '<div class="live-badge-live"><span class="dot"></span> LIVE NOW'+(s.participantCount ? ' &middot; &#128101; '+s.participantCount+' in the room' : '')+'</div>' : '')
       +'<div class="live-card2-course">'+(s.courseTitle||'Course')+'</div>'
       +'<div class="live-card2-title">'+s.title+'</div>'
       +'<div style="font-size:12px;color:var(--text3);">'+when+'</div>'
@@ -4147,7 +4174,7 @@ function rejoinLiveSession(sessionId, roomName){
 async function endLiveSession(sessionId){
   try {
     var fb = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
-    await fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { status:'ended', endedAt: fb.serverTimestamp() });
+    await fb.updateDoc(fb.doc(window._db,'liveSessions',sessionId), { status:'ended', endedAt: fb.serverTimestamp(), participantCount: 0 });
     showToast('&#10003;','Session ended.');
     loadAllLiveSessions();
   } catch(e){ showToast('&#10060;','Error: '+e.message); }
