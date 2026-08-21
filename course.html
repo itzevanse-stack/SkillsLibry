@@ -449,6 +449,7 @@ a{text-decoration:none;color:inherit}
   .hero-inner{grid-template-columns:1fr;}
   .purchase-card{position:static;}
   .testi-grid{grid-template-columns:1fr;}
+  #mobile-jump-cta{display:block !important;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
@@ -545,6 +546,8 @@ a{text-decoration:none;color:inherit}
         </video>
       </div>
 
+      <button id="mobile-jump-cta" onclick="document.getElementById('purchase-card-wrap').scrollIntoView({behavior:'smooth',block:'start'});" style="display:none;width:100%;margin:16px 0 4px;padding:15px;background:linear-gradient(135deg,var(--teal) 0%,#38b2ac 100%);color:#0d0d1a;font-family:'Poppins',sans-serif;font-size:15px;font-weight:800;border:none;border-radius:var(--r);cursor:pointer;box-shadow:0 4px 20px rgba(78,204,163,.3);">GET ACCESS NOW!</button>
+
       <div class="hero-badges" style="margin:-8px 0 20px;">
         <span class="badge" id="cd-type" style="display:none;background:var(--purple);color:#fff;"></span>
         <span class="badge badge-updated" id="cd-updated" style="display:none;"></span>
@@ -564,7 +567,7 @@ a{text-decoration:none;color:inherit}
     </div>
 
     <!-- Purchase card sits in hero on desktop -->
-    <div style="padding-top:64px;">
+    <div style="padding-top:64px;" id="purchase-card-wrap">
       <div class="purchase-card">
         <div class="pc-body">
           <div class="pc-price-row">
@@ -1578,6 +1581,29 @@ function showToast(icon,msg){
   startEnrollButtonPulse();
 
   renderModules(courseData.modules);
+
+  // Instructor-chosen CTA text — applies to both the real enroll button
+  // and the mobile jump button, so they read as one continuous action.
+  var ctaText = (courseData.ctaText || '').trim() || 'GET ACCESS NOW!';
+  var enrollBtnEl = document.getElementById('enroll-btn');
+  var jumpBtnEl = document.getElementById('mobile-jump-cta');
+  if(enrollBtnEl) enrollBtnEl.textContent = ctaText;
+  if(jumpBtnEl) jumpBtnEl.textContent = ctaText;
+
+  // On mobile, move the whole price/countdown/enroll card to sit AFTER
+  // the description/testimonials/modules tabs, so visitors see the offer
+  // explained before being asked to pay — the top-of-page jump button
+  // covers anyone who already knows they want in. Desktop keeps its
+  // original side-by-side layout untouched.
+  if(window.innerWidth <= 900){
+    var wrap = document.getElementById('purchase-card-wrap');
+    var content = document.querySelector('.course-content');
+    if(wrap && content && content.parentNode){
+      content.parentNode.insertBefore(wrap, content.nextSibling);
+      wrap.style.paddingTop = '0';
+      wrap.style.margin = '32px 0';
+    }
+  }
 
 })();
 
