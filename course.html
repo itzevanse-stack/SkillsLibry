@@ -230,7 +230,7 @@ a{text-decoration:none;color:inherit}
 .enroll-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(78,204,163,.45);}
 .enroll-btn:hover::before{opacity:1;}
 .enroll-btn:active{transform:translateY(0);}
-.enroll-btn.pulse{animation:enrollPulse .7s ease;}
+.enroll-btn.pulse, #mobile-jump-cta.pulse{animation:enrollPulse .7s ease;}
 @keyframes enrollPulse{
   0%{transform:scale(1);box-shadow:0 4px 20px rgba(78,204,163,.3);}
   40%{transform:scale(1.045);box-shadow:0 8px 30px rgba(78,204,163,.55);}
@@ -1041,14 +1041,16 @@ function startCountdown(prefix, startDateIso){
 
 /* ── ENROLL BUTTON ATTENTION PULSE (every 5-10s, random) ── */
 function startEnrollButtonPulse(){
-  var btn = document.getElementById('enroll-btn');
-  if(!btn) return;
+  var btns = [document.getElementById('enroll-btn'), document.getElementById('mobile-jump-cta')].filter(Boolean);
+  if(!btns.length) return;
   function schedule(){
     var delay = 5000 + Math.random()*5000; // 5-10s
     setTimeout(function(){
-      btn.classList.remove('pulse');
-      void btn.offsetWidth; // restart animation
-      btn.classList.add('pulse');
+      btns.forEach(function(btn){
+        btn.classList.remove('pulse');
+        void btn.offsetWidth; // restart animation
+        btn.classList.add('pulse');
+      });
       schedule();
     }, delay);
   }
