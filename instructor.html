@@ -1065,6 +1065,12 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
                 </label>
                 <div class="hint">When on, you can schedule live training calls for this course from your Live Sessions page — students see them on the community page with a countdown, and get notified the moment one's scheduled. Turn off for fully self-paced courses.</div>
               </div>
+
+              <div class="fg" style="margin-top:16px;">
+                <label>Enroll button text</label>
+                <input class="fi" id="ci-cta-text" type="text" placeholder="e.g. GET ACCESS NOW!" maxlength="40"/>
+                <div class="hint">Shown on the enroll button on your course page. Leave blank to use the default "GET ACCESS NOW!"</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1566,7 +1572,7 @@ var _course = {
   duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
   promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
   priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
-  startType:'instant', startDate:null, allowDM:true, liveEnabled:true,
+  startType:'instant', startDate:null, allowDM:true, liveEnabled:true, ctaText:'',
   status:'draft'
 };
 var _currentStep = 1;
@@ -1578,11 +1584,11 @@ function startNewCourse() {
     duration:'', description:'', thumbnail:null, thumbnailUrl:null, promoVideo:null,
     promoVideoId:null, promoVideoUrl:null, _origPromoVideoId:null, learns:[], requirements:[], modules:[],
     priceUSD:0, priceOriginal:0, checkoutUrl:null, priceType:'paid', includes:[],
-    startType:'instant', startDate:null, allowDM:true, liveEnabled:true, status:'draft'
+    startType:'instant', startDate:null, allowDM:true, liveEnabled:true, ctaText:'', status:'draft'
   };
   _currentStep = 1;
   // Reset form fields
-  ['ci-title','ci-subtitle','ci-desc','pr-usd','pr-original','ci-start-date'].forEach(function(id){
+  ['ci-title','ci-subtitle','ci-desc','pr-usd','pr-original','ci-start-date','ci-cta-text'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value = '';
   });
   var ctEl = document.getElementById('ci-content-type'); if(ctEl) ctEl.value = 'course';
@@ -1699,6 +1705,7 @@ function validateStep(n) {
     _course.includes = collectIncludes();
     _course.allowDM = !!(document.getElementById('ci-allow-dm')||{}).checked;
     _course.liveEnabled = !!(document.getElementById('ci-live-enabled')||{}).checked;
+    _course.ctaText = ((document.getElementById('ci-cta-text')||{}).value||'').trim();
   }
   return true;
 }
@@ -2205,6 +2212,7 @@ function buildReview() {
   _course.includes = collectIncludes();
   _course.allowDM = !!(document.getElementById('ci-allow-dm')||{}).checked;
   _course.liveEnabled = !!(document.getElementById('ci-live-enabled')||{}).checked;
+  _course.ctaText = ((document.getElementById('ci-cta-text')||{}).value||'').trim();
   var uploadedVideos = _course.modules.reduce(function(a,m){
     return a + (m.lessons||[]).filter(function(l){ return l.type==='video' && l.videoId; }).length;
   }, 0);
@@ -2323,6 +2331,7 @@ async function persistCourse(targetStatus, btn) {
       includes:     _course.includes || [],
       allowDM:      _course.allowDM !== false,
       liveEnabled:  _course.liveEnabled !== false,
+      ctaText:      _course.ctaText || '',
       totalLessons: totalLessons,
       totalModules: _course.modules.length,
       instructorId:  window._user.uid,
@@ -3305,7 +3314,7 @@ async function editCourse(courseId){
       }),
       priceUSD: c.priceUSD||0, priceOriginal: c.priceOriginal||0, checkoutUrl: c.checkoutUrl||null,
       priceType: c.priceType||'paid', includes: c.includes||[],
-      startType: c.startType||'instant', startDate: c.startDate||null, allowDM: c.allowDM !== false, liveEnabled: c.liveEnabled !== false,
+      startType: c.startType||'instant', startDate: c.startDate||null, allowDM: c.allowDM !== false, liveEnabled: c.liveEnabled !== false, ctaText: c.ctaText||'',
       status: c.status||'draft'
     };
     _currentStep = 1;
@@ -3379,6 +3388,7 @@ async function editCourse(courseId){
     });
     var dmEl = document.getElementById('ci-allow-dm'); if(dmEl) dmEl.checked = c.allowDM !== false;
     var liveEl = document.getElementById('ci-live-enabled'); if(liveEl) liveEl.checked = c.liveEnabled !== false;
+    var ctaEl = document.getElementById('ci-cta-text'); if(ctaEl) ctaEl.value = c.ctaText || '';
 
     showToast('&#9997;️','Course loaded. Make your changes and resubmit.');
   } catch(e){
