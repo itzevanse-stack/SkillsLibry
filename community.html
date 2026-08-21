@@ -1425,14 +1425,18 @@ async function openJitsiModal(sessionId, displayName){
     }
     var data = await resp.json();
 
+    var directUrl = 'https://8x8.vc/'+data.roomName+'?jwt='+data.jwt;
+    console.log('JITSI DIRECT JOIN URL (copy this if the embed fails):', directUrl);
+    var container = document.getElementById('jitsi-container');
+    container.innerHTML = '<div style="padding:16px;color:rgba(255,255,255,.6);font-family:Inter,sans-serif;font-size:11px;word-break:break-all;">If the call below fails to load, open this exact link directly: <a href="'+directUrl+'" target="_blank" style="color:#4ecca3;">'+directUrl+'</a></div><div style="height:calc(100% - 60px);"></div>';
+
     await loadJaasScript(data.appId);
 
-    var container = document.getElementById('jitsi-container');
-    container.innerHTML = '';
+    var apiTarget = container.lastElementChild;
     _jitsiApi = new window.JitsiMeetExternalAPI('8x8.vc', {
       roomName: data.roomName,
       jwt: data.jwt,
-      parentNode: container,
+      parentNode: apiTarget,
       width: '100%',
       height: '100%',
       userInfo: { displayName: displayName || 'Guest' },
