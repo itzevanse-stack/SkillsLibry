@@ -49,21 +49,22 @@ function signJaasToken({ appId, kid, privateKeyPem, roomName, userName, userEmai
     aud: 'jitsi',
     iss: 'chat',
     sub: appId,
-    room: roomName,
+    room: '*',
     exp: now + 90 * 60,
     nbf: now - 10,
     context: {
       user: {
         name: userName || 'Guest',
         email: userEmail || '',
-        moderator: isModerator ? 'true' : 'false',
+        moderator: !!isModerator,
         avatar: userAvatar || '',
+        'hidden-from-recorder': false,
       },
       features: {
-        livestreaming: 'false',
-        recording: 'false',
-        transcription: 'false',
-        'outbound-call': 'false',
+        livestreaming: false,
+        recording: false,
+        transcription: false,
+        'outbound-call': false,
       },
     },
   };
